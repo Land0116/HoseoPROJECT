@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 214e06d2e96012b468d6fb83cc0bee81, type: 3}
   m_Name: playerBaseData
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  playerName: 
-  hp: 0
-  gold: 0
+  Hp: 0
+  MaxHp: 0
+  Gold: 0
   MoveSpeed: 3
   Damage: 0
+  Amount: 5
+  MaxAmount: 5
+  playerState: 0
+  playerAttackType: 0

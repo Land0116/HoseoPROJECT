@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +19,13 @@ public class PlayerController : MonoBehaviour
     private Camera _mainCamera;
     
     public PlayerData playerData;
+    
+    [Header("공격 관련")]
+    public GameObject bulletPrefab;
+    public Transform gunTip;
+    public float range;
+    public float reloadTime = 1.5f; // 장전 걸리는 시간
+    private bool isReloading = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     private void Awake()
@@ -32,7 +41,7 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = 0f; 
         
         _mainCamera = Camera.main;
-        
+        playerData.Amount = playerData.MaxAmount;
     }
 
     void Start()
@@ -43,9 +52,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateCrosshairPosition();
-        RotatePlayerToMouse();
+        // UpdateCrosshairPosition();
+        // RotatePlayerToMouse();
+
+        PlayerMouseMovement();
+
     }
+    
+    
     void FixedUpdate()
     {
         Vector2 moveVector = inputDirection;
@@ -53,42 +67,72 @@ public class PlayerController : MonoBehaviour
         
         rb.linearVelocity = moveVector * playerData.MoveSpeed;
     }
-    
-    void UpdateCrosshairPosition()
+
+    void PlayerMouseMovement()
     {
-        if (crosshairTransform == null) return;
-        
+        if (crosshairTransform == null || playerBody == null) return;
+
+        // 1. 마우스 월드 좌표 계산 (한 번만 수행)
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        // 카메라와의 거리를 고려하여 좌표 변환
-        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, -_mainCamera.transform.position.z));
+        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
+            mouseScreenPos.x, 
+            mouseScreenPos.y, 
+            -_mainCamera.transform.position.z));
         mouseWorldPos.z = 0f;
-        
+
+        // 2. 조준점 위치 업데이트
         crosshairTransform.position = mouseWorldPos;
-        
-        crosshairTransform.position = mouseWorldPos;
-    }
 
-    void RotatePlayerToMouse()
-    {
-        if (playerBody == null) return;
-
-        // 1. 플레이어에서 조준점(마우스)으로 향하는 방향 벡터 구하기
-        Vector2 direction = (crosshairTransform.position - playerBody.position).normalized;
-
-        // 2. Atan2를 사용하여 각도(Radian -> Degree) 계산
-        // 탄젠트의 역함수로, y와 x값을 넣어주면 -180 ~ 180도 사이의 각도를 반환합니다.
+        // 3. 플레이어 회전 계산 (조준점 위치를 바로 활용)
+        Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // 3. 계산된 각도만큼 Z축 회전 적용
-        // 기본 스프라이트가 오른쪽(Right)을 바라보고 있다면 그대로 사용하면 됩니다.
+        
         playerBody.rotation = Quaternion.Euler(0, 0, angle);
+        
     }
     
+    //단추(기본공격) 발사
+    void Shoot()
+    {
+        playerData.Amount--;
+        Instantiate(bulletPrefab, gunTip.position, playerBody.rotation);
+    }
+    
+    //유니티 기본 InputSystem
     private void OnMove(InputValue movementValue)
     {
         inputDirection = movementValue.Get<Vector2>();
-        Debug.Log("나 이동해");
+        //playerData.playerState = PlayerData.PlayerState.Walk;
+    }
+    private void OnAttack(InputValue value)
+    {
+        // 버튼을 '눌렀을 때' / 단추의 개수가 0보다 클 때 실행 (떼거나 유지할 때 중복 실행 방지)
+        if (value.isPressed && playerData.Amount > 0 && !isReloading)
+        {
+            Shoot();
+        }
+    }
+
+    private void OnReload(InputValue value)
+    {
+        if (value.isPressed && !isReloading)
+        {
+            StartCoroutine(Reload());
+        }
+        else if (isReloading)
+        {
+            Debug.Log("장전 중입니다.");
+        }
     }
     
-
+    //기본 공격총알 장전
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        
+        yield return new WaitForSeconds(reloadTime);
+        playerData.Amount = playerData.MaxAmount;
+        isReloading = false;
+    }
+    
 }
