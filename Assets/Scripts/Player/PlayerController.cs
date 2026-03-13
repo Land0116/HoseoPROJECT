@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Vector2 inputDirection;
@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
         
         _mainCamera = Camera.main;
         playerData.Amount = playerData.MaxAmount;
+        playerData.Hp = playerData.MaxHp;
     }
 
     void Start()
@@ -111,6 +112,17 @@ public class PlayerController : MonoBehaviour
         {
             Shoot();
         }
+    }
+
+    public void OnDamage(float damage)
+    {
+        playerData.Hp -= (int)damage;
+        Debug.Log(playerData.Hp);
+    }
+
+    public void Death()
+    {
+        
     }
 
     private void OnReload(InputValue value)
