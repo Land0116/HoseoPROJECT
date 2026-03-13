@@ -26,7 +26,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             // Resources 폴더에서 해당 이름의 에셋을 찾아 할당합니다.
             playerData = Resources.Load<PlayerData>("player/playerBaseData");
         }
-        playerData = Instantiate(playerData);// 게임 시작시 플레이어 hp값을 playerData.asset에서 설정한 값을 초기 값으로 설정
+
+        playerData = Instantiate(playerData);
+
         rb = GetComponent<Rigidbody2D>();
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         rb.freezeRotation = true;
