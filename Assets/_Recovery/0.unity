@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 20
+  maxHealth: 100
 --- !u!61 &50285159
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1025,16 +1025,12 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: playerBody
-      value: 
-      objectReference: {fileID: 1443400832}
-    - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: reloadTime
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: hpRegenRate
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: attackDamage
@@ -1088,29 +1084,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 768106341338323055, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: m_NotificationBehavior
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 768106341338323055, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 768106341338323055, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 768106341338323055, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: m_DeviceLostEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3326340541342998006, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 4890913141404179664, guid: eae62301816a1df4f94147d10540344c, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eae62301816a1df4f94147d10540344c, type: 3}
@@ -1227,9 +1206,9 @@ RectTransform:
   - {fileID: 1724906267}
   m_Father: {fileID: 1975593785}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 133.33331, y: -224.99998}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 146.17, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &348744055
@@ -1339,8 +1318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AugButton
   nameText: {fileID: 1325096429}
-  descriptionText: {fileID: 1724906268}
-  button: {fileID: 348744055}
+  descText: {fileID: 1724906268}
 --- !u!1 &360452231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1674,7 +1652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 20
+  maxHealth: 100
 --- !u!1 &478868288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1809,7 +1787,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 40
+  maxHealth: 100
 --- !u!61 &572184272
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2307,9 +2285,10 @@ GameObject:
   - component: {fileID: 658706451}
   - component: {fileID: 658706450}
   - component: {fileID: 658706449}
+  - component: {fileID: 658706448}
   - component: {fileID: 658706452}
   m_Layer: 5
-  m_Name: AugButton
+  m_Name: UtilAug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2331,11 +2310,26 @@ RectTransform:
   - {fileID: 594363488}
   m_Father: {fileID: 1975593785}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 666.66656, y: -224.99998}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 146.17, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &658706448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 658706446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b116256e4e8cad2419dd1dc2449e77be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AugUIManager
+  augmentationDatabase: []
+  uiButtons: []
+  uiPanel: {fileID: 0}
 --- !u!114 &658706449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2443,8 +2437,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AugButton
   nameText: {fileID: 1971089574}
-  descriptionText: {fileID: 594363489}
-  button: {fileID: 658706449}
+  descText: {fileID: 594363489}
 --- !u!1 &725756703
 GameObject:
   m_ObjectHideFlags: 0
@@ -3140,7 +3133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 20
+  maxHealth: 100
 --- !u!61 &1030333520
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3601,7 +3594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 50
+  maxHealth: 100
 --- !u!61 &1236379410
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4085,9 +4078,10 @@ GameObject:
   - component: {fileID: 1403421968}
   - component: {fileID: 1403421967}
   - component: {fileID: 1403421966}
+  - component: {fileID: 1403421965}
   - component: {fileID: 1403421969}
   m_Layer: 5
-  m_Name: AugButton
+  m_Name: EtcAug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4109,11 +4103,26 @@ RectTransform:
   - {fileID: 214943277}
   m_Father: {fileID: 1975593785}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 399.99994, y: -224.99998}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 146.17, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1403421965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403421963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b116256e4e8cad2419dd1dc2449e77be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AugUIManager
+  augmentationDatabase: []
+  uiButtons: []
+  uiPanel: {fileID: 0}
 --- !u!114 &1403421966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4221,8 +4230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AugButton
   nameText: {fileID: 1162421336}
-  descriptionText: {fileID: 214943278}
-  button: {fileID: 1403421966}
+  descText: {fileID: 214943278}
 --- !u!1 &1432726606
 GameObject:
   m_ObjectHideFlags: 0
@@ -4314,11 +4322,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!4 &1443400832 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 621105006712859011, guid: eae62301816a1df4f94147d10540344c, type: 3}
-  m_PrefabInstance: {fileID: 234530781}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1463214389
 GameObject:
   m_ObjectHideFlags: 0
@@ -4441,7 +4444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35fe1d9ab993cf840ab115702af551e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestEnemy
-  maxHealth: 10
+  maxHealth: 100
 --- !u!61 &1568148455
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4556,7 +4559,7 @@ Transform:
   m_GameObject: {fileID: 1568148453}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.89, y: 1.84, z: 0}
+  m_LocalPosition: {x: 6.57, y: -3.56, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4690,7 +4693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4950,19 +4953,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b116256e4e8cad2419dd1dc2449e77be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AugUIManager
-  augmentationDatabase:
-  - {fileID: 11400000, guid: eeb147de296e25447849a2ed5fe190c4, type: 2}
-  - {fileID: 11400000, guid: c8273c7f4d4e6e748ad88e4632bdb4be, type: 2}
-  - {fileID: 11400000, guid: eecd62d54919e894796fcebe838ddede, type: 2}
-  - {fileID: 11400000, guid: 134ded6f6f4206547ae182bd899dd2c0, type: 2}
-  - {fileID: 11400000, guid: 829eaf4c55cf3104fab7282cfed9a57e, type: 2}
-  - {fileID: 11400000, guid: 6cc3332d5e2c2bf4882b0815fd9b87aa, type: 2}
-  - {fileID: 11400000, guid: 4c39a163962f56c4cbd1626e28097fdc, type: 2}
-  - {fileID: 11400000, guid: 93cac8bb12c40844a9d157b0f6c2f0fe, type: 2}
-  - {fileID: 11400000, guid: 10744737a9a96aa4dab29661460879c0, type: 2}
-  - {fileID: 11400000, guid: c475223f2186e1548aae5e7bf0b07f06, type: 2}
-  - {fileID: 11400000, guid: 4a72b081f56246040830a03a79a4708a, type: 2}
-  - {fileID: 11400000, guid: a97e5ae0b39165241a314f6c671ba6da, type: 2}
+  augmentationDatabase: []
   uiButtons:
   - {fileID: 658706452}
   - {fileID: 1403421969}
@@ -5252,7 +5243,6 @@ GameObject:
   - component: {fileID: 1883728574}
   - component: {fileID: 1883728573}
   - component: {fileID: 1883728576}
-  - component: {fileID: 1883728577}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -5328,7 +5318,7 @@ Transform:
   m_GameObject: {fileID: 1883728572}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9.91}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5378,20 +5368,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &1883728577
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1883728572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d75e644dd74c95f46917749317e640e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FollowCam
-  target: {fileID: 1443400832}
-  offset: {x: 0, y: 0, z: -10}
 --- !u!1 &1927231296
 GameObject:
   m_ObjectHideFlags: 0
@@ -5773,7 +5749,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1975593785
 RectTransform:
   m_ObjectHideFlags: 0

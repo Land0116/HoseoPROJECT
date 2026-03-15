@@ -3,10 +3,14 @@ using UnityEngine;
 
 public class ButtonSpawn : MonoBehaviour
 {
-    public float speed = 10f;
-    public float lifeTime = 3f;
+    public float lifeTime = 1f;
 
-    public int damage = 50;
+    private float speed = 5.0f;
+    private float damage;
+    public void SetDamage(float value)
+    {
+        damage = value;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

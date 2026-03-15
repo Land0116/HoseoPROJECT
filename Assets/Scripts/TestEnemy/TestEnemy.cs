@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class TestEnemy : MonoBehaviour, IDamageable
 {
-    public float maxHealth = 100f;
+    public float maxHealth;
     private float health;
 
-    private float Damage;
+    private int Damage;
 
     void Awake()
     {
@@ -33,10 +33,10 @@ public class TestEnemy : MonoBehaviour, IDamageable
             Debug.Log("플레이어와 접촉");
             other.gameObject.GetComponent<IDamageable>().OnDamage(Damage);
         }
-        else if (other.gameObject.CompareTag("CrossHair"))
-        {
-            Debug.Log("조준점과 접촉");
-        }
+        // else if (other.gameObject.CompareTag("CrossHair"))
+        // {
+        //     Debug.Log("조준점과 접촉");
+        // }
         
     }
     //데미지 입음
@@ -47,6 +47,7 @@ public class TestEnemy : MonoBehaviour, IDamageable
 
         if (health <= 0)
         {
+            AugUIManager.instance.ShowAugmentation();
             Death();
         }
     }
@@ -56,15 +57,15 @@ public class TestEnemy : MonoBehaviour, IDamageable
         Destroy(this.gameObject);
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            Debug.Log("플레이어 나감");
-        }
-        else if (other.gameObject.CompareTag("CrossHair"))
-        {
-            Debug.Log("조준점 나감");
-        }
-    }
+    // private void OnTriggerExit2D(Collider2D other)
+    // {
+    //     if (other.gameObject.CompareTag("Player"))
+    //     {
+    //         Debug.Log("플레이어 나감");
+    //     }
+    //     else if (other.gameObject.CompareTag("CrossHair"))
+    //     {
+    //         Debug.Log("조준점 나감");
+    //     }
+    // }
 }
