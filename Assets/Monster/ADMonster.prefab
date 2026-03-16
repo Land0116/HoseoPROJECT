@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -7576365530362814606}
   m_Layer: 0
   m_Name: ADMonster
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -112,6 +112,12 @@ MonoBehaviour:
   movePattern: {fileID: 1511476604992623015}
   moveSpeed: 3
   maxHP: 50
+  weaponPrefabDropChance: 0.3
+  itemDropChance: 0.2
+  weaponPrefab: {fileID: 0}
+  itemPrefab: {fileID: 0}
+  weaponSpawner: {x: -0.5, y: 0, z: 0}
+  itemSpawner: {x: 0.5, y: 0, z: 0}
 --- !u!114 &6755044034185917366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69149d4ce103ac04eac14b1f7c2b94ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack1
-  bulletPrefab: {fileID: 372273855903684181, guid: 110834880b4b39844b28a604c99d90f4, type: 3}
+  blockMovement: 0
+  bulletPrefab: {fileID: 2967955641685916884, guid: 110834880b4b39844b28a604c99d90f4, type: 3}
   fireRate: 1
   attackRange: 5
 --- !u!114 &1511476604992623015

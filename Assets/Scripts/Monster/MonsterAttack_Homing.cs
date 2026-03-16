@@ -20,7 +20,7 @@ public class MonsterAttack_Homing : AttackPattern
 
     public override void Execute()
     {
-        if (monster == null) return;
+        if (monster == null || monster.Player == null) return;
 
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
 

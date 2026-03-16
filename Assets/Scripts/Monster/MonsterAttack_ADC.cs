@@ -9,6 +9,9 @@ public class MonsterAttack_ADC : AttackPattern
 
     public override void Execute()
     {
+        if (monster.Player == null) return;
+
+
         float distance = (monster.Player.position - monster.transform.position).sqrMagnitude;
         if (distance > attackRange * attackRange)
             return;
@@ -24,11 +27,12 @@ public class MonsterAttack_ADC : AttackPattern
 
     void Shoot()
     {
+        if (monster.Player == null) return;
 
         Vector3 dir = (monster.Player.position - monster.transform.position).normalized;
 
         GameObject bullet = Instantiate(bulletPrefab, monster.transform.position, Quaternion.identity);
 
-        bullet.GetComponent<MonsterBullet>().SetDirection(dir);
+        bullet.GetComponent<MonsterBullet>().Init(dir);
     }
 }

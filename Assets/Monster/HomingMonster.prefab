@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 4160847594949203912}
   - component: {fileID: 6017520051770503932}
   - component: {fileID: 1261295475366875746}
+  - component: {fileID: -7653359381964960899}
   - component: {fileID: 1836687375467806062}
   - component: {fileID: 5442362418726462232}
   - component: {fileID: 281064115012882381}
   m_Layer: 0
   m_Name: HomingMonster
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -108,7 +109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 281064115012882381}
-  movePattern: {fileID: 0}
+  movePattern: {fileID: -7653359381964960899}
   moveSpeed: 3
   maxHP: 50
   weaponPrefabDropChance: 0.3
@@ -117,6 +118,18 @@ MonoBehaviour:
   itemPrefab: {fileID: 0}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+--- !u!114 &-7653359381964960899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5973335207726858145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 602674464956bd44caa8ea0143b2a6ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
 --- !u!58 &1836687375467806062
 CircleCollider2D:
   m_ObjectHideFlags: 0
