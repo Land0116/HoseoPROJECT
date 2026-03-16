@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: Aug_ATK_AttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentationID: A004
   augmentationType: 0
   augmentationName: AttackSpeed
   augmentationDesc: + 50% AttackSpeed
+  icon: {fileID: 0}
   effectType: 3
   value: 0
   duration: 0.5
-  icon: {fileID: 0}
+  maxStack: 1
+  isUnlocked: 1

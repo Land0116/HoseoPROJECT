@@ -26,11 +26,24 @@ public class ButtonSpawn : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        TestEnemy testEnemy = other.GetComponent<TestEnemy>();
-        if (other.gameObject.CompareTag("TestEnemy"))
+        if (PlayerController.Instance != null && other.gameObject == PlayerController.Instance.gameObject)
+            return;
+
+        if (!other.CompareTag("TestEnemy"))
+            return;
+
+        IDamageable damageable = other.GetComponent<IDamageable>();
+
+        if (damageable == null)
+            return;
+
+        damageable.OnDamage(damage);
+
+        if (PlayerController.Instance != null)
         {
-            testEnemy.OnDamage(damage);
-            Destroy(gameObject);
+            PlayerController.Instance.OnHitEnemy(damage);
         }
+
+        Destroy(gameObject);
     }
 }

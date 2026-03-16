@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: Aug_UTL_IgnoreObstacle
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentationID: U002
   augmentationType: 2
   augmentationName: IgnoreObstacle
   augmentationDesc: IgnoreObstacle
+  icon: {fileID: 0}
   effectType: 8
   value: 0
   duration: 0
-  icon: {fileID: 0}
+  maxStack: 1
+  isUnlocked: 1

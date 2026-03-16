@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: Aug_DFS_HPRegen
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentationID: D003
   augmentationType: 1
   augmentationName: HpRegen
   augmentationDesc: 10/s Regen +1HP
+  icon: {fileID: 0}
   effectType: 6
   value: 1
   duration: 10
-  icon: {fileID: 0}
+  maxStack: 1
+  isUnlocked: 1

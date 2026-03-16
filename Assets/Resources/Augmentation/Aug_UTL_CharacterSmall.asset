@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: Aug_UTL_CharacterSmall
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentationID: U001
   augmentationType: 2
   augmentationName: CharacterScale
   augmentationDesc: CharacterScale -50%
+  icon: {fileID: 0}
   effectType: 7
   value: 0.5
   duration: 0
-  icon: {fileID: 0}
+  maxStack: 1
+  isUnlocked: 1

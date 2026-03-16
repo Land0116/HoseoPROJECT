@@ -56,7 +56,27 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float weaponSynergy = 1f;
 // 아이템 증강 시너지
     [SerializeField] private float itemSynergy = 1f;
-    
+    [SerializeField] private int bulletPerShot = 1;
+    [SerializeField] private float bulletSpreadAngle = 10f;
+
+    [SerializeField] private bool canControl = true;
+
+    [SerializeField] private bool shieldEnabled = false;
+    [SerializeField] private bool shieldReady = false;
+    [SerializeField] private float shieldInterval = 30f;
+
+    [SerializeField] private int hpRegenAmount = 0;
+    [SerializeField] private float hpRegenInterval = 10f;
+
+    [SerializeField] private float lifeStealAmount = 0f;
+    [SerializeField] private bool ignoreObstacle = false;
+    [SerializeField] private bool removeSightBlock = false;
+    [SerializeField] private string obstacleLayerName = "Obstacle";
+
+    private Coroutine shieldCoroutine;
+    private Coroutine hpRegenCoroutine;
+
+    public static Action OnRemoveSightBlock;
     
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Vector2 inputDirection;
@@ -109,7 +129,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float FireRateTime
     {
         get => fireRate;
-        set => fireRate = Mathf.Clamp(value, 0, 1);
+        set => fireRate = Mathf.Max(0.05f, value);
     }
     public bool IsAttack
     {
@@ -156,6 +176,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void FixedUpdate()
     {
+        if (!canControl)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
         switch (playerState)
         {
             case PlayerState.Idle:
@@ -239,40 +264,80 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (!IsAttack && playerAttackType == AttackType.Base && amount > 0)
         {
-            GameObject bullet = Instantiate(bulletPrefab, gunTip.position, playerBody.rotation);
-            ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
+            int currentBulletCount = Mathf.Max(1, bulletPerShot);
 
-            if (bulletScript != null)
+            float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
+
+            for (int i = 0; i < currentBulletCount; i++)
             {
-                bulletScript.SetDamage(GetFinalDamage());
+                float addAngle = startAngle + (bulletSpreadAngle * i);
+                Quaternion bulletRotation = playerBody.rotation * Quaternion.Euler(0f, 0f, addAngle);
+
+                GameObject bullet = Instantiate(bulletPrefab, gunTip.position, bulletRotation);
+                ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
+
+                if (bulletScript != null)
+                {
+                    bulletScript.SetDamage(GetFinalDamage());
+                }
             }
+
             amount--;
             StartCoroutine(FireRate());
         }
     }
     
+    public void SetControl(bool value)
+    {
+        canControl = value;
+
+        if (!canControl)
+        {
+            inputDirection = Vector2.zero;
+            isFireInput = false;
+            IsAttack = false;
+            rb.linearVelocity = Vector2.zero;
+            playerState = PlayerState.Idle;
+        }
+    }
     //유니티 기본 InputSystem
     private void OnMove(InputValue movementValue)
     {
+        if (!canControl)
+        {
+            inputDirection = Vector2.zero;
+            return;
+        }
         inputDirection = movementValue.Get<Vector2>();
         if (inputDirection.sqrMagnitude > 0 ) { playerState = PlayerState.Walk; }
         else { playerState = PlayerState.Idle; }
     }
     private void OnAttack(InputValue value)
     {
+        if (!canControl)
+        {
+            isFireInput = false;
+            return;
+        }
         isFireInput = value.isPressed;
     }
 
     public void OnDamage(float damage)
     {
+        if (shieldEnabled && shieldReady)
+        {
+            shieldReady = false;
+            Debug.Log("보호막으로 공격 1회 무효");
+            return;
+        }
+
         hp -= (int)damage;
         playerState = PlayerState.Hit;
-        
+
         if (hp <= 0)
         {
             Death();
-        } 
-        //Debug.Log(hp);
+        }
     }
     
     public float GetFinalDamage()
@@ -281,7 +346,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             (weaponDamage * weaponSynergy) +
             (itemDamage * itemSynergy);
 
-        return Mathf.RoundToInt(finalDamage);
+        return Mathf.Max(0f, Mathf.Round(finalDamage));
     }
     public void Death()
     {
@@ -290,6 +355,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnReload(InputValue value)
     {
+        if (!canControl) return;
         if (value.isPressed && !isReloading && Amount != MaxAmount)
         {
             StartCoroutine(Reload());
@@ -300,87 +366,105 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
     
+    public void Heal(float value)
+    {
+        hp += Mathf.RoundToInt(value);
+        hp = Mathf.Clamp(hp, 0, maxHp);
+    }
+
+    public void OnHitEnemy(float damage)
+    {
+        if (lifeStealAmount <= 0f) return;
+
+        Heal(lifeStealAmount);
+    }
+    
     //증강시스템
     public void ApplyAugmentation(AugmentationSystem aug)
     {
         switch (aug.effectType)
         {
             case AugmentationSystem.AugmentEffectType.BulletDamage:
-                // 무기 공격 시너지 증가
                 weaponSynergy *= aug.value;
                 Debug.Log($"무기 공격 시너지 증가 : {weaponSynergy}");
                 break;
 
-
             case AugmentationSystem.AugmentEffectType.ItemDamage:
-                // 아이템 공격 시너지 증가
                 itemSynergy *= aug.value;
                 Debug.Log($"아이템 공격 시너지 증가 : {itemSynergy}");
                 break;
 
-
             case AugmentationSystem.AugmentEffectType.BulletCount:
-                // 총알 발사 개수 증가
-                maxAmount += (int)aug.value;
-                amount = Mathf.Clamp(amount, 0, maxAmount);
-                Debug.Log($"총알 개수 증가 : {maxAmount}");
+                bulletPerShot += Mathf.RoundToInt(aug.value);
+                Debug.Log($"발사 개수 증가 : {bulletPerShot}");
                 break;
-
 
             case AugmentationSystem.AugmentEffectType.AttackSpeed:
-                // 발사 간격 감소 = 공격속도 증가
-                FireRateTime = fireRate - aug.value;
-                Debug.Log($"공격속도 증가 : {FireRateTime}");
+                FireRateTime -= aug.value;
+                Debug.Log($"공격속도 증가, 현재 발사 간격 : {FireRateTime}");
                 break;
-
-
-            // -------------------------
-            // 수비형 증강
-            // -------------------------
 
             case AugmentationSystem.AugmentEffectType.Shield:
-                Debug.Log("보호막 시스템 필요 (추후 구현)");
+                shieldEnabled = true;
+                shieldReady = true;
+                shieldInterval = aug.duration > 0f ? aug.duration : 30f;
+
+                if (shieldCoroutine != null)
+                    StopCoroutine(shieldCoroutine);
+
+                shieldCoroutine = StartCoroutine(ShieldRoutine());
+                Debug.Log($"보호막 활성화 : {shieldInterval}초마다 재충전");
                 break;
 
-
             case AugmentationSystem.AugmentEffectType.MaxHP:
-                maxHp += (int)aug.value;
-                hp += (int)aug.value;
+                maxHp += Mathf.RoundToInt(aug.value);
+                hp += Mathf.RoundToInt(aug.value);
                 hp = Mathf.Clamp(hp, 0, maxHp);
                 Debug.Log($"최대 체력 증가 : {maxHp}");
                 break;
 
-
             case AugmentationSystem.AugmentEffectType.HPRegen:
-                Debug.Log("체력 재생 시스템 필요 (추후 구현)");
-                break;
+                hpRegenAmount += Mathf.RoundToInt(aug.value);
+                hpRegenInterval = aug.duration > 0f ? aug.duration : 10f;
 
-            // -------------------------
-            // 유틸형 증강
-            // -------------------------
+                if (hpRegenCoroutine != null)
+                    StopCoroutine(hpRegenCoroutine);
+
+                hpRegenCoroutine = StartCoroutine(HPRegenRoutine());
+                Debug.Log($"체력 재생 활성화 : {hpRegenInterval}초마다 {hpRegenAmount} 회복");
+                break;
 
             case AugmentationSystem.AugmentEffectType.CharacterScale:
                 transform.localScale *= aug.value;
-                Debug.Log("캐릭터 크기 감소");
+                Debug.Log("캐릭터 크기 변경");
                 break;
-            
+
             case AugmentationSystem.AugmentEffectType.IgnoreObstacle:
-                Debug.Log("장애물 충돌 무시 (레이어 처리 필요)");
+                ignoreObstacle = true;
+                int obstacleLayer = LayerMask.NameToLayer(obstacleLayerName);
+
+                if (obstacleLayer != -1)
+                {
+                    Physics2D.IgnoreLayerCollision(gameObject.layer, obstacleLayer, true);
+                }
+
+                Debug.Log("장애물 충돌 무시 적용");
                 break;
 
             case AugmentationSystem.AugmentEffectType.RemoveSightBlock:
-                Debug.Log("시야 방해 제거 (오브젝트 제어 필요)");
+                removeSightBlock = true;
+                OnRemoveSightBlock?.Invoke();
+                Debug.Log("시야 방해 제거 이벤트 호출");
                 break;
-
 
             case AugmentationSystem.AugmentEffectType.MoveSpeed:
                 moveSpeed += aug.value;
                 Debug.Log($"이동속도 증가 : {moveSpeed}");
                 break;
 
-
             case AugmentationSystem.AugmentEffectType.LifeSteal:
-                Debug.Log("흡혈 기능 (적중 시 체력 회복 구현 필요)");
+                lifeStealAmount += aug.value;
+                Debug.Log($"흡혈 증가 : {lifeStealAmount}");
                 break;
         }
     }
@@ -400,6 +484,36 @@ public class PlayerController : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(reloadTime);
         amount = maxAmount;
         isReloading = false;
+    }
+    
+    IEnumerator ShieldRoutine()
+    {
+        shieldReady = true;
+
+        while (shieldEnabled)
+        {
+            if (!shieldReady)
+            {
+                yield return new WaitForSeconds(shieldInterval);
+                shieldReady = true;
+                Debug.Log("보호막 재충전 완료");
+            }
+
+            yield return null;
+        }
+    }
+
+    IEnumerator HPRegenRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(hpRegenInterval);
+
+            if (hp > 0 && hp < maxHp)
+            {
+                Heal(hpRegenAmount);
+            }
+        }
     }
     
 }

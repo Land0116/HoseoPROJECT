@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: Aug_DFS_Shield
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentationID: D001
   augmentationType: 1
   augmentationName: Shield
   augmentationDesc: 30/s Shield +1
+  icon: {fileID: 0}
   effectType: 4
   value: 1
   duration: 30
-  icon: {fileID: 0}
+  maxStack: 1
+  isUnlocked: 1

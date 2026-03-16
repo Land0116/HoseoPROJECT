@@ -4,6 +4,7 @@ using UnityEngine;
 public class AugmentationSystem : ScriptableObject
 {
     public enum AugmentationType { Atk, Dfs, Util }
+
     public enum AugmentEffectType
     {
         BulletDamage,       // 총알 공격력 증가
@@ -21,17 +22,21 @@ public class AugmentationSystem : ScriptableObject
         MoveSpeed,          // 이동 속도 증가
         LifeSteal           // 흡혈
     }
-    
-    [Header("증강시스템정보")]
+
+    [Header("증강 기본 정보")]
+    public string augmentationID;
     public AugmentationType augmentationType;
     public string augmentationName;
     [TextArea]
     public string augmentationDesc;
-
-    [Header("증강시스템레벨")]
-    public AugmentEffectType effectType;
-    public float value;
-    public float duration;
     public Sprite icon;
 
+    [Header("증강 효과 정보")]
+    public AugmentEffectType effectType;
+    public float value;        // 효과 수치
+    public float duration;     // 지속/주기 시간 등에 사용
+
+    [Header("증강 등장 설정")]
+    public int maxStack = 1;   // 현재 시스템은 중복 불가라 기본 1
+    public bool isUnlocked = true;
 }
