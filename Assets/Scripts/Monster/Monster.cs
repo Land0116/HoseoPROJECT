@@ -79,6 +79,7 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (currentHP <= 0)
         {
+            AugUIManager.instance.ShowAugmentation();
             Death();
         }
     }

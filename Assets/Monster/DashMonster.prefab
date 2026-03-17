@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 6754581947390737897}
   - component: {fileID: 8160894248418204262}
-  - component: {fileID: 1384109488396971333}
+  - component: {fileID: 7582047141551886454}
   - component: {fileID: 7569439263099541066}
-  - component: {fileID: 16912600404282540}
   - component: {fileID: 3076247807678564111}
   - component: {fileID: 8733212576063524663}
+  - component: {fileID: 1024913950485825743}
   m_Layer: 0
   m_Name: DashMonster
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.28773582, g: 0.7524353, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -96,7 +96,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &1384109488396971333
+--- !u!114 &7582047141551886454
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,13 +105,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 6627270266103652004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 268d534d045b6be4a8fafd2682184c91, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 7569439263099541066}
-  movePattern: {fileID: 16912600404282540}
+  movePattern: {fileID: 1024913950485825743}
   moveSpeed: 3
   maxHP: 50
+  weaponPrefabDropChance: 0.3
+  itemDropChance: 0.3
+  weaponPrefab: {fileID: 200888439754898356, guid: 91b10f2ee59f9ac41bd274c354782d52, type: 3}
+  itemPrefab: {fileID: 2407056021327369741, guid: c727415534854cb41a2ec49804e22702, type: 3}
+  weaponSpawner: {x: -0.5, y: 0, z: 0}
+  itemSpawner: {x: 0.5, y: 0, z: 0}
 --- !u!114 &7569439263099541066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,23 +131,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Dash
   blockMovement: 0
-  detectRange: 5
+  detectRange: 8
   chargeTime: 1.5
   dashSpeed: 12
   dashDuration: 2
   dashCooldown: 0
---- !u!114 &16912600404282540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6627270266103652004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 602674464956bd44caa8ea0143b2a6ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
 --- !u!58 &3076247807678564111
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -205,3 +199,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &1024913950485825743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6627270266103652004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly

@@ -10,13 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 4160847594949203912}
   - component: {fileID: 6017520051770503932}
-  - component: {fileID: 1261295475366875746}
+  - component: {fileID: 6930646362987295373}
   - component: {fileID: 1836687375467806062}
   - component: {fileID: 5442362418726462232}
   - component: {fileID: 281064115012882381}
+  - component: {fileID: 5913029328634232479}
   m_Layer: 0
   m_Name: HomingMonster
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -86,7 +87,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.43875015, g: 1, b: 0.24056602, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -95,7 +96,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &1261295475366875746
+--- !u!114 &6930646362987295373
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,17 +105,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5973335207726858145}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 268d534d045b6be4a8fafd2682184c91, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 281064115012882381}
-  movePattern: {fileID: 0}
+  movePattern: {fileID: 5913029328634232479}
   moveSpeed: 3
   maxHP: 50
-  weaponPrefabDropChance: 0.3
-  itemDropChance: 0.2
-  weaponPrefab: {fileID: 0}
-  itemPrefab: {fileID: 0}
+  weaponPrefabDropChance: 1
+  itemDropChance: 1
+  weaponPrefab: {fileID: 200888439754898356, guid: 91b10f2ee59f9ac41bd274c354782d52, type: 3}
+  itemPrefab: {fileID: 2407056021327369741, guid: c727415534854cb41a2ec49804e22702, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
 --- !u!58 &1836687375467806062
@@ -197,3 +198,15 @@ MonoBehaviour:
   homingSpeed: 2
   damage: 10
   damageInterval: 1
+--- !u!114 &5913029328634232479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5973335207726858145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly

@@ -332,6 +332,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         hp -= (int)damage;
+        Debug.Log("플레이어 체력: " + hp + " / " + maxHp);
         playerState = PlayerState.Hit;
 
         if (hp <= 0)

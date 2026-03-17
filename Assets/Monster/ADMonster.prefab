@@ -10,14 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 523508479676574842}
   - component: {fileID: 1777967617492844882}
-  - component: {fileID: 6779390626414684511}
+  - component: {fileID: 7801968909320690378}
   - component: {fileID: 6755044034185917366}
-  - component: {fileID: 1511476604992623015}
-  - component: {fileID: -2627598231716815967}
   - component: {fileID: -7576365530362814606}
+  - component: {fileID: 7331288334387572157}
+  - component: {fileID: -8571590434366567013}
   m_Layer: 0
   m_Name: ADMonster
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -96,7 +96,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &6779390626414684511
+--- !u!114 &7801968909320690378
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,13 +105,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 6206183870814163924}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 268d534d045b6be4a8fafd2682184c91, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 6755044034185917366}
-  movePattern: {fileID: 1511476604992623015}
+  movePattern: {fileID: 7331288334387572157}
   moveSpeed: 3
   maxHP: 50
+  weaponPrefabDropChance: 1
+  itemDropChance: 1
+  weaponPrefab: {fileID: 200888439754898356, guid: 91b10f2ee59f9ac41bd274c354782d52, type: 3}
+  itemPrefab: {fileID: 2407056021327369741, guid: c727415534854cb41a2ec49804e22702, type: 3}
+  weaponSpawner: {x: -0.5, y: 0, z: 0}
+  itemSpawner: {x: 0.5, y: 0, z: 0}
 --- !u!114 &6755044034185917366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,48 +130,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69149d4ce103ac04eac14b1f7c2b94ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack1
-  bulletPrefab: {fileID: 372273855903684181, guid: 110834880b4b39844b28a604c99d90f4, type: 3}
+  blockMovement: 0
+  bulletPrefab: {fileID: 5626595216421672491, guid: c710537bfbba55948b9f3519fb8fea9f, type: 3}
   fireRate: 1
   attackRange: 5
---- !u!114 &1511476604992623015
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6206183870814163924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 602674464956bd44caa8ea0143b2a6ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
---- !u!50 &-2627598231716815967
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6206183870814163924}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!58 &-7576365530362814606
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -202,3 +170,42 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &7331288334387572157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6206183870814163924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+--- !u!50 &-8571590434366567013
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6206183870814163924}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
