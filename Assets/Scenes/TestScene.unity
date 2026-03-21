@@ -865,6 +865,10 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
+      propertyPath: currentItem
+      value: 
+      objectReference: {fileID: 5484491881706994805, guid: b0740ccfea693d34fae4010cdf02c7fc, type: 3}
+    - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: hpRegenRate
       value: 5
       objectReference: {fileID: 0}

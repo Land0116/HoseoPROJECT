@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
+using System.Runtime.CompilerServices;
+using UnityEditor.ShaderGraph.Internal;
 
 
 public class PlayerController : MonoBehaviour, IDamageable
@@ -25,27 +27,32 @@ public class PlayerController : MonoBehaviour, IDamageable
         Hit, //피격
         Death //죽음
     }
-    
+
     [Header("플레이어 정보")]
+    [SerializeField] private int baseMaxHP = 50;
     [SerializeField] private int hp; //playerHP
     [SerializeField] private int maxHp = 50; //playerMaxHP
     [SerializeField] private int gold; //playerGold
     [SerializeField] private float moveSpeed = 3.0f; //playerMoveSpeed;
+    [SerializeField] private float baseMoveSpeed = 3.0f; //playerMoveSpeed;
     [SerializeField] private float attackDamage = 10; //playerDamage;
-    [SerializeField] private int amount;
-    [SerializeField] private int maxAmount = 5;
+    
     
     
     
     [Header("플레이어의 상태")] 
     [SerializeField] private PlayerState playerState = PlayerState.Idle;
     [SerializeField] private AttackType playerAttackType = AttackType.Base;
-    [SerializeField] private float fireRate = 1.0f; //발사 주기
+    [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
+    [SerializeField] private float baseAttackPerSecond = 1.0f;
     [SerializeField] private bool isAttack = false; //발사 쿨타임?
-    [SerializeField] private float reloadTime = 1.5f; // 장전 걸리는 시간
-    [SerializeField] private bool isReloading = false ;
-    [SerializeField] private bool isFireInput = false; //발사입력
     
+    
+    [SerializeField] private bool isFireInput = false; //발사입력
+
+    [Header("장착 아이템")]
+    [SerializeField] private Item currentItem;
+
     [Header("데미지 계산 변수")]
 
 // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
@@ -101,12 +108,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     public int MaxHp => maxHp;
 
-    public int Amount
-    {
-        get => amount;
-        set => amount = Mathf.Clamp(value,0,maxAmount);
-    }
-    public int MaxAmount => maxAmount;
+    
 
     public float MoveSpeed
     {
@@ -128,8 +130,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public float FireRateTime
     {
-        get => fireRate;
-        set => fireRate = Mathf.Max(0.05f, value);
+        get => attackPerSecond;
+        set => attackPerSecond = Mathf.Max(0.1f, value);
     }
     public bool IsAttack
     {
@@ -154,10 +156,19 @@ public class PlayerController : MonoBehaviour, IDamageable
             Destroy(gameObject);
         }
         _mainCamera = Camera.main;
-        
+
+
+
+        maxHp = baseMaxHP;//체력수정.아이템
         Hp = maxHp;
-        Amount = maxAmount;
+        
         weaponDamage = AttackDamage;
+
+        moveSpeed = baseMoveSpeed; //아이템관련 수정
+        if (currentItem != null)//수정한 부분.아이템
+        {
+            ApplyItem(currentItem);
+        }
     }
     
 
@@ -194,7 +205,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 }
 
                 // 공격 입력
-                if (isFireInput && !IsAttack && amount > 0 && !isReloading)
+                if (isFireInput && !IsAttack)
                 {
                     playerState = PlayerState.Attack;
                 }
@@ -211,7 +222,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 }
 
                 // 이동 중 공격
-                if (isFireInput && !IsAttack && amount > 0 && !isReloading)
+                if (isFireInput && !IsAttack )// &&amount > 0 && !isReloading)
                 {
                     playerState = PlayerState.Attack;
                 }
@@ -262,7 +273,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     //단추(기본공격) 발사
     void Shoot()
     {
-        if (!IsAttack && playerAttackType == AttackType.Base && amount > 0)
+        if (!IsAttack && playerAttackType == AttackType.Base)// && amount > 0)
         {
             int currentBulletCount = Mathf.Max(1, bulletPerShot);
 
@@ -282,7 +293,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 }
             }
 
-            amount--;
+            //amount--;
             StartCoroutine(FireRate());
         }
     }
@@ -354,7 +365,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         //죽는 애니메이션 후 끝나면 리스폰.
     }
 
-    private void OnReload(InputValue value)
+    /*private void OnReload(InputValue value)
     {
         if (!canControl) return;
         if (value.isPressed && !isReloading && Amount != MaxAmount)
@@ -365,7 +376,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             Debug.Log("장전 중입니다.");
         }
-    }
+    }*/
     
     public void Heal(float value)
     {
@@ -401,8 +412,8 @@ public class PlayerController : MonoBehaviour, IDamageable
                 break;
 
             case AugmentationSystem.AugmentEffectType.AttackSpeed:
-                FireRateTime -= aug.value;
-                Debug.Log($"공격속도 증가, 현재 발사 간격 : {FireRateTime}");
+                attackPerSecond += aug.value;
+                Debug.Log($"공격속도 증가, 현재 발사 간격 : {attackPerSecond}");
                 break;
 
             case AugmentationSystem.AugmentEffectType.Shield:
@@ -469,23 +480,40 @@ public class PlayerController : MonoBehaviour, IDamageable
                 break;
         }
     }
-    
+
+    public void ApplyItem(Item item)
+    {
+        if (item == null) return;
+        itemDamage = item.damage;
+        moveSpeed = baseMoveSpeed + item.moveSpeed;
+        attackPerSecond = baseAttackPerSecond + item.bulletRate;
+        maxHp = baseMaxHP + item.hp;
+        hp = Mathf.Clamp(Hp, 0, maxHp);
+
+        currentItem = item;
+    }
+    public void EquipItem(Item newItem)
+    {
+        if (newItem == null) return;
+
+        ApplyItem(newItem);
+    }
     IEnumerator FireRate()
     {
         IsAttack = true;
-        yield return new WaitForSeconds(FireRateTime);
+        yield return new WaitForSeconds(1f/ attackPerSecond);
         IsAttack = false;
         
     }
     //기본 공격총알 장전
-    IEnumerator Reload()
+    /*IEnumerator Reload()
     {
         isReloading = true;
         PlayerUIManager.Instance.StartCoroutine(PlayerUIManager.Instance.ReloadingText());
         yield return new WaitForSeconds(reloadTime);
         amount = maxAmount;
         isReloading = false;
-    }
+    }*/
     
     IEnumerator ShieldRoutine()
     {

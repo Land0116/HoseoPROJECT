@@ -30,7 +30,7 @@ public class TestEnemy : MonoBehaviour, IDamageable
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("플레이어와 접촉");
+           // Debug.Log("플레이어와 접촉");
             other.gameObject.GetComponent<IDamageable>().OnDamage(Damage);
         }
         // else if (other.gameObject.CompareTag("CrossHair"))
