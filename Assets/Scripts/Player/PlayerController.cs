@@ -41,10 +41,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private PlayerState playerState = PlayerState.Idle;
     [SerializeField] private AttackType playerAttackType = AttackType.Base;
     [SerializeField] private float fireRate = 1.0f; //발사 주기
-    [SerializeField] private bool isAttack = false; //발사 쿨타임?
+    [SerializeField] private bool isAttack = false; //발사 체크
     [SerializeField] private float reloadTime = 1.5f; // 장전 걸리는 시간
     [SerializeField] private bool isReloading = false ;
     [SerializeField] private bool isFireInput = false; //발사입력
+    [SerializeField] private bool isDie = false;
     
     [Header("데미지 계산 변수")]
 
@@ -136,8 +137,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isAttack;
         set => isAttack = value;
     }
-    
-    
+
+    public bool IsDie
+    {
+        get => isDie;
+        set => isDie = value;
+    }
+
+
     private void Awake()
     {
         
@@ -169,13 +176,22 @@ public class PlayerController : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        if (IsDie)
+        {
+            return;
+        }
         PlayerMouseMovement();
-        
     }
 
 
     void FixedUpdate()
     {
+        if (IsDie)
+        {
+            rb.linearVelocity = Vector2.zero;
+            playerState = PlayerState.Death;
+            return;
+        }
         if (!canControl)
         {
             rb.linearVelocity = Vector2.zero;
@@ -232,19 +248,26 @@ public class PlayerController : MonoBehaviour, IDamageable
                 //피격 애니메이션
                 break;
             }
+            case PlayerState.Death:
+            {
+                // 죽은 상태에서는 이동도 공격도 하지 않음
+                rb.linearVelocity = Vector2.zero;
+                break;
+            }
         }
     }
     
 
     void PlayerMouseMovement()
     {
+        if (IsDie) return;
         if (crosshairTransform == null || playerBody == null) return;
 
         // 1. 마우스 월드 좌표 계산 (한 번만 수행)
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
-            mouseScreenPos.x, 
-            mouseScreenPos.y, 
+            mouseScreenPos.x,
+            mouseScreenPos.y,
             -_mainCamera.transform.position.z));
         mouseWorldPos.z = 0f;
 
@@ -254,14 +277,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 3. 플레이어 회전 계산 (조준점 위치를 바로 활용)
         Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        
+
         playerBody.rotation = Quaternion.Euler(0, 0, angle);
-        
     }
     
     //단추(기본공격) 발사
     void Shoot()
     {
+        if (IsDie) return;
         if (!IsAttack && playerAttackType == AttackType.Base && amount > 0)
         {
             int currentBulletCount = Mathf.Max(1, bulletPerShot);
@@ -283,7 +306,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
 
             amount--;
-            StartCoroutine(FireRate());
+            StartCoroutine(FireCooldown());
         }
     }
     
@@ -303,27 +326,48 @@ public class PlayerController : MonoBehaviour, IDamageable
     //유니티 기본 InputSystem
     private void OnMove(InputValue movementValue)
     {
+        if (IsDie)
+        {
+            inputDirection = Vector2.zero;
+            return;
+        }
         if (!canControl)
         {
             inputDirection = Vector2.zero;
             return;
         }
+
         inputDirection = movementValue.Get<Vector2>();
-        if (inputDirection.sqrMagnitude > 0 ) { playerState = PlayerState.Walk; }
-        else { playerState = PlayerState.Idle; }
+        if (inputDirection.sqrMagnitude > 0)
+        {
+            playerState = PlayerState.Walk;
+        }
+        else
+        {
+            playerState = PlayerState.Idle;
+        }
+        
     }
     private void OnAttack(InputValue value)
     {
+        if (IsDie)
+        {
+            isFireInput = false;
+            return;
+        }
+
         if (!canControl)
         {
             isFireInput = false;
             return;
         }
+
         isFireInput = value.isPressed;
     }
 
     public void OnDamage(float damage)
     {
+        if (IsDie) return;
         if (shieldEnabled && shieldReady)
         {
             shieldReady = false;
@@ -331,7 +375,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
-        hp -= (int)damage;
+        Hp -= Mathf.RoundToInt(damage);
         Debug.Log("플레이어 체력: " + hp + " / " + maxHp);
         playerState = PlayerState.Hit;
 
@@ -351,11 +395,44 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     public void Death()
     {
-        //죽는 애니메이션 후 끝나면 리스폰.
+        if (IsDie) return;
+        IsDie = true;
+        playerState = PlayerState.Death;
+        Cursor.visible = true;
+
+        // 플레이어 입력 관련 값 전부 초기화
+        // → 키를 누르고 있던 상태가 남아있지 않게 처리
+        inputDirection = Vector2.zero;
+        isFireInput = false;
+        IsAttack = false;
+        isReloading = false;
+
+        // 이동 완전 정지
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        // 혹시 외부에서 canControl을 같이 사용 중이면
+        // 죽은 뒤 조작 금지 상태로 같이 잠가줌
+        canControl = false;
+
+        // 이 PlayerController에서 돌고 있던 코루틴 정지
+        // → 공격 쿨타임, 장전, 보호막, 체젠 등 남아있는 동작 정리
+        StopAllCoroutines();
+
+        // 조준점이 있으면 꺼줌
+        // → 죽은 뒤 크로스헤어가 계속 움직여 보이는 문제 방지
+        if (crosshairTransform != null)
+        {
+            crosshairTransform.gameObject.SetActive(false);
+        }
+
     }
 
     private void OnReload(InputValue value)
     {
+        if (IsDie) return;
         if (!canControl) return;
         if (value.isPressed && !isReloading && Amount != MaxAmount)
         {
@@ -369,8 +446,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     public void Heal(float value)
     {
-        hp += Mathf.RoundToInt(value);
-        hp = Mathf.Clamp(hp, 0, maxHp);
+        Hp += Mathf.RoundToInt(value);
     }
 
     public void OnHitEnemy(float damage)
@@ -419,8 +495,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
             case AugmentationSystem.AugmentEffectType.MaxHP:
                 maxHp += Mathf.RoundToInt(aug.value);
-                hp += Mathf.RoundToInt(aug.value);
-                hp = Mathf.Clamp(hp, 0, maxHp);
+                //hp += Mathf.RoundToInt(aug.value);
+                //hp = Mathf.Clamp(hp, 0, maxHp);
                 Debug.Log($"최대 체력 증가 : {maxHp}");
                 break;
 
@@ -470,7 +546,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
     
-    IEnumerator FireRate()
+    IEnumerator FireCooldown()
     {
         IsAttack = true;
         yield return new WaitForSeconds(FireRateTime);

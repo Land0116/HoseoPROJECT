@@ -1,9 +1,9 @@
-using UnityEditor.Experimental.GraphView;
+ï»¿using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class MonsterAttack_Homing : AttackPattern
 {
-    [Header("À¯µµ°ø°Ý¼³Á¤")]
+    [Header("???????????")]
     [SerializeField]
     private float detectRange = 6f;
     [SerializeField]
@@ -11,7 +11,7 @@ public class MonsterAttack_Homing : AttackPattern
     [SerializeField]
     private float damage = 6f;
 
-    [Header("Æ½´ç Æ½ ¼³Á¤")]
+    [Header("??? ? ????")]
     [SerializeField]
     private float damageInterval = 0.1f;
     private float damageTimer = 0.5f;

@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class MonsterAttack_Flyhoming : AttackPattern
 {
-    [Header("ºñÇàÃßÀû¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float homingSpeed = 3f;
     [SerializeField] private float detectRange = 8f;
 
-    [Header("µ¥¹ÌÁö ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float damage = 10f;
     [SerializeField] private float damageInterval = 1f;
 

@@ -30,7 +30,7 @@ public class CrossHairController : MonoBehaviour
                 if (sr != null)
                 {
                     sr.color =  Color.red;
-                    Debug.Log("조준점에 적이 들어옴");
+                    //Debug.Log("조준점에 적이 들어옴");
                 }
             }
         }
@@ -46,7 +46,7 @@ public class CrossHairController : MonoBehaviour
                 if (sr != null)
                 {
                     sr.color =  Color.white;
-                    Debug.Log("조준점에 적이 나감");
+                    //Debug.Log("조준점에 적이 나감");
                 }
             }
         }

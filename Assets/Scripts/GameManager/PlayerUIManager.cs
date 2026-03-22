@@ -7,41 +7,39 @@ using UnityEngine.UI;
 public class PlayerUIManager : MonoBehaviour
 {
     public PlayerController playerController;
-    public AugmentationSystem[] augmentationSystem;
     public static PlayerUIManager Instance { get; private set; }
     
     [Header("PlayerTextUI")]
     [SerializeField] private GameObject playerTextUIPanel;
-    [SerializeField] private TextMeshProUGUI Amount;
+
+    [SerializeField] private Slider hpBar;
+    [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI amountText;
+    [SerializeField] private TextMeshProUGUI goldText;
     [SerializeField] private TextMeshProUGUI reloadText;
     
     
     [Header("AugmentationUI")]
     [SerializeField] private GameObject augmentationUIPanel;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         playerTextUIPanel = GameObject.Find("PlayerUIPanel").transform.Find("ReloadingTxt").gameObject;
-        // if (playerData == null)
-        // {
-        //     // Resources 폴더에서 해당 이름의 에셋을 찾아 할당합니다.
-        //     playerData = Resources.Load<PlayerData>("player/playerBaseData");
-        // }
+        
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // 씬 전환시 유지
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
         }
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        Amount.text = playerController.Amount.ToString() + "/" + playerController.MaxAmount.ToString();
+        PlayerStateUI();
     }
     
     public IEnumerator ReloadingText()
@@ -54,5 +52,16 @@ public class PlayerUIManager : MonoBehaviour
         reloadText.text = "Reloading...";
         yield return new WaitForSeconds(0.5f);
         reloadText.gameObject.SetActive(false);
+    }
+
+    private void PlayerStateUI()
+    {
+        hpText.text = playerController.Hp.ToString() + " / " + playerController.MaxHp.ToString();
+        hpBar.value = Mathf.Lerp(hpBar.value, (float)playerController.Hp / (float)playerController.MaxHp, Time.deltaTime);
+        if(playerController.IsDie) return;
+        amountText.text = playerController.Amount.ToString() + "/" + playerController.MaxAmount.ToString();
+        goldText.text = "G : " + playerController.Gold.ToString();
+        
+        
     }
 }

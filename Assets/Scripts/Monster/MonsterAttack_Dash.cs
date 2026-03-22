@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MonsterAttack_Dash: AttackPattern
 {
-    [Header("µ¹Áø ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private float detectRange = 5f;
     [SerializeField] private float chargeTime = 2f;
     [SerializeField] private float dashSpeed = 12f;
