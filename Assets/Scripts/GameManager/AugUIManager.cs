@@ -55,6 +55,7 @@ public class AugUIManager : MonoBehaviour
 
         IsSelecting = true;
         Time.timeScale = 0f;
+        Cursor.visible = true;
         uiPanel.SetActive(true);
 
         if (PlayerController.Instance != null)
@@ -145,6 +146,7 @@ public class AugUIManager : MonoBehaviour
     {
         IsSelecting = false;
         uiPanel.SetActive(false);
+        Cursor.visible = false;
         Time.timeScale = 1f;
 
         if (PlayerController.Instance != null)

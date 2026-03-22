@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class MonsterBullet : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float speed = 7f;
     public int damage = 10;
     private Vector3 direction;
@@ -34,7 +33,7 @@ public class MonsterBullet : MonoBehaviour
             if (damageable != null)
             {
                 damageable.OnDamage(damage);
-                Debug.Log("ÇÃ·¹ÀÌ¾î Ã¼·Â °¨¼Ò");
+                Debug.Log("ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             }
 
             Destroy(gameObject);
