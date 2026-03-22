@@ -14,9 +14,7 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
-    [SerializeField] private TextMeshProUGUI amountText;
     [SerializeField] private TextMeshProUGUI goldText;
-    [SerializeField] private TextMeshProUGUI reloadText;
     
     
     [Header("AugmentationUI")]
@@ -24,7 +22,6 @@ public class PlayerUIManager : MonoBehaviour
 
     void Start()
     {
-        playerTextUIPanel = GameObject.Find("PlayerUIPanel").transform.Find("ReloadingTxt").gameObject;
         
         if (Instance == null)
         {
@@ -42,26 +39,17 @@ public class PlayerUIManager : MonoBehaviour
         PlayerStateUI();
     }
     
-    public IEnumerator ReloadingText()
-    {
-        reloadText.gameObject.SetActive(true);
-        reloadText.text = "Reloading.";
-        yield return new WaitForSeconds(0.5f);
-        reloadText.text = "Reloading..";
-        yield return new WaitForSeconds(0.5f);
-        reloadText.text = "Reloading...";
-        yield return new WaitForSeconds(0.5f);
-        reloadText.gameObject.SetActive(false);
-    }
 
     private void PlayerStateUI()
     {
+        if (playerController.Hp <= 0)
+        {
+            playerController.Hp = 0;
+        }
         hpText.text = playerController.Hp.ToString() + " / " + playerController.MaxHp.ToString();
         hpBar.value = Mathf.Lerp(hpBar.value, (float)playerController.Hp / (float)playerController.MaxHp, Time.deltaTime);
         if(playerController.IsDie) return;
-        amountText.text = playerController.Amount.ToString() + "/" + playerController.MaxAmount.ToString();
         goldText.text = "G : " + playerController.Gold.ToString();
-        
         
     }
 }
