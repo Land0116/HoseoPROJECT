@@ -16,9 +16,7 @@ public class Weapon : MonoBehaviour
     {
         if(isPlayerNear && Keyboard.current.fKey.wasPressedThisFrame)
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
+            
             Debug.Log("F키로 상호작용 - 총알");
             PlayerController.Instance.EquipWeapon(this);
             Destroy(gameObject);
