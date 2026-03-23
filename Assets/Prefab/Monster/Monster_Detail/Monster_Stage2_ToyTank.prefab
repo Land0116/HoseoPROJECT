@@ -112,9 +112,9 @@ MonoBehaviour:
   movePattern: {fileID: 8327386214904472354}
   moveSpeed: 3
   maxHP: 100
-  weaponPrefabDropChance: 0
+  weaponPrefabDropChance: 0.7
   itemDropChance: 0.8
-  weaponPrefab: {fileID: 200888439754898356, guid: 91b10f2ee59f9ac41bd274c354782d52, type: 3}
+  weaponPrefab: {fileID: 3109816979422489258, guid: f89856a791e08834f9be08b8a0394048, type: 3}
   itemPrefab: {fileID: 9126729053172147412, guid: 5503555656fe2b247afc47bec4968ebe, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
