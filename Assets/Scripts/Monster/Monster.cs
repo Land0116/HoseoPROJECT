@@ -63,11 +63,14 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void FixedUpdate()
     {
-        attackPattern.Execute();
-
-        if (!attackPattern.blockMovement)
+        if (attackPattern != null)
         {
-            movePattern.Execute();
+            attackPattern.Execute();
+
+            if (!attackPattern.blockMovement && movePattern != null)
+            {
+                movePattern.Execute();
+            }
         }
     }
 

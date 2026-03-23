@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int gold; //playerGold
     [SerializeField] private float moveSpeed = 3.0f; //playerMoveSpeed;
     [SerializeField] private float baseMoveSpeed = 3.0f; //playerMoveSpeed;
-    [SerializeField] private float attackDamage = 10; //playerDamage;
+    //[SerializeField] private float attackDamage = 10; //playerDamage;
     
     
     
@@ -53,6 +53,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("장착 아이템")]
     [SerializeField] private Item currentItem;
+
+    [Header("장착총알")]
+    [SerializeField] private GameObject curProjectilePrefab;
+    [SerializeField] private Weapon basicWeapon;
+    
 
     [Header("데미지 계산 변수")]
 
@@ -98,7 +103,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     
     [Header("공격 관련")]
-    public GameObject bulletPrefab;
+    //public GameObject bulletPrefab;
     public Transform gunTip;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -123,11 +128,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         set => gold = Mathf.Max(0, value);
     }
     
-    public float AttackDamage
+    /*public float AttackDamage
     {
         get => attackDamage;
         set => attackDamage = Mathf.Max(0, value);
-    }
+    }*/
 
     public float FireRateTime
     {
@@ -169,8 +174,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         maxHp = baseMaxHP;//체력수정.아이템
         Hp = maxHp;
         
-        weaponDamage = AttackDamage;
-
+        //weaponDamage = AttackDamage;
+        if(basicWeapon != null)
+        {
+            ApplyWeapon(basicWeapon);
+        }
         moveSpeed = baseMoveSpeed; //아이템관련 수정
         if (currentItem != null)//수정한 부분.아이템
         {
@@ -299,16 +307,18 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsDie) return;
         if (!IsAttack && playerAttackType == AttackType.Base)// && amount > 0)
         {
+            if (curProjectilePrefab == null) return;
+
             int currentBulletCount = Mathf.Max(1, bulletPerShot);
 
             float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
 
             for (int i = 0; i < currentBulletCount; i++)
-            {
+            {    
                 float addAngle = startAngle + (bulletSpreadAngle * i);
                 Quaternion bulletRotation = playerBody.rotation * Quaternion.Euler(0f, 0f, addAngle);
 
-                GameObject bullet = Instantiate(bulletPrefab, gunTip.position, bulletRotation);
+                GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
                 ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
                 if (bulletScript != null)
@@ -554,22 +564,28 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         ApplyItem(newItem);
     }
+
+    public void ApplyWeapon(Weapon weapon)
+    {
+        if (weapon == null) return;
+
+        weaponDamage = weapon.damage;
+        curProjectilePrefab = weapon.projectilePrefab;
+    }
+
+    public void EquipWeapon(Weapon newWeapon)
+    {
+        if (newWeapon == null) return;
+
+        ApplyWeapon(newWeapon);
+    }
     IEnumerator FireRate()
     {
         IsAttack = true;
-        yield return new WaitForSeconds(1f/ attackPerSecond);
+        yield return new WaitForSeconds(1f / attackPerSecond);
         IsAttack = false;
-        
+
     }
-    //기본 공격총알 장전
-    /*IEnumerator Reload()
-    {
-        isReloading = true;
-        PlayerUIManager.Instance.StartCoroutine(PlayerUIManager.Instance.ReloadingText());
-        yield return new WaitForSeconds(reloadTime);
-        amount = maxAmount;
-        isReloading = false;
-    }*/
     
     IEnumerator ShieldRoutine()
     {

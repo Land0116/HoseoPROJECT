@@ -11,7 +11,9 @@ public class MonsterAttack_Dash: AttackPattern
     [SerializeField] private float dashCooldown = 2f;
     private float timer;
     private Vector2 dashDirection;
-    private float dashdamage = 20f;
+
+    
+    [SerializeField] private float dashdamage = 20f;
     private Vector2 targetPosition;
     private enum State
     {
