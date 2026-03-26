@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3581708937489623315}
   - component: {fileID: 4381357558785860476}
-  - component: {fileID: 7642101954389032671}
   - component: {fileID: 4150648578007693359}
+  - component: {fileID: -5389349626202510840}
   m_Layer: 0
   m_Name: Interact_Weapon_Stage3_PrincessDollMirror
   m_TagString: Untagged
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &7642101954389032671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6657840687825691299}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1fde0cc539078b40baf34caa0f83b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  damage: 8
-  projectilePrefab: {fileID: 4865459882403079585, guid: 7736e8b5915041d4ab6cf2dd89c640c7, type: 3}
 --- !u!61 &4150648578007693359
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +139,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-5389349626202510840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6657840687825691299}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a8285811ca234887989cb61885f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
+  weaponData: {fileID: 11400000, guid: 779412a8080a6f64ea3ec0553fba8951, type: 2}

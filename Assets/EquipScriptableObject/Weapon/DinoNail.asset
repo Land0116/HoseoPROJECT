@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0703684ba9b93394b8664df5b3d8a07c, type: 3}
+  m_Name: DinoNail
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: "\uACF5\uB8E1\uC758 \uC190\uD1B1"
+  damage: 7
+  projectilePrefab: {fileID: 420827255770552773, guid: ced54ae861e13c4438c78e0cf72d99e5, type: 3}

@@ -12,7 +12,12 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float maxHP = 50f;
 
+    [SerializeField] private GameObject hpUIPrefab;
+    private MonsterHPUI hpUI;
+
     private float currentHP;
+
+    public float CurrentHP => currentHP;
     private Rigidbody2D rb;
     public Transform Player => player;
     public float MoveSpeed => moveSpeed;
@@ -47,6 +52,15 @@ public class Monster : MonoBehaviour, IDamageable
         rb.freezeRotation = true;
 
         currentHP = maxHP;
+
+        GameObject ui = Instantiate(hpUIPrefab, transform);
+        ui.transform.localPosition = new Vector3(0, 0.8f, 0); // 머리 위 위치
+
+        hpUI = ui.GetComponent<MonsterHPUI>();
+        hpUI.Init(this);
+
+
+
         if (attackPattern != null)
         {
             attackPattern.Init(this);

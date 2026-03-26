@@ -11,12 +11,11 @@ public class Item : MonoBehaviour
 
     private bool isPlayerNear = false;
 
-    private void Update()//아이템 교환 기존아이템 사라짐
+    private void Update()
     {
         if(isPlayerNear && Keyboard.current.fKey.wasPressedThisFrame)
         {
-            PlayerController.Instance.EquipItem(this);
-
+           
             Destroy(gameObject);
         }
     }

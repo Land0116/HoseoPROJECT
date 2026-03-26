@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0703684ba9b93394b8664df5b3d8a07c, type: 3}
+  m_Name: Button
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponData
+  weaponName: "\uB2E8\uCD94"
+  damage: 1
+  icon: {fileID: 649223268058989734, guid: 9494805212b945340b52e548927852f9, type: 3}
+  projectilePrefab: {fileID: 33401344934054971, guid: 2df8a4b864d0583439ada03a3c3799b2, type: 3}

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8276448896846230559}
   - component: {fileID: 1569481323655244050}
-  - component: {fileID: 7399478755077925884}
   - component: {fileID: 1568033991363240200}
-  m_Layer: 0
+  - component: {fileID: -2161352151737676934}
+  m_Layer: 10
   m_Name: Item_Stage1_MonkeyDumbbell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,22 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &7399478755077925884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 943861596225332501}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bafb80e41220a764fa660f83292aafd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  damage: 0
-  moveSpeed: 0
-  bulletRate: 2
-  hp: 0
 --- !u!58 &1568033991363240200
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -145,3 +129,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-2161352151737676934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943861596225332501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfb9bf23bed679419e7c37659a553f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  itemData: {fileID: 11400000, guid: baeca8dbd660f544ea7ddf7a40c9caf4, type: 2}

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8667116995580861358}
   - component: {fileID: 4493666950517443266}
-  - component: {fileID: 3659012546356020507}
   - component: {fileID: 1516187377144630107}
-  m_Layer: 0
+  - component: {fileID: -9133682943836825178}
+  m_Layer: 10
   m_Name: Item_Stage2_DinosaurSkin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,22 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &3659012546356020507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7308775233680704557}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bafb80e41220a764fa660f83292aafd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  damage: 0
-  moveSpeed: 0
-  bulletRate: 0
-  hp: 30
 --- !u!58 &1516187377144630107
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -145,3 +129,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-9133682943836825178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308775233680704557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfb9bf23bed679419e7c37659a553f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  itemData: {fileID: 11400000, guid: 97219c3bd216c2643b68add9815c85bf, type: 2}

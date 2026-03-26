@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8080771752324787932}
   - component: {fileID: 8835801583884090619}
-  - component: {fileID: 3177206727452265855}
   - component: {fileID: 6723547571968241874}
-  m_Layer: 0
+  - component: {fileID: -3593492402320060262}
+  m_Layer: 10
   m_Name: Item_Stage1_Ladder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,22 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &3177206727452265855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6367623647753802642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bafb80e41220a764fa660f83292aafd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  damage: 2
-  moveSpeed: 0
-  bulletRate: 0
-  hp: 0
 --- !u!58 &6723547571968241874
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -145,3 +129,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-3593492402320060262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367623647753802642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfb9bf23bed679419e7c37659a553f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  itemData: {fileID: 11400000, guid: dda1a80235168c9489681fc314d04413, type: 2}

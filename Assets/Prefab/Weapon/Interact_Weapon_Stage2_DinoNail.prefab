@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5633700024303887976}
   - component: {fileID: 8983902098543754496}
-  - component: {fileID: 1829316029760729374}
   - component: {fileID: 3617034143031692312}
+  - component: {fileID: 6315939107028786680}
   m_Layer: 0
   m_Name: Interact_Weapon_Stage2_DinoNail
   m_TagString: Untagged
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &1829316029760729374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848678835105187383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1fde0cc539078b40baf34caa0f83b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  damage: 7
-  projectilePrefab: {fileID: 420827255770552773, guid: ced54ae861e13c4438c78e0cf72d99e5, type: 3}
 --- !u!61 &3617034143031692312
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +139,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6315939107028786680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848678835105187383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a8285811ca234887989cb61885f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
+  weaponData: {fileID: 11400000, guid: 42aa083092116fc49ad64dd357fdf701, type: 2}

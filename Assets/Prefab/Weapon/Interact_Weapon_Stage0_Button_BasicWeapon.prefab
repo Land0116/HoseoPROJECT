@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 269842395320784543}
   - component: {fileID: 6664174742417621677}
-  - component: {fileID: 4956061541447682783}
   - component: {fileID: 5432416599429398096}
+  - component: {fileID: 4656883971837886145}
   m_Layer: 0
   m_Name: Interact_Weapon_Stage0_Button_BasicWeapon
   m_TagString: Untagged
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &4956061541447682783
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5184124696774315385}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1fde0cc539078b40baf34caa0f83b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  damage: 1
-  projectilePrefab: {fileID: 33401344934054971, guid: 2df8a4b864d0583439ada03a3c3799b2, type: 3}
 --- !u!61 &5432416599429398096
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +139,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &4656883971837886145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5184124696774315385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a8285811ca234887989cb61885f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
+  weaponData: {fileID: 11400000, guid: 9e064bbc690ddaf429d530587bb06e7c, type: 2}

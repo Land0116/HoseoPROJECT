@@ -5,8 +5,12 @@ public class MonsterBullet : MonoBehaviour
     public float speed = 7f;
     public int damage = 10;
     private Vector3 direction;
+
+    
     private void Start()
     {
+        
+
         Destroy(gameObject, 3f);
     }
     public void SetDirection(Vector3 dir)

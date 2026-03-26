@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8480395832632244311}
   - component: {fileID: 2110226584648967433}
-  - component: {fileID: 218521770035574162}
   - component: {fileID: 831942781511611864}
+  - component: {fileID: -7372132524285958214}
   m_Layer: 0
   m_Name: Interact_Weapon_Stage3_SoldierEyes
   m_TagString: Untagged
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &218521770035574162
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7114331523729837587}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1fde0cc539078b40baf34caa0f83b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  damage: 6
-  projectilePrefab: {fileID: 2510667271872039706, guid: 1b9fb85d041854e4a93d24b5bcadc945, type: 3}
 --- !u!61 &831942781511611864
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +139,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-7372132524285958214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7114331523729837587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a8285811ca234887989cb61885f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
+  weaponData: {fileID: 11400000, guid: d6a15cdd5d3232849a5cf3c45e64c7ee, type: 2}

@@ -9,6 +9,10 @@ public class MonsterAttack_ADC : AttackPattern
 
     public override void Execute()
     {
+        if (monster == null) return;
+
+        if (monster.Player == null) return;
+        
         float distance = (monster.Player.position - monster.transform.position).sqrMagnitude;
         if (distance > attackRange * attackRange)
             return;

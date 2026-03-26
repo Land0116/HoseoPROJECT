@@ -9,9 +9,12 @@ public class MonsterAttack_Dash: AttackPattern
     [SerializeField] private float dashSpeed = 12f;
     [SerializeField] private float dashDuration = 0.8f;
     [SerializeField] private float dashCooldown = 2f;
+    [SerializeField] private float dashExtraDistance = 1f;
+
     private float timer;
     private Vector2 dashDirection;
 
+    private Vector2 dashTargetPosition;
     
     [SerializeField] private float dashdamage = 20f;
     private Vector2 targetPosition;
@@ -67,6 +70,8 @@ public class MonsterAttack_Dash: AttackPattern
                     dashDirection =
                         (targetPosition - (Vector2)monster.transform.position).normalized;
 
+                    dashTargetPosition = targetPosition + dashDirection * dashExtraDistance;
+
                     timer = 0f;
                     state = State.Dash;
                 }
@@ -74,15 +79,26 @@ public class MonsterAttack_Dash: AttackPattern
 
             case State.Dash:
                 blockMovement = true;
-                monster.RB.MovePosition(monster.RB.position + dashDirection * dashSpeed * Time.fixedDeltaTime);
 
-                timer += Time.deltaTime;
+                Vector2 nextPos = monster.RB.position + dashDirection * dashSpeed * Time.fixedDeltaTime;
+                monster.RB.MovePosition(nextPos);
 
-                if(timer >= dashDuration)
+                // 1. 가까워지면 멈춤
+                if (Vector2.Distance(nextPos, dashTargetPosition) <= 0.1f)
+                {
+                    state = State.Idle;
+                    timer = 0f;
+                    break;
+                }
+
+                // 2. 지나쳤으면 멈춤 (🔥 필수)
+                Vector2 toTarget = dashTargetPosition - monster.RB.position;
+                if (Vector2.Dot(toTarget, dashDirection) <= 0f)
                 {
                     state = State.Idle;
                     timer = 0f;
                 }
+
                 break;
         }
     }

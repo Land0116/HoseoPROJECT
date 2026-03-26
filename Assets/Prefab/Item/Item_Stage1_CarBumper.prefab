@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1436171851788526767}
   - component: {fileID: 4580440720320207475}
-  - component: {fileID: 4616694432672968657}
   - component: {fileID: 8584692986177605724}
-  m_Layer: 0
+  - component: {fileID: -5871780512824010692}
+  m_Layer: 10
   m_Name: Item_Stage1_CarBumper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,22 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &4616694432672968657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6944307034578826902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bafb80e41220a764fa660f83292aafd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  damage: 0
-  moveSpeed: 0
-  bulletRate: 0
-  hp: 5
 --- !u!58 &8584692986177605724
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -145,3 +129,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-5871780512824010692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6944307034578826902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfb9bf23bed679419e7c37659a553f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  itemData: {fileID: 11400000, guid: fb5db2eb80737054ca8851968a6f966c, type: 2}

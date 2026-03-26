@@ -112,6 +112,7 @@ MonoBehaviour:
   movePattern: {fileID: 6395952001008251220}
   moveSpeed: 3
   maxHP: 50
+  hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0
   itemDropChance: 0
   weaponPrefab: {fileID: 200888439754898356, guid: 91b10f2ee59f9ac41bd274c354782d52, type: 3}
@@ -136,6 +137,7 @@ MonoBehaviour:
   dashSpeed: 12
   dashDuration: 2
   dashCooldown: 0
+  dashExtraDistance: 1
   dashdamage: 55
 --- !u!58 &1966882572342881090
 CircleCollider2D:

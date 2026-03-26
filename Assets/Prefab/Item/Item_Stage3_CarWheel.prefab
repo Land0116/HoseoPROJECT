@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4114998645504704721}
   - component: {fileID: 5810056422732158248}
-  - component: {fileID: 8313581909715469057}
   - component: {fileID: 4679920373159769067}
-  m_Layer: 0
+  - component: {fileID: -5721193415183830290}
+  m_Layer: 10
   m_Name: Item_Stage3_CarWheel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,22 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &8313581909715469057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6037355705632369937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bafb80e41220a764fa660f83292aafd5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Item
-  damage: 0
-  moveSpeed: 3
-  bulletRate: 0
-  hp: 0
 --- !u!58 &4679920373159769067
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -145,3 +129,16 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-5721193415183830290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6037355705632369937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfb9bf23bed679419e7c37659a553f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
+  itemData: {fileID: 11400000, guid: ce8c8f4251c8f5d408248a06b221327c, type: 2}

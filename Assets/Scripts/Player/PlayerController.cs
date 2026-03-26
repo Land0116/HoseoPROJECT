@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
 using System.Runtime.CompilerServices;
-using UnityEditor.ShaderGraph.Internal;
+//using UnityEditor.ShaderGraph.Internal;
 
 
 public class PlayerController : MonoBehaviour, IDamageable
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int baseMaxHP = 50;
     [SerializeField] private int hp; //playerHP
     [SerializeField] private int maxHp = 50; //playerMaxHP
-    [SerializeField] private int gold; //playerGold
+    [SerializeField] private int gold = 10; //playerGold
     [SerializeField] private float moveSpeed = 3.0f; //playerMoveSpeed;
     [SerializeField] private float baseMoveSpeed = 3.0f; //playerMoveSpeed;
     //[SerializeField] private float attackDamage = 10; //playerDamage;
@@ -52,11 +52,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private bool isFireInput = false; //발사입력
 
     [Header("장착 아이템")]
-    [SerializeField] private Item currentItem;
+    [SerializeField] private ItemData currentItem;
 
     [Header("장착총알")]
     [SerializeField] private GameObject curProjectilePrefab;
-    [SerializeField] private Weapon basicWeapon;
+    [SerializeField] private WeaponData basicWeapon;
     
 
     [Header("데미지 계산 변수")]
@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     //public GameObject bulletPrefab;
     public Transform gunTip;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-
+    private bool isPaused = false;
     public int Hp
     {
         get => hp;
@@ -178,6 +178,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         if(basicWeapon != null)
         {
             ApplyWeapon(basicWeapon);
+            /*if(CurWeaponUI.Instance != null)
+            {
+                CurWeaponUI.Instance.SetWeapon(basicWeapon);
+            }*/
         }
         moveSpeed = baseMoveSpeed; //아이템관련 수정
         if (currentItem != null)//수정한 부분.아이템
@@ -190,6 +194,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Start()
     {
         if (hideSystemCursor) Cursor.visible = false;
+
+        
     }
 
     // Update is called once per frame
@@ -327,7 +333,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 }
             }
 
-            //amount--;
             StartCoroutine(FireRate());
         }
     }
@@ -345,7 +350,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             playerState = PlayerState.Idle;
         }
     }
-    //유니티 기본 InputSystem
+    
     private void OnMove(InputValue movementValue)
     {
         if (IsDie)
@@ -412,8 +417,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         playerState = PlayerState.Death;
         Cursor.visible = true;
 
-        // 플레이어 입력 관련 값 전부 초기화
-        // → 키를 누르고 있던 상태가 남아있지 않게 처리
         inputDirection = Vector2.zero;
         isFireInput = false;
         IsAttack = false;
@@ -425,27 +428,25 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.linearVelocity = Vector2.zero;
         }
 
-        // 혹시 외부에서 canControl을 같이 사용 중이면
-        // 죽은 뒤 조작 금지 상태로 같이 잠가줌
         canControl = false;
 
-        // 이 PlayerController에서 돌고 있던 코루틴 정지
-        // → 공격 쿨타임, 장전, 보호막, 체젠 등 남아있는 동작 정리
         StopAllCoroutines();
 
-        // 조준점이 있으면 꺼줌
-        // → 죽은 뒤 크로스헤어가 계속 움직여 보이는 문제 방지
         if (crosshairTransform != null)
         {
             crosshairTransform.gameObject.SetActive(false);
+        }
+
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowPlayerDyingUI();
         }
 
     }
     
     public void Heal(float value)
     {
-        //hp += Mathf.RoundToInt(value);
-        //hp = Mathf.Clamp(hp, 0, maxHp);
+       
         
         Hp += Mathf.RoundToInt(value);
     }
@@ -457,7 +458,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         Heal(lifeStealAmount);
     }
     
-    //증강시스템
     public void ApplyAugmentation(AugmentationSystem aug)
     {
         switch (aug.effectType)
@@ -547,7 +547,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    public void ApplyItem(Item item)
+    public void ApplyItem(ItemData item)
     {
         if (item == null) return;
         itemDamage = item.damage;
@@ -558,14 +558,14 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         currentItem = item;
     }
-    public void EquipItem(Item newItem)
+    public void EquipItem(ItemData newItem)
     {
         if (newItem == null) return;
 
         ApplyItem(newItem);
     }
 
-    public void ApplyWeapon(Weapon weapon)
+    public void ApplyWeapon(WeaponData weapon)
     {
         if (weapon == null) return;
 
@@ -573,12 +573,28 @@ public class PlayerController : MonoBehaviour, IDamageable
         curProjectilePrefab = weapon.projectilePrefab;
     }
 
-    public void EquipWeapon(Weapon newWeapon)
+    public void EquipWeapon(WeaponData newWeapon)
     {
         if (newWeapon == null) return;
 
         ApplyWeapon(newWeapon);
     }
+
+    public void SetPause(bool isPaused) 
+    {
+        Cursor.visible = isPaused;
+
+        if (crosshairTransform != null)
+            crosshairTransform.gameObject.SetActive(!isPaused);
+    }
+
+    private void OnPause(InputValue value)
+    {
+        if (!value.isPressed) return;
+        if (IsDie) return;
+        PlayerUIManager.Instance.HandleEscape();
+    }
+
     IEnumerator FireRate()
     {
         IsAttack = true;

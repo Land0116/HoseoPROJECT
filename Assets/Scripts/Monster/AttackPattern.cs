@@ -1,11 +1,11 @@
-using TMPro.EditorUtilities;
+//using TMPro.EditorUtilities;
 using UnityEngine;
 
 public abstract class AttackPattern : MonoBehaviour
 {
     protected Monster monster;
 
-    [Header("?????? ??? ?????? ???? ????")]
+    [Header("공격패턴시 움직임 여부")]
     public bool blockMovement = false;
 
     public virtual void Init(Monster monster)

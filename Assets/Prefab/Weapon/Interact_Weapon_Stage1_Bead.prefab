@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4019440420304206342}
   - component: {fileID: 7283126328708135402}
-  - component: {fileID: 7232840905432360187}
   - component: {fileID: -6706065021382784190}
+  - component: {fileID: -4711382769026638276}
   m_Layer: 0
   m_Name: Interact_Weapon_Stage1_Bead
   m_TagString: Untagged
@@ -93,20 +93,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!114 &7232840905432360187
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1623683425526410053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1fde0cc539078b40baf34caa0f83b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  damage: 2
-  projectilePrefab: {fileID: 5558928932769363602, guid: 586e20ee71e68654d80fe6d01fbbfa56, type: 3}
 --- !u!61 &-6706065021382784190
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -153,3 +139,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-4711382769026638276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623683425526410053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68a8285811ca234887989cb61885f24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponPickup
+  weaponData: {fileID: 11400000, guid: 4af8efd5bd3d774468c209c712b1b72b, type: 2}
