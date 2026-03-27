@@ -36,6 +36,7 @@ public class ItemUIManager : MonoBehaviour
                     PlayerController.Instance.EquipItem(itemData);
                     CurItemUI.Instance.SetItem(itemData); 
                     nearbyItems.Remove(item);
+
                     Destroy(item.gameObject);
                     currentTarget = null;
                     panel.SetActive(false);
@@ -54,6 +55,9 @@ public class ItemUIManager : MonoBehaviour
                     nearbyWeapons.Remove(weapon);
                     currentTarget = null;
                     panel.SetActive(false);
+
+                    if (panel != null) panel.SetActive(false);
+
                     Destroy(weapon.gameObject);
 
                     if (alertWeaponPanel != null)
@@ -140,10 +144,10 @@ public class ItemUIManager : MonoBehaviour
     public void UnregisterItem(ItemPickup item)
     {
         nearbyItems.Remove(item);
-        if ((currentTarget as UnityEngine.Object) == item)
+        if (currentTarget != null && (currentTarget as UnityEngine.Object) == item)
         {
             currentTarget = null;
-            panel.SetActive(false);
+            if (panel != null) panel.SetActive(false);
         }
     }
 
@@ -154,10 +158,10 @@ public class ItemUIManager : MonoBehaviour
     public void UnregisterWeapon(WeaponPickup weapon)
     {
         nearbyWeapons.Remove(weapon);
-        if ((currentTarget as UnityEngine.Object) == weapon)
+        if (currentTarget != null && (currentTarget as UnityEngine.Object) == weapon)
         {
             currentTarget = null;
-            panel.SetActive(false);
+            if (panel != null) panel.SetActive(false);
         }
     }
 
