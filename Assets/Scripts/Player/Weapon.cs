@@ -4,11 +4,11 @@ using UnityEngine.InputSystem;
 
 public class Weapon : MonoBehaviour
 {
-    [Header("무기스텟")]
-    public float damage = 1f;
-
-    [Header("발사용 총알")]
-    public GameObject projectilePrefab;
+    // [Header("무기스텟")]
+    // public float damage = 1f;
+    //
+    // [Header("발사용 총알")]
+    // public GameObject projectilePrefab;
 
     private bool isPlayerNear = false;
 
@@ -18,8 +18,8 @@ public class Weapon : MonoBehaviour
         {
             
             Debug.Log("F키로 상호작용 - 총알");
-            PlayerController.Instance.EquipWeapon(this);
-            Destroy(gameObject);
+            //PlayerController.Instance.EquipWeapon();
+            //Destroy(gameObject);
         }
     }
 

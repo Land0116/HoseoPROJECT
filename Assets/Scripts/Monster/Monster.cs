@@ -82,7 +82,7 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (currentHP <= 0)
         {
-            AugUIManager.instance.ShowAugmentation();
+            //AugUIManager.instance.ShowAugmentation();
             Death();
         }
     }
@@ -96,6 +96,10 @@ public class Monster : MonoBehaviour, IDamageable
         if(Random.value < itemDropChance)
         {
             Instantiate(itemPrefab, transform.position + itemSpawner, Quaternion.identity);
+        }
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.OnKillEnemy();
         }
         Destroy(this.gameObject);
     }
