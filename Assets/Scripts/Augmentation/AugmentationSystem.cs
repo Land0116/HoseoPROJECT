@@ -7,22 +7,39 @@ public class AugmentationSystem : ScriptableObject
 
     public enum AugmentEffectType
     {
-        BulletDamage,       // 총알 공격력 증가
-        ItemDamage,         // 아이템 공격력 증가
-        BulletCount,        // 총알 발사 수 증가
-        AttackSpeed,        // 공격속도 증가
-
-        Shield,             // 보호막
-        MaxHP,              // 최대체력 증가
-        HPRegen,            // 체력회복 증가
-
-        CharacterScale,     // 캐릭터 크기 변경
-        IgnoreObstacle,     // 장애물 충돌 무시
-        RemoveSightBlock,   // 시야 방해 제거
-        MoveSpeed,          // 이동 속도 증가
-        LifeSteal           // 흡혈
+        // =========================
+        // [최종 데미지 관련]
+        // =========================
+        DamageMultiplier,            // 총알/아이템 데미지 증가
+        SlowDamageMultiplier,        // 느리지만 강한 공격
+        
+        // =========================
+        // [공격 관련]
+        // =========================
+        BulletCountAdd,              // 한 번 발사 시 총알 수 +N
+        AttackPerSecondAdd,          // 초당 공격 횟수 증가/감소
+        
+        // =========================
+        // [체력 / 방어 관련]
+        // =========================
+        MaxHpMultiplier,             // 최대 체력 x계수
+        HpToDamagePercentPerHp,      // 최대 체력 10당 최종 데미지 % 증가
+        HealOnKill,                  // 적 처치 시 체력 회복
+        HpRegenPerSecond,            // 초당 체력 회복
+        HealToAutoAttack,            // 누적 회복량이 기준치 도달 시 자동 공격 발동
+        LifeStealOnHit,              // 공격 적중 시 회복
+        ShieldByInterval,            // N초마다 1회 공격 무효
+        
+        // =========================
+        // [이동 / 유틸 관련]
+        // =========================
+        MoveSpeedMultiplier,         // 이동속도 x계수
+        CharacterScaleMultiplier,    // 캐릭터 크기 x계수
+        IgnoreObstacleCollision,     // 장애물 충돌 무시
+        CheatDeathOnce,              // 1회 치명상 무시
+        //InvincibleSeconds          // N초 무적
     }
-
+    
     [Header("증강 기본 정보")]
     public string augmentationID;
     public AugmentationType augmentationType;

@@ -33,6 +33,11 @@ public class ButtonSpawn : MonoBehaviour
             if (damageable != null)
             {
                 damageable.OnDamage(damage);
+                
+                if (PlayerController.Instance != null)
+                {
+                    PlayerController.Instance.OnHitEnemy();
+                }
             }
 
             Destroy(gameObject);

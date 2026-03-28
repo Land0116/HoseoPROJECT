@@ -9,6 +9,7 @@ TagManager:
   - CrossHair
   - Monster
   - Wall
+  - PlayerSpawnPoint
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - Wall
   - Object
   - ItemWeapn
-  - 
-  - 
+  - Obstacle
+  - Monster
   - 
   - 
   - 
