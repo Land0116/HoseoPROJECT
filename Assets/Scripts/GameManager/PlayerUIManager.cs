@@ -121,7 +121,6 @@ public class PlayerUIManager : MonoBehaviour
         panel.SetActive(true);
         currentPanel = panel;
     }
-
     
     public void HandleEscape()
     {
@@ -190,6 +189,17 @@ public class PlayerUIManager : MonoBehaviour
         Application.Quit();
 #endif
     }
+    
+    public void BindPlayer(PlayerController player)
+    {
+        playerController = player;
+
+        if (playerDyingPanel != null)
+        {
+            playerDyingPanel.SetActive(false);
+        }
+    }
+    
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
