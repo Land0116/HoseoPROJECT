@@ -7,7 +7,6 @@ public class MonsterAttack_Dash: AttackPattern
     [SerializeField] private float detectRange = 5f;
     [SerializeField] private float chargeTime = 2f;
     [SerializeField] private float dashSpeed = 12f;
-    [SerializeField] private float dashDuration = 0.8f;
     [SerializeField] private float dashCooldown = 2f;
     [SerializeField] private float dashExtraDistance = 1f;
 

@@ -168,12 +168,33 @@ public class PlayerUIManager : MonoBehaviour
 
     private void OnClickToMain()
     {
+        if (toMainSurePanel != null)
+            toMainSurePanel.SetActive(false);
         SceneManager.LoadScene("Main");
     }
 
     private void OnClickRestart()
     {
         Time.timeScale = 1f; 
+        if (AugmentRunManager.Instance != null)
+        {
+            AugmentRunManager.Instance.ResetRun();
+        }
+
+        // UI 상태 초기화 + 다음 씬에서 증강창 다시 띄우기 예약
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.ResetUIStateForRestart();
+            AugUIManager.instance.RequestShowOnNextScene();
+        }
+        
+        // 플레이어 상태 초기화
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.ResetPlayerForRestart();
+            hpBar.value = 1.0f;
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -190,6 +211,21 @@ public class PlayerUIManager : MonoBehaviour
 #endif
     }
     
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameObject systemUI = GameObject.Find("System_UI");
+
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.BindPlayerUI(systemUI);
+        }
+
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.BindAugUI(systemUI);
+        }
+    }
+    
     public void BindPlayer(PlayerController player)
     {
         playerController = player;
@@ -199,18 +235,33 @@ public class PlayerUIManager : MonoBehaviour
             playerDyingPanel.SetActive(false);
         }
     }
-    
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void BindPlayerUI(GameObject systemUIRoot)
     {
-        Time.timeScale = 1f;
+        if (systemUIRoot == null) return;
 
-        playerController = FindFirstObjectByType<PlayerController>();
+        Transform playerPanel = systemUIRoot.transform.Find("PlayerUIPanel");
+        Transform augPanel = systemUIRoot.transform.Find("AugmentationUIPanel");
 
-        hpBar = FindFirstObjectByType<Slider>();
-        hpText = FindFirstObjectByType<TextMeshProUGUI>();
-        goldText = FindFirstObjectByType<TextMeshProUGUI>();
+        if (playerPanel != null)
+        {
+            playerTextUIPanel = playerPanel.gameObject;
 
-        currentPanel = null;
+            if (hpBar == null)
+                hpBar = playerPanel.GetComponentInChildren<Slider>(true);
+
+            TextMeshProUGUI[] texts = playerPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
+            foreach (var t in texts)
+            {
+                if (t.name.Contains("Hp") || t.name.Contains("HP"))
+                    hpText = t;
+
+                if (t.name.Contains("Gold"))
+                    goldText = t;
+            }
+        }
+
+        if (augPanel != null)
+            augmentationUIPanel = augPanel.gameObject;
+
     }
 }
