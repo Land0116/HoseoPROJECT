@@ -2,16 +2,26 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 플레이어 UI 전담 매니저
+/// - HP / Gold 표시
+/// - ESC 패널
+/// - 옵션 패널
+/// - 메인 복귀 / 종료 확인 패널
+/// - 사망 UI
+/// 
+/// 중요한 점:
+/// - 씬 전환은 여기서 직접 하지 않고 UIManager에 요청만 함
+/// - MainUI 같은 별도 클래스는 더 이상 사용하지 않음
+/// </summary>
 public class PlayerUIManager : MonoBehaviour
 {
     public PlayerController playerController;
     public static PlayerUIManager Instance { get; private set; }
 
     [Header("PlayerTextUI")]
-    [SerializeField] private GameObject playerTextUIPanel;
+    [SerializeField] public GameObject playerTextUIPanel;
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI goldText;
@@ -45,33 +55,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject playerDyingPanel;
     [SerializeField] private Button reStart;
     [SerializeField] private Button dieToMain;
+    
 
-    void Start()
+    private bool returnToAugmentationOnClose;
+    private void Awake()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
-        escPanel.SetActive(false);
-        optionPanel.SetActive(false);
-        exitSurePanel.SetActive(false);
-        toMainSurePanel.SetActive(false);
-        playerDyingPanel.SetActive(false);
-        currentPanel = null;
-
-        optionBtn.onClick.AddListener(OptionPanelTrue);
-        toMainBtn.onClick.AddListener(ToMainSurePanel);
-        exitGameBtn.onClick.AddListener(ExitSureTrue);
-        xBtn.onClick.AddListener(EscPanelTrue);
-
-        exitSureYesBtn.onClick.AddListener(OnClickExitGame);
-        exitSureNoBtn.onClick.AddListener(EscPanelTrue);
-        exitSureXBtn.onClick.AddListener(EscPanelTrue);
-
-        toMainSureYesBtn.onClick.AddListener(OnClickToMain);
-        toMainSureNoBtn.onClick.AddListener(EscPanelTrue);
-        toMainSureXBtn.onClick.AddListener(EscPanelTrue);
-
-        reStart.onClick.AddListener(OnClickRestart);
-        dieToMain.onClick.AddListener(OnClickToMain);
+        // 싱글톤 패턴
         if (Instance == null)
         {
             Instance = this;
@@ -79,129 +68,247 @@ public class PlayerUIManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
-
-        playerController = FindFirstObjectByType<PlayerController>();
-    }
-
-    void Update()
-    {
-        if (playerController == null)
-        {
-            playerController = FindFirstObjectByType<PlayerController>();
             return;
         }
-
-        PlayerStateUI();
     }
 
-    private void PlayerStateUI()
+    private void Start()
+    {
+        // 패널 초기 상태 정리
+        ResetPanels();
+    }
+
+    private void Update()
     {
         if (playerController == null) return;
+        // HP / Gold UI 갱신
+        UpdatePlayerStateUI();
+    }
 
+    /// <summary>
+    /// 플레이어 상태 UI 갱신
+    /// </summary>
+    private void UpdatePlayerStateUI()
+    {
+        if (playerController == null) return;
+        if (hpBar == null || hpText == null || goldText == null) return;
+
+        // HP가 0보다 아래로 내려가지 않게 보정
         if (playerController.Hp <= 0)
             playerController.Hp = 0;
 
+        // HP 텍스트
         hpText.text = playerController.Hp + " / " + playerController.MaxHp;
-        hpBar.value = Mathf.Lerp(hpBar.value,
-            (float)playerController.Hp / playerController.MaxHp,
-            Time.deltaTime);
 
+        // HP 바 부드럽게 보간
+        hpBar.value = Mathf.Lerp(
+            hpBar.value,
+            (float)playerController.Hp / playerController.MaxHp,
+            Time.unscaledDeltaTime * 10f
+        );
+
+        // 죽은 상태면 Gold 업데이트는 안 해도 됨
         if (playerController.IsDie) return;
 
+        // Gold 텍스트
         goldText.text = "G : " + playerController.Gold;
     }
 
-    
+    /// <summary>
+    /// 현재 패널을 닫고 새 패널 열기
+    /// </summary>
     private void OpenPanel(GameObject panel)
     {
+        if (panel == null) return;
+
         if (currentPanel != null)
             currentPanel.SetActive(false);
 
         panel.SetActive(true);
         currentPanel = panel;
     }
-    
+
+    /// <summary>
+    /// ESC 입력 처리
+    /// 
+    /// 동작 규칙:
+    /// 1. 아무 패널도 없으면 -> ESC 패널 열기
+    /// 2. 옵션 패널 열려 있으면 -> ESC 패널로 돌아가기
+    /// 3. ESC 패널 열려 있으면
+    ///    - 일반 상황: 게임으로 복귀
+    ///    - 증강창에서 들어온 상황: 증강창으로 복귀
+    /// 4. 그 외 확인 패널 열려 있으면 -> ESC 패널로 돌아가기
+    /// </summary>
     public void HandleEscape()
     {
-        
+        // 아무 패널도 안 열려 있으면 ESC 패널 열기
         if (currentPanel == null)
         {
-            OpenPanel(escPanel);
-            Time.timeScale = 0f;
-            PlayerController.Instance.SetPause(true);
+            OpenEscPanelNormal();
             return;
         }
 
-       
+        // 옵션 패널 열려 있을 때 ESC 누르면 ESC 패널로 복귀
+        if (currentPanel == optionPanel)
+        {
+            OpenPanel(escPanel);
+            return;
+        }
+
+        // 종료 확인 / 메인복귀 확인 패널 열려 있을 때 ESC 누르면 ESC 패널로 복귀
+        if (currentPanel == exitSurePanel || currentPanel == toMainSurePanel)
+        {
+            OpenPanel(escPanel);
+            return;
+        }
+
+        // ESC 패널이 열려 있을 때 다시 ESC를 누르면
         if (currentPanel == escPanel)
         {
-            currentPanel.SetActive(false);
-            currentPanel = null;
+            // 증강창에서 왔던 ESC면 증강창으로 되돌림
+            if (returnToAugmentationOnClose)
+            {
+                CloseEscAndReturnToAugmentation();
+            }
+            else
+            {
+                CloseEscAndResumeGameplay();
+            }
 
-            Time.timeScale = 1f;
-            PlayerController.Instance.SetPause(false);
             return;
         }
+    }
+
+    /// <summary>
+    /// 일반 상황에서 ESC 패널 열기
+    /// </summary>
+    private void OpenEscPanelNormal()
+    {
+        returnToAugmentationOnClose = false;
 
         OpenPanel(escPanel);
-    }
-    private void ToMainSurePanel()
-    {
-        OpenPanel(toMainSurePanel);
+
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
     }
 
-    private void OptionPanelTrue()
+    /// <summary>
+    /// 증강창에서 ESC를 눌러 넘어온 경우의 ESC 패널 열기
+    /// </summary>
+    public void OpenEscPanelFromAugmentation()
+    {
+        returnToAugmentationOnClose = true;
+
+        OpenPanel(escPanel);
+
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
+
+    /// <summary>
+    /// ESC 패널 닫고 게임 복귀
+    /// </summary>
+    private void CloseEscAndResumeGameplay()
+    {
+        if (escPanel != null)
+            escPanel.SetActive(false);
+
+        currentPanel = null;
+        returnToAugmentationOnClose = false;
+
+        Time.timeScale = 1f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(false);
+    }
+
+    /// <summary>
+    /// ESC 패널 닫고 증강창으로 복귀
+    /// </summary>
+    private void CloseEscAndReturnToAugmentation()
+    {
+        if (escPanel != null)
+            escPanel.SetActive(false);
+
+        currentPanel = null;
+
+        // 증강 UI 다시 보여주기
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.RestoreCurrentAugmentationUI();
+        }
+
+        // 증강 UI는 게임을 멈춘 상태로 써야 하므로 timeScale 0 유지
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
+
+    /// <summary>
+    /// 옵션 패널 열기
+    /// </summary>
+    private void OpenOptionPanel()
     {
         OpenPanel(optionPanel);
     }
 
-    public void EscPanelTrue()
+    /// <summary>
+    /// 메인 복귀 확인 패널 열기
+    /// </summary>
+    private void OpenToMainSurePanel()
     {
-        OpenPanel(escPanel);
+        OpenPanel(toMainSurePanel);
     }
 
-    private void ExitSureTrue()
+    /// <summary>
+    /// 게임 종료 확인 패널 열기
+    /// </summary>
+    private void OpenExitSurePanel()
     {
         OpenPanel(exitSurePanel);
     }
 
+    /// <summary>
+    /// ESC 패널을 다시 열기
+    /// 버튼에서 X 누르거나 No 누를 때 사용
+    /// </summary>
+    public void OpenEscPanel()
+    {
+        OpenPanel(escPanel);
+    }
+
+    /// <summary>
+    /// 메인으로 돌아가기
+    /// 실제 씬 로드는 UIManager가 담당
+    /// </summary>
     private void OnClickToMain()
     {
-        if (toMainSurePanel != null)
-            toMainSurePanel.SetActive(false);
-        SceneManager.LoadScene("Main");
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.GoToMainScene();
+        }
     }
 
+    /// <summary>
+    /// 현재 씬 재시작
+    /// 실제 씬 로드는 UIManager가 담당
+    /// </summary>
     private void OnClickRestart()
     {
-        Time.timeScale = 1f; 
-        if (AugmentRunManager.Instance != null)
+        if (UIManager.Instance != null)
         {
-            AugmentRunManager.Instance.ResetRun();
+            UIManager.Instance.RestartCurrentScene();
         }
-
-        // UI 상태 초기화 + 다음 씬에서 증강창 다시 띄우기 예약
-        if (AugUIManager.instance != null)
-        {
-            AugUIManager.instance.ResetUIStateForRestart();
-            AugUIManager.instance.RequestShowOnNextScene();
-        }
-        
-        // 플레이어 상태 초기화
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.ResetPlayerForRestart();
-            hpBar.value = 1.0f;
-        }
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void ShowPlayerDyingUI()
-    {
-        OpenPanel(playerDyingPanel);
-    }
+    /// <summary>
+    /// 게임 종료
+    /// </summary>
     private void OnClickExitGame()
     {
 #if UNITY_EDITOR
@@ -210,58 +317,163 @@ public class PlayerUIManager : MonoBehaviour
         Application.Quit();
 #endif
     }
-    
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+
+    /// <summary>
+    /// 사망 UI 보여주기
+    /// </summary>
+    public void ShowPlayerDyingUI()
     {
-        GameObject systemUI = GameObject.Find("System_UI");
+        OpenPanel(playerDyingPanel);
 
-        if (PlayerUIManager.Instance != null)
-        {
-            PlayerUIManager.Instance.BindPlayerUI(systemUI);
-        }
+        Time.timeScale = 0f;
 
-        if (AugUIManager.instance != null)
-        {
-            AugUIManager.instance.BindAugUI(systemUI);
-        }
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
     }
     
+    /// <summary>
+    /// 플레이어 HUD(HP, Gold 등 기본 UI)를 켠다.
+    /// 게임 씬 진입 후 / 증강 선택 후 다시 보이게 할 때 사용.
+    /// </summary>
+    public void ShowPlayerHUD()
+    {
+        if (playerTextUIPanel != null)
+            playerTextUIPanel.SetActive(true);
+    }
+
+    /// <summary>
+    /// 플레이어 HUD를 끈다.
+    /// 필요하면 메인 복귀나 특수 연출 때 사용.
+    /// </summary>
+    public void HidePlayerHUD()
+    {
+        if (playerTextUIPanel != null)
+            playerTextUIPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 플레이어 재바인딩
+    /// 씬이 새로 로드될 때 UIManager가 호출
+    /// </summary>
     public void BindPlayer(PlayerController player)
     {
         playerController = player;
 
         if (playerDyingPanel != null)
-        {
             playerDyingPanel.SetActive(false);
-        }
     }
+
+    /// <summary>
+    /// System_UI 아래 오브젝트를 이름으로 찾아 연결
+    /// </summary>
     public void BindPlayerUI(GameObject systemUIRoot)
     {
         if (systemUIRoot == null) return;
 
-        Transform playerPanel = systemUIRoot.transform.Find("PlayerUIPanel");
-        Transform augPanel = systemUIRoot.transform.Find("AugmentationUIPanel");
+        // PlayerUIPanel 찾기
+        Transform playerPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerUIPanel");
+        if (playerPanel == null) return;
 
-        if (playerPanel != null)
+        // 플레이어 상태 UI
+        playerTextUIPanel = playerPanel.gameObject;
+        hpBar = UIManager.FindChildRecursive(playerPanel, "PlayerHpBar")?.GetComponent<Slider>();
+        hpText = UIManager.FindChildRecursive(playerPanel, "HpTxt")?.GetComponent<TextMeshProUGUI>();
+        goldText = UIManager.FindChildRecursive(playerPanel, "GoldTxt")?.GetComponent<TextMeshProUGUI>();
+
+        // 패널들
+        escPanel = UIManager.FindChildRecursive(playerPanel, "EscPanel")?.gameObject;
+
+        // OptionPanel은 System_UI 아래 공용 패널을 사용
+        optionPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "OptionPanel")?.gameObject;
+
+        exitSurePanel = UIManager.FindChildRecursive(playerPanel, "ExitSurePanel")?.gameObject;
+        toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
+        playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
+
+        // ESC 패널 내부 버튼
+        optionBtn = UIManager.FindChildRecursive(playerPanel, "OptionBtn")?.GetComponent<Button>();
+        toMainBtn = UIManager.FindChildRecursive(playerPanel, "ToMainBtn")?.GetComponent<Button>();
+        exitGameBtn = UIManager.FindChildRecursive(playerPanel, "ExitGameBtn")?.GetComponent<Button>();
+        xBtn = UIManager.FindChildRecursive(systemUIRoot.transform, "OptionCloseBtn")?.GetComponent<Button>();
+
+        // 종료 확인 패널 버튼
+        if (exitSurePanel != null)
         {
-            playerTextUIPanel = playerPanel.gameObject;
-
-            if (hpBar == null)
-                hpBar = playerPanel.GetComponentInChildren<Slider>(true);
-
-            TextMeshProUGUI[] texts = playerPanel.GetComponentsInChildren<TextMeshProUGUI>(true);
-            foreach (var t in texts)
-            {
-                if (t.name.Contains("Hp") || t.name.Contains("HP"))
-                    hpText = t;
-
-                if (t.name.Contains("Gold"))
-                    goldText = t;
-            }
+            exitSureYesBtn = UIManager.FindChildRecursive(exitSurePanel.transform, "ExitSureYesBtn")?.GetComponent<Button>();
+            exitSureNoBtn = UIManager.FindChildRecursive(exitSurePanel.transform, "ExitSureNoBtn")?.GetComponent<Button>();
+            exitSureXBtn = UIManager.FindChildRecursive(exitSurePanel.transform, "ExitSureXBtn")?.GetComponent<Button>();
         }
 
-        if (augPanel != null)
-            augmentationUIPanel = augPanel.gameObject;
+        // 메인복귀 확인 패널 버튼
+        if (toMainSurePanel != null)
+        {
+            toMainSureYesBtn = UIManager.FindChildRecursive(toMainSurePanel.transform, "ToMainSureYesBtn")?.GetComponent<Button>();
+            toMainSureNoBtn = UIManager.FindChildRecursive(toMainSurePanel.transform, "ToMainSureNoBtn")?.GetComponent<Button>();
+            toMainSureXBtn = UIManager.FindChildRecursive(toMainSurePanel.transform, "ToMainSureXBtn")?.GetComponent<Button>();
+        }
 
+        // 사망 UI 버튼
+        if (playerDyingPanel != null)
+        {
+            reStart = UIManager.FindChildRecursive(playerDyingPanel.transform, "ReStartBtn")?.GetComponent<Button>();
+            dieToMain = UIManager.FindChildRecursive(playerDyingPanel.transform, "DieToMainBtn")?.GetComponent<Button>();
+        }
+
+        // 버튼 이벤트 연결
+        BindButtons();
+
+        // 씬 들어올 때 패널 상태 초기화
+        ResetPanels();
+        
+        ShowPlayerHUD();
+    }
+
+    /// <summary>
+    /// 버튼 이벤트 연결
+    /// 씬 재로드 시 중복 리스너 방지 위해 RemoveAllListeners 사용
+    /// </summary>
+    private void BindButtons()
+    {
+        BindButton(optionBtn, OpenOptionPanel);
+        BindButton(toMainBtn, OpenToMainSurePanel);
+        BindButton(exitGameBtn, OpenExitSurePanel);
+        BindButton(xBtn, OpenEscPanel);
+
+        BindButton(exitSureYesBtn, OnClickExitGame);
+        BindButton(exitSureNoBtn, OpenEscPanel);
+        BindButton(exitSureXBtn, OpenEscPanel);
+
+        BindButton(toMainSureYesBtn, OnClickToMain);
+        BindButton(toMainSureNoBtn, OpenEscPanel);
+        BindButton(toMainSureXBtn, OpenEscPanel);
+
+        BindButton(reStart, OnClickRestart);
+        BindButton(dieToMain, OnClickToMain);
+    }
+
+    /// <summary>
+    /// 모든 패널 초기 상태 정리
+    /// </summary>
+    private void ResetPanels()
+    {
+        if (escPanel != null) escPanel.SetActive(false);
+        if (optionPanel != null) optionPanel.SetActive(false);
+        if (exitSurePanel != null) exitSurePanel.SetActive(false);
+        if (toMainSurePanel != null) toMainSurePanel.SetActive(false);
+        if (playerDyingPanel != null) playerDyingPanel.SetActive(false);
+
+        currentPanel = null;
+        returnToAugmentationOnClose = false;
+    }
+
+    /// <summary>
+    /// 버튼 바인딩 공통 함수
+    /// </summary>
+    private void BindButton(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if (button == null) return;
+
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(action);
     }
 }

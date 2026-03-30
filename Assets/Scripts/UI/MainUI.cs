@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -6,6 +7,12 @@ using UnityEngine.UI;
 
 public class MainUI : MonoBehaviour
 {
+    
+    public static MainUI Instance { get; private set; }
+    
+    [Header("Image")]
+    [SerializeField] public GameObject mainImage;
+    
     [Header("Panel")]
     [SerializeField] private GameObject mainPanel;
     [SerializeField] private GameObject optionPanel;
@@ -23,8 +30,23 @@ public class MainUI : MonoBehaviour
     [SerializeField] private Button exitYesBtn;
     [SerializeField] private Button exitNoBtn;
     [SerializeField] private Button exitCloseBtn;
-
     
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);
+        
+        //PlayerUIManager.Instance.playerTextUIPanel.SetActive(false);
+    }
+
     private void Start()
     {
         mainPanel.SetActive(true);
@@ -41,11 +63,25 @@ public class MainUI : MonoBehaviour
         exitYesBtn.onClick.AddListener(OnClickExitGame);
         exitNoBtn.onClick.AddListener(CloseExit);
         exitCloseBtn.onClick.AddListener(CloseExit);
+        
+        // 메인 UI가 켜질 때 증강 UI는 강제로 꺼둠
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.showOnPlayForTest = false;
+            AugUIManager.instance.ResetUIStateForRestart();
+        }
     }
 
     private void OnClickStart()
     {
+        mainImage.SetActive(false);
         SceneManager.LoadScene("TestScene");
+        
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.RequestShowOnNextScene();
+        }
+        PlayerUIManager.Instance.playerTextUIPanel.SetActive(true);
     }
     private void OnClickOption()
     {
@@ -77,3 +113,4 @@ public class MainUI : MonoBehaviour
     }
 
 }
+

@@ -10,6 +10,7 @@ public class ItemUIManager : MonoBehaviour
     [SerializeField] private GameObject panel;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Transform player;
+    [SerializeField] private PlayerController playerController;
 
     private List<ItemPickup> nearbyItems = new List<ItemPickup>();
     private List<WeaponPickup> nearbyWeapons = new List<WeaponPickup>();
@@ -22,10 +23,17 @@ public class ItemUIManager : MonoBehaviour
     {
         Instance = this;
         panel.SetActive(false);
+        
+        playerController = FindFirstObjectByType<PlayerController>();
     }
 
     private void Update()
     {
+         if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<PlayerController>();
+            return;
+        }
         if (Keyboard.current.fKey.wasPressedThisFrame && currentTarget != null && PlayerController.Instance != null)
         {
             if (currentTarget is ItemPickup item)

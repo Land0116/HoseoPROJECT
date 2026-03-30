@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,11 @@ public class AugUIManager : MonoBehaviour
 
     [Header("게임이 시작될 때 UI 설정")]
     // 게임 시작하자마자 테스트용으로 증강 UI를 띄울지 여부
-    [SerializeField] public bool showOnPlayForTest = true;
+    [SerializeField] public bool showOnPlayForTest;
 
     private void Awake()
     {
+        // 싱글톤 패턴
         if (instance != null && instance != this)
         {
             Destroy(gameObject);
@@ -40,58 +42,88 @@ public class AugUIManager : MonoBehaviour
         }
 
         instance = this;
-        //DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        // 시작 시 보유 증강 아이콘 슬롯 초기화
+        // 시작 시 슬롯 비워두기
         ClearOwnedAugmentUI();
-
-        // 테스트용으로 시작 직후 증강 UI 자동 오픈
-        if (showOnPlayForTest)
-        {
-            StartCoroutine(ShowAugmentationOnStartRoutine());
-            showOnPlayForTest = false;
-        }
     }
 
-    private IEnumerator ShowAugmentationOnStartRoutine()
+    /// <summary>
+    /// 다음 게임 씬에서 증강창을 띄우기 위한 예약 플래그
+    /// </summary>
+    public void RequestShowOnNextScene()
     {
-        // 다른 매니저들의 Awake / Start가 먼저 끝날 수 있게 1프레임 대기
+        showOnPlayForTest = true;
+    }
+
+    /// <summary>
+    /// 예약되어 있으면 증강창 오픈 시도
+    /// 이 함수는 UIManager가 sceneLoaded 후 호출
+    /// </summary>
+    public void TryOpenReservedAugmentation()
+    {
+        if (!showOnPlayForTest) return;
+
+        StartCoroutine(ShowAugmentationOnStartRoutine());
+        showOnPlayForTest = false;
+    }
+
+    /// <summary>
+    /// 다른 매니저 / 플레이어 / 런 매니저가 먼저 준비될 수 있게 한 프레임 대기 후 증강창 열기
+    /// </summary>
+    public IEnumerator ShowAugmentationOnStartRoutine()
+    {
+        // 한 프레임 대기
         yield return null;
 
-        // AugmentRunManager가 생성될 때까지 기다림
+        // AugmentRunManager가 아직 없으면 생길 때까지 대기
         while (AugmentRunManager.Instance == null)
         {
             yield return null;
         }
 
-        // 혹시 이미 보유 중인 증강이 있다면 아이콘 UI 먼저 갱신
+        // 현재 보유 증강 UI 먼저 갱신
         RefreshOwnedAugmentUI();
 
-        // 바로 증강 선택창 띄우기
+        // 증강창 열기
         ShowAugmentation();
     }
 
+    /// <summary>
+    /// 현재 씬에서 증강창을 열 수 있는지 판단
+    /// </summary>
     public bool CanShowAugmentation()
     {
-        // 런 매니저가 없으면 증강 UI를 띄울 수 없음
+        // 런 매니저가 없으면 불가
         if (AugmentRunManager.Instance == null) return false;
 
-        // 이미 최대 개수만큼 증강을 먹었다면 더 이상 띄울 수 없음
+        // 이미 최대 증강 수를 다 먹었다면 불가
         if (!AugmentRunManager.Instance.CanPickMore) return false;
 
-        // 아직 해금되어 있고, 아직 먹지 않은 증강이 하나라도 있어야 함
+        // 아직 선택 가능한 증강이 하나라도 있어야 함
         return augmentationDatabase.Any(aug =>
             aug != null &&
             aug.isUnlocked &&
             !AugmentRunManager.Instance.HasAugment(aug));
     }
 
+    /// <summary>
+    /// 증강 선택 패널 열기
+    /// </summary>
     public void ShowAugmentation()
     {
-        // 증강 선택이 가능한 상태가 아니라면 패널 닫고 종료
+        // Main 씬에서는 증강창 금지
+        if (!CanOpenAugUIInCurrentScene())
+        {
+            if (uiPanel != null)
+                uiPanel.SetActive(false);
+
+            return;
+        }
+
+        // 선택 가능한 증강이 없으면 종료
         if (!CanShowAugmentation())
         {
             if (uiPanel != null)
@@ -100,17 +132,22 @@ public class AugUIManager : MonoBehaviour
             return;
         }
 
-        // 게임 일시정지
+        // 게임 멈춤
         Time.timeScale = 0f;
 
-        // 증강 선택 패널 열기
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+
+        // UI 패널 켜기
         if (uiPanel != null)
             uiPanel.SetActive(true);
+        else
+            return;
 
-        // 3개 랜덤 선택
+        // 랜덤 증강 3개 뽑기
         List<AugmentationSystem> selectedAugments = GetRandomAugments(3);
 
-        // 버튼에 증강 데이터 연결
+        // 버튼에 세팅
         for (int i = 0; i < uiButtons.Length; i++)
         {
             if (i < selectedAugments.Count)
@@ -125,30 +162,67 @@ public class AugUIManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 현재 증강 UI가 켜져 있는지
+    /// </summary>
+    public bool IsAugmentationVisible()
+    {
+        return uiPanel != null && uiPanel.activeSelf;
+    }
+
+    /// <summary>
+    /// ESC로 잠시 숨길 때 사용
+    /// 다시 보여줄 때는 기존 선택지가 그대로 유지됨
+    /// </summary>
+    public void HideCurrentAugmentationUI()
+    {
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// ESC 패널에서 돌아왔을 때 증강창 복원
+    /// 기존 선택지를 다시 그대로 보여줌
+    /// </summary>
+    public void RestoreCurrentAugmentationUI()
+    {
+        if (uiPanel != null)
+            uiPanel.SetActive(true);
+
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
+
+    /// <summary>
+    /// 증강 3개 랜덤 뽑기
+    /// 같은 런에서 이미 보유 중인 건 제외
+    /// 타입 가중치 적용
+    /// </summary>
     private List<AugmentationSystem> GetRandomAugments(int count)
     {
-        // 최종적으로 뽑혀서 반환될 증강 리스트
         List<AugmentationSystem> result = new List<AugmentationSystem>();
-        
+
+        // 사용 가능한 증강 목록
         List<AugmentationSystem> available = augmentationDatabase
             .Where(aug => aug != null &&
                           aug.isUnlocked &&
                           !AugmentRunManager.Instance.HasAugment(aug))
             .ToList();
 
-        // count 개수만큼 뽑되, available이 비면 중단
+        // count개 뽑되, available이 다 떨어지면 중단
         while (result.Count < count && available.Count > 0)
         {
-            // 가중치 기반으로 우선 뽑고 싶은 타입 결정
+            // 가중치로 원하는 타입 먼저 정함
             AugmentationSystem.AugmentationType targetType = GetWeightedType();
 
-            // 해당 타입만 따로 모음
+            // 해당 타입만 추리기
             List<AugmentationSystem> typePool = available
                 .Where(x => x.augmentationType == targetType)
                 .ToList();
 
-            // 같은 타입이 2개 이미 뽑혔으면
-            // 3번째도 같은 타입이 나오지 않게 막음
+            // 앞의 2개가 같은 타입이면 3번째는 다른 타입 우선
             if (result.Count >= 2 &&
                 result[0].augmentationType == result[1].augmentationType)
             {
@@ -157,14 +231,14 @@ public class AugUIManager : MonoBehaviour
                     .ToList();
             }
 
-            // 만약 해당 타입 풀이 비어 있으면 전체 available에서 뽑음
+            // 타입 풀이 비었으면 전체 available에서 뽑기
             List<AugmentationSystem> finalPool = typePool.Count > 0 ? typePool : available;
 
-            // 랜덤 1개 선택
+            // 랜덤 선택
             int rand = Random.Range(0, finalPool.Count);
             AugmentationSystem picked = finalPool[rand];
 
-            // 결과에 추가하고, 중복 방지를 위해 available에서는 제거
+            // 결과에 추가하고 available에서 제거
             result.Add(picked);
             available.Remove(picked);
         }
@@ -172,87 +246,90 @@ public class AugUIManager : MonoBehaviour
         return result;
     }
 
+    /// <summary>
+    /// 타입별 가중치
+    /// 공격 40 / 방어 30 / 유틸 30
+    /// </summary>
     private AugmentationSystem.AugmentationType GetWeightedType()
     {
-        // 0 ~ 100 사이 랜덤값
         float rand = Random.Range(0f, 100f);
 
-        // 공격 40%
         if (rand < 40f) return AugmentationSystem.AugmentationType.Atk;
-
-        // 방어 30%
         if (rand < 70f) return AugmentationSystem.AugmentationType.Dfs;
-
-        // 유틸 30%
         return AugmentationSystem.AugmentationType.Util;
     }
 
+    /// <summary>
+    /// 증강 선택 확정
+    /// </summary>
     public void SelectAugmentation(AugmentationSystem selectedData)
     {
-        // 예외처리
+        // 잘못된 선택 방지
         if (selectedData == null) return;
         if (AugmentRunManager.Instance == null) return;
 
-        // 런 매니저에 증강 추가 시도
-        // 이미 먹었거나 최대 개수면 false
+        // 런 매니저에 증강 추가
         bool added = AugmentRunManager.Instance.TryAddAugment(selectedData);
-
-        // 추가 실패 시 종료
         if (!added) return;
 
         // 플레이어 스탯 재계산
-        // 증강 효과 적용을 여기서 다시 반영
         if (PlayerController.Instance != null)
         {
             PlayerController.Instance.RebuildPlayerStats();
         }
 
-        // 보유 증강 아이콘 슬롯 갱신
+        // 보유 증강 슬롯 UI 갱신
         RefreshOwnedAugmentUI();
+
+        // 증강 선택 패널 닫기
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
+
+        // 여기 추가:
+        // 증강 선택이 끝났으니 플레이어 HUD 다시 표시
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowPlayerHUD();
+        }
 
         // 게임 재개
         Time.timeScale = 1f;
 
-        // 선택 패널 닫기
-        if (uiPanel != null)
-            uiPanel.SetActive(false);
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(false);
     }
 
+    /// <summary>
+    /// 보유 중인 증강 아이콘 슬롯 갱신
+    /// </summary>
     public void RefreshOwnedAugmentUI()
     {
-        // 먼저 슬롯 비우기
+        // 먼저 모두 비움
         ClearOwnedAugmentUI();
 
-        // 런 매니저가 없으면 종료
         if (AugmentRunManager.Instance == null) return;
         if (slotImages == null) return;
 
-        // 보유 중인 증강 목록 가져오기
         IReadOnlyList<AugmentationSystem> ownedAugments = AugmentRunManager.Instance.OwnedAugments;
 
-        // 슬롯 개수만큼 아이콘 채우기
         for (int i = 0; i < ownedAugments.Count && i < slotImages.Length; i++)
         {
             if (ownedAugments[i] == null) continue;
             if (slotImages[i] == null) continue;
 
-            // 슬롯 오브젝트 활성화
             slotImages[i].gameObject.SetActive(true);
-
-            // 아이콘 넣기
             slotImages[i].sprite = ownedAugments[i].icon;
-
-            // 아이콘이 있을 때만 Image 활성화
             slotImages[i].enabled = ownedAugments[i].icon != null;
         }
     }
 
+    /// <summary>
+    /// 보유 아이콘 슬롯 전부 비우기
+    /// </summary>
     private void ClearOwnedAugmentUI()
     {
-        // 슬롯 배열이 비어있으면 종료
         if (slotImages == null) return;
 
-        // 모든 슬롯 초기화
         for (int i = 0; i < slotImages.Length; i++)
         {
             if (slotImages[i] == null) continue;
@@ -262,60 +339,62 @@ public class AugUIManager : MonoBehaviour
             slotImages[i].gameObject.SetActive(false);
         }
     }
-    
-    private void OnEnable()
+
+    /// <summary>
+    /// Main 씬에서는 증강 UI 금지
+    /// </summary>
+    private bool CanOpenAugUIInCurrentScene()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        return SceneManager.GetActiveScene().name != "Main";
     }
 
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // 씬 이동 후 멈춘 시간 복구
-        Time.timeScale = 1f;
-
-        // 보유 증강 UI 갱신
-        RefreshOwnedAugmentUI();
-
-        // 다음 씬 시작 시 증강창을 띄워야 하면 여기서 직접 실행
-        if (showOnPlayForTest)
-        {
-            StartCoroutine(ShowAugmentationOnStartRoutine());
-            showOnPlayForTest = false;
-        }
-    }
-    
-    public void RequestShowOnNextScene() //UI 감지
-    {
-        showOnPlayForTest = true;
-    }
-
+    /// <summary>
+    /// 재시작 / 메인 복귀 시 UI 상태 정리
+    /// </summary>
     public void ResetUIStateForRestart()
     {
         Time.timeScale = 1f;
 
+        showOnPlayForTest = false;
+
         if (uiPanel != null)
-        {
             uiPanel.SetActive(false);
-        }
 
         ClearOwnedAugmentUI();
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(false);
     }
-    
+
+    /// <summary>
+    /// System_UI 아래에서 증강 UI 다시 연결
+    /// </summary>
     public void BindAugUI(GameObject systemUIRoot)
     {
         if (systemUIRoot == null) return;
 
-        Transform augPanelRoot = systemUIRoot.transform.Find("AugmentationUIPanel");
+        // 증강 패널 찾기
+        Transform augPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugmentationUIPanel");
         if (augPanelRoot != null)
         {
             uiPanel = augPanelRoot.gameObject;
 
+            // 하위 AugButton 자동 수집
             uiButtons = augPanelRoot.GetComponentsInChildren<AugButton>(true);
         }
+
+        // 보유 증강 슬롯 루트 찾기
+        Transform slotRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugUIPanel");
+        if (slotRoot != null)
+        {
+            // Slot 이름이 들어간 Image만 슬롯으로 사용
+            slotImages = slotRoot
+                .GetComponentsInChildren<Image>(true)
+                .Where(x => x.name.Contains("Slot"))
+                .ToArray();
+        }
+
+        // 바인딩 직후 현재 런 상태 반영
+        RefreshOwnedAugmentUI();
     }
 }

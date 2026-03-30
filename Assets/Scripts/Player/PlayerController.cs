@@ -204,6 +204,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
+        Time.timeScale = 0f;
     }
 
     // Update is called once per frame
@@ -745,8 +746,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (!value.isPressed) return;
         if (IsDie) return;
-        PlayerUIManager.Instance.HandleEscape();
+        if (UIManager.Instance == null) return;
+        //PlayerUIManager.Instance.HandleEscape();
     }
+    
     public void SetPause(bool isPaused) 
     {
         Cursor.visible = isPaused;
@@ -1000,12 +1003,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 rb.linearVelocity = Vector2.zero;
             }
         }
-
-        // UI가 플레이어 참조를 다시 잡게 함
-        if (PlayerUIManager.Instance != null)
-        {
-            PlayerUIManager.Instance.BindPlayer(this);
-        }
+        
 
         // 증강 아이콘 UI 갱신
         if (AugUIManager.instance != null)
