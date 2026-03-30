@@ -286,6 +286,13 @@ public class AugUIManager : MonoBehaviour
             uiPanel.SetActive(false);
 
         // 여기 추가:
+        var shop = UIManager.Instance.GetShopUI();
+
+        if (shop != null)
+        {
+            shop.ShowShop();
+        }
+
         // 증강 선택이 끝났으니 플레이어 HUD 다시 표시
         if (PlayerUIManager.Instance != null)
         {
@@ -298,7 +305,16 @@ public class AugUIManager : MonoBehaviour
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(false);
     }
+    /*private IEnumerator OpenShopNextFrame()
+    {
+        // 1프레임 대기
+        yield return null;
 
+        if (ShopUIManager.instance != null)
+        {
+            ShopUIManager.instance.ShowShop();
+        }
+    }*/
     /// <summary>
     /// 보유 중인 증강 아이콘 슬롯 갱신
     /// </summary>

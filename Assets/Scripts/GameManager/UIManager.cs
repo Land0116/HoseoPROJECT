@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+
     [Header("UI캔버스")]
     [SerializeField]private GameObject rootUI;
     [SerializeField]private GameObject systemUI;
@@ -38,6 +39,8 @@ public class UIManager : MonoBehaviour
     // 하위 매니저
     [SerializeField] private PlayerUIManager playerUIManager;
     [SerializeField] private AugUIManager augUIManager;
+    [SerializeField] private ShopUIManager shopUIManager;
+    [SerializeField] private ItemUIManager itemUIManager;
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
@@ -164,23 +167,31 @@ public class UIManager : MonoBehaviour
             systemUI = null;
             playerUIManager = null;
             augUIManager = null;
+            shopUIManager = null;
             return;
         }
 
         Transform systemTransform = FindChildRecursive(rootUI.transform, "System_UI");
         systemUI = systemTransform != null ? systemTransform.gameObject : null;
 
-        // 현재 씬 안에 있는 하위 UI 매니저들 찾기
         playerUIManager = rootUI.GetComponentInChildren<PlayerUIManager>(true);
         augUIManager = rootUI.GetComponentInChildren<AugUIManager>(true);
+        shopUIManager = rootUI.GetComponentInChildren<ShopUIManager>(true);
+        itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
+        Debug.Log(itemUIManager == null ? "ItemUIManager 못찾음" : "ItemUIManager 찾음");
 
-        // UI 오브젝트 바인딩
         if (playerUIManager != null && systemUI != null)
             playerUIManager.BindPlayerUI(systemUI);
 
         if (augUIManager != null && systemUI != null)
             augUIManager.BindAugUI(systemUI);
-        
+
+        if (shopUIManager != null && systemUI != null)
+            shopUIManager.BindShopUI(systemUI);
+
+        if (itemUIManager != null && systemUI != null)
+            itemUIManager.BindItemUI(systemUI);
+
         BindMainSceneUI();
     }
     
@@ -511,4 +522,20 @@ public class UIManager : MonoBehaviour
 
         return null;
     }
+
+    public ShopUIManager GetShopUI()
+    {
+        return shopUIManager;
+    }
+    public ItemUIManager GetItemUI()
+    {
+        return itemUIManager;
+    }
+
+    public ItemUIManager GetWeaponUI()
+    {
+        return itemUIManager;
+    }
+
+
 }

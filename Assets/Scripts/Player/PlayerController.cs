@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("플레이어 현재 상태값")] 
     [SerializeField] private int hp; // 현재 체력
     [SerializeField] private int maxHp; // 현재 최대 체력
-    [SerializeField] private int gold; // 현재 소지 골드
+    [SerializeField] private int gold = 20; // 현재 소지 골드
     [SerializeField] private float moveSpeed = 3.0f; // 현재 이동속도
     [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
 
@@ -947,7 +947,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         inputDirection = Vector2.zero;
         playerState = PlayerState.Idle;
 
-        Gold = 0;
+        Gold = 10;
 
         // 완전 처음부터 시작이면 기본 무기로 되돌림
         currentWeapon = basicWeapon;

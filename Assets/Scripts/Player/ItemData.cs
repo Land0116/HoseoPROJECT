@@ -1,5 +1,12 @@
 using UnityEngine;
-
+public enum ItemZoneType
+{
+    TutoZone,
+    StorageZone,
+    SortZone,
+    NormalZone,
+    PremiumZone
+}
 [CreateAssetMenu(fileName = "ItemData", menuName = "Item/ItemData")]
 public class ItemData : ScriptableObject
 {
@@ -13,4 +20,6 @@ public class ItemData : ScriptableObject
 
     public Sprite icon;
     public string itemName;
+
+    public ItemZoneType zoneType;
 }

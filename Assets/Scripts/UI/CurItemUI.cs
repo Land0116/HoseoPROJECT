@@ -27,6 +27,9 @@ public class CurItemUI : MonoBehaviour
 
     public void SetItem(ItemData itemData)
     {
+
+        if (itemImage == null) return;
+
         if (itemData != null && itemData.icon != null)
         {
             itemImage.sprite = itemData.icon;
@@ -36,5 +39,11 @@ public class CurItemUI : MonoBehaviour
         {
             itemImage.enabled = false;
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }
