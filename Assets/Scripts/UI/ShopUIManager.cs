@@ -15,7 +15,7 @@ public class ShopUIManager : MonoBehaviour
     public bool isSelectedAug = false;
 
     /// <summary>
-    /// UIManager에서 씬 로드 후 호출됨 (Aug 방식 그대로)
+    /// UIManager에서 씬 로드 후 호출 (Aug 방식 그대로)
     /// </summary>
     public void BindShopUI(GameObject systemUIRoot)
     {
@@ -35,10 +35,9 @@ public class ShopUIManager : MonoBehaviour
         if (itemDatabase == null || itemDatabase.Length == 0) return;
         if (uiPanel == null) return;
         if (uiPanel.activeSelf) return;
-
-        Time.timeScale = 0f;
+        
         uiPanel.SetActive(true);
-
+        Time.timeScale = 0f;
         List<ItemData> randomItems = itemDatabase
             .OrderBy(x => Random.value)
             .Take(3)
@@ -93,6 +92,29 @@ public class ShopUIManager : MonoBehaviour
         }
 
         CloseShop();
+    }
+    public bool IsShopVisible()
+    {
+        return uiPanel != null && uiPanel.activeSelf;
+    }
+    
+    public void HideCurrentShopUI()
+    {
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
+    }
+    
+    /// <summary>
+    /// ESC 패널을 닫았을 때 상점 UI를 다시 보여줌
+    /// 이미 뽑혀 있던 아이템 버튼 상태를 그대로 유지함
+    /// </summary>
+    public void RestoreCurrentShopUI()
+    {
+        if (uiPanel != null)
+            uiPanel.SetActive(true);
+
+        // 상점 UI는 열려 있는 동안 게임이 멈춰 있어야 함
+        Time.timeScale = 0f;
     }
 
     public void CloseShop()

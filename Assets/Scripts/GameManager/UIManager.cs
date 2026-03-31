@@ -41,6 +41,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private AugUIManager augUIManager;
     [SerializeField] private ShopUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
+    
+    public ShopUIManager ShopUIManager => shopUIManager;
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
@@ -121,7 +123,6 @@ public class UIManager : MonoBehaviour
         if (scene.name == "Main")
             return;
         
-        StartCoroutine(BindPlayerAfterSceneLoad());
         
         // 게임 씬에서는 PlayerController를 씬 로드 후에 다시 연결
         if (playerUIManager != null && PlayerController.Instance != null)
@@ -209,6 +210,7 @@ public class UIManager : MonoBehaviour
         // 다음 씬의 PlayerController를
         // PlayerUIManager의 public PlayerController playerController에 넣어준다.
         playerUIManager.BindPlayer(PlayerController.Instance);
+        BindCameraToPlayer(PlayerController.Instance);
     }
     
     /// <summary>
@@ -359,6 +361,13 @@ public class UIManager : MonoBehaviour
             return;
         }
 
+        if (shopUIManager != null && shopUIManager.IsShopVisible())
+        {
+            shopUIManager.HideCurrentShopUI();
+            playerUIManager.OpenEscPanelFromShop();
+            return;
+        }
+
         // 그 외는 PlayerUIManager에서 처리
         playerUIManager.HandleEscape();
     }
@@ -394,7 +403,7 @@ public class UIManager : MonoBehaviour
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;
 
-        SceneManager.LoadScene("TestScene");
+        SceneManager.LoadScene("Tutorial_Stage");
     }
 
     /// <summary>
@@ -435,6 +444,17 @@ public class UIManager : MonoBehaviour
         if (augUIManager != null)
         {
             augUIManager.ResetUIStateForRestart();
+        }
+        if (PlayerController.Instance != null)
+        {
+            Transform crosshair = PlayerController.Instance.GetCrosshairTransform();
+
+            if (crosshair != null)
+            {
+                Destroy(crosshair.gameObject);
+            }
+
+            Destroy(PlayerController.Instance.gameObject);
         }
 
         SceneManager.LoadScene("Main");
@@ -501,6 +521,23 @@ public class UIManager : MonoBehaviour
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(action);
     }
+    
+    /// <summary>
+    /// 현재 씬의 Main Camera가 새 플레이어를 다시 따라가게 연결
+    /// 직접 만든 CameraFollow 스크립트 기준
+    /// </summary>
+    public void BindCameraToPlayer(PlayerController player)
+    {
+        if (player == null) return;
+
+        Camera mainCam = Camera.main;
+        if (mainCam == null) return;
+
+        FollowCam follow = mainCam.GetComponent<FollowCam>();
+        if (follow == null) return;
+
+        follow.SetTarget(player.transform);
+    }
 
     /// <summary>
     /// 이름으로 자식 오브젝트 재귀 탐색
@@ -523,6 +560,7 @@ public class UIManager : MonoBehaviour
         return null;
     }
 
+    
     public ShopUIManager GetShopUI()
     {
         return shopUIManager;
@@ -531,11 +569,14 @@ public class UIManager : MonoBehaviour
     {
         return itemUIManager;
     }
-
     public ItemUIManager GetWeaponUI()
     {
         return itemUIManager;
     }
-
+    
+    public void RequestStageEntryUI()
+    {
+        needShowAugmentationOnNextScene = true;
+    }
 
 }

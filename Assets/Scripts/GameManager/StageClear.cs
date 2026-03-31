@@ -10,7 +10,7 @@ public class StageClear : MonoBehaviour
     [SerializeField] private string nextSceneName = "Tutorial_Stage";
 
     [Header("몬스터 전멸 시 자동 클리어 여부")]
-    [SerializeField] private bool autoClearWhenNoMonster = true;
+    [SerializeField] private bool autoClearWhenNoMonster;
 
     [Header("몬스터 태그")]
     [SerializeField] private string monsterTag = "Monster";
@@ -38,17 +38,18 @@ public class StageClear : MonoBehaviour
 
         // New Input System 방식
         // N 키를 누른 프레임에만 클리어
-        //if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
-        //{
-            //ClearStage();
+        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
+        {
+            autoClearWhenNoMonster = true;
             //return;
-        //}
+        }
 
         // 옵션이 켜져 있으면 몬스터가 0마리일 때 자동 클리어
         if (autoClearWhenNoMonster)
         {
             GameObject[] monsters = GameObject.FindGameObjectsWithTag(monsterTag);
-
+            
+            Debug.Log(monsters.Length);
             if (monsters.Length == 0)
             {
                 ClearStage();
@@ -68,7 +69,7 @@ public class StageClear : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //isStageCleared = false;
+        isStageCleared = false;
     }
     
     public void ClearStage()
@@ -85,6 +86,12 @@ public class StageClear : MonoBehaviour
         {
             AugUIManager.instance.showOnPlayForTest = true;
         }
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.RequestStageEntryUI();
+        }
+
+        autoClearWhenNoMonster = false;
 
         // 다음 씬 로드
         SceneManager.LoadScene(nextSceneName);

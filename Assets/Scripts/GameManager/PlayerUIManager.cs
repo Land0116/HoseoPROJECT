@@ -57,7 +57,19 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button dieToMain;
     
 
-    private bool returnToAugmentationOnClose;
+    /// <summary>
+    /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
+    /// None        : 그냥 게임으로 복귀
+    /// Augmentation: 증강창으로 복귀
+    /// Shop        : 상점창으로 복귀
+    /// </summary>
+    private enum EscReturnTarget
+    {
+        None,
+        Augmentation,
+        Shop
+    }
+    [SerializeField] private EscReturnTarget escReturnTarget = EscReturnTarget.None;
     private void Awake()
     {
         // 싱글톤 패턴
@@ -134,45 +146,47 @@ public class PlayerUIManager : MonoBehaviour
     /// 동작 규칙:
     /// 1. 아무 패널도 없으면 -> ESC 패널 열기
     /// 2. 옵션 패널 열려 있으면 -> ESC 패널로 돌아가기
-    /// 3. ESC 패널 열려 있으면
-    ///    - 일반 상황: 게임으로 복귀
-    ///    - 증강창에서 들어온 상황: 증강창으로 복귀
-    /// 4. 그 외 확인 패널 열려 있으면 -> ESC 패널로 돌아가기
+    /// 3. 종료/메인복귀 확인 패널 열려 있으면 -> ESC 패널로 돌아가기
+    /// 4. ESC 패널 열려 있으면
+    ///    - None        : 게임 복귀
+    ///    - Augmentation: 증강창 복귀
+    ///    - Shop        : 상점창 복귀
     /// </summary>
     public void HandleEscape()
     {
-        // 아무 패널도 안 열려 있으면 ESC 패널 열기
         if (currentPanel == null)
         {
             OpenEscPanelNormal();
             return;
         }
 
-        // 옵션 패널 열려 있을 때 ESC 누르면 ESC 패널로 복귀
         if (currentPanel == optionPanel)
         {
             OpenPanel(escPanel);
             return;
         }
 
-        // 종료 확인 / 메인복귀 확인 패널 열려 있을 때 ESC 누르면 ESC 패널로 복귀
         if (currentPanel == exitSurePanel || currentPanel == toMainSurePanel)
         {
             OpenPanel(escPanel);
             return;
         }
 
-        // ESC 패널이 열려 있을 때 다시 ESC를 누르면
         if (currentPanel == escPanel)
         {
-            // 증강창에서 왔던 ESC면 증강창으로 되돌림
-            if (returnToAugmentationOnClose)
+            switch (escReturnTarget)
             {
-                CloseEscAndReturnToAugmentation();
-            }
-            else
-            {
-                CloseEscAndResumeGameplay();
+                case EscReturnTarget.Augmentation:
+                    CloseEscAndReturnToAugmentation();
+                    break;
+
+                case EscReturnTarget.Shop:
+                    CloseEscAndReturnToShop();
+                    break;
+
+                default:
+                    CloseEscAndResumeGameplay();
+                    break;
             }
 
             return;
@@ -184,7 +198,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void OpenEscPanelNormal()
     {
-        returnToAugmentationOnClose = false;
+        escReturnTarget = EscReturnTarget.None;
 
         OpenPanel(escPanel);
 
@@ -193,13 +207,28 @@ public class PlayerUIManager : MonoBehaviour
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(true);
     }
-
+    
     /// <summary>
     /// 증강창에서 ESC를 눌러 넘어온 경우의 ESC 패널 열기
     /// </summary>
     public void OpenEscPanelFromAugmentation()
     {
-        returnToAugmentationOnClose = true;
+        escReturnTarget = EscReturnTarget.Augmentation;
+
+        OpenPanel(escPanel);
+
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
+    
+    /// <summary>
+    /// 상점창에서 ESC를 눌러 넘어온 경우의 ESC 패널 열기
+    /// </summary>
+    public void OpenEscPanelFromShop()
+    {
+        escReturnTarget = EscReturnTarget.Shop;
 
         OpenPanel(escPanel);
 
@@ -218,7 +247,7 @@ public class PlayerUIManager : MonoBehaviour
             escPanel.SetActive(false);
 
         currentPanel = null;
-        returnToAugmentationOnClose = false;
+        escReturnTarget = EscReturnTarget.None;
 
         Time.timeScale = 1f;
 
@@ -236,19 +265,36 @@ public class PlayerUIManager : MonoBehaviour
 
         currentPanel = null;
 
-        // 증강 UI 다시 보여주기
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RestoreCurrentAugmentationUI();
         }
 
-        // 증강 UI는 게임을 멈춘 상태로 써야 하므로 timeScale 0 유지
+        // 증강창은 멈춘 상태 유지
         Time.timeScale = 0f;
 
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(true);
     }
+    
+    private void CloseEscAndReturnToShop()
+    {
+        if (escPanel != null)
+            escPanel.SetActive(false);
 
+        currentPanel = null;
+
+        if (UIManager.Instance != null && UIManager.Instance.ShopUIManager != null)
+        {
+            UIManager.Instance.ShopUIManager.RestoreCurrentShopUI();
+        }
+
+        // 상점창도 멈춘 상태 유지
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
     /// <summary>
     /// 옵션 패널 열기
     /// </summary>
@@ -463,7 +509,7 @@ public class PlayerUIManager : MonoBehaviour
         if (playerDyingPanel != null) playerDyingPanel.SetActive(false);
 
         currentPanel = null;
-        returnToAugmentationOnClose = false;
+        escReturnTarget = EscReturnTarget.None;
     }
 
     /// <summary>

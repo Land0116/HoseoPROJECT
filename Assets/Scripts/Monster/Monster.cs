@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Monster : MonoBehaviour, IDamageable
@@ -39,13 +40,33 @@ public class Monster : MonoBehaviour, IDamageable
     private Vector3 weaponSpawner = new Vector3(-0.5f, 0, 0);
     [SerializeField]
     private Vector3 itemSpawner = new Vector3(0.5f, 0, 0);
+    
+    
+    // 플레이어를 기다리는 코루틴 저장용
+    private Coroutine bindPlayerRoutine;
 
+    private void OnEnable()
+    {
+        // 몬스터가 활성화될 때
+        // 플레이어가 아직 생성되지 않았을 수도 있으므로
+        // 코루틴으로 PlayerController.Instance가 생길 때까지 기다림
+        bindPlayerRoutine = StartCoroutine(BindPlayerRoutine());
+    }
 
+    private void OnDisable()
+    {
+        // 오브젝트가 비활성화되거나 파괴될 때
+        // 코루틴이 남아 있으면 정리
+        if (bindPlayerRoutine != null)
+        {
+            StopCoroutine(bindPlayerRoutine);
+            bindPlayerRoutine = null;
+        }
+    }
 
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
 
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -53,14 +74,20 @@ public class Monster : MonoBehaviour, IDamageable
 
         currentHP = maxHP;
 
-        GameObject ui = Instantiate(hpUIPrefab, transform);
-        ui.transform.localPosition = new Vector3(0, 0.8f, 0); // 머리 위 위치
+        if (hpUIPrefab != null)
+        {
+            GameObject ui = Instantiate(hpUIPrefab, transform);
+            ui.transform.localPosition = new Vector3(0, 0.8f, 0);
 
-        hpUI = ui.GetComponent<MonsterHPUI>();
-        hpUI.Init(this);
+            hpUI = ui.GetComponent<MonsterHPUI>();
 
+            if (hpUI != null)
+            {
+                hpUI.Init(this);
+            }
+        }
 
-
+        
         if (attackPattern != null)
         {
             attackPattern.Init(this);
@@ -73,10 +100,17 @@ public class Monster : MonoBehaviour, IDamageable
 
     void Update()
     {
-        
+        // 플레이어가 씬 전환/삭제/재생성 때문에 잠깐 null 될 수 있으니
+        // null이면 다시 연결 시도
+        if (player == null && PlayerController.Instance != null)
+        {
+            player = PlayerController.Instance.transform;
+        }
     }
+    
     private void FixedUpdate()
     {
+        if (player == null) return;
         if (attackPattern != null)
         {
             attackPattern.Execute();
@@ -86,6 +120,21 @@ public class Monster : MonoBehaviour, IDamageable
                 movePattern.Execute();
             }
         }
+    }
+    
+    /// <summary>
+    /// 플레이어가 준비될 때까지 기다렸다가 연결하는 코루틴
+    /// </summary>
+    private IEnumerator BindPlayerRoutine()
+    {
+        // PlayerController.Instance가 생길 때까지 대기
+        while (PlayerController.Instance == null)
+        {
+            yield return null;
+        }
+
+        // 플레이어가 준비되면 Transform 연결
+        player = PlayerController.Instance.transform;
     }
 
     //데미지 입음

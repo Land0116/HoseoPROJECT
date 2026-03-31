@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossUI : MonoBehaviour
 {
@@ -37,17 +38,17 @@ public class BossUI : MonoBehaviour
 
         panel.position = leftOffScreen;
 
-        //ÆÐ³Î ºñÈ°¼ºÈ­
+        //ï¿½Ð³ï¿½ ï¿½ï¿½È°ï¿½ï¿½È­
         panel.gameObject.SetActive(true);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(" Trigger µé¾î¿È: " + other.name);
+        Debug.Log(" Trigger ï¿½ï¿½ï¿½ï¿½: " + other.name);
 
         if (!hasShown && other.CompareTag("Player"))
         {
-            Debug.Log(" Player °¨ÁöµÊ");
+            Debug.Log(" Player ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
             hasShown = true;
             StartCoroutine(DelayedStart());
@@ -56,14 +57,9 @@ public class BossUI : MonoBehaviour
 
     private IEnumerator DelayedStart()
     {
-        //¿¬Ãâ½ÃÀÛ½Ã È°¼ºÈ­
         panel.gameObject.SetActive(true);
 
-        Debug.Log("DelayedStart ½ÃÀÛ");
-
         yield return new WaitForSeconds(1.5f);
-
-        Debug.Log(" 1.5ÃÊ ³¡, ÆÐ³Î È°¼ºÈ­");
 
         Time.timeScale = 0;
 
@@ -72,16 +68,13 @@ public class BossUI : MonoBehaviour
 
     private IEnumerator SlidePanel()
     {
-        Debug.Log("SlidePanel ½ÃÀÛ");
 
         while ((panel.position - center).sqrMagnitude > 0.1f)
         {
             panel.position = Vector3.Lerp(panel.position, center, Time.unscaledDeltaTime * slideSpeed);
             yield return null;
         }
-
-        Debug.Log(" Áß¾Ó µµÂø");
-
+        
         panel.position = center;
 
         yield return new WaitForSecondsRealtime(stayTime);
@@ -95,8 +88,8 @@ public class BossUI : MonoBehaviour
         panel.position = rightOffScreen;
 
         Time.timeScale = 1;
-
-        //ÆÐ³Î ºñÈ°¼ºÈ­
+        
         panel.gameObject.SetActive(false);
+        
     }
 }

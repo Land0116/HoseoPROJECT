@@ -28,6 +28,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         Hit, //피격
         Death //죽음
     }
+    
+    private readonly string[] dirNames =
+    {
+        "Right",         // 0
+        "Qback_Right",   // 1
+        "Back",          // 2
+        "Qback_Left",    // 3
+        "Left",          // 4
+        "Qfront_Left",   // 5
+        "Front",         // 6
+        "Qfront_Right"   // 7
+    };
+    
 
     [Header("플레이어 기본 정보")] 
     [SerializeField] private int baseMaxHp = 50; // 게임 시작 시 기준 최대 체력
@@ -48,6 +61,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private bool isDie = false; // 사망 여부
     [SerializeField] private bool isFireInput = false; //발사입력
     [SerializeField] private bool canControl = true; // 조작 가능 여부
+    
+    [Header("비주얼 / 애니메이션")]
+    [SerializeField] private Animator bodyAnimator;
+// 현재 마우스를 향하는 방향 벡터
+    [SerializeField] private Vector2 aimDirection = Vector2.down;
+// 현재 바라보는 방향 인덱스
+    [SerializeField] private int facingDir = 6; // 기본 아래
+    private string currentAnimState;
 
     [Header("장비")]
     [SerializeField] private WeaponData basicWeapon; // 시작 무기
@@ -58,13 +79,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
 
-
-//     [Header("데미지 계산 변수 + 증강 시스템 계산 변수")]
-// // 무기 증강 시너지
-//     //[SerializeField] private float weaponSynergy = 1f;
-// // 아이템 증강 시너지
-//     //[SerializeField] private float itemSynergy = 1f;
-
+    
     [Header("증강 - 공격")] 
     [SerializeField] private float damageMultiplier = 1f; // 총알/아이템 공통 데미지 배율
     [SerializeField] private float slowDamageMultiplier = 0f; // 느리지만 강한 공격 추가 배율
@@ -116,7 +131,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private Coroutine shieldCoroutine;
     private Coroutine hpRegenCoroutine;
-    [SerializeField] private string playerSpawnTag = "PlayerSpawnPoint";
+    //[SerializeField] private string playerSpawnTag = "PlayerSpawnPoint";
 
     public int Hp
     {
@@ -215,6 +230,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         PlayerMouseMovement();
+        
+        // 애니메이션 파라미터 갱신
+        UpdateAnimation();
     }
 
 
@@ -235,8 +253,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             case PlayerState.Idle:
             {
+                PlayDirectionalAnimation("Idle");
                 rb.linearVelocity = Vector2.zero;
-                
                 if (inputDirection.sqrMagnitude > 0)
                 {
                     playerState = PlayerState.Walk;
@@ -252,6 +270,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             case PlayerState.Walk:
             {
+                PlayDirectionalAnimation("Walk");
                 Vector2 moveVector = inputDirection;
                 if (moveVector.magnitude > 1) { moveVector.Normalize(); }
                 rb.linearVelocity = moveVector * moveSpeed;
@@ -270,6 +289,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             case PlayerState.Attack:
             {
                 Shoot();
+                //PlayDirectionalAnimation("Attack");
                 playerState = inputDirection.sqrMagnitude > 0
                         ? PlayerState.Walk
                         : PlayerState.Idle;
@@ -296,42 +316,88 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDie) return;
         if (crosshairTransform == null || playerBody == null) return;
+        if (_mainCamera == null) return;
 
-        // 1. 마우스 월드 좌표 계산 (한 번만 수행)
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
-            mouseScreenPos.x, 
-            mouseScreenPos.y, 
+            mouseScreenPos.x,
+            mouseScreenPos.y,
             -_mainCamera.transform.position.z));
         mouseWorldPos.z = 0f;
 
-        // 2. 조준점 위치 업데이트
         crosshairTransform.position = mouseWorldPos;
 
-        // 3. 플레이어 회전 계산 (조준점 위치를 바로 활용)
-        Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position);
+
+        if (direction.sqrMagnitude > 0.0001f)
+        {
+            aimDirection = direction.normalized;
+            facingDir = Get8DirectionIndex(aimDirection);
+        }
         
-        playerBody.rotation = Quaternion.Euler(0, 0, angle);
-        
+    }
+    
+    /// <summary>
+    /// 8방향 인덱스 반환
+    /// 0=Right, 1=UpRight, 2=Up, 3=UpLeft,
+    /// 4=Left, 5=DownLeft, 6=Down, 7=DownRight
+    /// </summary>
+    private int Get8DirectionIndex(Vector2 dir)
+    {
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        if (angle < 0f)
+            angle += 360f;
+
+        int index = Mathf.RoundToInt(angle / 45f) % 8;
+        return index;
+    }
+    /// <summary>
+    /// 이동 / 방향 애니메이션 파라미터 갱신
+    /// </summary>
+    private void UpdateAnimation()
+    {
+        if (bodyAnimator == null) return;
+
+        // 현재 마우스를 바라보는 방향
+        bodyAnimator.SetInteger("FacingDir", facingDir);
+
+        // 움직이는 중인지
+        bool isMovingNow = inputDirection.sqrMagnitude > 0.01f;
+        bodyAnimator.SetBool("IsMoving", isMovingNow);
+    }
+    
+    private void PlayDirectionalAnimation(string actionPrefix)
+    {
+        if (bodyAnimator == null) return;
+
+        string nextState = actionPrefix + "_" + dirNames[facingDir];
+
+        if (currentAnimState == nextState)
+            return;
+
+        bodyAnimator.CrossFade(nextState, 0.05f);
+        currentAnimState = nextState;
     }
     
     //단추(기본공격) 발사
     void Shoot()
     {
         if (IsDie) return;
-        if (!IsAttack && playerAttackType == AttackType.Base)// && amount > 0)
+        if (!IsAttack && playerAttackType == AttackType.Base)
         {
             if (curProjectilePrefab == null) return;
 
             int currentBulletCount = Mathf.Max(1, bulletPerShot);
 
             float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
+            float baseAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
             for (int i = 0; i < currentBulletCount; i++)
-            {    
+            {
                 float addAngle = startAngle + (bulletSpreadAngle * i);
-                Quaternion bulletRotation = playerBody.rotation * Quaternion.Euler(0f, 0f, addAngle);
+
+                Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle + addAngle);
 
                 GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
                 ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
@@ -362,6 +428,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     private void OnMove(InputValue movementValue)
     {
+        // 메인 씬에서는 입력 차단
+        if (!IsGameplayScene())
+        {
+            inputDirection = Vector2.zero;
+            return;
+        }
         if (IsDie)
         {
             inputDirection = Vector2.zero;
@@ -378,6 +450,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     private void OnAttack(InputValue value)
     {
+        if (!IsGameplayScene())
+        {
+            isFireInput = false;
+            return;
+        }
         if (IsDie)
         {
             isFireInput = false;
@@ -651,7 +728,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void EquipItem(ItemData newItem)
     {
         if (newItem == null) return;
-
+        
+        
         ApplyItem(newItem);
     }
     public void ApplyWeapon(WeaponData weapon)
@@ -664,7 +742,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void EquipWeapon(WeaponData newWeapon)
     {
         if (newWeapon == null) return;
-
+        currentWeapon = newWeapon;
         ApplyWeapon(newWeapon);
     }
 
@@ -745,9 +823,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void OnPause(InputValue value)
     {
         if (!value.isPressed) return;
+        if (!IsGameplayScene()) return;
         if (IsDie) return;
-        if (UIManager.Instance == null) return;
-        //PlayerUIManager.Instance.HandleEscape();
+        
     }
     
     public void SetPause(bool isPaused) 
@@ -983,6 +1061,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // 메인 씬으로 돌아왔으면 플레이어는 존재하면 안 됨
+        if (scene.name == "Main")
+        {
+            Destroy(gameObject);
+            return;
+        }
         // 새 씬의 Main Camera 다시 연결
         _mainCamera = Camera.main;
 
@@ -991,25 +1075,111 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             crosshairTransform.gameObject.SetActive(!IsDie);
         }
-
-        // 새 씬에 스폰 포인트가 있으면 그 위치로 이동
-        GameObject spawnPoint = GameObject.FindGameObjectWithTag(playerSpawnTag);
-        if (spawnPoint != null)
-        {
-            transform.position = spawnPoint.transform.position;
-
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
-        }
         
-
+        
         // 증강 아이콘 UI 갱신
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
+    }
+    
+    
+    /// <summary>
+    /// Player가 처음 생성된 직후 PlayerSpawner가 호출
+    /// 
+    /// 역할:
+    /// 1. Crosshair 참조 연결
+    /// 2. 현재 씬 Camera 연결
+    /// 3. 커서/크로스헤어 상태 정리
+    /// </summary>
+    public void SetupAfterSpawn(Transform spawnedCrosshair)
+    {
+        // 새로 생성한 크로스헤어 연결
+        crosshairTransform = spawnedCrosshair;
+
+        // 현재 씬 카메라 연결
+        _mainCamera = Camera.main;
+
+        // 시스템 커서 표시 여부 설정
+        Cursor.visible = !hideSystemCursor;
+
+        // 크로스헤어가 있으면 활성화
+        if (crosshairTransform != null)
+        {
+            crosshairTransform.gameObject.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// 스테이지가 바뀌었을 때 새 씬 기준 참조 재연결
+    /// 
+    /// 역할:
+    /// 1. 현재 씬 Camera 다시 잡기
+    /// 2. 죽지 않았다면 크로스헤어 다시 켜기
+    /// </summary>
+    public void RefreshSceneReferences()
+    {
+        // 새 씬의 메인 카메라 다시 연결
+        _mainCamera = Camera.main;
+
+        // 살아있으면 크로스헤어 다시 켜기
+        if (crosshairTransform != null)
+        {
+            crosshairTransform.gameObject.SetActive(!IsDie);
+        }
+    }
+
+    /// <summary>
+    /// 스테이지 이동 직후 Player 상태를 잠깐 정리
+    /// 
+    /// 역할:
+    /// 1. Rigidbody 속도 정지
+    /// 2. 입력값 초기화
+    /// 3. 공격 상태 초기화
+    /// 4. 상태머신 Idle로 되돌리기
+    /// </summary>
+    public void ResetVelocityOnly()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        inputDirection = Vector2.zero;
+        isFireInput = false;
+        IsAttack = false;
+        playerState = PlayerState.Idle;
+    }
+
+    /// <summary>
+    /// UIManager가 Main 씬으로 돌아갈 때
+    /// 크로스헤어도 같이 삭제할 수 있게 반환
+    /// </summary>
+    public Transform GetCrosshairTransform()
+    {
+        return crosshairTransform;
+    }
+    
+    
+    /// <summary>
+    /// 플레이어가 파괴될 때 static Instance 정리
+    /// 안 해주면 죽은 오브젝트를 계속 참조할 수 있음
+    /// </summary>
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+    /// <summary>
+    /// 현재 씬이 실제 플레이 가능한 게임 씬인지 확인
+    /// Main 씬에서는 false
+    /// </summary>
+    private bool IsGameplayScene()
+    {
+        return SceneManager.GetActiveScene().name != "Main";
     }
     
 }
