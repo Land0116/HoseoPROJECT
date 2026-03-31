@@ -12,7 +12,14 @@ public class CurItemUI : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         //기본아이템
         if (defaultItem != null && defaultItem.icon != null)
         {
@@ -46,4 +53,6 @@ public class CurItemUI : MonoBehaviour
         if (Instance == this)
             Instance = null;
     }
+
+
 }

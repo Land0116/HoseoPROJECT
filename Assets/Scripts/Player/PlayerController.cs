@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Coroutine shieldCoroutine;
     private Coroutine hpRegenCoroutine;
     //[SerializeField] private string playerSpawnTag = "PlayerSpawnPoint";
-
+    
     public int Hp
     {
         get => hp;
@@ -202,6 +202,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if(basicWeapon != null)
         {
             ApplyWeapon(basicWeapon);
+
         }
         moveSpeed = baseMoveSpeed; //아이템관련 수정
         if (currentItem != null)//수정한 부분.아이템
@@ -219,6 +220,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
+
+        ApplyWeapon(basicWeapon);
+        ApplyItem(currentItem);
         Time.timeScale = 0f;
     }
 
@@ -724,6 +728,16 @@ public class PlayerController : MonoBehaviour, IDamageable
         hp = Mathf.Clamp(Hp, 0, maxHp);
 
         currentItem = item;
+
+        if (CurItemUI.Instance != null)
+        {
+            Debug.Log("CurItemUI 있음 → SetItem 호출");
+            CurItemUI.Instance.SetItem(item);
+        }
+        else
+        {
+            Debug.Log("CurItemUI 없음 (NULL)");
+        }
     }
     public void EquipItem(ItemData newItem)
     {
@@ -736,13 +750,25 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (weapon == null) return;
 
+        Debug.Log("ApplyWeapon 실행됨: " + weapon.name);
+
         weaponDamage = weapon.damage;
         curProjectilePrefab = weapon.projectilePrefab;
+
+        if (CurWeaponUI.Instance != null)
+        {
+            Debug.Log("CurWeaponUI 있음 → SetWeapon 호출");
+            CurWeaponUI.Instance.SetWeapon(weapon);
+        }
+        else
+        {
+            Debug.Log("CurWeaponUI 없음 (NULL)");
+        }
+
     }
     public void EquipWeapon(WeaponData newWeapon)
     {
-        if (newWeapon == null) return;
-        currentWeapon = newWeapon;
+        
         ApplyWeapon(newWeapon);
     }
 
@@ -1046,6 +1072,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             crosshairTransform.gameObject.SetActive(true);
         }
 
+        
         Cursor.visible = !hideSystemCursor;
     }
     

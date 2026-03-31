@@ -13,6 +13,10 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float maxHP = 50f;
 
+    [Header("»ç¸Á½Ã °ñµå")]
+    [SerializeField] private int minGold = 1;
+    [SerializeField] private int maxGold = 3;
+
     [SerializeField] private GameObject hpUIPrefab;
     private MonsterHPUI hpUI;
 
@@ -152,6 +156,14 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void Death()
     {
+
+        if (PlayerController.Instance != null)
+        {
+            int rewardGold = Random.Range(minGold, maxGold + 1);
+            PlayerController.Instance.Gold += rewardGold;
+            Debug.Log("°ñµå È¹µæ: " + rewardGold);
+        }
+
         if (Random.value < weaponPrefabDropChance)
         {
             Instantiate(weaponPrefab, transform.position + weaponSpawner, Quaternion.identity);
