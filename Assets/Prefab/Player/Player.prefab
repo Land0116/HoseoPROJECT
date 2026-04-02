@@ -186,11 +186,10 @@ MonoBehaviour:
   isInvincible: 0
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}
-  crosshairTransform: {fileID: 6444624563947541171}
+  crosshairTransform: {fileID: 581639872760927715, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
   hideSystemCursor: 1
   playerBody: {fileID: 621105006712859011}
   gunTip: {fileID: 6879044860308773687}
-  playerSpawnTag: PlayerSpawnPoint
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5
