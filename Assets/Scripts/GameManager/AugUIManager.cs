@@ -286,12 +286,12 @@ public class AugUIManager : MonoBehaviour
             uiPanel.SetActive(false);
 
         // 여기 추가:
-        var shop = UIManager.Instance.GetShopUI();
+        //var shop = UIManager.Instance.GetShopUI();
 
-        if (shop != null)
+        /*if (shop != null)
         {
             shop.ShowShop();
-        }
+        }*/
 
         // 증강 선택이 끝났으니 플레이어 HUD 다시 표시
         if (PlayerUIManager.Instance != null)

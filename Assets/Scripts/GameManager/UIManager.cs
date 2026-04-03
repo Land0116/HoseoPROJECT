@@ -458,6 +458,7 @@ public class UIManager : MonoBehaviour
         }
 
         SceneManager.LoadScene("Main");
+        Cursor.visible = true; //*
     }
 
     /// <summary>
