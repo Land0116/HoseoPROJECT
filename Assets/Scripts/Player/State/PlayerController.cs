@@ -8,7 +8,6 @@ using UnityEngine.Serialization;
 using UnityEngine.EventSystems;
 using System.Runtime.CompilerServices;
 using UnityEngine.SceneManagement;
-//using UnityEditor.ShaderGraph.Internal;
 
 
 public class PlayerController : MonoBehaviour, IDamageable
@@ -78,7 +77,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private GameObject curProjectilePrefab; // 현재 발사할 투사체 프리팹
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
-
+    
     
     [Header("증강 - 공격")] 
     [SerializeField] private float damageMultiplier = 1f; // 총알/아이템 공통 데미지 배율
@@ -97,6 +96,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private bool shieldEnabled = false;
     [SerializeField] private bool shieldReady = false;
     [SerializeField] private float shieldInterval = 30f;
+    [Header("쉴드 시각 효과")]
+    [SerializeField] private GameObject shieldVisualObject;
 
 
     [Header("증강 - 회복 자동 공격")] 
@@ -236,9 +237,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         PlayerMouseMovement();
         
         // 애니메이션 파라미터 갱신
-        UpdateAnimation();
+        //UpdateAnimation();
     }
-
+    
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+    }
 
     void FixedUpdate()
     {
@@ -257,47 +262,57 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             case PlayerState.Idle:
             {
-                PlayDirectionalAnimation("Idle");
                 rb.linearVelocity = Vector2.zero;
+                // 마우스를 누르고 있고, 쿨타임이 끝났고, UI 클릭이 아니면 공격 시작
+                if (isFireInput && !IsAttack && !IsPointerOverUI())
+                {
+                    playerState = PlayerState.Attack;
+                    break;
+                }
                 if (inputDirection.sqrMagnitude > 0)
                 {
                     playerState = PlayerState.Walk;
                     break;
                 }
-
-                // 공격 입력
-                if (isFireInput && !IsAttack)
-                {
-                    playerState = PlayerState.Attack;
-                }
+                PlayDirectionalAnimation("Idle");
                 break;
             }
             case PlayerState.Walk:
             {
-                PlayDirectionalAnimation("Walk");
                 Vector2 moveVector = inputDirection;
-                if (moveVector.magnitude > 1) { moveVector.Normalize(); }
-                rb.linearVelocity = moveVector * moveSpeed;
-                if (inputDirection.sqrMagnitude == 0)
-                {
-                    playerState = PlayerState.Idle;
-                }
 
-                // 이동 중 공격
-                if (isFireInput && !IsAttack )// &&amount > 0 && !isReloading)
+                if (moveVector.magnitude > 1f)
+                    moveVector.Normalize();
+
+                rb.linearVelocity = moveVector * moveSpeed;
+
+                // 이동 중에도 마우스를 누르고 있고, 쿨타임이 끝났고, UI 클릭이 아니면 공격 시작
+                if (isFireInput && !IsAttack && !IsPointerOverUI())
                 {
                     playerState = PlayerState.Attack;
+                    break;
                 }
+
+                if (inputDirection.sqrMagnitude <= 0.01f)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    playerState = PlayerState.Idle;
+                    break;
+                }
+
+                PlayDirectionalAnimation("Walk");
                 break;
             }
             case PlayerState.Attack:
             {
-                Shoot();
-                //PlayDirectionalAnimation("Attack");
-                playerState = inputDirection.sqrMagnitude > 0
-                        ? PlayerState.Walk
-                        : PlayerState.Idle;
-                
+                // 공격 요청이 들어온 첫 프레임에만 발사 + 공격 애니메이션 재생
+                PlayDirectionalAnimation("Attack");
+                // 공격 중에도 이동 입력이 있으면 실제 이동 허용
+                Vector2 moveVector = inputDirection;
+                if (moveVector.magnitude > 1f)
+                    moveVector.Normalize();
+
+                rb.linearVelocity = moveVector * moveSpeed;
                 break;
             }
             case PlayerState.Hit:
@@ -356,33 +371,73 @@ public class PlayerController : MonoBehaviour, IDamageable
         int index = Mathf.RoundToInt(angle / 45f) % 8;
         return index;
     }
-    /// <summary>
-    /// 이동 / 방향 애니메이션 파라미터 갱신
-    /// </summary>
-    private void UpdateAnimation()
+
+    public void FireOnAnimationEvent()
     {
-        if (bodyAnimator == null) return;
-
-        // 현재 마우스를 바라보는 방향
-        bodyAnimator.SetInteger("FacingDir", facingDir);
-
-        // 움직이는 중인지
-        bool isMovingNow = inputDirection.sqrMagnitude > 0.01f;
-        bodyAnimator.SetBool("IsMoving", isMovingNow);
+        if (IsDie) return;
+        if (IsAttack) return;
+        
+        Shoot();
     }
     
+    public void EndAttackAnimationEvent()
+    {
+        playerState = inputDirection.sqrMagnitude > 0.01f
+            ? PlayerState.Walk
+            : PlayerState.Idle;
+    }
     private void PlayDirectionalAnimation(string actionPrefix)
     {
         if (bodyAnimator == null) return;
 
-        string nextState = actionPrefix + "_" + dirNames[facingDir];
+        string nextState = "";
 
+        // 공격 애니메이션
+        // 이동 중 공격이면 Walk_Attack_방향
+        // 제자리 공격이면 Idle_Attack_방향
+        if (actionPrefix == "Attack")
+        {
+            if (inputDirection.sqrMagnitude > 0.01f)
+            {
+                nextState = "Walk_Attack_" + dirNames[facingDir];
+            }
+            else
+            {
+                nextState = "Idle_Attack_" + dirNames[facingDir];
+            }
+        }
+        // 대기 애니메이션
+        else if (actionPrefix == "Idle")
+        {
+            nextState = "Idle_Weapon_" + dirNames[facingDir];
+        }
+        // 이동 애니메이션
+        else if (actionPrefix == "Walk")
+        {
+            nextState = "Walk_Weapon_" + dirNames[facingDir];
+        }
+        else
+        {
+            return;
+        }
+
+        int stateHash = Animator.StringToHash(nextState);
+
+        // Animator 안에 해당 state가 실제로 없으면 경고 출력
+        if (!bodyAnimator.HasState(0, stateHash))
+        {
+            Debug.LogWarning("애니메이션 상태 없음 : " + nextState);
+            return;
+        }
+
+        // 이미 같은 애니메이션이면 중복 재생 안 함
         if (currentAnimState == nextState)
             return;
 
-        bodyAnimator.CrossFade(nextState, 0.05f);
+        bodyAnimator.CrossFade(stateHash, 0.05f, 0, 0f);
         currentAnimState = nextState;
     }
+
     
     //단추(기본공격) 발사
     void Shoot()
@@ -459,58 +514,54 @@ public class PlayerController : MonoBehaviour, IDamageable
             isFireInput = false;
             return;
         }
+
         if (IsDie)
         {
             isFireInput = false;
             return;
         }
+
         if (!canControl)
         {
             isFireInput = false;
             return;
         }
+        //if (IsAttack) return;
+        
+        // 누르고 있으면 true, 떼면 false
         isFireInput = value.isPressed;
     }
+    
 
     public void OnDamage(float damage)
     {
-        // 이미 죽은 상태면 피격 무시
         if (IsDie) return;
-
-        // 일시 무적 상태면 피격 무시
         if (isInvincible) return;
 
-        // 보호막이 준비되어 있으면 공격 1회 무효화
         if (shieldEnabled && shieldReady)
         {
             shieldReady = false;
+            SetShieldVisual(false); // 보호막 깨짐 연출
             Debug.Log("보호막으로 공격 1회 무효");
             return;
         }
 
-        // 들어온 데미지를 정수형으로 변환
         int incomingDamage = Mathf.RoundToInt(damage);
 
-        // 치명적인 피해를 받는 순간 1회만 사망 무효
         if (cheatDeathOnce && Hp - incomingDamage <= 0)
         {
-            cheatDeathOnce = false; // 한 번 발동하면 소모
-            Hp = 1; // 최소 체력 1 남김
+            cheatDeathOnce = false;
+            Hp = 1;
             playerState = PlayerState.Hit;
-
-            // 짧은 무적 시간 부여
             StartCoroutine(TemporaryInvincibleRoutine());
-
             Debug.Log("치명적 피해 1회 무효 발동");
             return;
         }
 
-        // 일반 피격 처리
         Hp -= incomingDamage;
         Debug.Log("플레이어 체력: " + Hp + " / " + maxHp);
         playerState = PlayerState.Hit;
 
-        // 체력이 0 이하가 되면 사망 처리
         if (Hp <= 0)
         {
             Death();
@@ -748,21 +799,20 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     public void ApplyWeapon(WeaponData weapon)
     {
-        if (weapon == null) return;
-
-       // Debug.Log("ApplyWeapon 실행됨: " + weapon.name);
-
+        currentWeapon = weapon;
+        if (weapon == null)
+        {
+            weaponDamage = 0f;
+            curProjectilePrefab = null;
+            return;
+        }
+        
         weaponDamage = weapon.damage;
         curProjectilePrefab = weapon.projectilePrefab;
-
+        
         if (CurWeaponUI.Instance != null)
         {
-            //Debug.Log("CurWeaponUI 있음 → SetWeapon 호출");
             CurWeaponUI.Instance.SetWeapon(weapon);
-        }
-        else
-        {
-            //Debug.Log("CurWeaponUI 없음 (NULL)");
         }
 
     }
@@ -842,7 +892,16 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
     }
-    
+    //증강 - 쉴드생성
+    private void SetShieldVisual(bool isOn)
+    {
+        if (shieldVisualObject == null) return;
+
+        if (shieldVisualObject.activeSelf != isOn)
+        {
+            shieldVisualObject.SetActive(isOn);
+        }
+    }
     
     
     //UI-Esc일시정지
@@ -898,18 +957,25 @@ public class PlayerController : MonoBehaviour, IDamageable
     IEnumerator ShieldRoutine()
     {
         shieldReady = true;
+        SetShieldVisual(true);
 
         while (shieldEnabled)
         {
             if (!shieldReady)
             {
+                SetShieldVisual(false);
+
                 yield return new WaitForSeconds(shieldInterval);
+
                 shieldReady = true;
+                SetShieldVisual(true);
                 Debug.Log("보호막 재충전 완료");
             }
 
             yield return null;
         }
+
+        SetShieldVisual(false);
     }
 
     //힐 리젠

@@ -1164,9 +1164,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc57265978591af409c4459a83793175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageClear
-  nextSceneName: Stage_1
+  stageSceneNames: []
   autoClearWhenNoMonster: 0
   monsterTag: Monster
+  clearDelay: 1
 --- !u!4 &511293384
 Transform:
   m_ObjectHideFlags: 0

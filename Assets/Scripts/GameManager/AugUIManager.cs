@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class AugUIManager : MonoBehaviour
@@ -136,7 +138,10 @@ public class AugUIManager : MonoBehaviour
         Time.timeScale = 0f;
 
         if (PlayerController.Instance != null)
+        {
             PlayerController.Instance.SetPause(true);
+            PlayerController.Instance.SetControl(false);
+        }
 
         // UI 패널 켜기
         if (uiPanel != null)
@@ -281,40 +286,40 @@ public class AugUIManager : MonoBehaviour
         // 보유 증강 슬롯 UI 갱신
         RefreshOwnedAugmentUI();
 
-        // 증강 선택 패널 닫기
-        if (uiPanel != null)
-            uiPanel.SetActive(false);
-
-        // 여기 추가:
-        //var shop = UIManager.Instance.GetShopUI();
-
-        /*if (shop != null)
-        {
-            shop.ShowShop();
-        }*/
-
-        // 증강 선택이 끝났으니 플레이어 HUD 다시 표시
+        // HUD 다시 표시
         if (PlayerUIManager.Instance != null)
         {
             PlayerUIManager.Instance.ShowPlayerHUD();
         }
 
+        // 여기서 바로 게임 재개하지 말고,
+        // 클릭을 뗀 뒤 닫는 코루틴으로 넘김
+        StartCoroutine(CloseAugmentationAfterMouseRelease());
+    }
+    private IEnumerator CloseAugmentationAfterMouseRelease()
+    {
+        // 지금 누른 클릭이 완전히 끝날 때까지 대기
+        while (Mouse.current != null && Mouse.current.leftButton.isPressed)
+        {
+            yield return null;
+        }
+
+        // 혹시 남아있는 UI 클릭 처리 한 프레임 더 넘김
+        yield return null;
+
+        // 증강 패널 닫기
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
+
         // 게임 재개
         Time.timeScale = 1f;
 
         if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(false);
-    }
-    /*private IEnumerator OpenShopNextFrame()
-    {
-        // 1프레임 대기
-        yield return null;
-
-        if (ShopUIManager.instance != null)
         {
-            ShopUIManager.instance.ShowShop();
+            PlayerController.Instance.SetPause(false);
+            PlayerController.Instance.SetControl(true);
         }
-    }*/
+    }
     /// <summary>
     /// 보유 중인 증강 아이콘 슬롯 갱신
     /// </summary>
