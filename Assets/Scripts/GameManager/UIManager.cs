@@ -36,11 +36,15 @@ public class UIManager : MonoBehaviour
     [SerializeField]private Button exitNoBtn;
     [SerializeField]private Button exitCloseBtn;
 
+
+    [Header("상점 UI")]
+    //[SerializeField] private 
     // 하위 매니저
     [SerializeField] private PlayerUIManager playerUIManager;
     [SerializeField] private AugUIManager augUIManager;
     [SerializeField] private ShopUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
+    [SerializeField] private InGameShopUIManager inGameShopUIManager;
     
     public ShopUIManager ShopUIManager => shopUIManager;
 
@@ -110,14 +114,14 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        
+
+
         // 혹시 이전 씬에서 timeScale이 0으로 멈춰 있었으면 복구
         Time.timeScale = 1f;
 
         // 현재 씬의 UI 다시 찾기
-        BindSceneUI();
-
-        // 씬별 기본 UI 상태 적용
-        ApplySceneDefaultState(scene.name);
+        StartCoroutine(DelayedBind(scene.name));
 
         // Main 씬이면 여기까지
         if (scene.name == "Main")
@@ -155,6 +159,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private IEnumerator DelayedBind(string sceneName)
+    {
+        yield return null;
+
+        BindSceneUI();
+        ApplySceneDefaultState(sceneName);
+    }
     /// <summary>
     /// 현재 씬의 RootUI / System_UI / 하위 UIManager들을 찾고 바인딩
     /// </summary>
@@ -179,7 +190,9 @@ public class UIManager : MonoBehaviour
         augUIManager = rootUI.GetComponentInChildren<AugUIManager>(true);
         shopUIManager = rootUI.GetComponentInChildren<ShopUIManager>(true);
         itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
-        Debug.Log(itemUIManager == null ? "ItemUIManager 못찾음" : "ItemUIManager 찾음");
+        inGameShopUIManager = rootUI.GetComponentInChildren<InGameShopUIManager>(true);
+
+        //Debug.Log(itemUIManager == null ? "ItemUIManager 못찾음" : "ItemUIManager 찾음");
 
         if (playerUIManager != null && systemUI != null)
             playerUIManager.BindPlayerUI(systemUI);
@@ -192,6 +205,9 @@ public class UIManager : MonoBehaviour
 
         if (itemUIManager != null && systemUI != null)
             itemUIManager.BindItemUI(systemUI);
+
+        if (inGameShopUIManager != null && systemUI != null)
+            inGameShopUIManager.BindShopUI(systemUI);
 
         BindMainSceneUI();
     }
@@ -361,11 +377,10 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        if (shopUIManager != null && shopUIManager.IsShopVisible())
+        if (inGameShopUIManager != null && inGameShopUIManager.IsShopOpen())
         {
-            shopUIManager.HideCurrentShopUI();
-            playerUIManager.OpenEscPanelFromShop();
-            return;
+            inGameShopUIManager.ToggleShop(); // 닫기
+            return; // ⭐ 여기서 끝
         }
 
         // 그 외는 PlayerUIManager에서 처리
@@ -404,6 +419,7 @@ public class UIManager : MonoBehaviour
         needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Tutorial_Stage");
+        InGameShopUIManager.Instance.ResetShop();
     }
 
     /// <summary>

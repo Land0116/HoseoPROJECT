@@ -252,11 +252,11 @@ public class ItemUIManager : MonoBehaviour
         {
             itemPanel = itemPanelRoot.gameObject;
             itemText = itemPanelRoot.GetComponentInChildren<TextMeshProUGUI>(true);
-            Debug.Log("ItemPanel 연결됨");
+            //Debug.Log("ItemPanel 연결됨");
         }
         else
         {
-            Debug.LogError("ItemUIPanel 못찾음");
+            //Debug.LogError("ItemUIPanel 못찾음");
         }
         Transform weaponPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "WeaponUIPanel");
         if (weaponPanelRoot != null)

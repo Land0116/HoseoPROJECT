@@ -731,12 +731,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (CurItemUI.Instance != null)
         {
-            Debug.Log("CurItemUI 있음 → SetItem 호출");
+            //Debug.Log("CurItemUI 있음 → SetItem 호출");
             CurItemUI.Instance.SetItem(item);
         }
         else
         {
-            Debug.Log("CurItemUI 없음 (NULL)");
+            //Debug.Log("CurItemUI 없음 (NULL)");
         }
     }
     public void EquipItem(ItemData newItem)
@@ -750,19 +750,19 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (weapon == null) return;
 
-        Debug.Log("ApplyWeapon 실행됨: " + weapon.name);
+       // Debug.Log("ApplyWeapon 실행됨: " + weapon.name);
 
         weaponDamage = weapon.damage;
         curProjectilePrefab = weapon.projectilePrefab;
 
         if (CurWeaponUI.Instance != null)
         {
-            Debug.Log("CurWeaponUI 있음 → SetWeapon 호출");
+            //Debug.Log("CurWeaponUI 있음 → SetWeapon 호출");
             CurWeaponUI.Instance.SetWeapon(weapon);
         }
         else
         {
-            Debug.Log("CurWeaponUI 없음 (NULL)");
+            //Debug.Log("CurWeaponUI 없음 (NULL)");
         }
 
     }
@@ -1208,5 +1208,21 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         return SceneManager.GetActiveScene().name != "Main";
     }
-    
+
+    public void OnShop(InputValue value)
+    {
+
+        if (!value.isPressed) return;
+        Debug.Log("B");
+
+        if (InGameShopUIManager.Instance == null)
+        {
+            Debug.Log(" ShopUIManager 없음");
+            return;
+        }
+
+        Debug.Log(" ShopUIManager 있음");
+
+        InGameShopUIManager.Instance.ToggleShop();
+    }
 }
