@@ -17,6 +17,11 @@ public class AugUIManager : MonoBehaviour
     [Header("전체 증강 데이터")]
     // 게임 내에서 사용할 전체 증강 데이터 목록
     public AugmentationSystem[] augmentationDatabase;
+    
+    [Header("현재 화면에 표시 중인 증강 3개")]
+    [SerializeField] private List<AugmentationSystem> currentShownAugments = new List<AugmentationSystem>();
+    [Header("각 칸 reroll 사용 여부")]
+    [SerializeField] private List<bool> rerollUsedStates = new List<bool>();
 
     [Header("UI 버튼 3개")]
     // 증강 선택용 버튼 3개
@@ -149,16 +154,31 @@ public class AugUIManager : MonoBehaviour
         else
             return;
 
-        // 랜덤 증강 3개 뽑기
-        List<AugmentationSystem> selectedAugments = GetRandomAugments(3);
+        // 현재 표시할 3개 저장
+        currentShownAugments = GetRandomAugments(3);
 
-        // 버튼에 세팅
+        // 각 칸 reroll 사용 여부 초기화
+        rerollUsedStates.Clear();
+        for (int i = 0; i < currentShownAugments.Count; i++)
+        {
+            rerollUsedStates.Add(false);
+        }
+
+        // 버튼 반영
+        ApplyCurrentAugmentsToButtons();
+    }
+    
+    
+    private void ApplyCurrentAugmentsToButtons()
+    {
         for (int i = 0; i < uiButtons.Length; i++)
         {
-            if (i < selectedAugments.Count)
+            if (i < currentShownAugments.Count && currentShownAugments[i] != null)
             {
                 uiButtons[i].gameObject.SetActive(true);
-                uiButtons[i].Setup(selectedAugments[i], this);
+
+                bool canReroll = i < rerollUsedStates.Count && !rerollUsedStates[i];
+                uiButtons[i].Setup(currentShownAugments[i], this, i, canReroll);
             }
             else
             {
@@ -166,7 +186,81 @@ public class AugUIManager : MonoBehaviour
             }
         }
     }
+    
+    public void RerollAugmentation(int slotIndex)
+    {
+        // 인덱스 예외 방지
+        if (slotIndex < 0 || slotIndex >= currentShownAugments.Count) return;
+        if (slotIndex >= rerollUsedStates.Count) return;
+        if (AugmentRunManager.Instance == null) return;
 
+        // 이미 이 칸은 reroll 사용했으면 종료
+        if (rerollUsedStates[slotIndex]) return;
+
+        AugmentationSystem currentAug = currentShownAugments[slotIndex];
+        if (currentAug == null) return;
+
+        // 제외할 증강 목록 구성
+        HashSet<AugmentationSystem> excludedAugments = new HashSet<AugmentationSystem>();
+
+        // 현재 칸에 있는 기존 증강 제외
+        excludedAugments.Add(currentAug);
+
+        // 다른 칸에 이미 떠 있는 증강도 제외
+        for (int i = 0; i < currentShownAugments.Count; i++)
+        {
+            if (i == slotIndex) continue;
+            if (currentShownAugments[i] == null) continue;
+
+            excludedAugments.Add(currentShownAugments[i]);
+        }
+
+        // 새로운 증강 1개 뽑기
+        AugmentationSystem rerolledAug = GetRandomAugmentForSingleSlot(excludedAugments);
+
+        // 후보가 없으면 종료
+        if (rerolledAug == null)
+        {
+            Debug.Log("리롤 가능한 다른 증강이 없음");
+            return;
+        }
+
+        // 해당 칸 증강 교체
+        currentShownAugments[slotIndex] = rerolledAug;
+
+        // 이 칸 reroll 사용 처리
+        rerollUsedStates[slotIndex] = true;
+
+        // 버튼 다시 세팅 - 이번엔 reroll 불가 상태로 세팅
+        uiButtons[slotIndex].Setup(rerolledAug, this, slotIndex, false);
+    }
+    
+    private AugmentationSystem GetRandomAugmentForSingleSlot(HashSet<AugmentationSystem> excludedAugments)
+    {
+        List<AugmentationSystem> available = augmentationDatabase
+            .Where(aug =>
+                aug != null &&
+                aug.isUnlocked &&
+                !AugmentRunManager.Instance.HasAugment(aug) &&
+                !excludedAugments.Contains(aug))
+            .ToList();
+
+        if (available.Count == 0)
+            return null;
+
+        // 기존 가중치 로직 재사용
+        AugmentationSystem.AugmentationType targetType = GetWeightedType();
+
+        List<AugmentationSystem> typePool = available
+            .Where(x => x.augmentationType == targetType)
+            .ToList();
+
+        List<AugmentationSystem> finalPool = typePool.Count > 0 ? typePool : available;
+
+        int rand = Random.Range(0, finalPool.Count);
+        return finalPool[rand];
+    }
+    
     /// <summary>
     /// 현재 증강 UI가 켜져 있는지
     /// </summary>

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class AugButton : MonoBehaviour
 {
@@ -8,52 +9,75 @@ public class AugButton : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descText;
-    [SerializeField] private Button selectButton;
+    
+    [Header("버튼")]
+    [SerializeField] private Button selectBtn;
+    [SerializeField] private Button rerollBtn;
 
     // 현재 버튼에 연결된 증강 데이터
     private AugmentationSystem currentData;
-
     // 이 버튼을 관리하는 UI 매니저
     private AugUIManager currentManager;
+    private int slotIndex;
 
-    public void Setup(AugmentationSystem data, AugUIManager manager)
+    public void Setup(AugmentationSystem data, AugUIManager manager, int index, bool canReroll)
     {
-        // 현재 데이터와 매니저 저장
         currentData = data;
         currentManager = manager;
+        slotIndex = index;
 
-        // 이름 표시
         if (nameText != null)
-            nameText.text = data.augmentationName;
+            nameText.text = data != null ? data.augmentationName : "";
 
-        // 설명 표시
         if (descText != null)
-            descText.text = data.augmentationDesc;
+            descText.text = data != null ? data.augmentationDesc : "";
 
-        // 아이콘 표시
         if (iconImage != null)
         {
-            iconImage.sprite = data.icon;
-            iconImage.enabled = data.icon != null;
+            iconImage.sprite = data != null ? data.icon : null;
+            iconImage.enabled = data != null && data.icon != null;
         }
 
-        // 버튼 클릭 이벤트 연결
-        if (selectButton != null)
+        if (selectBtn != null)
         {
-            // 기존 리스너 제거
-            selectButton.onClick.RemoveAllListeners();
+            selectBtn.onClick.RemoveAllListeners();
+            selectBtn.onClick.AddListener(OnClickSelect);
+        }
 
-            // 현재 증강 선택 함수 연결
-            selectButton.onClick.AddListener(OnClickAugmentation);
+        if (rerollBtn != null)
+        {
+            rerollBtn.onClick.RemoveAllListeners();
+            rerollBtn.onClick.AddListener(OnClickReroll);
+
+            // 딱 1회만 가능
+            rerollBtn.interactable = canReroll;
+
+            // 하이라이트/셀렉트도 끊고 싶으면 Navigation None
+            Navigation nav = rerollBtn.navigation;
+            nav.mode = Navigation.Mode.None;
+            rerollBtn.navigation = nav;
         }
     }
 
-    public void OnClickAugmentation()
+    private void OnClickSelect()
     {
-        // 매니저나 데이터가 없으면 종료
         if (currentManager == null || currentData == null) return;
-
-        // UI 매니저에 현재 증강 선택 요청
         currentManager.SelectAugmentation(currentData);
     }
+
+    private void OnClickReroll()
+    {
+        if (currentManager == null) return;
+        if (rerollBtn == null) return;
+        if (!rerollBtn.interactable) return;
+
+        currentManager.RerollAugmentation(slotIndex);
+
+        // 혹시 눌린 채 선택 상태 남아있으면 제거
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == rerollBtn.gameObject)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
+    
 }

@@ -68,6 +68,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 // 현재 바라보는 방향 인덱스
     [SerializeField] private int facingDir = 6; // 기본 아래
     private string currentAnimState;
+    [Header("공격 애니메이션 방향 잠금")]
+    [SerializeField] private bool isAttackAnimLocked = false;   // 현재 공격 애니메이션 방향 고정 여부
+    [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
 
     [Header("장비")]
     [SerializeField] private WeaponData basicWeapon; // 시작 무기
@@ -305,9 +308,16 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             case PlayerState.Attack:
             {
-                // 공격 요청이 들어온 첫 프레임에만 발사 + 공격 애니메이션 재생
-                PlayDirectionalAnimation("Attack");
-                // 공격 중에도 이동 입력이 있으면 실제 이동 허용
+                // 공격 상태에 들어온 첫 프레임에만 방향 잠금
+                if (!isAttackAnimLocked)
+                {
+                    lockedAttackFacingDir = facingDir;
+                    isAttackAnimLocked = true;
+
+                    PlayDirectionalAnimation("Attack", lockedAttackFacingDir);
+                }
+
+                // 공격 중에도 이동 입력이 있으면 실제 이동은 허용
                 Vector2 moveVector = inputDirection;
                 if (moveVector.magnitude > 1f)
                     moveVector.Normalize();
@@ -382,39 +392,42 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     public void EndAttackAnimationEvent()
     {
+        // 공격 애니메이션 종료 -> 방향 잠금 해제
+        isAttackAnimLocked = false;
+        
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
             : PlayerState.Idle;
     }
-    private void PlayDirectionalAnimation(string actionPrefix)
+    private void PlayDirectionalAnimation(string actionPrefix, int forcedDir = -1)
     {
         if (bodyAnimator == null) return;
+
+        int dirIndex = forcedDir >= 0 ? forcedDir : facingDir;
 
         string nextState = "";
 
         // 공격 애니메이션
-        // 이동 중 공격이면 Walk_Attack_방향
-        // 제자리 공격이면 Idle_Attack_방향
         if (actionPrefix == "Attack")
         {
             if (inputDirection.sqrMagnitude > 0.01f)
             {
-                nextState = "Walk_Attack_" + dirNames[facingDir];
+                nextState = "Walk_Attack_" + dirNames[dirIndex];
             }
             else
             {
-                nextState = "Idle_Attack_" + dirNames[facingDir];
+                nextState = "Idle_Attack_" + dirNames[dirIndex];
             }
         }
         // 대기 애니메이션
         else if (actionPrefix == "Idle")
         {
-            nextState = "Idle_Weapon_" + dirNames[facingDir];
+            nextState = "Idle_Weapon_" + dirNames[dirIndex];
         }
         // 이동 애니메이션
         else if (actionPrefix == "Walk")
         {
-            nextState = "Walk_Weapon_" + dirNames[facingDir];
+            nextState = "Walk_Weapon_" + dirNames[dirIndex];
         }
         else
         {
@@ -423,14 +436,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         int stateHash = Animator.StringToHash(nextState);
 
-        // Animator 안에 해당 state가 실제로 없으면 경고 출력
         if (!bodyAnimator.HasState(0, stateHash))
         {
             Debug.LogWarning("애니메이션 상태 없음 : " + nextState);
             return;
         }
 
-        // 이미 같은 애니메이션이면 중복 재생 안 함
         if (currentAnimState == nextState)
             return;
 
@@ -526,7 +537,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             isFireInput = false;
             return;
         }
-        //if (IsAttack) return;
         
         // 누르고 있으면 true, 떼면 false
         isFireInput = value.isPressed;
