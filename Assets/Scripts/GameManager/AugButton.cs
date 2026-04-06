@@ -59,13 +59,13 @@ public class AugButton : MonoBehaviour
         }
     }
 
-    private void OnClickSelect()
+    public void OnClickSelect()
     {
         if (currentManager == null || currentData == null) return;
         currentManager.SelectAugmentation(currentData);
     }
 
-    private void OnClickReroll()
+    public void OnClickReroll()
     {
         if (currentManager == null) return;
         if (rerollBtn == null) return;
