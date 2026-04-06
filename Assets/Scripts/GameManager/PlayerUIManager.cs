@@ -55,7 +55,10 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject playerDyingPanel;
     [SerializeField] private Button reStart;
     [SerializeField] private Button dieToMain;
-    
+
+    [Header("Equipment UI")]
+    [SerializeField] private Image qSlotIcon;
+    [SerializeField] private Image eSlotIcon;
 
     /// <summary>
     /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
@@ -521,5 +524,54 @@ public class PlayerUIManager : MonoBehaviour
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(action);
+    }
+
+    //플레이어 상점 아이템 장착
+    public void SetEquipment(EquipmentSlot.SlotType type, ShopItemData item)
+    {
+        switch (type)
+        {
+            case EquipmentSlot.SlotType.Q:
+                if (item == null)
+                {
+                    qSlotIcon.sprite = null;
+                    qSlotIcon.enabled = false;
+                }
+                else
+                {
+                    qSlotIcon.sprite = item.icon;
+                    qSlotIcon.enabled = true;
+                }
+                break;
+
+            case EquipmentSlot.SlotType.E:
+                if (item == null)
+                {
+                    eSlotIcon.sprite = null;
+                    eSlotIcon.enabled = false;
+                }
+                else
+                {
+                    eSlotIcon.sprite = item.icon;
+                    eSlotIcon.enabled = true;
+                }
+                break;
+        }
+    }
+    public void ResetEquipmentUI()
+    {
+        // Q 슬롯 초기화
+        if (qSlotIcon != null)
+        {
+            qSlotIcon.sprite = null;
+            qSlotIcon.enabled = false;
+        }
+
+        // E 슬롯 초기화
+        if (eSlotIcon != null)
+        {
+            eSlotIcon.sprite = null;
+            eSlotIcon.enabled = false;
+        }
     }
 }
