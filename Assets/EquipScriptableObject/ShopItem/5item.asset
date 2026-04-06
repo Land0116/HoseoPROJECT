@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81493182a142114699adb64a92e74b5, type: 3}
+  m_Name: 5item
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
+  itemName: "5\uBC88\uCA30\uC544\uC774\uD15C"
+  icon: {fileID: 649223268058989734, guid: 9494805212b945340b52e548927852f9, type: 3}
+  price: 5
+  description: "\uD14C\uC2A4\uD2B8\uC6A9\uC774\uB2E4"

@@ -45,7 +45,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private ShopUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
     [SerializeField] private InGameShopUIManager inGameShopUIManager;
-    
+    [SerializeField] private InventoryManager inventoryManager;
+    public InventoryManager InventoryManager => inventoryManager;
     public ShopUIManager ShopUIManager => shopUIManager;
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
@@ -126,7 +127,8 @@ public class UIManager : MonoBehaviour
         // Main 씬이면 여기까지
         if (scene.name == "Main")
             return;
-        
+
+
         
         // 게임 씬에서는 PlayerController를 씬 로드 후에 다시 연결
         if (playerUIManager != null && PlayerController.Instance != null)
@@ -191,6 +193,7 @@ public class UIManager : MonoBehaviour
         shopUIManager = rootUI.GetComponentInChildren<ShopUIManager>(true);
         itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
         inGameShopUIManager = rootUI.GetComponentInChildren<InGameShopUIManager>(true);
+        inventoryManager = rootUI.GetComponentInChildren<InventoryManager>(true);
 
         //Debug.Log(itemUIManager == null ? "ItemUIManager 못찾음" : "ItemUIManager 찾음");
 
@@ -208,6 +211,9 @@ public class UIManager : MonoBehaviour
 
         if (inGameShopUIManager != null && systemUI != null)
             inGameShopUIManager.BindShopUI(systemUI);
+
+        if (inventoryManager != null && systemUI != null)
+            inventoryManager.BindInventoryUI(systemUI);
 
         BindMainSceneUI();
     }
@@ -380,9 +386,14 @@ public class UIManager : MonoBehaviour
         if (inGameShopUIManager != null && inGameShopUIManager.IsShopOpen())
         {
             inGameShopUIManager.ToggleShop(); // 닫기
-            return; // ⭐ 여기서 끝
+            return; //  여기서 끝
         }
 
+        if (InventoryManager.Instance != null && InventoryManager.Instance.IsOpen())
+        {
+            InventoryManager.Instance.ToggleInventory();
+            return;
+        }
         // 그 외는 PlayerUIManager에서 처리
         playerUIManager.HandleEscape();
     }
@@ -414,12 +425,18 @@ public class UIManager : MonoBehaviour
             augUIManager.ResetUIStateForRestart();
         }
 
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.ResetInventory();
+
+        if (playerUIManager != null)
+            playerUIManager.ResetEquipmentUI();
         // 다음 씬 로드 후 처리 예약
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Tutorial_Stage");
         InGameShopUIManager.Instance.ResetShop();
+
     }
 
     /// <summary>

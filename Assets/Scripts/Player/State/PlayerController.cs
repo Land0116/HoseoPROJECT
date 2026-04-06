@@ -1301,4 +1301,33 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         InGameShopUIManager.Instance.ToggleShop();
     }
+    public void OnInventory(InputValue value)
+    {
+        if (!value.isPressed) return;
+
+        if (!IsGameplayScene()) return;
+        if (IsDie) return;
+
+        if (InventoryManager.Instance == null)
+        {
+            Debug.Log("InventoryManager 없음");
+            return;
+        }
+
+        if (!InventoryManager.Instance.canOpenInventory)
+        {
+            Debug.Log("인벤토리 비활성 상태");
+            return;
+        }
+
+        // 상점 열려있으면 먼저 닫기
+        if (InGameShopUIManager.Instance != null && InGameShopUIManager.Instance.IsShopOpen())
+        {
+            InGameShopUIManager.Instance.CloseShop();
+            return;
+        }
+
+        InventoryManager.Instance.ToggleInventory();
+    }
+
 }
