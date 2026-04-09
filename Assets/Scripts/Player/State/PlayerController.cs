@@ -71,6 +71,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("공격 애니메이션 방향 잠금")]
     [SerializeField] private bool isAttackAnimLocked = false;   // 현재 공격 애니메이션 방향 고정 여부
     [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
+    [Header("공격 잠금 방향")]
+    [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
 
     [Header("장비")]
     [SerializeField] private WeaponData basicWeapon; // 시작 무기
@@ -269,10 +271,10 @@ public class PlayerController : MonoBehaviour, IDamageable
                 // 마우스를 누르고 있고, 쿨타임이 끝났고, UI 클릭이 아니면 공격 시작
                 if (isFireInput && !IsAttack && !IsPointerOverUI())
                 {
-                    playerState = PlayerState.Attack;
+                    StartAttack();
                     break;
                 }
-                if (inputDirection.sqrMagnitude > 0)
+                if (inputDirection.sqrMagnitude > 0.01f)
                 {
                     playerState = PlayerState.Walk;
                     break;
@@ -289,10 +291,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 
                 rb.linearVelocity = moveVector * moveSpeed;
 
-                // 이동 중에도 마우스를 누르고 있고, 쿨타임이 끝났고, UI 클릭이 아니면 공격 시작
                 if (isFireInput && !IsAttack && !IsPointerOverUI())
                 {
-                    playerState = PlayerState.Attack;
+                    StartAttack();
                     break;
                 }
 
@@ -303,20 +304,11 @@ public class PlayerController : MonoBehaviour, IDamageable
                     break;
                 }
 
-                PlayDirectionalAnimation("Walk");
+                //PlayDirectionalAnimation("Walk");
                 break;
             }
             case PlayerState.Attack:
             {
-                // 공격 상태에 들어온 첫 프레임에만 방향 잠금
-                if (!isAttackAnimLocked)
-                {
-                    lockedAttackFacingDir = facingDir;
-                    isAttackAnimLocked = true;
-
-                    PlayDirectionalAnimation("Attack", lockedAttackFacingDir);
-                }
-
                 // 공격 중에도 이동 입력이 있으면 실제 이동은 허용
                 Vector2 moveVector = inputDirection;
                 if (moveVector.magnitude > 1f)
@@ -392,22 +384,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     public void EndAttackAnimationEvent()
     {
-        // 공격 애니메이션 종료 -> 방향 잠금 해제
-        isAttackAnimLocked = false;
-        
-        playerState = inputDirection.sqrMagnitude > 0.01f
-            ? PlayerState.Walk
-            : PlayerState.Idle;
+        ReleaseAttackState();
     }
+    
     private void PlayDirectionalAnimation(string actionPrefix, int forcedDir = -1)
     {
         if (bodyAnimator == null) return;
 
         int dirIndex = forcedDir >= 0 ? forcedDir : facingDir;
-
         string nextState = "";
 
-        // 공격 애니메이션
         if (actionPrefix == "Attack")
         {
             if (inputDirection.sqrMagnitude > 0.01f)
@@ -419,16 +405,16 @@ public class PlayerController : MonoBehaviour, IDamageable
                 nextState = "Idle_Attack_" + dirNames[dirIndex];
             }
         }
-        // 대기 애니메이션
         else if (actionPrefix == "Idle")
         {
             nextState = "Idle_Weapon_" + dirNames[dirIndex];
         }
-        // 이동 애니메이션
+        /*
         else if (actionPrefix == "Walk")
         {
             nextState = "Walk_Weapon_" + dirNames[dirIndex];
         }
+        */
         else
         {
             return;
@@ -442,10 +428,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
-        if (currentAnimState == nextState)
+        bool isAttackAnim = actionPrefix == "Attack";
+
+        // 공격 애니메이션은 같은 방향이어도 다시 재생 허용
+        if (!isAttackAnim && currentAnimState == nextState)
             return;
 
-        bodyAnimator.CrossFade(stateHash, 0.05f, 0, 0f);
+        bodyAnimator.CrossFade(stateHash, isAttackAnim ? 0.02f : 0.05f, 0, 0f);
         currentAnimState = nextState;
     }
 
@@ -461,7 +450,10 @@ public class PlayerController : MonoBehaviour, IDamageable
             int currentBulletCount = Mathf.Max(1, bulletPerShot);
 
             float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
-            float baseAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+
+            // 공격 중이면 잠금 방향 사용
+            Vector2 shotDirection = isAttackAnimLocked ? lockedAttackAimDirection : aimDirection;
+            float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
 
             for (int i = 0; i < currentBulletCount; i++)
             {
@@ -515,8 +507,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         inputDirection = movementValue.Get<Vector2>();
-        if (inputDirection.sqrMagnitude > 0 ) { playerState = PlayerState.Walk; }
-        else { playerState = PlayerState.Idle; }
+        
     }
     private void OnAttack(InputValue value)
     {
@@ -539,7 +530,48 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         
         // 누르고 있으면 true, 떼면 false
+        //bool wasPressed = isFireInput;
         isFireInput = value.isPressed;
+
+        // 눌린 첫 순간에 바로 공격 시작
+        // if (isFireInput && !wasPressed)
+        // {
+        //     StartAttack();
+        // }
+    }
+    
+    private void StartAttack()
+    {
+        if (IsDie) return;
+        if (!canControl) return;
+        if (IsAttack) return;
+        if (playerState == PlayerState.Attack) return;
+        //if (IsPointerOverUI()) return;
+
+        playerState = PlayerState.Attack;
+
+        lockedAttackFacingDir = facingDir;
+        lockedAttackAimDirection = aimDirection;
+        isAttackAnimLocked = true;
+
+        PlayDirectionalAnimation("Attack", lockedAttackFacingDir);
+    }
+    
+    private void ReleaseAttackState()
+    {
+        isAttackAnimLocked = false;
+        currentAnimState = string.Empty;
+
+        // 마우스를 계속 누르고 있고, 쿨타임이 끝났으면 바로 다음 공격
+        if (isFireInput && !IsAttack && !IsPointerOverUI())
+        {
+            StartAttack();
+            return;
+        }
+
+        playerState = inputDirection.sqrMagnitude > 0.01f
+            ? PlayerState.Walk
+            : PlayerState.Idle;
     }
     
 

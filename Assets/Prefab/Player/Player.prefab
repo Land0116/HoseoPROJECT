@@ -285,6 +285,9 @@ MonoBehaviour:
   bodyAnimator: {fileID: 845225410227853194}
   aimDirection: {x: 0, y: -1}
   facingDir: 6
+  isAttackAnimLocked: 0
+  lockedAttackFacingDir: 6
+  lockedAttackAimDirection: {x: 0, y: -1}
   basicWeapon: {fileID: 11400000, guid: 9e064bbc690ddaf429d530587bb06e7c, type: 2}
   currentWeapon: {fileID: 0}
   currentItem: {fileID: 11400000, guid: 6e16a9eeab94c4841ba976635580c268, type: 2}
@@ -543,7 +546,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: -5164357226681718072, guid: 419c67b5c43947b498e877821269ae75, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
