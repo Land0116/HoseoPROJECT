@@ -73,26 +73,20 @@ public class InGameShopUIManager : MonoBehaviour
             CloseShop();
         }
     }
-    //B키 입력
-    /*public void OnShop(InputValue value)
-    {
-        Debug.Log("B키 들어옴");
-        if (!value.isPressed) return;
 
-        if (!canOpenShop) return;
-
-        ToggleShop();
-    }*/
 
 
     public void ToggleShop()
     {
+        if (!isOpen && !canOpenShop) return;
+
         isOpen = !isOpen;
 
         shopPanel.SetActive(isOpen);
         Cursor.visible = isOpen;
+        Time.timeScale = isOpen ? 0f : 1f;
 
-        if(PlayerController.Instance != null)
+        if (PlayerController.Instance != null)
         {
             PlayerController.Instance.SetControl(!isOpen);
         }
@@ -245,9 +239,9 @@ public class InGameShopUIManager : MonoBehaviour
         if (!isOpen) return;
 
         isOpen = false;
-
+        
         shopPanel.SetActive(false);
-        Cursor.visible = false;
+        
 
         if (PlayerController.Instance != null)
         {

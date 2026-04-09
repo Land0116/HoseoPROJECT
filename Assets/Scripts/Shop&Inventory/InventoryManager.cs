@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections.Generic;
-using static UnityEditor.Progress;
+
 
 public class InventoryManager : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class InventoryManager : MonoBehaviour
 
     [Header("패널 ")]
     [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private Button inventoryCloseBtn;
 
     [Header("아이템 슬롯")]
     [SerializeField] private Transform goodsIndex;
@@ -20,6 +21,8 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private Image descIcon;
     [SerializeField] private TMP_Text descName;
     [SerializeField] private TMP_Text descText;
+
+    
 
     [Header("열기 제한")]
     public bool canOpenInventory = true;
@@ -42,8 +45,9 @@ public class InventoryManager : MonoBehaviour
     private void Start()
     {
         inventoryPanel.SetActive(false);
+
     }
-    
+
 
     public void BindInventoryUI(GameObject systemUIRoot)
     {
@@ -61,6 +65,32 @@ public class InventoryManager : MonoBehaviour
         descIcon = UIManager.FindChildRecursive(systemUIRoot.transform, "DescIcon").GetComponent<Image>();
         descName = UIManager.FindChildRecursive(systemUIRoot.transform, "DescName").GetComponent<TMP_Text>();
         descText = UIManager.FindChildRecursive(systemUIRoot.transform, "DescText").GetComponent<TMP_Text>();
+        Transform closeBtnTr = UIManager.FindChildRecursive(systemUIRoot.transform, "InventoryCloseBtn");
+        if (closeBtnTr != null)
+        {
+            inventoryCloseBtn = closeBtnTr.GetComponent<Button>();
+
+            if (inventoryCloseBtn != null)
+            {
+                inventoryCloseBtn.onClick.RemoveAllListeners(); // 중복 방지
+                inventoryCloseBtn.onClick.AddListener(CloseInventory);
+            }
+            else
+            {
+                Debug.LogError("InventoryCloseBtn에 Button 컴포넌트 없음");
+            }
+        }
+        else
+        {
+            Debug.LogError("InventoryCloseBtn 못찾음");
+        }
+    }
+
+    public void CloseInventory()
+    {
+        if (!isOpen) return;
+
+        ToggleInventory();
     }
     public void ShowItemDesc(ShopItemData item)
     {
@@ -68,34 +98,7 @@ public class InventoryManager : MonoBehaviour
         descName.text = item.itemName;
         descText.text = item.description;
     }
-    /*public void AddItem(ShopItemData item)
-    {
-        Debug.Log("AddItem 호출됨");
 
-        items.Add(item);
-
-        GameObject slot = Instantiate(slotPrefab, goodsIndex);
-
-        Transform iconTr = slot.transform.Find("InventoryIcon");
-        if (iconTr == null)
-        {
-            Debug.LogError("Icon 못찾음");
-            return;
-        }
-
-        Image icon = iconTr.GetComponent<Image>();
-        icon.sprite = item.icon; 
-
-        Button btn = slot.GetComponent<Button>();
-        if (btn == null)
-        {
-            Debug.LogError("Button 없음");
-            return;
-        }
-
-        btn.onClick.AddListener(() => OnClickItem(item));
-
-    }*/
     public void AddItem(ShopItemData item)
     {
         items.Add(item);
@@ -120,10 +123,16 @@ public class InventoryManager : MonoBehaviour
 
     public void ToggleInventory()
     {
+        if (!isOpen && !canOpenInventory) return;
+
         isOpen = !isOpen;
 
         inventoryPanel.SetActive(isOpen);
+
         Cursor.visible = isOpen;
+
+        Time.timeScale = isOpen ? 0f : 1f;
+
 
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetControl(!isOpen);

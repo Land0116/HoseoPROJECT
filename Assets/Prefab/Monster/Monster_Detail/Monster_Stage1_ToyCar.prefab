@@ -110,8 +110,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 3373887644737195208}
   movePattern: {fileID: 1468389543809814125}
-  moveSpeed: 3
-  maxHP: 50
+  moveSpeed: 4
+  maxHP: 11
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0.7
   itemDropChance: 0.8
@@ -195,8 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Homing
   blockMovement: 0
-  detectRange: 5
-  homingSpeed: 2
+  detectRange: 13
+  homingSpeed: 7.7
   damage: 10
   damageInterval: 1
 --- !u!114 &1468389543809814125

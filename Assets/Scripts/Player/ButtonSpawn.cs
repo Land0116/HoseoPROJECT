@@ -5,7 +5,7 @@ public class ButtonSpawn : MonoBehaviour
 {
     public float lifeTime = 1f;
 
-    private float speed = 5.0f;
+    [SerializeField] private float speed = 5.0f;
     private float damage;
     public void SetDamage(float value)
     {

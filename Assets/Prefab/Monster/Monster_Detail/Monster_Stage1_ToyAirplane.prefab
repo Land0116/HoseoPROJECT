@@ -136,8 +136,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   attackPattern: {fileID: 1593344598488793418}
   movePattern: {fileID: 0}
-  moveSpeed: 3
-  maxHP: 25
+  moveSpeed: 4
+  maxHP: 9
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0.7
   itemDropChance: 0.8
@@ -158,9 +160,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Flyhoming
   blockMovement: 0
-  homingSpeed: 2
-  detectRange: 10
-  damage: 10
+  homingSpeed: 7
+  detectRange: 13
+  damage: 15
   damageInterval: 1
 --- !u!58 &1899126733358210982
 CircleCollider2D:

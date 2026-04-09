@@ -90,7 +90,7 @@ public class MonsterAttack_Dash: AttackPattern
                     break;
                 }
 
-                // 2. 지나쳤으면 멈춤 (🔥 필수)
+                // 2. 지나쳤으면 멈춤 ( 필수)
                 Vector2 toTarget = dashTargetPosition - monster.RB.position;
                 if (Vector2.Dot(toTarget, dashDirection) <= 0f)
                 {

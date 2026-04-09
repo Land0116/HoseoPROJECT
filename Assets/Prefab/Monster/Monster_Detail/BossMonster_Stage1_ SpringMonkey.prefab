@@ -112,6 +112,8 @@ MonoBehaviour:
   movePattern: {fileID: 3724076725698994551}
   moveSpeed: 3
   maxHP: 50
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0.25
   itemDropChance: 0.4
@@ -132,12 +134,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Dash
   blockMovement: 0
-  detectRange: 8
-  chargeTime: 1.5
+  detectRange: 15
+  chargeTime: 0
   dashSpeed: 12
-  dashCooldown: 0
+  dashCooldown: 0.7
   dashExtraDistance: 1
-  dashdamage: 20
+  dashdamage: 17
 --- !u!58 &2842034953250269096
 CircleCollider2D:
   m_ObjectHideFlags: 0

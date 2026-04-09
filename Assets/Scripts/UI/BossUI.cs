@@ -9,6 +9,10 @@ public class BossUI : MonoBehaviour
     [SerializeField] private float stayTime = 2f;
     [SerializeField] private float offScreenMultiplier = 2f;
 
+    [Header("보스방 문")]
+    [SerializeField] private GameObject bossDoor; // 닫힐 문
+
+
     private Vector3 leftOffScreen;
     private Vector3 center;
     private Vector3 rightOffScreen;
@@ -38,8 +42,12 @@ public class BossUI : MonoBehaviour
 
         panel.position = leftOffScreen;
 
-        //�г� ��Ȱ��ȭ
         panel.gameObject.SetActive(true);
+
+        if(bossDoor != null)
+        {
+            bossDoor.SetActive(false);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -48,9 +56,19 @@ public class BossUI : MonoBehaviour
 
         if (!hasShown && other.CompareTag("Player"))
         {
-            Debug.Log(" Player ������");
+            Debug.Log(" Player 감지됨");
 
             hasShown = true;
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.canOpenInventory = false;
+            }
+            if(InGameShopUIManager.Instance != null)
+            {
+                InGameShopUIManager.Instance.canOpenShop = false;
+            }
+           
+
             StartCoroutine(DelayedStart());
         }
     }
@@ -60,9 +78,8 @@ public class BossUI : MonoBehaviour
         panel.gameObject.SetActive(true);
 
         yield return new WaitForSeconds(1.5f);
-
         Time.timeScale = 0;
-
+        bossDoor.SetActive(true); // 보스방 문 닫기
         StartCoroutine(SlidePanel());
     }
 
