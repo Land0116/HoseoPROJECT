@@ -303,7 +303,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     playerState = PlayerState.Idle;
                     break;
                 }
-
+                PlayDirectionalAnimation("Idle");
                 //PlayDirectionalAnimation("Walk");
                 break;
             }
@@ -405,7 +405,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 nextState = "Idle_Attack_" + dirNames[dirIndex];
             }
         }
-        else if (actionPrefix == "Idle")
+        else if (actionPrefix == "Idle" || actionPrefix == "Walk")
         {
             nextState = "Idle_Weapon_" + dirNames[dirIndex];
         }
