@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4919755520824632952}
   - component: {fileID: 1593344598488793418}
   - component: {fileID: 1899126733358210982}
+  - component: {fileID: -5293173466515385422}
   m_Layer: 6
   m_Name: Monster_Stage1_ToyAirplane
   m_TagString: Monster
@@ -136,7 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   animator: {fileID: 0}
   attackPattern: {fileID: 1593344598488793418}
-  movePattern: {fileID: 0}
+  movePattern: {fileID: -5293173466515385422}
   moveSpeed: 4
   maxHP: 9
   minGold: 1
@@ -150,6 +151,7 @@ MonoBehaviour:
   itemSpawner: {x: 0.5, y: 0, z: 0}
   isAttacking: 0
   hitAnimationTime: 0.5
+  deathAnimationTime: 0.7
 --- !u!114 &1593344598488793418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,3 +205,15 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!114 &-5293173466515385422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2449111736576007643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly

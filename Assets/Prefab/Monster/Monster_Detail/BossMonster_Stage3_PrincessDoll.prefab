@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4103541142441359991}
   - component: {fileID: 7109906817166493928}
   - component: {fileID: 2499163760719310675}
+  - component: {fileID: -7134544189471993517}
   m_Layer: 0
   m_Name: BossMonster_Stage3_PrincessDoll
   m_TagString: Monster
@@ -108,10 +109,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  animator: {fileID: -7134544189471993517}
   attackPattern: {fileID: 4103541142441359991}
   movePattern: {fileID: 5060372229435714203}
-  moveSpeed: 3
-  maxHP: 350
+  moveSpeed: 8
+  maxHP: 20
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0.25
   itemDropChance: 0.4
@@ -119,6 +123,9 @@ MonoBehaviour:
   itemPrefab: {fileID: 5064779668398752217, guid: 9bf9bae0622c30d40b9b31915d003116, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+  isAttacking: 0
+  hitAnimationTime: 0.5
+  deathAnimationTime: 0.7
 --- !u!114 &5060372229435714203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,9 +151,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Melee
   blockMovement: 0
-  detectRange: 3
+  detectRange: 15
   attackRange: 1.5
-  chargeTime: 0.5
+  chargeTime: 0.3
   knifePrefab: {fileID: 8931521270293366354, guid: c0603e874f96a574a87f92c96aeae254, type: 3}
   attackDuration: 0.5
 --- !u!50 &7109906817166493928
@@ -212,3 +219,25 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
+--- !u!95 &-7134544189471993517
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2777918899926891923}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

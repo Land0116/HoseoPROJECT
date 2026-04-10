@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2842034953250269096}
   - component: {fileID: 2711026659414486241}
   - component: {fileID: 3724076725698994551}
+  - component: {fileID: 1870213019226508124}
   m_Layer: 0
   m_Name: BossMonster_Stage1_ SpringMonkey
   m_TagString: Monster
@@ -108,6 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  animator: {fileID: 1870213019226508124}
   attackPattern: {fileID: 4592890574985433778}
   movePattern: {fileID: 3724076725698994551}
   moveSpeed: 3
@@ -121,6 +123,9 @@ MonoBehaviour:
   itemPrefab: {fileID: 943861596225332501, guid: 1f767dd7cdd5d784f8e943cc0f000dbe, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+  isAttacking: 0
+  hitAnimationTime: 0.5
+  deathAnimationTime: 0.7
 --- !u!114 &4592890574985433778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,8 +141,8 @@ MonoBehaviour:
   blockMovement: 0
   detectRange: 15
   chargeTime: 0
-  dashSpeed: 12
-  dashCooldown: 0.7
+  dashSpeed: 15
+  dashCooldown: 1.2
   dashExtraDistance: 1
   dashdamage: 17
 --- !u!58 &2842034953250269096
@@ -215,3 +220,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+--- !u!95 &1870213019226508124
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5700764306014107140}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

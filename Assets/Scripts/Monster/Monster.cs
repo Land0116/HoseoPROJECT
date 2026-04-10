@@ -121,6 +121,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     void Update()
     {
+
         if (isDead) return;
 
         // 플레이어가 씬 전환/삭제/재생성 때문에 잠깐 null 될 수 있으니
@@ -198,6 +199,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void Death()
     {
+        Debug.Log("DEAD ENTERED");
         if (isDead) return;
         isDead = true;
 

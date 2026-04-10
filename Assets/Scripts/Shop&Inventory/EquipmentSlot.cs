@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using TMPro;
-using UnityEditorInternal.Profiling.Memory.Experimental;
+//using UnityEditorInternal.Profiling.Memory.Experimental;
 
 public class EquipmentSlot : MonoBehaviour,
     IDropHandler,

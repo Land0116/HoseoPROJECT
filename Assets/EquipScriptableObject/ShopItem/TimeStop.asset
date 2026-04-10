@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
   itemName: "\uBAA8\uB798\uC2DC\uACC4"
   icon: {fileID: -219983279929958656, guid: 90381749dcec7f8408542969585a3c60, type: 3}
-  price: 10
-  description: "3\uCD08\uAC04 \uC815\uC9C0\uB41C \uC2DC\uAC04\uC5D0 \uB4E4\uC5B4\uAC04\uB2E4."
-  cooldown: 30
-  effect: {fileID: 0}
+  price: 3
+  description: "3\uCD08\uAC04 \uC2DC\uAC04\uC774 \uB290\uB9AC\uAC8C \uD750\uB978\uB2E4\n\uCFE8\uD0C0\uC784:
+    10\uCD08"
+  cooldown: 10
+  effect: {fileID: 11400000, guid: 3cde9f7cb59533d40a218a67c4fc42bf, type: 2}

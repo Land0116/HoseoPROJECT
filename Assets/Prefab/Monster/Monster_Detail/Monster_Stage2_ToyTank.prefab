@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1100845049900730700}
   - component: {fileID: 8327386214904472354}
   - component: {fileID: 7405641069116044333}
+  - component: {fileID: 8737345790187462919}
   m_Layer: 0
   m_Name: Monster_Stage2_ToyTank
   m_TagString: Monster
@@ -108,10 +109,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  animator: {fileID: 8737345790187462919}
   attackPattern: {fileID: 3875865195104918760}
   movePattern: {fileID: 8327386214904472354}
   moveSpeed: 3
   maxHP: 100
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0.7
   itemDropChance: 0.8
@@ -119,6 +123,9 @@ MonoBehaviour:
   itemPrefab: {fileID: 9126729053172147412, guid: 5503555656fe2b247afc47bec4968ebe, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+  isAttacking: 0
+  hitAnimationTime: 0.5
+  deathAnimationTime: 0.7
 --- !u!114 &3875865195104918760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,3 +217,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!95 &8737345790187462919
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5733596665570298416}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
