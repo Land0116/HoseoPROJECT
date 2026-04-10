@@ -193,7 +193,7 @@ public class InGameShopUIManager : MonoBehaviour
         purchasedItems.Add(selectedItem);
 
         
-        InventoryManager.Instance.AddItem(selectedItem);
+        InventoryManager.Instance.AddItem(new ItemInstance(selectedItem));
         Debug.Log("구매 완료: " + selectedItem.itemName);
 
         //  UI 갱신

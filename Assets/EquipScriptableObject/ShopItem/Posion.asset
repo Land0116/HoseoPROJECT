@@ -16,3 +16,6 @@ MonoBehaviour:
   icon: {fileID: 4652814170132803431, guid: 637ac03c26cc0cc4c85a7377d2b6207c, type: 3}
   price: 5
   description: "\uCCB4\uB825\uC744 10 \uD68C\uBCF5\uD55C\uB2E4."
+  cooldown: 15
+  lastUseTime: 5.314121
+  effect: {fileID: 11400000, guid: b72c96e9f924c474fa7b24d4f374165d, type: 2}

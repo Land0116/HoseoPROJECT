@@ -27,7 +27,7 @@ public class InventoryManager : MonoBehaviour
     [Header("열기 제한")]
     public bool canOpenInventory = true;
     private bool isOpen = false;
-    private List<ShopItemData> items = new List<ShopItemData>();
+    private List<ItemInstance> items = new List<ItemInstance>();
 
     private void Awake()
     {
@@ -92,14 +92,14 @@ public class InventoryManager : MonoBehaviour
 
         ToggleInventory();
     }
-    public void ShowItemDesc(ShopItemData item)
+    public void ShowItemDesc(ItemInstance item)
     {
-        descIcon.sprite = item.icon;
-        descName.text = item.itemName;
-        descText.text = item.description;
+        descIcon.sprite = item.data.icon;
+        descName.text = item.data.itemName;
+        descText.text = item.data.description;
     }
 
-    public void AddItem(ShopItemData item)
+    public void AddItem(ItemInstance item)
     {
         items.Add(item);
 

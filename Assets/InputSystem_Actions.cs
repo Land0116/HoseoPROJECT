@@ -208,6 +208,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseQ"",
+                    ""type"": ""Button"",
+                    ""id"": ""e6d6f8dd-515a-4950-9b0e-f5208194e8dd"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseE"",
+                    ""type"": ""Button"",
+                    ""id"": ""25f6826e-2f68-4ea8-b02d-0dfa475eb0de"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -637,6 +655,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a458f4f-0586-43fd-bb24-1930bb7be8b7"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseQ"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a721ed14-57ce-49a7-957f-d6d909f6978a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseE"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1257,6 +1297,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_Shop = m_Player.FindAction("Shop", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+        m_Player_UseQ = m_Player.FindAction("UseQ", throwIfNotFound: true);
+        m_Player_UseE = m_Player.FindAction("UseE", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1364,6 +1406,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_Shop;
     private readonly InputAction m_Player_Inventory;
+    private readonly InputAction m_Player_UseQ;
+    private readonly InputAction m_Player_UseE;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1427,6 +1471,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Inventory".
         /// </summary>
         public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/UseQ".
+        /// </summary>
+        public InputAction @UseQ => m_Wrapper.m_Player_UseQ;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/UseE".
+        /// </summary>
+        public InputAction @UseE => m_Wrapper.m_Player_UseE;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1492,6 +1544,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Inventory.started += instance.OnInventory;
             @Inventory.performed += instance.OnInventory;
             @Inventory.canceled += instance.OnInventory;
+            @UseQ.started += instance.OnUseQ;
+            @UseQ.performed += instance.OnUseQ;
+            @UseQ.canceled += instance.OnUseQ;
+            @UseE.started += instance.OnUseE;
+            @UseE.performed += instance.OnUseE;
+            @UseE.canceled += instance.OnUseE;
         }
 
         /// <summary>
@@ -1542,6 +1600,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Inventory.started -= instance.OnInventory;
             @Inventory.performed -= instance.OnInventory;
             @Inventory.canceled -= instance.OnInventory;
+            @UseQ.started -= instance.OnUseQ;
+            @UseQ.performed -= instance.OnUseQ;
+            @UseQ.canceled -= instance.OnUseQ;
+            @UseE.started -= instance.OnUseE;
+            @UseE.performed -= instance.OnUseE;
+            @UseE.canceled -= instance.OnUseE;
         }
 
         /// <summary>
@@ -1944,6 +2008,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInventory(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseQ" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseQ(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseE" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseE(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

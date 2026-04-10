@@ -60,6 +60,7 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private float deathAnimationTime = 0.7f;
     private bool isDead = false;
 
+    private CircleCollider2D col;//콜리더가져오기
     // 플레이어를 기다리는 코루틴 저장용
     private Coroutine bindPlayerRoutine;
 
@@ -87,6 +88,8 @@ public class Monster : MonoBehaviour, IDamageable
     {
 
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<CircleCollider2D>();
+
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
 
@@ -183,6 +186,7 @@ public class Monster : MonoBehaviour, IDamageable
     {
         currentHP -= damage;
         Debug.Log("[" + currentHP + "]" + "남음");
+        currentHP = Mathf.Max(currentHP, 0f);
 
         PlayHitAnimation();
 
@@ -330,6 +334,11 @@ public class Monster : MonoBehaviour, IDamageable
     public void DeathAnimationStartEvent()
     {
         //콜라이더 제거
+        if (col != null)
+            col.enabled = false;
+        //rb같이 제거
+        if (rb != null)
+            rb.simulated = false;
     }
 }
 

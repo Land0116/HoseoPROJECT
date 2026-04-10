@@ -9,4 +9,9 @@ public class ShopItemData : ScriptableObject
 
     [TextArea]
     public string description;
+
+    [Header("아이템 능력")]
+    public float cooldown;
+
+    public ItemEffect effect;
 }

@@ -1362,4 +1362,18 @@ public class PlayerController : MonoBehaviour, IDamageable
         InventoryManager.Instance.ToggleInventory();
     }
 
+    private void OnUseQ(InputValue value)//*
+    {
+        if (!value.isPressed) return;
+
+        PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.Q);
+    }
+
+    private void OnUseE(InputValue value)
+    {
+        if (!value.isPressed) return;
+
+        PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.E);
+    }
+
 }

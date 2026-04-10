@@ -2,13 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using TMPro;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 
 public class EquipmentSlot : MonoBehaviour,
     IDropHandler,
     IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Image icon;
-    public ShopItemData item;
     GameObject dragIcon;
     Image dragImage;
     public enum SlotType { Q, E }
@@ -18,6 +19,7 @@ public class EquipmentSlot : MonoBehaviour,
     private CanvasGroup canvasGroup;
 
     public bool isDropped = false;
+    public ItemInstance item;
 
     private void Awake()
     {
@@ -29,6 +31,9 @@ public class EquipmentSlot : MonoBehaviour,
     }
 
 
+
+   
+
     public void OnDrop(PointerEventData eventData)
     {
 
@@ -38,7 +43,7 @@ public class EquipmentSlot : MonoBehaviour,
         {
             inv.isDropped = true;
 
-            ShopItemData temp = item;
+            ItemInstance temp = item;
 
             SetItem(inv.item);
             inv.ClearItem();
@@ -53,18 +58,18 @@ public class EquipmentSlot : MonoBehaviour,
         {
             equip.isDropped = true;
 
-            ShopItemData temp = item;
+            ItemInstance temp = item;
 
             SetItem(equip.item);
             equip.SetItem(temp);
         }
     }
 
-    public void SetItem(ShopItemData newItem)
+    public void SetItem(ItemInstance newItem)
     {
         item = newItem;
-        UpdateUI();
 
+        UpdateUI();
         PlayerUIManager.Instance.SetEquipment(slotType, item);
     }
 
@@ -85,7 +90,7 @@ public class EquipmentSlot : MonoBehaviour,
         }
         else
         {
-            icon.sprite = item.icon;
+            icon.sprite = item.data.icon;
             icon.enabled = true;
         }
     }
@@ -138,5 +143,26 @@ public class EquipmentSlot : MonoBehaviour,
             icon.enabled = false;
         }
     }
+    public void TryUse()
+    {
+        if (item == null) return;
 
+        if (item.data.effect == null)
+        {
+            Debug.Log("effect 없음");
+            return;
+        }
+
+        if (Time.time < item.lastUseTime + item.data.cooldown)
+        {
+            Debug.Log("쿨타임 중");
+            return;
+        }
+
+        item.data.effect.Use(PlayerController.Instance.gameObject);
+
+        Debug.Log("아이템 사용: " + item.data.itemName);
+
+        item.lastUseTime = Time.time;
+    }
 }

@@ -61,6 +61,15 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Image qSlotIcon;
     [SerializeField] private Image eSlotIcon;
 
+    [SerializeField] private EquipmentSlot qSlot;//*
+    [SerializeField] private EquipmentSlot eSlot;//*
+
+    [Header("Cooldown UI")]
+    [SerializeField] private Image qCooldownOverlay;
+    [SerializeField] private TextMeshProUGUI qCooldownText;
+
+    [SerializeField] private Image eCooldownOverlay;
+    [SerializeField] private TextMeshProUGUI eCooldownText;
     /// <summary>
     /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
     /// None        : 그냥 게임으로 복귀
@@ -99,8 +108,52 @@ public class PlayerUIManager : MonoBehaviour
         if (playerController == null) return;
         // HP / Gold UI 갱신
         UpdatePlayerStateUI();
+
+        UpdateCooldownUI();
+    }
+    private void UpdateCooldownUI()
+    {
+        UpdateSlotCooldown(qSlot, qCooldownOverlay, qCooldownText);
+        UpdateSlotCooldown(eSlot, eCooldownOverlay, eCooldownText);
     }
 
+    private void UpdateSlotCooldown(EquipmentSlot slot, Image overlay, TextMeshProUGUI text)
+    {
+        if (slot == null || slot.item == null)
+        {
+            overlay.gameObject.SetActive(false);
+            text.text = "";
+            return;
+        }
+
+        var item = slot.item;
+
+        if (item.lastUseTime < 0)
+        {
+            overlay.gameObject.SetActive(false);
+            text.text = "";
+            return;
+        }
+
+        float remain = (item.lastUseTime + item.data.cooldown) - Time.time;
+
+        if (remain > 0)
+        {
+            overlay.gameObject.SetActive(true);
+            text.gameObject.SetActive(true);
+
+            float ratio = remain / item.data.cooldown;
+            overlay.fillAmount = ratio;
+
+            text.text = Mathf.Ceil(remain).ToString();
+        }
+        else
+        {
+            overlay.fillAmount = 0;
+            overlay.gameObject.SetActive(false);
+            text.text = "";
+        }
+    }
     /// <summary>
     /// 플레이어 상태 UI 갱신
     /// </summary>
@@ -535,7 +588,7 @@ public class PlayerUIManager : MonoBehaviour
     }
 
     //플레이어 상점 아이템 장착
-    public void SetEquipment(EquipmentSlot.SlotType type, ShopItemData item)
+    public void SetEquipment(EquipmentSlot.SlotType type, ItemInstance item)
     {
         switch (type)
         {
@@ -547,7 +600,7 @@ public class PlayerUIManager : MonoBehaviour
                 }
                 else
                 {
-                    qSlotIcon.sprite = item.icon;
+                    qSlotIcon.sprite = item.data.icon;
                     qSlotIcon.enabled = true;
                 }
                 break;
@@ -560,7 +613,7 @@ public class PlayerUIManager : MonoBehaviour
                 }
                 else
                 {
-                    eSlotIcon.sprite = item.icon;
+                    eSlotIcon.sprite = item.data.icon;
                     eSlotIcon.enabled = true;
                 }
                 break;
@@ -584,6 +637,18 @@ public class PlayerUIManager : MonoBehaviour
         }
 
     }
+    public void UseEquipment(EquipmentSlot.SlotType type) //*
+    {
+        switch (type)
+        {
+            case EquipmentSlot.SlotType.Q:
+                if (qSlot != null) qSlot.TryUse();
+                break;
 
+            case EquipmentSlot.SlotType.E:
+                if (eSlot != null) eSlot.TryUse();
+                break;
+        }
+    }
 
 }

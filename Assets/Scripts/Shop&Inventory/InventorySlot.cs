@@ -6,7 +6,7 @@ public class InventorySlot : MonoBehaviour,
     IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
 {
     public Image icon;
-    public ShopItemData item;
+    public ItemInstance item;
 
     private Canvas canvas;
     private CanvasGroup canvasGroup;
@@ -27,7 +27,7 @@ public class InventorySlot : MonoBehaviour,
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
-    public void SetItem(ShopItemData newItem)
+    public void SetItem(ItemInstance newItem)
     {
         item = newItem;
         UpdateUI();
@@ -71,7 +71,7 @@ public class InventorySlot : MonoBehaviour,
         {
             dragged.isDropped = true;
 
-            ShopItemData temp = item;
+            ItemInstance temp = item;
             item = dragged.item;
             dragged.item = temp;
 
@@ -88,7 +88,7 @@ public class InventorySlot : MonoBehaviour,
             equip.isDropped = true;
 
             // 기존 아이템 있으면 교환
-            ShopItemData temp = item;
+            ItemInstance temp = item;
 
             SetItem(equip.item);
 
@@ -121,7 +121,7 @@ public class InventorySlot : MonoBehaviour,
         }
         else
         {
-            icon.sprite = item.icon;
+            icon.sprite = item.data.icon;
             icon.enabled = true;
         }
     }

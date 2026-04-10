@@ -594,58 +594,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &368310071498016395
-AnimatorState:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: QBackL_Death 0
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 8a48ca4212b7ce44ca086c7a325287c8, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
---- !u!1102 &380344847568521816
-AnimatorState:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: QBackR_Attack 0
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 94047f6c551c7e946b277d22bf16d8e1, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1102 &857857304369352486
 AnimatorState:
   serializedVersion: 6
@@ -1149,25 +1097,19 @@ AnimatorStateMachine:
     m_Position: {x: 1190, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3555261641748644572}
-    m_Position: {x: 1300.8535, y: 103.63382, z: 0}
+    m_Position: {x: 1400, y: -20, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4692924206324407668}
-    m_Position: {x: 1310.8535, y: 113.63382, z: 0}
+    m_Position: {x: 1190, y: 40, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8069407301012568410}
-    m_Position: {x: 1320.8535, y: 123.63382, z: 0}
+    m_Position: {x: 1190, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3872553924586216422}
-    m_Position: {x: 1330.8535, y: 133.63382, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 368310071498016395}
-    m_Position: {x: 1365.8535, y: 198.63382, z: 0}
+    m_Position: {x: 1400, y: 90, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5462628065123375277}
-    m_Position: {x: 1575.2543, y: 83.72351, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 380344847568521816}
-    m_Position: {x: 1610.2543, y: 148.72351, z: 0}
+    m_Position: {x: 1400, y: 40, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7614230256680251223}
     m_Position: {x: 900, y: -70, z: 0}
