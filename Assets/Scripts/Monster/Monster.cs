@@ -209,7 +209,7 @@ public class Monster : MonoBehaviour, IDamageable
         animator.Play(anim);
 
 
-        StartCoroutine(DeathRoutine());
+        //StartCoroutine(DeathRoutine());
     }
     private void DropReward()
     {
@@ -314,9 +314,15 @@ public class Monster : MonoBehaviour, IDamageable
     {
         return isHit;
     }
-    private IEnumerator DeathRoutine()
+    /*private IEnumerator DeathRoutine()
     {
         yield return new WaitForSeconds(deathAnimationTime);
+        DropReward();
+        Destroy(gameObject);
+    }*/
+
+    public void DeathAnimationEvent()
+    {
         DropReward();
         Destroy(gameObject);
     }

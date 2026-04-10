@@ -120501,6 +120501,10 @@ PrefabInstance:
       propertyPath: homingSpeed
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: deathAnimationTime
+      value: 0.7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
