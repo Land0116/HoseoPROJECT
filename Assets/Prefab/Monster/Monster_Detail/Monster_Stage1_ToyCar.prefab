@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 462825605787251823}
   - component: {fileID: 3373887644737195208}
   - component: {fileID: 1468389543809814125}
+  - component: {fileID: -8276817023020365305}
   m_Layer: 0
   m_Name: Monster_Stage1_ToyCar
   m_TagString: Monster
@@ -86,8 +87,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.43875015, g: 1, b: 0.24056602, a: 1}
+  m_Sprite: {fileID: -3174320408264164923, guid: 0e1e4614e751b184986ccde49b89070f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -108,6 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  animator: {fileID: -8276817023020365305}
   attackPattern: {fileID: 3373887644737195208}
   movePattern: {fileID: 1468389543809814125}
   moveSpeed: 4
@@ -121,6 +123,9 @@ MonoBehaviour:
   itemPrefab: {fileID: 6944307034578826902, guid: dc3b5a3b8a26aa44997cdbbe68b722a8, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+  isAttacking: 0
+  hitAnimationTime: 0.25
+  deathAnimationTime: 1.6
 --- !u!58 &7984385713015388799
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -155,8 +160,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0, y: -0.1}
+  m_Radius: 1.1
 --- !u!50 &462825605787251823
 Rigidbody2D:
   serializedVersion: 5
@@ -197,8 +202,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Homing
   blockMovement: 0
-  detectRange: 13
-  homingSpeed: 7.7
+  detectRange: 7
+  homingSpeed: 7
   damage: 10
   damageInterval: 1
 --- !u!114 &1468389543809814125
@@ -213,3 +218,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+--- !u!95 &-8276817023020365305
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1520619776978038105}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 90678e497bca36c4f95a9f3a393f83bf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

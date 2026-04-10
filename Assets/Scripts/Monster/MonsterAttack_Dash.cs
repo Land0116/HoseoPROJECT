@@ -71,6 +71,8 @@ public class MonsterAttack_Dash: AttackPattern
 
                     dashTargetPosition = targetPosition + dashDirection * dashExtraDistance;
 
+                    
+
                     timer = 0f;
                     state = State.Dash;
                 }
@@ -85,15 +87,17 @@ public class MonsterAttack_Dash: AttackPattern
                 // 1. 가까워지면 멈춤
                 if (Vector2.Distance(nextPos, dashTargetPosition) <= 0.1f)
                 {
+                    
                     state = State.Idle;
                     timer = 0f;
                     break;
                 }
 
-                // 2. 지나쳤으면 멈춤 ( 필수)
+                // 2. 지나쳤으면 멈춤 
                 Vector2 toTarget = dashTargetPosition - monster.RB.position;
                 if (Vector2.Dot(toTarget, dashDirection) <= 0f)
                 {
+                    
                     state = State.Idle;
                     timer = 0f;
                 }

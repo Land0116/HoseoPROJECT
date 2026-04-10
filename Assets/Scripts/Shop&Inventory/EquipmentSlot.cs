@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 public class EquipmentSlot : MonoBehaviour,
     IDropHandler,
@@ -126,4 +127,16 @@ public class EquipmentSlot : MonoBehaviour,
         if (dragIcon != null)
             Destroy(dragIcon);
     }
+
+    public void ResetSlot()
+    {
+        item = null;
+
+        if (icon != null)
+        {
+            icon.sprite = null;
+            icon.enabled = false;
+        }
+    }
+
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MonsterAttack_Homing : AttackPattern
 {
-    [Header("???????????")]
+    [Header("공격 스텟")]
     [SerializeField]
     private float detectRange = 6f;
     [SerializeField]
@@ -11,7 +11,7 @@ public class MonsterAttack_Homing : AttackPattern
     [SerializeField]
     private float damage = 6f;
 
-    [Header("??? ? ????")]
+    [Header("공격 주기")]
     [SerializeField]
     private float damageInterval = 0.1f;
     private float damageTimer = 0.5f;
@@ -22,21 +22,28 @@ public class MonsterAttack_Homing : AttackPattern
     {
         if (monster == null || monster.Player == null) return;
 
+        if (monster.IsHit()) return;
+
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
 
         if(distance <= detectRange)
         {
             isHoming = true;
             blockMovement = true;
+            monster.isAttacking = true;//*
         }
         else
         {
             isHoming = false;
             blockMovement = false;
+            monster.isAttacking = false;//*
         }
         if (!isHoming) return;
 
         Vector2 direction = ((Vector2)monster.Player.position - monster.RB.position).normalized;
+
+        monster.PlayAttackAnimation(direction);//*
+
         Vector2 newPos = monster.RB.position + direction * homingSpeed * Time.fixedDeltaTime;
         monster.RB.MovePosition(newPos);
     }

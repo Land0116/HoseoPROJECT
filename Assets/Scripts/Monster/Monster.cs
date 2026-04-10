@@ -5,6 +5,12 @@ public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
 
+    [Header("애니메이션")]
+    [SerializeField] private Animator animator;
+
+    private Vector2 lastMoveDir = Vector2.down;
+    private Vector2 lastPosition;
+
     [Header("패턴")]
     [SerializeField] private AttackPattern attackPattern;
     [SerializeField] private MovePattern movePattern;
@@ -44,8 +50,16 @@ public class Monster : MonoBehaviour, IDamageable
     private Vector3 weaponSpawner = new Vector3(-0.5f, 0, 0);
     [SerializeField]
     private Vector3 itemSpawner = new Vector3(0.5f, 0, 0);
-    
-    
+
+    //몬스터 애니메이션 부분
+    public bool isAttacking = false;
+    private string currentAnim;
+    private bool isHit = false;
+    [SerializeField] private float hitAnimationTime = 0.5f;
+    private Vector2 lastLookDir = Vector2.down;
+    [SerializeField] private float deathAnimationTime = 0.7f;
+    private bool isDead = false;
+
     // 플레이어를 기다리는 코루틴 저장용
     private Coroutine bindPlayerRoutine;
 
@@ -104,6 +118,8 @@ public class Monster : MonoBehaviour, IDamageable
 
     void Update()
     {
+        if (isDead) return;
+
         // 플레이어가 씬 전환/삭제/재생성 때문에 잠깐 null 될 수 있으니
         // null이면 다시 연결 시도
         if (player == null && PlayerController.Instance != null)
@@ -114,7 +130,28 @@ public class Monster : MonoBehaviour, IDamageable
     
     private void FixedUpdate()
     {
+        if (isDead) return;
+
         if (player == null) return;
+        Vector2 currentPos = rb.position;
+        Vector2 moveDir = (currentPos - lastPosition).normalized;
+
+        // 이동 중일 때만 방향 업데이트
+        if (!isAttacking && !isHit ) 
+        {
+            if (moveDir.magnitude > 0.01f)
+            {
+                lastMoveDir = moveDir;
+                UpdateAnimation(moveDir, true);
+            }
+            else
+            {
+                UpdateAnimation(lastMoveDir, false);
+            }
+        }
+
+        lastPosition = currentPos;
+
         if (attackPattern != null)
         {
             attackPattern.Execute();
@@ -147,35 +184,141 @@ public class Monster : MonoBehaviour, IDamageable
         currentHP -= damage;
         Debug.Log("[" + currentHP + "]" + "남음");
 
+        PlayHitAnimation();
+
         if (currentHP <= 0)
         {
-            //AugUIManager.instance.ShowAugmentation();
             Death();
         }
     }
 
     public void Death()
     {
+        if (isDead) return;
+        isDead = true;
 
+        Vector2 dir = lastLookDir;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Death";
+
+        isAttacking = false;
+        isHit = false;
+        rb.linearVelocity = Vector2.zero;
+
+        currentAnim = anim;
+        animator.Play(anim);
+
+
+        StartCoroutine(DeathRoutine());
+    }
+    private void DropReward()
+    {
         if (PlayerController.Instance != null)
         {
             int rewardGold = Random.Range(minGold, maxGold + 1);
             PlayerController.Instance.Gold += rewardGold;
-            Debug.Log("골드 획득: " + rewardGold);
+            PlayerController.Instance.OnKillEnemy();
         }
 
         if (Random.value < weaponPrefabDropChance)
         {
             Instantiate(weaponPrefab, transform.position + weaponSpawner, Quaternion.identity);
         }
-        if(Random.value < itemDropChance)
+
+        if (Random.value < itemDropChance)
         {
             Instantiate(itemPrefab, transform.position + itemSpawner, Quaternion.identity);
         }
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.OnKillEnemy();
-        }
-        Destroy(this.gameObject);
+    }
+    private void UpdateAnimation(Vector2 dir, bool isMoving)
+    {
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        string anim = GetDirectionName(angle);
+
+        if (isMoving)
+            animator.Play(anim + "_Walk");
+        else
+            animator.Play(anim + "_Idle");
+    }
+
+    private string GetDirectionName(float angle)
+    {
+        if (angle >= -22.5f && angle < 22.5f)//오른쪽
+            return "SideR";
+        if (angle >= 22.5f && angle < 67.5f)// 오른쪽 위
+            return "QBackR";
+        if (angle >= 67.5f && angle < 112.5f)// 위
+            return "Back";
+        if (angle >= 112.5f && angle < 157.5f)//왼쪽 위
+            return "QBackL";
+        if (angle >= 157.5f || angle < -157.5f)// 왼
+            return "SideL";
+        if (angle >= -157.5f && angle < -112.5f)//왼 아래
+            return "QFrontL";
+        if (angle >= -112.5f && angle < -67.5f)//아래
+            return "Front";
+        if (angle >= -67.5f && angle < -22.5f)//오른 아래
+            return "QFrontR";
+
+        return "Front";
+    }
+
+    public void PlayAttackAnimation(Vector2 dir)
+    {
+
+        if (isHit) return;
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Attack";
+
+        if (currentAnim == anim) return; 
+
+        currentAnim = anim;
+        animator.Play(anim);
+    }
+
+    public void PlayHitAnimation()
+    {
+        Vector2 dir = lastLookDir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Hit";
+
+        isHit = true;
+        isAttacking = false;
+
+        rb.linearVelocity = Vector2.zero;
+
+        
+        currentAnim = anim;
+        animator.Play(anim);
+
+        StartCoroutine(HitRoutine());
+    }
+
+    private IEnumerator HitRoutine()
+    {
+        yield return new WaitForSeconds(hitAnimationTime);
+        
+        isHit = false;
+    }
+    public bool IsHit()
+    {
+        return isHit;
+    }
+    private IEnumerator DeathRoutine()
+    {
+        yield return new WaitForSeconds(deathAnimationTime);
+        DropReward();
+        Destroy(gameObject);
     }
 }
+
