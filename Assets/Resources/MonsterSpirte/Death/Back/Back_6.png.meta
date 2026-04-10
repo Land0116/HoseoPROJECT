@@ -106,34 +106,12 @@ TextureImporter:
       name: Back_6_0
       rect:
         serializedVersion: 2
-        x: 78
-        y: 199
-        width: 239
-        height: 101
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: dbe9bb600283f2660800000000000000
-      internalID: 7363165625977118397
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Back_6_1
-      rect:
-        serializedVersion: 2
         x: 84
         y: 82
-        width: 215
-        height: 135
+        width: 237
+        height: 219
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -150,7 +128,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3229e0b1f84733d40ab6ad8f5f5bc3a1
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +138,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Back_6_0: 7363165625977118397
-      Back_6_1: -8898649301352603881
+      Back_6_0: -8898649301352603881
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

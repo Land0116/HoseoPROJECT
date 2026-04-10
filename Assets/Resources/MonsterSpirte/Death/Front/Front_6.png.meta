@@ -112,78 +112,12 @@ TextureImporter:
       name: Front_6_0
       rect:
         serializedVersion: 2
-        x: 77
-        y: 116
-        width: 119
-        height: 120
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8d7aa78b32e394560800000000000000
-      internalID: 7298432994270423000
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Front_6_1
-      rect:
-        serializedVersion: 2
-        x: 221
-        y: 217
-        width: 22
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 46abe956593a57930800000000000000
-      internalID: 4140395294487394916
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Front_6_2
-      rect:
-        serializedVersion: 2
-        x: 248
-        y: 150
-        width: 81
-        height: 100
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 37b382693f9ce2c10800000000000000
-      internalID: 2030782530024127347
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Front_6_3
-      rect:
-        serializedVersion: 2
         x: 82
         y: 52
-        width: 223
-        height: 149
+        width: 247
+        height: 202
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -200,7 +134,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 303ab1cd0a75ad74a9d35d5741178c88
     internalID: 0
     vertices: []
     indices: 
@@ -210,10 +144,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Front_6_0: 7298432994270423000
+      Front_6_0: -4043919798406718735
       Front_6_1: 4140395294487394916
       Front_6_2: 2030782530024127347
-      Front_6_3: -4043919798406718735
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

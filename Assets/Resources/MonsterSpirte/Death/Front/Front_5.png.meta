@@ -109,34 +109,12 @@ TextureImporter:
       name: Front_5_0
       rect:
         serializedVersion: 2
-        x: 79
-        y: 184
-        width: 116
-        height: 117
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b25f22a01f37caf90800000000000000
-      internalID: -6941045446590401237
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Front_5_1
-      rect:
-        serializedVersion: 2
         x: 84
         y: 54
-        width: 222
-        height: 173
+        width: 253
+        height: 255
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -149,33 +127,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Front_5_2
-      rect:
-        serializedVersion: 2
-        x: 211
-        y: 191
-        width: 118
-        height: 111
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b064ea7e067048460800000000000000
-      internalID: 7242922213503813131
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 0405454d87623e74eae2b53b9578ec6d
     internalID: 0
     vertices: []
     indices: 
@@ -185,8 +141,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Front_5_0: -6941045446590401237
-      Front_5_1: -339282428724397002
+      Front_5_0: -339282428724397002
       Front_5_2: 7242922213503813131
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

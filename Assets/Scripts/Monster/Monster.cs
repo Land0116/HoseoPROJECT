@@ -326,5 +326,10 @@ public class Monster : MonoBehaviour, IDamageable
         DropReward();
         Destroy(gameObject);
     }
+
+    public void DeathAnimationStartEvent()
+    {
+        //콜라이더 제거
+    }
 }
 

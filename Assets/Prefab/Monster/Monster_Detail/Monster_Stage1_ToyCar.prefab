@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 462825605787251823}
   - component: {fileID: 3373887644737195208}
   - component: {fileID: 1468389543809814125}
-  - component: {fileID: -8276817023020365305}
+  - component: {fileID: 6614774483367663178}
   m_Layer: 0
   m_Name: Monster_Stage1_ToyCar
   m_TagString: Monster
@@ -92,7 +92,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.36, y: 2.19}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
-  animator: {fileID: -8276817023020365305}
+  animator: {fileID: 6614774483367663178}
   attackPattern: {fileID: 3373887644737195208}
   movePattern: {fileID: 1468389543809814125}
   moveSpeed: 4
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
---- !u!95 &-8276817023020365305
+--- !u!95 &6614774483367663178
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0

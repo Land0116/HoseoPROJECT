@@ -114,10 +114,10 @@ TextureImporter:
         serializedVersion: 2
         x: 74
         y: 61
-        width: 251
-        height: 139
+        width: 250
+        height: 212
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -130,77 +130,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: QbackR_6_1
-      rect:
-        serializedVersion: 2
-        x: 78
-        y: 172
-        width: 99
-        height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 286884ba7b8281210800000000000000
-      internalID: 1303836861441541762
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: QbackR_6_2
-      rect:
-        serializedVersion: 2
-        x: 194
-        y: 199
-        width: 117
-        height: 66
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d8d7e400851d7c980800000000000000
-      internalID: -8518609994255532659
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: QbackR_6_3
-      rect:
-        serializedVersion: 2
-        x: 213
-        y: 170
-        width: 35
-        height: 42
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 821d8e051d7c0c730800000000000000
-      internalID: 4017430569434009896
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8c8dad666b2a7bf4ba31c0df42cc846d
     internalID: 0
     vertices: []
     indices: 
