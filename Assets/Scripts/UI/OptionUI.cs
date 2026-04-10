@@ -114,17 +114,41 @@ public class OptionUI : MonoBehaviour
         
         Resolution res = resolutions[settings.resolutionIndex];
         FullScreenMode mode = FullScreenMode.FullScreenWindow;
+
         switch (settings.screenModeIndex)
         {
             case 0: mode = FullScreenMode.ExclusiveFullScreen; break;
             case 1: mode = FullScreenMode.Windowed; break;
-            case 2: mode = FullScreenMode.FullScreenWindow; break;
+            case 2: mode = FullScreenMode.ExclusiveFullScreen; break;
         }
         Screen.SetResolution(res.width, res.height, mode);
 
         UpdateBrightnessOverlay();
     }
+    public static void ApplySettingsStatic(OptionSettings settings)
+    {
+        if (settings == null) return;
 
+        Resolution[] resolutions =
+        {
+        new Resolution { width = 1600, height = 900 },
+        new Resolution { width = 1920, height = 1080 },
+        new Resolution { width = 2560, height = 1440 }
+    };
+
+        Resolution res = resolutions[settings.resolutionIndex];
+
+        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
+
+        switch (settings.screenModeIndex)
+        {
+            case 0: mode = FullScreenMode.ExclusiveFullScreen; break;
+            case 1: mode = FullScreenMode.Windowed; break;
+            case 2: mode = FullScreenMode.ExclusiveFullScreen; break;
+        }
+
+        Screen.SetResolution(res.width, res.height, mode);
+    }
     private void UpdateBrightnessOverlay()
     {
         if (brightnessOverlay != null)

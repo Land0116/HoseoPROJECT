@@ -46,6 +46,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private ItemUIManager itemUIManager;
     [SerializeField] private InGameShopUIManager inGameShopUIManager;
     [SerializeField] private InventoryManager inventoryManager;
+
+
+    [SerializeField] private OptionSettings optionSettings;
     public InventoryManager InventoryManager => inventoryManager;
     public ShopUIManager ShopUIManager => shopUIManager;
 
@@ -74,6 +77,7 @@ public class UIManager : MonoBehaviour
         // 시작하자마자 현재 씬 UI 바인딩
         BindSceneUI();
 
+        OptionUI.ApplySettingsStatic(optionSettings);
         // 현재 씬 이름에 맞는 초기 UI 상태 적용
         ApplySceneDefaultState(SceneManager.GetActiveScene().name);
     }
@@ -125,11 +129,22 @@ public class UIManager : MonoBehaviour
         StartCoroutine(DelayedBind(scene.name));
 
         // Main 씬이면 여기까지
-        if (scene.name == "Main")
-            return;
+        //if (scene.name == "Main")
+        //    return;
+        if (scene.name != "Main")
+        {
+            EquipmentSlot[] slots = FindObjectsByType<EquipmentSlot>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+            foreach (var slot in slots)
+            {
+                slot.ResetSlot();
+            }
+        }
 
 
-        
         // 게임 씬에서는 PlayerController를 씬 로드 후에 다시 연결
         if (playerUIManager != null && PlayerController.Instance != null)
         {
@@ -430,6 +445,9 @@ public class UIManager : MonoBehaviour
 
         if (playerUIManager != null)
             playerUIManager.ResetEquipmentUI();
+
+        
+
         // 다음 씬 로드 후 처리 예약
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;

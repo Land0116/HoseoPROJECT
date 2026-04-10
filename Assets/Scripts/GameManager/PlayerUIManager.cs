@@ -37,6 +37,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button toMainBtn;
     [SerializeField] private Button exitGameBtn;
     [SerializeField] private Button xBtn;
+    [SerializeField] private Button escToOptionCloseBtn;//*
 
     [Header("ExitSure")]
     [SerializeField] private GameObject exitSurePanel;
@@ -166,6 +167,10 @@ public class PlayerUIManager : MonoBehaviour
         if (currentPanel == optionPanel)
         {
             OpenPanel(escPanel);
+
+            if (escToOptionCloseBtn != null)
+                escToOptionCloseBtn.gameObject.SetActive(false);
+
             return;
         }
 
@@ -304,6 +309,8 @@ public class PlayerUIManager : MonoBehaviour
     private void OpenOptionPanel()
     {
         OpenPanel(optionPanel);
+        if (escToOptionCloseBtn != null)
+            escToOptionCloseBtn.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -444,7 +451,7 @@ public class PlayerUIManager : MonoBehaviour
         toMainBtn = UIManager.FindChildRecursive(playerPanel, "ToMainBtn")?.GetComponent<Button>();
         exitGameBtn = UIManager.FindChildRecursive(playerPanel, "ExitGameBtn")?.GetComponent<Button>();
         xBtn = UIManager.FindChildRecursive(systemUIRoot.transform, "OptionCloseBtn")?.GetComponent<Button>();
-
+        escToOptionCloseBtn = UIManager.FindChildRecursive(systemUIRoot.transform, "EscToOptionCloseBtn")?.GetComponent<Button>(); //*
         // 종료 확인 패널 버튼
         if (exitSurePanel != null)
         {
@@ -487,6 +494,7 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(toMainBtn, OpenToMainSurePanel);
         BindButton(exitGameBtn, OpenExitSurePanel);
         BindButton(xBtn, OpenEscPanel);
+        BindButton(escToOptionCloseBtn, HandleEscape);//*
 
         BindButton(exitSureYesBtn, OnClickExitGame);
         BindButton(exitSureNoBtn, OpenEscPanel);
@@ -499,7 +507,7 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(reStart, OnClickRestart);
         BindButton(dieToMain, OnClickToMain);
     }
-
+    
     /// <summary>
     /// 모든 패널 초기 상태 정리
     /// </summary>
@@ -558,6 +566,7 @@ public class PlayerUIManager : MonoBehaviour
                 break;
         }
     }
+
     public void ResetEquipmentUI()
     {
         // Q 슬롯 초기화
@@ -573,5 +582,8 @@ public class PlayerUIManager : MonoBehaviour
             eSlotIcon.sprite = null;
             eSlotIcon.enabled = false;
         }
+
     }
+
+
 }
