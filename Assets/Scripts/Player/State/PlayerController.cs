@@ -75,6 +75,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
     
     [Header("대쉬")]
+    [SerializeField] private Vector2 lastMoveDirection = Vector2.down; // 마지막 이동 방향 저장
     [SerializeField] private float dashDistance;   // 짧게 이동할 거리
     [SerializeField] private float dashDuration = 0.3f;  // 대쉬 지속 시간
     [SerializeField] private float dashCooldown = 2.0f;   // 쿨타임 2초(임시)
@@ -572,6 +573,10 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         inputDirection = movementValue.Get<Vector2>();
+        if (inputDirection.sqrMagnitude > 0.0001f)
+        {
+            lastMoveDirection = inputDirection.normalized;
+        }
         
     }
     private void OnAttack(InputValue value)
@@ -706,23 +711,22 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         Vector2 dir = Vector2.zero;
 
-        // 1순위: 현재 조준 방향
-        if (aimDirection.sqrMagnitude > 0.0001f)
-        {
-            dir = aimDirection.normalized;
-        }
-        // 2순위: 이동 입력 방향
-        else if (inputDirection.sqrMagnitude > 0.0001f)
+        // 1순위 : 현재 이동 입력 방향
+        if (inputDirection.sqrMagnitude > 0.0001f)
         {
             dir = inputDirection.normalized;
         }
-        // 3순위: 마지막으로 바라보던 방향 인덱스
+        // 2순위 : 마지막 이동 방향
+        else if (lastMoveDirection.sqrMagnitude > 0.0001f)
+        {
+            dir = lastMoveDirection.normalized;
+        }
         else
         {
-            dir = GetDirectionVectorFromFacingDir(facingDir);
+            return; // 이동 방향 정보가 없으면 대쉬 안 함
         }
 
-        dashDirection = dir.normalized;
+        dashDirection = dir;
         isDashing = true;
         dashEndTime = Time.time + dashDuration;
         lastDashTime = Time.time;
