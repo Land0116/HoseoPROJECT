@@ -17,4 +17,11 @@ public class PlayerAnimationEventReceiver : MonoBehaviour
             PlayerController.Instance.EndAttackAnimationEvent();
         }
     }
+    public void EndHitAnimationEvent()
+    {
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.EndHitAnimationEvent();
+        }
+    }
 }

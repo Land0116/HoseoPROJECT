@@ -73,6 +73,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
     [Header("공격 잠금 방향")]
     [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
+    [Header("공격 입력 버퍼")]
+    [SerializeField] private float attackBufferTime = 0.15f;
+    private bool hasBufferedAttack = false;
+    private float attackBufferEndTime = -1f;
+
+    [Header("피격")]
+    [SerializeField] private bool isHitAnimating = false;
     
     [Header("대쉬")]
     [SerializeField] private Vector2 lastMoveDirection = Vector2.down; // 마지막 이동 방향 저장
@@ -148,7 +155,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private Coroutine shieldCoroutine;
     private Coroutine hpRegenCoroutine;
-    
+    private bool isPointerOverUIThisFrame = false;
     public int Hp
     {
         get => hp;
@@ -213,7 +220,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isDie;
         set => isDie = value;
     }
-
     
     
     private void Awake()
@@ -276,11 +282,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         PlayerMouseMovement();
         
+        isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        
+        if (isFireInput && CanStartAttackNow())
+        {
+            ClearAttackBuffer();
+            StartAttack();
+            return;
+        }
+        
+        TryConsumeBufferedAttack();
+        
     }
     
     private bool IsPointerOverUI()
     {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        return isPointerOverUIThisFrame;
     }
 
     void FixedUpdate()
@@ -315,12 +332,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             case PlayerState.Idle:
             {
                 rb.linearVelocity = Vector2.zero;
-                // 마우스를 누르고 있고, 쿨타임이 끝났고, UI 클릭이 아니면 공격 시작
-                if (isFireInput && !IsAttack && !IsPointerOverUI())
-                {
-                    StartAttack();
-                    break;
-                }
+                
                 if (inputDirection.sqrMagnitude > 0.01f)
                 {
                     playerState = PlayerState.Walk;
@@ -337,12 +349,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     moveVector.Normalize();
 
                 rb.linearVelocity = moveVector * moveSpeed;
-
-                if (isFireInput && !IsAttack && !IsPointerOverUI())
-                {
-                    StartAttack();
-                    break;
-                }
+                
 
                 if (inputDirection.sqrMagnitude <= 0.01f)
                 {
@@ -365,8 +372,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             case PlayerState.Hit:
             {
-                playerState = PlayerState.Idle;
-                //피격 애니메이션
+                rb.linearVelocity = Vector2.zero;
                 break;
             }
             case PlayerState.Death:
@@ -449,6 +455,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         ReleaseAttackState();
     }
     
+    public void EndHitAnimationEvent()
+    {
+        if (IsDie) return;
+
+        isHitAnimating = false;
+
+        playerState = inputDirection.sqrMagnitude > 0.01f
+            ? PlayerState.Walk
+            : PlayerState.Idle;
+
+        TryConsumeBufferedAttack();
+    }
+    
     private void PlayDirectionalAnimation(string actionPrefix, int forcedDir = -1)
     {
         if (bodyAnimator == null) return;
@@ -471,12 +490,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             nextState = "Idle_Weapon_" + dirNames[dirIndex];
         }
-        
         else if (actionPrefix == "Walk")
         {
             nextState = "Walk_Weapon_" + dirNames[dirIndex];
         }
-        
+        else if (actionPrefix == "Hit")
+        {
+            nextState = "Hit_" + dirNames[dirIndex];
+        }
         else
         {
             return;
@@ -491,12 +512,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         bool isAttackAnim = actionPrefix == "Attack";
+        bool isHitAnim = actionPrefix == "Hit";
 
-        // 공격 애니메이션은 같은 방향이어도 다시 재생 허용
-        if (!isAttackAnim && currentAnimState == nextState)
+        if (!isAttackAnim && !isHitAnim && currentAnimState == nextState)
             return;
 
-        bodyAnimator.CrossFade(stateHash, isAttackAnim ? 0.02f : 0.05f, 0, 0f);
+        bodyAnimator.CrossFade(stateHash, (isAttackAnim || isHitAnim) ? 0.02f : 0.05f, 0, 0f);
         currentAnimState = nextState;
     }
 
@@ -583,33 +604,51 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!IsGameplayScene())
         {
             isFireInput = false;
+            ClearAttackBuffer();
             return;
         }
 
         if (IsDie)
         {
             isFireInput = false;
+            ClearAttackBuffer();
             return;
         }
 
         if (!canControl)
         {
             isFireInput = false;
+            ClearAttackBuffer();
             return;
         }
-        
-        
+
         isFireInput = value.isPressed;
 
+        if (isFireInput)
+        {
+            BufferAttackInput();
+        }
+        else
+        {
+            ClearAttackBuffer();
+        }
     }
-    
+     private bool CanStartAttackNow()
+     {
+         if (!IsGameplayScene()) return false;
+         if (IsDie) return false;
+         if (!canControl) return false;
+         if (IsPointerOverUI()) return false;
+         if (IsAttack) return false;
+         if (playerState == PlayerState.Attack) return false;
+         if (playerState == PlayerState.Hit) return false;
+         if (isDashing) return false;
+
+         return true;
+     }
     private void StartAttack()
     {
-        if (IsDie) return;
-        if (!canControl) return;
-        if (IsAttack) return;
-        if (playerState == PlayerState.Attack) return;
-        //if (IsPointerOverUI()) return;
+        if (!CanStartAttackNow()) return;
 
         playerState = PlayerState.Attack;
 
@@ -625,19 +664,40 @@ public class PlayerController : MonoBehaviour, IDamageable
         isAttackAnimLocked = false;
         currentAnimState = string.Empty;
 
-        // 마우스를 계속 누르고 있고, 쿨타임이 끝났으면 바로 다음 공격
-        if (isFireInput && !IsAttack && !IsPointerOverUI())
-        {
-            StartAttack();
-            return;
-        }
-
+        // 먼저 Attack 상태에서 빠져나와야 함
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
             : PlayerState.Idle;
+        
     }
     
+    private void BufferAttackInput()
+    {
+        hasBufferedAttack = true;
+        attackBufferEndTime = Time.time + attackBufferTime;
+    }
 
+    private void ClearAttackBuffer()
+    {
+        hasBufferedAttack = false;
+        attackBufferEndTime = -1f;
+    }
+
+    private void TryConsumeBufferedAttack()
+    {
+        if (!hasBufferedAttack) return;
+
+        if (Time.time > attackBufferEndTime)
+        {
+            ClearAttackBuffer();
+            return;
+        }
+
+        if (!CanStartAttackNow()) return;
+
+        ClearAttackBuffer();
+        StartAttack();
+    }
     public void OnDamage(float damage)
     {
         if (IsDie) return;
@@ -646,7 +706,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (shieldEnabled && shieldReady)
         {
             shieldReady = false;
-            SetShieldVisual(false); // 보호막 깨짐 연출
+            SetShieldVisual(false);
             Debug.Log("보호막으로 공격 1회 무효");
             return;
         }
@@ -657,7 +717,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             cheatDeathOnce = false;
             Hp = 1;
-            playerState = PlayerState.Hit;
+            EnterHitState();
             StartCoroutine(TemporaryInvincibleRoutine());
             Debug.Log("치명적 피해 1회 무효 발동");
             return;
@@ -665,12 +725,32 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Hp -= incomingDamage;
         Debug.Log("플레이어 체력: " + Hp + " / " + maxHp);
-        playerState = PlayerState.Hit;
 
         if (Hp <= 0)
         {
             Death();
+            return;
         }
+
+        EnterHitState();
+    }
+    
+    private void EnterHitState()
+    {
+        if (IsDie) return;
+
+        isHitAnimating = true;
+        playerState = PlayerState.Hit;
+
+        // 피격 시 대쉬/공격 정리
+        isDashing = false;
+        dashEndTime = -999f;
+        rb.linearVelocity = Vector2.zero;
+
+        isAttackAnimLocked = false;
+        currentAnimState = string.Empty;
+
+        PlayDirectionalAnimation("Hit", facingDir);
     }
     
     public float GetFinalDamage()
@@ -1116,7 +1196,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         IsAttack = true;
         yield return new WaitForSeconds(1f / attackPerSecond);
         IsAttack = false;
-
+        
     }
     
     IEnumerator ShieldRoutine()
