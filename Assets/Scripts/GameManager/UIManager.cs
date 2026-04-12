@@ -452,7 +452,7 @@ public class UIManager : MonoBehaviour
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;
 
-        SceneManager.LoadScene("Tutorial_Stage");
+        SceneManager.LoadScene("Stage_1_1");
         InGameShopUIManager.Instance.ResetShop();
 
     }

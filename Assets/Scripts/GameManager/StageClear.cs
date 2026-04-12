@@ -13,6 +13,8 @@ public class StageClear : MonoBehaviour
     [Header("몬스터 전멸 시 자동 클리어 여부")]
     [SerializeField] private bool autoClearWhenNoMonster = true;
 
+    [Header("출구에 들어올 플레이어 태그")]
+    [SerializeField] private string playerTag = "Player";
     [Header("몬스터 태그")]
     [SerializeField] private string monsterTag = "Monster";
 
@@ -24,11 +26,17 @@ public class StageClear : MonoBehaviour
 
     // 중복 클리어 방지
     private bool isStageCleared = false;
+    // 이미 다음 씬으로 넘어가는 중인지
+    [SerializeField] private bool isLoadingNextScene = false;
+
+    // 출구 충돌체
+    [SerializeField] private CompositeCollider2D exitCompositeCollider;
+    [SerializeField] private Rigidbody2D exitRigidbody;
 
     // 씬 이동 코루틴 저장용
     private Coroutine clearRoutine;
 
-    private void Awake()
+     private void Awake()
     {
         // 싱글톤 처리
         if (Instance != null && Instance != this)
@@ -41,36 +49,8 @@ public class StageClear : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Update()
-    {
-        // 이미 클리어 처리 중이면 더 이상 검사 안 함
-        if (isStageCleared) return;
-
-        // 테스트용:
-        // N 키를 누르면 자동 클리어 검사 활성화
-        if (Keyboard.current != null && Keyboard.current.nKey.wasPressedThisFrame)
-        {
-            autoClearWhenNoMonster = true;
-        }
-
-        // 자동 클리어 옵션이 켜져 있으면 몬스터 수 검사
-        if (autoClearWhenNoMonster)
-        {
-            GameObject[] monsters = GameObject.FindGameObjectsWithTag(monsterTag);
-
-            Debug.Log("남은 몬스터 수 : " + monsters.Length);
-
-            // 몬스터가 0마리면 스테이지 클리어
-            if (monsters.Length == 0)
-            {
-                ClearStage();
-            }
-        }
-    }
-
     private void OnEnable()
     {
-        // 씬 로드 이벤트 등록
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -79,15 +59,98 @@ public class StageClear : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private void Start()
+    {
+        // 첫 시작 씬도 직접 한 번 바인딩
+        BindSceneMoveCollider();
+        currentSceneIndex = GetSceneIndex(SceneManager.GetActiveScene().name);
+        ResetStageClearState();
+
+        Debug.Log("현재 씬 인덱스 : " + currentSceneIndex + " / 씬 이름 : " + SceneManager.GetActiveScene().name);
+    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 새 씬이 로드되면 다시 클리어 가능 상태로 초기화
-        isStageCleared = false;
+        // 씬 바뀔 때마다 새 SceneMoveColl 다시 찾기
+        BindSceneMoveCollider();
 
-        // 현재 씬이 배열에서 몇 번째인지 계산
+        // 씬 인덱스 다시 계산
         currentSceneIndex = GetSceneIndex(scene.name);
 
-        Debug.Log("현재 씬 인덱스 : " + currentSceneIndex + " / 씬 이름 : " + scene.name);
+        // 스테이지 상태 초기화
+        ResetStageClearState();
+
+        Debug.Log("씬 로드 완료 / 현재 씬 인덱스 : " + currentSceneIndex + " / 씬 이름 : " + scene.name);
+    }
+
+    private void BindSceneMoveCollider()
+    {
+        GameObject moveCollObj = GameObject.Find("SceneMoveColl");
+
+        if (moveCollObj == null)
+        {
+            exitCompositeCollider = null;
+            exitRigidbody = null;
+            Debug.LogError("SceneMoveColl 오브젝트를 찾지 못함");
+            return;
+        }
+
+        exitCompositeCollider = moveCollObj.GetComponent<CompositeCollider2D>();
+        exitRigidbody = moveCollObj.GetComponent<Rigidbody2D>();
+
+        if (exitCompositeCollider == null)
+        {
+            Debug.LogError("SceneMoveColl 오브젝트에 CompositeCollider2D가 없음");
+            return;
+        }
+
+        if (exitRigidbody == null)
+        {
+            Debug.LogError("SceneMoveColl 오브젝트에 Rigidbody2D가 없음");
+            return;
+        }
+
+        // 출구는 움직이지 않으므로 Static
+        exitRigidbody.bodyType = RigidbodyType2D.Static;
+
+        // 기본은 막힌 상태
+        exitCompositeCollider.isTrigger = false;
+    }
+
+
+    private void Update()
+    {
+        // 이미 클리어됐거나 씬 이동 중이면 검사 안 함
+        if (isStageCleared) return;
+        if (isLoadingNextScene) return;
+
+        // 자동 클리어 검사 꺼져 있으면 검사 안 함
+        if (!autoClearWhenNoMonster) return;
+
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag(monsterTag);
+
+        //Debug.Log("남은 몬스터 수 : " + monsters.Length);
+
+        // 몬스터가 0마리면 출구 열기
+        if (monsters.Length == 0)
+        {
+            autoClearWhenNoMonster = true;
+            ClearStage();
+        }
+    }
+
+    /// <summary>
+    /// 씬 시작 시 상태 초기화
+    /// </summary>
+    private void ResetStageClearState()
+    {
+        isStageCleared = false;
+        isLoadingNextScene = false;
+
+        if (exitCompositeCollider != null)
+        {
+            exitCompositeCollider.isTrigger = false;
+        }
     }
 
     /// <summary>
@@ -114,13 +177,11 @@ public class StageClear : MonoBehaviour
     /// </summary>
     private string GetNextSceneName()
     {
-        // 현재 씬이 배열에 없으면 진행 불가
         if (currentSceneIndex < 0)
             return null;
 
         int nextIndex = currentSceneIndex + 1;
 
-        // 마지막 씬이면 다음 씬 없음
         if (nextIndex >= stageSceneNames.Length)
             return null;
 
@@ -128,55 +189,61 @@ public class StageClear : MonoBehaviour
     }
 
     /// <summary>
-    /// 스테이지 클리어 처리 시작
-    /// 바로 씬 이동하지 않고 딜레이 후 이동
+    /// 스테이지 클리어 처리
+    /// 몬스터를 다 잡으면 출구를 Trigger로 열어줌
     /// </summary>
     public void ClearStage()
     {
-        // 중복 실행 방지
         if (isStageCleared) return;
+
         isStageCleared = true;
 
-        // 이미 코루틴이 실행 중이면 정리
-        if (clearRoutine != null)
+        if (exitCompositeCollider != null)
         {
-            StopCoroutine(clearRoutine);
+            exitCompositeCollider.isTrigger = true;
         }
 
-        clearRoutine = StartCoroutine(ClearStageRoutine());
+        Debug.Log("스테이지 클리어 - 출구 Trigger 활성화");
+    }
+    
+    /// <summary>
+    /// 다음 씬 이동 시도
+    /// </summary>
+    public void TryMoveNextScene(Collider2D other)
+    {
+        if (other == null) return;
+        if (!isStageCleared) return;
+        if (isLoadingNextScene) return;
+        if (!other.CompareTag(playerTag)) return;
+
+        string nextSceneName = GetNextSceneName();
+
+        if (string.IsNullOrEmpty(nextSceneName))
+        {
+            Debug.Log("다음 씬이 없음. 마지막 스테이지일 가능성 있음.");
+            return;
+        }
+
+        isLoadingNextScene = true;
+        StartCoroutine(LoadNextSceneRoutine(nextSceneName));
     }
 
     /// <summary>
-    /// 실제 스테이지 클리어 처리 코루틴
+    /// 실제 다음 씬 이동 코루틴
     /// </summary>
-    private IEnumerator ClearStageRoutine()
+    private IEnumerator LoadNextSceneRoutine(string nextSceneName)
     {
-        // 혹시 일시정지 상태였으면 해제
+        // 혹시 멈춰있으면 해제
         Time.timeScale = 1f;
 
-        // 다음 씬 진입 시 증강 UI가 뜨도록 예약
+        // 다음 씬 진입 시 증강 UI 띄우기 예약
         if (UIManager.Instance != null)
         {
             UIManager.Instance.RequestStageEntryUI();
         }
 
-        // 자동 클리어 검사 끔
-        autoClearWhenNoMonster = false;
-
-        // 다음 씬 이름 가져오기
-        string nextSceneName = GetNextSceneName();
-
-        // 다음 씬이 없으면 종료
-        if (string.IsNullOrEmpty(nextSceneName))
-        {
-            Debug.Log("다음 씬이 없음. 현재 배열의 마지막 스테이지일 가능성 있음.");
-            yield break;
-        }
-
-        // 테스트용 딜레이
         yield return new WaitForSeconds(clearDelay);
 
-        // 다음 씬 로드
         SceneManager.LoadScene(nextSceneName);
     }
 }

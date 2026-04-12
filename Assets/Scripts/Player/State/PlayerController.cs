@@ -73,6 +73,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
     [Header("공격 잠금 방향")]
     [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
+    
+    [Header("대쉬")]
+    [SerializeField] private float dashDistance;   // 짧게 이동할 거리
+    [SerializeField] private float dashDuration = 0.3f;  // 대쉬 지속 시간
+    [SerializeField] private float dashCooldown = 2.0f;   // 쿨타임 2초(임시)
+
+    [SerializeField] private bool isDashing = false;      // 현재 대쉬 중인지
+    [SerializeField] private Vector2 dashDirection = Vector2.down; // 대쉬 방향
+    [SerializeField] private float dashEndTime = -999f;   // 대쉬 종료 시각
+    [SerializeField] private float lastDashTime = -999f;  // 마지막 대쉬 사용 시각
 
     [Header("장비")]
     [SerializeField] private WeaponData basicWeapon; // 시작 무기
@@ -137,7 +147,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private Coroutine shieldCoroutine;
     private Coroutine hpRegenCoroutine;
-    //[SerializeField] private string playerSpawnTag = "PlayerSpawnPoint";
     
     public int Hp
     {
@@ -171,6 +180,31 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         get => isAttack;
         set => isAttack = value;
+    }
+    
+    private float DashSpeed
+    {
+        get
+        {
+            if (dashDuration <= 0f) return 0f;
+            return dashDistance / dashDuration;
+        }
+    }
+
+    public bool IsDashOnCooldown()
+    {
+        return Time.time < lastDashTime + dashCooldown;
+    }
+
+    public float GetDashCooldownRemain()
+    {
+        return Mathf.Max(0f, (lastDashTime + dashCooldown) - Time.time);
+    }
+
+    public float GetDashCooldownRatio()
+    {
+        if (dashCooldown <= 0f) return 0f;
+        return Mathf.Clamp01(GetDashCooldownRemain() / dashCooldown);
     }
 
     public bool IsDie
@@ -241,8 +275,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         PlayerMouseMovement();
         
-        // 애니메이션 파라미터 갱신
-        //UpdateAnimation();
     }
     
     private bool IsPointerOverUI()
@@ -263,6 +295,20 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.linearVelocity = Vector2.zero;
             return;
         }
+        
+        if (isDashing)
+        {
+            if (Time.time >= dashEndTime)
+            {
+                EndDash();
+            }
+            else
+            {
+                rb.linearVelocity = dashDirection * DashSpeed;
+                return;
+            }
+        }
+        
         switch (playerState)
         {
             case PlayerState.Idle:
@@ -373,6 +419,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         int index = Mathf.RoundToInt(angle / 45f) % 8;
         return index;
     }
+    
+    private Vector2 GetDirectionVectorFromFacingDir(int dirIndex)
+    {
+        switch (dirIndex)
+        {
+            case 0: return Vector2.right;                         // Right
+            case 1: return new Vector2(1f, 1f).normalized;       // Qback_Right
+            case 2: return Vector2.up;                            // Back
+            case 3: return new Vector2(-1f, 1f).normalized;      // Qback_Left
+            case 4: return Vector2.left;                          // Left
+            case 5: return new Vector2(-1f, -1f).normalized;     // Qfront_Left
+            case 6: return Vector2.down;                          // Front
+            case 7: return new Vector2(1f, -1f).normalized;      // Qfront_Right
+            default: return Vector2.down;
+        }
+    }
 
     public void FireOnAnimationEvent()
     {
@@ -477,9 +539,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void SetControl(bool value)
     {
         canControl = value;
-
+        
         if (!canControl)
         {
+            isDashing = false;
+            dashEndTime = -999f;
+            
             inputDirection = Vector2.zero;
             isFireInput = false;
             IsAttack = false;
@@ -529,15 +594,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
         
-        // 누르고 있으면 true, 떼면 false
-        //bool wasPressed = isFireInput;
+        
         isFireInput = value.isPressed;
 
-        // 눌린 첫 순간에 바로 공격 시작
-        // if (isFireInput && !wasPressed)
-        // {
-        //     StartAttack();
-        // }
     }
     
     private void StartAttack()
@@ -614,12 +673,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         float baseDamage = weaponDamage + itemDamage;
 
-        // 기본 데미지 배율 적용
+        
         float damageByMultiplier = baseDamage * damageMultiplier;
-
-        // 느리지만 강한 공격 추가 보너스
+        
         float slowBonusDamage = baseDamage * slowDamageMultiplier;
-
 
         float subtotal = damageByMultiplier + slowBonusDamage;
 
@@ -627,13 +684,70 @@ public class PlayerController : MonoBehaviour, IDamageable
         float hpBonusDamage = subtotal * (hpStack * hpToDamagePercentPer10Hp);
 
         float finalDamage = subtotal + hpBonusDamage;
-        // Debug.Log(
-        //     $"[DamageCheck] base:{baseDamage}, maxHp:{maxHp}, hpStack:{hpStack}, " +
-        //     $"hpRate:{hpToDamagePercentPer10Hp}, hpBonus:{hpBonusDamage}, final:{finalDamage}"
-        // );
+        
         // 음수 방지 + 보기 좋은 값으로 반올림
         return Mathf.Max(0f, Mathf.Round(finalDamage));
     }
+    
+    private void OnDash(InputValue value)
+    {
+        if (!value.isPressed) return;
+        if (!IsGameplayScene()) return;
+        if (IsDie) return;
+        if (!canControl) return;
+        if (Time.timeScale <= 0f) return;
+        if (isDashing) return;
+        if (IsDashOnCooldown()) return;
+
+        StartDash();
+    }
+    
+    private void StartDash()
+    {
+        Vector2 dir = Vector2.zero;
+
+        // 1순위: 현재 조준 방향
+        if (aimDirection.sqrMagnitude > 0.0001f)
+        {
+            dir = aimDirection.normalized;
+        }
+        // 2순위: 이동 입력 방향
+        else if (inputDirection.sqrMagnitude > 0.0001f)
+        {
+            dir = inputDirection.normalized;
+        }
+        // 3순위: 마지막으로 바라보던 방향 인덱스
+        else
+        {
+            dir = GetDirectionVectorFromFacingDir(facingDir);
+        }
+
+        dashDirection = dir.normalized;
+        isDashing = true;
+        dashEndTime = Time.time + dashDuration;
+        lastDashTime = Time.time;
+
+        // 대쉬 시작 즉시 속도 반영
+        rb.linearVelocity = dashDirection * DashSpeed;
+
+        // 공격 연출 잠금 해제
+        isAttackAnimLocked = false;
+        currentAnimState = string.Empty;
+
+        // 필요 시 공격 상태 끊기
+        playerState = PlayerState.Idle;
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+        rb.linearVelocity = Vector2.zero;
+
+        playerState = inputDirection.sqrMagnitude > 0.01f
+            ? PlayerState.Walk
+            : PlayerState.Idle;
+    }
+    
     public void Death()
     {
         if (IsDie) return;
@@ -644,8 +758,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         inputDirection = Vector2.zero;
         isFireInput = false;
         IsAttack = false;
-
-
+        
+        isDashing = false;
+        dashEndTime = -999f;
+        
         // 이동 완전 정지
         if (rb != null)
         {
@@ -824,12 +940,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (CurItemUI.Instance != null)
         {
-            //Debug.Log("CurItemUI 있음 → SetItem 호출");
             CurItemUI.Instance.SetItem(item);
-        }
-        else
-        {
-            //Debug.Log("CurItemUI 없음 (NULL)");
         }
     }
     public void EquipItem(ItemData newItem)
@@ -1107,15 +1218,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         // =========================
         // 4. 현재 장착 무기 다시 적용
         // =========================
-        if (basicWeapon != null)
-        {
-            ApplyWeapon(basicWeapon);
-        }
-        
-        if (currentWeapon == null)
+        if (currentWeapon == null && basicWeapon != null)
         {
             currentWeapon = basicWeapon;
         }
+
         if (currentWeapon != null)
         {
             ApplyWeapon(currentWeapon);
@@ -1151,6 +1258,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         StopAllCoroutines();
 
+        isDashing = false;
+        dashEndTime = -999f;
+        lastDashTime = -999f;
         IsDie = false;
         canControl = true;
         isInvincible = false;
@@ -1362,7 +1472,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         InventoryManager.Instance.ToggleInventory();
     }
 
-    private void OnUseQ(InputValue value)//*
+    private void OnUseQ(InputValue value)
     {
         if (!value.isPressed) return;
 

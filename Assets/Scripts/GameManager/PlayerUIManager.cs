@@ -37,7 +37,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button toMainBtn;
     [SerializeField] private Button exitGameBtn;
     [SerializeField] private Button xBtn;
-    [SerializeField] private Button escToOptionCloseBtn;//*
+    [SerializeField] private Button escToOptionCloseBtn;
 
     [Header("ExitSure")]
     [SerializeField] private GameObject exitSurePanel;
@@ -61,8 +61,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Image qSlotIcon;
     [SerializeField] private Image eSlotIcon;
 
-    [SerializeField] private EquipmentSlot qSlot;//*
-    [SerializeField] private EquipmentSlot eSlot;//*
+    [SerializeField] private EquipmentSlot qSlot;
+    [SerializeField] private EquipmentSlot eSlot;
 
     [Header("Cooldown UI")]
     [SerializeField] private Image qCooldownOverlay;
@@ -70,6 +70,12 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private Image eCooldownOverlay;
     [SerializeField] private TextMeshProUGUI eCooldownText;
+    
+    [SerializeField] private GameObject dashPanel;
+    [SerializeField] private Image dashIcon;
+    [SerializeField] private Image dashCooldownOverlay;
+    [SerializeField] private TextMeshProUGUI dashCooldownText;
+
     /// <summary>
     /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
     /// None        : 그냥 게임으로 복귀
@@ -115,6 +121,8 @@ public class PlayerUIManager : MonoBehaviour
     {
         UpdateSlotCooldown(qSlot, qCooldownOverlay, qCooldownText);
         UpdateSlotCooldown(eSlot, eCooldownOverlay, eCooldownText);
+        
+        UpdateDashCooldownUI();
     }
 
     private void UpdateSlotCooldown(EquipmentSlot slot, Image overlay, TextMeshProUGUI text)
@@ -356,6 +364,63 @@ public class PlayerUIManager : MonoBehaviour
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(true);
     }
+    
+    
+    private void UpdateDashCooldownUI()
+    {
+        if (playerController == null)
+        {
+            if (dashCooldownOverlay != null)
+                dashCooldownOverlay.gameObject.SetActive(false);
+
+            if (dashCooldownText != null)
+                dashCooldownText.text = "";
+
+            return;
+        }
+
+        float remain = playerController.GetDashCooldownRemain();
+        float ratio = playerController.GetDashCooldownRatio();
+        bool onCooldown = playerController.IsDashOnCooldown();
+
+        // 쿨타임 중
+        if (onCooldown)
+        {
+            if (dashCooldownOverlay != null)
+            {
+                dashCooldownOverlay.gameObject.SetActive(true);
+                dashCooldownOverlay.fillAmount = ratio;
+            }
+
+            if (dashCooldownText != null)
+            {
+                dashCooldownText.gameObject.SetActive(true);
+                dashCooldownText.text = Mathf.Max(0f, remain).ToString("F1");
+            }
+
+        }
+        // 사용 가능
+        else
+        {
+            if (dashCooldownOverlay != null)
+            {
+                dashCooldownOverlay.fillAmount = 0f;
+                dashCooldownOverlay.gameObject.SetActive(false);
+            }
+
+            if (dashCooldownText != null)
+            {
+                dashCooldownText.text = "";
+                dashCooldownText.gameObject.SetActive(true);
+            }
+
+            
+        }
+    }
+    
+    
+    
+    
     /// <summary>
     /// 옵션 패널 열기
     /// </summary>
@@ -470,6 +535,8 @@ public class PlayerUIManager : MonoBehaviour
 
         if (playerDyingPanel != null)
             playerDyingPanel.SetActive(false);
+        
+        ResetDashUI();
     }
 
     /// <summary>
@@ -488,7 +555,6 @@ public class PlayerUIManager : MonoBehaviour
         hpBar = UIManager.FindChildRecursive(playerPanel, "PlayerHpBar")?.GetComponent<Slider>();
         hpText = UIManager.FindChildRecursive(playerPanel, "HpTxt")?.GetComponent<TextMeshProUGUI>();
         goldText = UIManager.FindChildRecursive(playerPanel, "GoldTxt")?.GetComponent<TextMeshProUGUI>();
-
         // 패널들
         escPanel = UIManager.FindChildRecursive(playerPanel, "EscPanel")?.gameObject;
 
@@ -498,6 +564,18 @@ public class PlayerUIManager : MonoBehaviour
         exitSurePanel = UIManager.FindChildRecursive(playerPanel, "ExitSurePanel")?.gameObject;
         toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
         playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
+        
+        Transform dashPanelTr = UIManager.FindChildRecursive(playerPanel, "DashPanel");
+        if (dashPanelTr != null)
+        {
+            dashPanel = dashPanelTr.gameObject;
+            dashIcon = UIManager.FindChildRecursive(dashPanelTr, "DashIcon")?.GetComponent<Image>();
+            dashCooldownOverlay = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownOverlay")?.GetComponent<Image>();
+            dashCooldownText = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownText")?.GetComponent<TextMeshProUGUI>();
+
+
+        }
+        
 
         // ESC 패널 내부 버튼
         optionBtn = UIManager.FindChildRecursive(playerPanel, "OptionBtn")?.GetComponent<Button>();
@@ -574,6 +652,22 @@ public class PlayerUIManager : MonoBehaviour
 
         currentPanel = null;
         escReturnTarget = EscReturnTarget.None;
+    }
+    
+    private void ResetDashUI()
+    {
+        if (dashCooldownOverlay != null)
+        {
+            dashCooldownOverlay.fillAmount = 0f;
+            dashCooldownOverlay.gameObject.SetActive(false);
+        }
+
+        if (dashCooldownText != null)
+        {
+            dashCooldownText.text = "";
+            dashCooldownText.gameObject.SetActive(true);
+        }
+
     }
 
     /// <summary>
