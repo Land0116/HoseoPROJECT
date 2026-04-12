@@ -477,7 +477,7 @@ public class UIManager : MonoBehaviour
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("Stage_1_1");
     }
 
     /// <summary>

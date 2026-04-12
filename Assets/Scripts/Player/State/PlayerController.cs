@@ -350,8 +350,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     playerState = PlayerState.Idle;
                     break;
                 }
-                PlayDirectionalAnimation("Idle");
-                //PlayDirectionalAnimation("Walk");
+                PlayDirectionalAnimation("Walk");
                 break;
             }
             case PlayerState.Attack:
@@ -468,16 +467,16 @@ public class PlayerController : MonoBehaviour, IDamageable
                 nextState = "Idle_Attack_" + dirNames[dirIndex];
             }
         }
-        else if (actionPrefix == "Idle" || actionPrefix == "Walk")
+        else if (actionPrefix == "Idle")
         {
             nextState = "Idle_Weapon_" + dirNames[dirIndex];
         }
-        /*
+        
         else if (actionPrefix == "Walk")
         {
             nextState = "Walk_Weapon_" + dirNames[dirIndex];
         }
-        */
+        
         else
         {
             return;
@@ -986,13 +985,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 필수 참조가 없으면 종료
         if (curProjectilePrefab == null) return;
         if (gunTip == null) return;
-        if (playerBody == null) return;
 
-        // 플레이어가 현재 보는 방향으로 자동 공격 총알 1개 생성
-        GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, playerBody.rotation);
+        // 현재 플레이어가 바라보는 방향 사용
+        Vector2 shotDirection = aimDirection;
+
+        // 방향값이 이상하면 facingDir 기준 방향으로 보정
+        if (shotDirection.sqrMagnitude <= 0.0001f)
+        {
+            shotDirection = GetDirectionVectorFromFacingDir(facingDir);
+        }
+
+        float angle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, angle);
+
+        GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
-        // 총알 스크립트가 있으면 데미지 적용
         if (bulletScript != null)
         {
             float autoAttackDamage = GetFinalDamage() * autoAttackDamageRatio;
