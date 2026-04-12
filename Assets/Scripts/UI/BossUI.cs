@@ -6,11 +6,11 @@ public class BossUI : MonoBehaviour
 {
     [SerializeField] private RectTransform panel; // BossUIPanel
     [SerializeField] private float slideSpeed = 5f;
-    [SerializeField] private float stayTime = 2f;
+    [SerializeField] private float stayTime = 0f;
     [SerializeField] private float offScreenMultiplier = 2f;
 
     [Header("보스방 문")]
-    [SerializeField] private GameObject bossDoor; // 닫힐 문
+    //[SerializeField] private GameObject bossDoor; // 닫힐 문
 
 
     private Vector3 leftOffScreen;
@@ -44,10 +44,10 @@ public class BossUI : MonoBehaviour
 
         panel.gameObject.SetActive(true);
 
-        if(bossDoor != null)
+       /* if(bossDoor != null)
         {
             bossDoor.SetActive(false);
-        }
+        }*/
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -77,9 +77,9 @@ public class BossUI : MonoBehaviour
     {
         panel.gameObject.SetActive(true);
 
-        yield return new WaitForSeconds(1.5f);
+       
         Time.timeScale = 0;
-        bossDoor.SetActive(true); // 보스방 문 닫기
+        yield return null;
         StartCoroutine(SlidePanel());
     }
 

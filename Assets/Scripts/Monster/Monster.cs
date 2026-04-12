@@ -199,23 +199,31 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void Death()
     {
-        Debug.Log("DEAD ENTERED");
         if (isDead) return;
         isDead = true;
 
-        Vector2 dir = lastLookDir;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        string anim = GetDirectionName(angle) + "_Death";
-
         isAttacking = false;
         isHit = false;
+
         rb.linearVelocity = Vector2.zero;
 
-        currentAnim = anim;
-        animator.Play(anim);
+        // 애니메이션 있으면 재생
+        if (animator != null)
+        {
+            Vector2 dir = lastLookDir;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            string anim = GetDirectionName(angle) + "_Death";
 
+            PlayAnim(anim);
 
-        //StartCoroutine(DeathRoutine());
+            StartCoroutine(DeathFallbackRoutine());
+        }
+        else
+        {
+            
+            DropReward();
+            Destroy(gameObject);
+        }
     }
     private void DropReward()
     {
@@ -238,18 +246,16 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void UpdateAnimation(Vector2 dir, bool isMoving)
     {
-
         if (dir.magnitude > 0.01f)
             lastLookDir = dir;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
         string anim = GetDirectionName(angle);
 
         if (isMoving)
-            animator.Play(anim + "_Walk");
+            PlayAnim(anim + "_Walk");
         else
-            animator.Play(anim + "_Idle");
+            PlayAnim(anim + "_Idle");
     }
 
     private string GetDirectionName(float angle)
@@ -276,7 +282,6 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void PlayAttackAnimation(Vector2 dir)
     {
-
         if (isHit) return;
 
         if (dir.magnitude > 0.01f)
@@ -285,10 +290,7 @@ public class Monster : MonoBehaviour, IDamageable
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         string anim = GetDirectionName(angle) + "_Attack";
 
-        if (currentAnim == anim) return; 
-
-        currentAnim = anim;
-        animator.Play(anim);
+        PlayAnim(anim);
     }
 
     public void PlayHitAnimation()
@@ -303,13 +305,10 @@ public class Monster : MonoBehaviour, IDamageable
 
         rb.linearVelocity = Vector2.zero;
 
-        
-        currentAnim = anim;
-        animator.Play(anim);
+        PlayAnim(anim);
 
         StartCoroutine(HitRoutine());
     }
-
     private IEnumerator HitRoutine()
     {
         yield return new WaitForSeconds(hitAnimationTime);
@@ -320,12 +319,35 @@ public class Monster : MonoBehaviour, IDamageable
     {
         return isHit;
     }
-    /*private IEnumerator DeathRoutine()
+    void PlayAnim(string animName)
+    {
+        if (animator == null) return;
+
+        if (animator.runtimeAnimatorController == null) return; 
+
+        if (!HasState(animName)) return;//*
+
+        if (currentAnim == animName) return;
+
+        currentAnim = animName;
+        animator.Play(animName);
+    }
+    bool HasState(string stateName) //*
+    {
+        int hash = Animator.StringToHash(stateName);
+
+        return animator.HasState(0, hash);
+    }
+    IEnumerator DeathFallbackRoutine()
     {
         yield return new WaitForSeconds(deathAnimationTime);
-        DropReward();
-        Destroy(gameObject);
-    }*/
+
+        if (this != null)
+        {
+            DropReward();
+            Destroy(gameObject);
+        }
+    }
 
     public void DeathAnimationEvent()
     {
@@ -342,5 +364,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (rb != null)
             rb.simulated = false;
     }
+
+    
 }
 
