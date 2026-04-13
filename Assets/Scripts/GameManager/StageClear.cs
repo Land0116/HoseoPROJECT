@@ -204,6 +204,11 @@ public class StageClear : MonoBehaviour
         }
 
         Debug.Log("스테이지 클리어 - 출구 Trigger 활성화");
+        
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.ShowAugmentation();
+        }
     }
     
     /// <summary>
@@ -237,11 +242,6 @@ public class StageClear : MonoBehaviour
         Time.timeScale = 1f;
 
         // 다음 씬 진입 시 증강 UI 띄우기 예약
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.RequestStageEntryUI();
-        }
-
         yield return new WaitForSeconds(clearDelay);
 
         SceneManager.LoadScene(nextSceneName);
