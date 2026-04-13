@@ -30,6 +30,10 @@ public class InventorySlot : MonoBehaviour,
     public void SetItem(ItemInstance newItem)
     {
         item = newItem;
+
+        if (icon == null)
+            icon = GetComponentInChildren<Image>();
+
         UpdateUI();
     }
 
@@ -114,16 +118,18 @@ public class InventorySlot : MonoBehaviour,
 
     private void UpdateUI()
     {
-        if (item == null)
+        if (icon == null)
+            return;
+
+        if (item == null || item.data == null)
         {
             icon.sprite = null;
             icon.enabled = false;
+            return;
         }
-        else
-        {
-            icon.sprite = item.data.icon;
-            icon.enabled = true;
-        }
+
+        icon.sprite = item.data.icon;
+        icon.enabled = true;
     }
 
     public void OnPointerClick(PointerEventData eventData)

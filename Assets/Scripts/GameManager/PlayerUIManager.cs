@@ -127,7 +127,10 @@ public class PlayerUIManager : MonoBehaviour
 
     private void UpdateSlotCooldown(EquipmentSlot slot, Image overlay, TextMeshProUGUI text)
     {
-        if (slot == null || slot.item == null)
+        if (slot == null || overlay == null || text == null)
+            return;
+
+        if (slot.item == null)
         {
             overlay.gameObject.SetActive(false);
             text.text = "";
@@ -135,6 +138,13 @@ public class PlayerUIManager : MonoBehaviour
         }
 
         var item = slot.item;
+
+        if (item == null || item.data == null)
+        {
+            overlay.gameObject.SetActive(false);
+            text.text = "";
+            return;
+        }
 
         if (item.lastUseTime < 0)
         {
@@ -744,5 +754,10 @@ public class PlayerUIManager : MonoBehaviour
                 break;
         }
     }
+    public void RestoreEquipmentSlot(EquipmentSlot slot, ItemInstance item)
+    {
+        if (slot == null) return;
 
+        slot.SetItem(item);
+    }
 }

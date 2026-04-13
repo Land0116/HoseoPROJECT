@@ -119,16 +119,27 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        
-        // 혹시 이전 씬에서 timeScale이 0으로 멈춰 있었으면 복구
+        // 이전 씬에서 TimeScale 멈춘 상태 방지
         Time.timeScale = 1f;
 
-        // 현재 씬의 UI 다시 찾기
+        // UI 바인딩은 한 프레임 뒤에 (중요: 오브젝트 생성 타이밍 문제 방지)
         StartCoroutine(DelayedBind(scene.name));
 
-        // Main 씬이면 여기까지
-        //if (scene.name == "Main")
-        //    return;
+        // ================================
+        // 1. 플레이어 초기화 / 재연결
+        // ================================
+        if (playerUIManager != null)
+        {
+            if (PlayerController.Instance != null)
+            {
+                playerUIManager.BindPlayer(PlayerController.Instance);
+                playerUIManager.BindPlayerUI(systemUI);
+            }
+        }
+
+        // ================================
+        // 2. 장비 슬롯 복구 (핵심 수정)
+        // ================================
         if (scene.name != "Main")
         {
             EquipmentSlot[] slots = FindObjectsByType<EquipmentSlot>(
@@ -138,39 +149,46 @@ public class UIManager : MonoBehaviour
 
             foreach (var slot in slots)
             {
-                slot.ResetSlot();
+                // ClearItem 쓰면 item 데이터까지 날아감 (사용 불가 원인)
+                // slot.ClearItem();
+
+                // UI만 초기화 (item 유지)
+                slot.ResetSlotUIOnly();
             }
         }
 
-
-        // 게임 씬에서는 PlayerController를 씬 로드 후에 다시 연결
-        if (playerUIManager != null && PlayerController.Instance != null)
-        {
-            playerUIManager.BindPlayer(PlayerController.Instance);
-        }
-
-        // "새 게임 시작" 또는 "재시작" 예약이 있었다면
+        // ================================
+        // 3. 플레이어 상태 초기화 (새 게임 / 재시작)
+        // ================================
         if (needResetPlayerOnNextScene)
         {
             if (PlayerController.Instance != null)
             {
-                // 플레이어 상태 초기화
                 PlayerController.Instance.ResetPlayerForRestart();
             }
 
             needResetPlayerOnNextScene = false;
         }
 
-        // 다음 씬에서 증강창을 띄우기로 예약되어 있으면
+        // ================================
+        // 4. 증강 UI 예약 처리
+        // ================================
         if (needShowAugmentationOnNextScene)
         {
             if (augUIManager != null)
             {
-                //augUIManager.RequestShowOnNextScene();
-                //augUIManager.TryOpenReservedAugmentation();
+                // 필요하면 여기서 예약 로직 실행
             }
 
             needShowAugmentationOnNextScene = false;
+        }
+
+        // ================================
+        // 5. 카메라 재바인딩 (안전)
+        // ================================
+        if (PlayerController.Instance != null)
+        {
+            BindCameraToPlayer(PlayerController.Instance);
         }
     }
 

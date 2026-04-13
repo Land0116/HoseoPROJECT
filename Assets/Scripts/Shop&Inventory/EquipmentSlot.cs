@@ -165,4 +165,18 @@ public class EquipmentSlot : MonoBehaviour,
 
         item.lastUseTime = Time.time;
     }
+
+    public void ResetSlotUIOnly()
+    {
+        if (icon == null) return;
+
+        if (item == null || item.data == null)
+        {
+            icon.sprite = null;
+            icon.enabled = false;
+            return;
+        }
+
+        UpdateUI();
+    }
 }
