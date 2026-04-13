@@ -233,10 +233,10 @@ MonoBehaviour:
   blockMovement: 0
   detectRange: 15
   chargeTime: 0
-  dashSpeed: 17
+  dashSpeed: 25
   dashCooldown: 1.2
   dashExtraDistance: 1
-  dashdamage: 3
+  dashdamage: 20
 --- !u!58 &2842034953250269096
 CircleCollider2D:
   m_ObjectHideFlags: 0
