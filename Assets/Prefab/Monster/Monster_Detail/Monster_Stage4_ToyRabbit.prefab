@@ -113,7 +113,7 @@ MonoBehaviour:
   attackPattern: {fileID: 7208056487558059103}
   movePattern: {fileID: 3973549176726646443}
   moveSpeed: 3
-  maxHP: 100
+  maxHP: 30
   minGold: 1
   maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
@@ -144,7 +144,7 @@ MonoBehaviour:
   dashSpeed: 15
   dashCooldown: 1.2
   dashExtraDistance: 1
-  dashdamage: 25
+  dashdamage: 3
 --- !u!58 &8563671019788274839
 CircleCollider2D:
   m_ObjectHideFlags: 0

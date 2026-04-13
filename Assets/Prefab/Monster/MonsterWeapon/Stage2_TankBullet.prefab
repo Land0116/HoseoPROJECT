@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a6adcb3271428b458c4080b482af193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterBullet
-  speed: 25
-  damage: 15
+  speed: 15
+  damage: 3
 --- !u!58 &4517589242465483021
 CircleCollider2D:
   m_ObjectHideFlags: 0

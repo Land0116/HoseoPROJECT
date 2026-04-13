@@ -167,9 +167,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Flyhoming
   blockMovement: 0
-  homingSpeed: 7.5
-  detectRange: 15
-  damage: 15
+  homingSpeed: 6
+  detectRange: 9
+  damage: 3
   damageInterval: 1
 --- !u!58 &1899126733358210982
 CircleCollider2D:
@@ -320,7 +320,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: -8740905913338149718, guid: 247d8e643182c6d4f8cfa165214f5cea, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

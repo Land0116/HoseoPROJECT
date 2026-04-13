@@ -202,9 +202,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Homing
   blockMovement: 0
-  detectRange: 15
-  homingSpeed: 7
-  damage: 10
+  detectRange: 10
+  homingSpeed: 6
+  damage: 3
   damageInterval: 1
 --- !u!114 &1468389543809814125
 MonoBehaviour:
