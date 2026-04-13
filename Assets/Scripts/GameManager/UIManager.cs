@@ -120,8 +120,6 @@ public class UIManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         
-
-
         // 혹시 이전 씬에서 timeScale이 0으로 멈춰 있었으면 복구
         Time.timeScale = 1f;
 
@@ -168,8 +166,8 @@ public class UIManager : MonoBehaviour
         {
             if (augUIManager != null)
             {
-                augUIManager.RequestShowOnNextScene();
-                augUIManager.TryOpenReservedAugmentation();
+                //augUIManager.RequestShowOnNextScene();
+                //augUIManager.TryOpenReservedAugmentation();
             }
 
             needShowAugmentationOnNextScene = false;

@@ -67,7 +67,6 @@ public class MainUI : MonoBehaviour
         // 메인 UI가 켜질 때 증강 UI는 강제로 꺼둠
         if (AugUIManager.instance != null)
         {
-            AugUIManager.instance.showOnPlayForTest = false;
             AugUIManager.instance.ResetUIStateForRestart();
         }
     }
@@ -77,10 +76,6 @@ public class MainUI : MonoBehaviour
         mainImage.SetActive(false);
         SceneManager.LoadScene("TestScene");
         
-        if (AugUIManager.instance != null)
-        {
-            AugUIManager.instance.RequestShowOnNextScene();
-        }
         PlayerUIManager.Instance.playerTextUIPanel.SetActive(true);
     }
     private void OnClickOption()

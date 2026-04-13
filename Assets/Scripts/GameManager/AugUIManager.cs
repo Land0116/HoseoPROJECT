@@ -34,10 +34,7 @@ public class AugUIManager : MonoBehaviour
     [Header("보유 증강 아이콘 슬롯")]
     // 현재 런에서 먹은 증강을 보여줄 아이콘 슬롯들
     [SerializeField] private Image[] slotImages;
-
-    [Header("게임이 시작될 때 UI 설정")]
-    // 게임 시작하자마자 테스트용으로 증강 UI를 띄울지 여부
-    [SerializeField] public bool showOnPlayForTest;
+    
 
     private void Awake()
     {
@@ -56,48 +53,8 @@ public class AugUIManager : MonoBehaviour
         // 시작 시 슬롯 비워두기
         ClearOwnedAugmentUI();
     }
-
-    /// <summary>
-    /// 다음 게임 씬에서 증강창을 띄우기 위한 예약 플래그
-    /// </summary>
-    public void RequestShowOnNextScene()
-    {
-        showOnPlayForTest = true;
-    }
-
-    /// <summary>
-    /// 예약되어 있으면 증강창 오픈 시도
-    /// 이 함수는 UIManager가 sceneLoaded 후 호출
-    /// </summary>
-    public void TryOpenReservedAugmentation()
-    {
-        if (!showOnPlayForTest) return;
-
-        StartCoroutine(ShowAugmentationOnStartRoutine());
-        showOnPlayForTest = false;
-    }
-
-    /// <summary>
-    /// 다른 매니저 / 플레이어 / 런 매니저가 먼저 준비될 수 있게 한 프레임 대기 후 증강창 열기
-    /// </summary>
-    public IEnumerator ShowAugmentationOnStartRoutine()
-    {
-        // 한 프레임 대기
-        yield return null;
-
-        // AugmentRunManager가 아직 없으면 생길 때까지 대기
-        while (AugmentRunManager.Instance == null)
-        {
-            yield return null;
-        }
-
-        // 현재 보유 증강 UI 먼저 갱신
-        RefreshOwnedAugmentUI();
-
-        // 증강창 열기
-        ShowAugmentation();
-    }
-
+    
+    
     /// <summary>
     /// 현재 씬에서 증강창을 열 수 있는지 판단
     /// </summary>
@@ -460,7 +417,12 @@ public class AugUIManager : MonoBehaviour
     /// </summary>
     private bool CanOpenAugUIInCurrentScene()
     {
-        return SceneManager.GetActiveScene().name != "Main";
+        string sceneName = SceneManager.GetActiveScene().name;
+
+        if (sceneName == "Main") return false;
+        if (sceneName == "Stage_1_5") return false;
+
+        return true;
     }
 
     /// <summary>
@@ -469,9 +431,7 @@ public class AugUIManager : MonoBehaviour
     public void ResetUIStateForRestart()
     {
         Time.timeScale = 1f;
-
-        showOnPlayForTest = false;
-
+        
         if (uiPanel != null)
             uiPanel.SetActive(false);
 

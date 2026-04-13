@@ -73,11 +73,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
     [Header("공격 잠금 방향")]
     [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
-    [Header("공격 입력 버퍼")]
-    [SerializeField] private float attackBufferTime = 0.15f;
-    private bool hasBufferedAttack = false;
-    private float attackBufferEndTime = -1f;
-
+    
     [Header("피격")]
     [SerializeField] private bool isHitAnimating = false;
     
@@ -282,7 +278,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         ApplyWeapon(basicWeapon);
         ApplyItem(currentItem);
-        Time.timeScale = 0f;
     }
 
     // Update is called once per frame
