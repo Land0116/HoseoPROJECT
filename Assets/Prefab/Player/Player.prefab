@@ -288,6 +288,9 @@ MonoBehaviour:
   isAttackAnimLocked: 0
   lockedAttackFacingDir: 6
   lockedAttackAimDirection: {x: 0, y: -1}
+  attackBufferTime: 0.15
+  isHitAnimating: 0
+  lastMoveDirection: {x: 0, y: -1}
   dashDistance: 5
   dashDuration: 0.12
   dashCooldown: 2
@@ -326,7 +329,7 @@ MonoBehaviour:
   isInvincible: 0
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}
-  crosshairTransform: {fileID: 581639872760927715, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
+  crosshairTransform: {fileID: 0}
   hideSystemCursor: 1
   playerBody: {fileID: 621105006712859011}
   gunTip: {fileID: 6879044860308773687}
@@ -530,7 +533,7 @@ Animator:
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: f2206c82d22089f4dbc4ef563dff06b1, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 0
+  m_UpdateMode: 2
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0

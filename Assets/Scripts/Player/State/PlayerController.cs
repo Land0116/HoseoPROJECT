@@ -220,8 +220,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isDie;
         set => isDie = value;
     }
-    
-    
+
+    public bool IsHitAnimating
+    {
+        get => isHitAnimating;
+        set => isHitAnimating = value;
+    }
+
+
     private void Awake()
     {
         
@@ -245,7 +251,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         maxHp = baseMaxHp;//체력수정.아이템
         Hp = maxHp;
         
-        //weaponDamage = AttackDamage;
+        
         if(basicWeapon != null)
         {
             ApplyWeapon(basicWeapon);
@@ -459,7 +465,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDie) return;
 
-        isHitAnimating = false;
+        IsHitAnimating = false;
 
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
@@ -498,6 +504,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             nextState = "Hit_" + dirNames[dirIndex];
         }
+        else if (actionPrefix == "Death")
+        {
+            nextState = "Death_" + dirNames[dirIndex];
+        }
         else
         {
             return;
@@ -513,14 +523,14 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         bool isAttackAnim = actionPrefix == "Attack";
         bool isHitAnim = actionPrefix == "Hit";
+        bool isDeathAnim = actionPrefix == "Death";
 
-        if (!isAttackAnim && !isHitAnim && currentAnimState == nextState)
+        if (!isAttackAnim && !isHitAnim && !isDeathAnim && currentAnimState == nextState)
             return;
 
-        bodyAnimator.CrossFade(stateHash, (isAttackAnim || isHitAnim) ? 0.02f : 0.05f, 0, 0f);
+        bodyAnimator.CrossFade(stateHash, (isAttackAnim || isHitAnim || isDeathAnim) ? 0.02f : 0.05f, 0, 0f);
         currentAnimState = nextState;
     }
-
     
     //단추(기본공격) 발사
     void Shoot()
@@ -739,7 +749,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDie) return;
 
-        isHitAnimating = true;
+        IsHitAnimating = true;
         playerState = PlayerState.Hit;
 
         // 피격 시 대쉬/공격 정리
@@ -852,19 +862,28 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         canControl = false;
+        
+        isAttackAnimLocked = false;
+        currentAnimState = string.Empty;
+
+        // 죽는 방향 기준으로 Death 애니메이션 재생
+        PlayDirectionalAnimation("Death", facingDir);
 
         StopAllCoroutines();
-
+        
         if (crosshairTransform != null)
         {
             crosshairTransform.gameObject.SetActive(false);
         }
 
+    }
+
+    public void EndDeathAnimationEvent()
+    {
         if (PlayerUIManager.Instance != null)
         {
             PlayerUIManager.Instance.ShowPlayerDyingUI();
         }
-
     }
     
     

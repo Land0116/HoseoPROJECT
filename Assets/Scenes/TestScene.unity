@@ -219,14 +219,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: rb
-      value: 
-      objectReference: {fileID: 234530782}
-    - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
-      propertyPath: bodyAnimator
-      value: 
-      objectReference: {fileID: 234530783}
-    - target: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
       propertyPath: crosshairTransform
       value: 
       objectReference: {fileID: 2106886933}
@@ -279,16 +271,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eae62301816a1df4f94147d10540344c, type: 3}
---- !u!50 &234530782 stripped
-Rigidbody2D:
-  m_CorrespondingSourceObject: {fileID: 5864595452075051824, guid: eae62301816a1df4f94147d10540344c, type: 3}
-  m_PrefabInstance: {fileID: 234530781}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &234530783 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 845225410227853194, guid: eae62301816a1df4f94147d10540344c, type: 3}
-  m_PrefabInstance: {fileID: 234530781}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &272124371
 GameObject:
   m_ObjectHideFlags: 0
