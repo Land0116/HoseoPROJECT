@@ -6,7 +6,7 @@ public class PlayerAnimationEventReceiver : MonoBehaviour
     {
         if (PlayerController.Instance != null)
         {
-            PlayerController.Instance.FireOnAnimationEvent();
+           PlayerController.Instance.FireOnAnimationEvent();
         }
     }
 

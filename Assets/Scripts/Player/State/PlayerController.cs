@@ -156,6 +156,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     private Coroutine shieldCoroutine;
     private Coroutine hpRegenCoroutine;
     private bool isPointerOverUIThisFrame = false;
+
+    //수정하면서 추가한 부분
+    private float nextAttackTime = 0f;
+
     public int Hp
     {
         get => hp;
@@ -268,6 +272,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Start()
     {
         if (hideSystemCursor) Cursor.visible = false;
+        bodyAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+
         RebuildPlayerStats();
         if (AugUIManager.instance != null && AugmentRunManager.Instance != null)
         {
@@ -283,27 +289,65 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Update()
     {
         if (IsDie)
-        {
             return;
-        }
+
         PlayerMouseMovement();
         
         isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-        
-        if (isFireInput && CanStartAttackNow())
-        {
-            ClearAttackBuffer();
-            StartAttack();
-            return;
-        }
-        
-        TryConsumeBufferedAttack();
+
+        HandleAttack();//새로 추가한 부분
+
+    
         
     }
-    
+    private void HandleAttack()
+    {
+        
+
+        if (!isFireInput) return;
+
+        bool canAttack = CanStartAttackNow();
+        
+
+        if (!canAttack) return;
+
+        ;
+
+        if (Time.time >= nextAttackTime)
+        {
+            
+
+            nextAttackTime = Time.time + (1f / attackPerSecond);
+
+            PlayAttackAnimation();
+            Shoot();
+        }
+    }
     private bool IsPointerOverUI()
     {
-        return isPointerOverUIThisFrame;
+        if (EventSystem.current == null)
+            return false;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Mouse.current.position.ReadValue();
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+
+        for (int i = 0; i < results.Count; i++)
+        {
+            Debug.Log("[UI CHECK] hit: " + results[i].gameObject.name +
+          " / parent: " + results[i].gameObject.transform.root.name);
+
+            if (results[i].gameObject.layer == LayerMask.NameToLayer("UI"))
+            {
+                
+                return true;
+            }
+        }
+
+        return false;
     }
 
     void FixedUpdate()
@@ -407,13 +451,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         crosshairTransform.position = mouseWorldPos;
 
         Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position);
-
         if (direction.sqrMagnitude > 0.0001f)
         {
             aimDirection = direction.normalized;
             facingDir = Get8DirectionIndex(aimDirection);
         }
-        
+
     }
     
     /// <summary>
@@ -448,13 +491,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    public void FireOnAnimationEvent()
-    {
-        if (IsDie) return;
-        if (IsAttack) return;
-        
-        Shoot();
-    }
+    
     
     public void EndAttackAnimationEvent()
     {
@@ -471,7 +508,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             ? PlayerState.Walk
             : PlayerState.Idle;
 
-        TryConsumeBufferedAttack();
     }
     
     private void PlayDirectionalAnimation(string actionPrefix, int forcedDir = -1)
@@ -517,7 +553,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (!bodyAnimator.HasState(0, stateHash))
         {
-            Debug.LogWarning("애니메이션 상태 없음 : " + nextState);
+            
             return;
         }
 
@@ -529,44 +565,54 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         bodyAnimator.CrossFade(stateHash, (isAttackAnim || isHitAnim || isDeathAnim) ? 0.02f : 0.05f, 0, 0f);
+        if (isAttackAnim)
+        {
+            // 공격 애니메이션은 무조건 처음부터 재생 (이벤트 씹힘 방지)
+            bodyAnimator.Play(stateHash, 0, 0f);
+        }
+        else
+        {
+            bodyAnimator.CrossFade(stateHash, (isHitAnim || isDeathAnim) ? 0.02f : 0.05f, 0, 0f);
+        }
+
         currentAnimState = nextState;
     }
-    
+
     //단추(기본공격) 발사
     void Shoot()
     {
         if (IsDie) return;
-        if (!IsAttack && playerAttackType == AttackType.Base)
+        if (curProjectilePrefab == null) return;
+
+        int currentBulletCount = Mathf.Max(1, bulletPerShot);
+
+        float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
+
+        Vector2 shotDirection = playerState == PlayerState.Attack
+    ? lockedAttackAimDirection
+    : aimDirection;
+        if (shotDirection.sqrMagnitude <= 0.0001f)
         {
-            if (curProjectilePrefab == null) return;
+            shotDirection = GetDirectionVectorFromFacingDir(facingDir);
+        }
+        float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
 
-            int currentBulletCount = Mathf.Max(1, bulletPerShot);
+        for (int i = 0; i < currentBulletCount; i++)
+        {
+            float addAngle = startAngle + (bulletSpreadAngle * i);
 
-            float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle + addAngle);
 
-            // 공격 중이면 잠금 방향 사용
-            Vector2 shotDirection = isAttackAnimLocked ? lockedAttackAimDirection : aimDirection;
-            float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+            GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
+            ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
-            for (int i = 0; i < currentBulletCount; i++)
+            if (bulletScript != null)
             {
-                float addAngle = startAngle + (bulletSpreadAngle * i);
-
-                Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle + addAngle);
-
-                GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
-                ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
-
-                if (bulletScript != null)
-                {
-                    bulletScript.SetDamage(GetFinalDamage());
-                }
+                bulletScript.SetDamage(GetFinalDamage());
             }
-
-            StartCoroutine(FireRate());
         }
     }
-    
+
     public void SetControl(bool value)
     {
         canControl = value;
@@ -614,21 +660,21 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!IsGameplayScene())
         {
             isFireInput = false;
-            ClearAttackBuffer();
+
             return;
         }
 
         if (IsDie)
         {
             isFireInput = false;
-            ClearAttackBuffer();
+
             return;
         }
 
         if (!canControl)
         {
             isFireInput = false;
-            ClearAttackBuffer();
+
             return;
         }
 
@@ -636,78 +682,55 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (isFireInput)
         {
-            BufferAttackInput();
+
+            isFireInput = value.isPressed;
         }
         else
         {
-            ClearAttackBuffer();
+
+            isFireInput = value.isPressed;
         }
     }
-     private bool CanStartAttackNow()
-     {
-         if (!IsGameplayScene()) return false;
-         if (IsDie) return false;
-         if (!canControl) return false;
-         if (IsPointerOverUI()) return false;
-         if (IsAttack) return false;
-         if (playerState == PlayerState.Attack) return false;
-         if (playerState == PlayerState.Hit) return false;
-         if (isDashing) return false;
-
-         return true;
-     }
-    private void StartAttack()
+    private bool CanStartAttackNow()
     {
-        if (!CanStartAttackNow()) return;
+        bool isUI = IsPointerOverUI();
 
+        
+        if (!IsGameplayScene()) return false;
+        if (IsDie) return false;
+        if (!canControl) return false;
+        if (isUI) return false;
+        if (isDashing) return false;
+
+        return true;
+    }
+
+    private void PlayAttackAnimation()
+    {
         playerState = PlayerState.Attack;
 
         lockedAttackFacingDir = facingDir;
         lockedAttackAimDirection = aimDirection;
-        isAttackAnimLocked = true;
 
+        bodyAnimator.speed = attackPerSecond;
         PlayDirectionalAnimation("Attack", lockedAttackFacingDir);
     }
-    
     private void ReleaseAttackState()
     {
         isAttackAnimLocked = false;
         currentAnimState = string.Empty;
 
-        // 먼저 Attack 상태에서 빠져나와야 함
+        // 애니메이션 속도 원복
+        bodyAnimator.speed = 1f;
+
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
             : PlayerState.Idle;
-        
     }
+
+
+
     
-    private void BufferAttackInput()
-    {
-        hasBufferedAttack = true;
-        attackBufferEndTime = Time.time + attackBufferTime;
-    }
-
-    private void ClearAttackBuffer()
-    {
-        hasBufferedAttack = false;
-        attackBufferEndTime = -1f;
-    }
-
-    private void TryConsumeBufferedAttack()
-    {
-        if (!hasBufferedAttack) return;
-
-        if (Time.time > attackBufferEndTime)
-        {
-            ClearAttackBuffer();
-            return;
-        }
-
-        if (!CanStartAttackNow()) return;
-
-        ClearAttackBuffer();
-        StartAttack();
-    }
     public void OnDamage(float damage)
     {
         if (IsDie) return;
@@ -1210,13 +1233,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    IEnumerator FireRate()
-    {
-        IsAttack = true;
-        yield return new WaitForSeconds(1f / attackPerSecond);
-        IsAttack = false;
-        
-    }
+    
     
     IEnumerator ShieldRoutine()
     {
@@ -1597,4 +1614,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.E);
     }
 
+    public void FireOnAnimationEvent()
+    {
+       // Shoot();
+    }
 }
