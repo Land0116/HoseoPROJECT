@@ -1,25 +1,30 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AugmentRunManager : MonoBehaviour
 {
-    // 싱글톤 인스턴스
     public static AugmentRunManager Instance;
 
-    [Header("최대 보유 가능한 증강 개수")]
-    [SerializeField] private int maxAugmentCount = 5;
+    #region Fields
 
-    // 현재 런에서 보유 중인 증강 목록
-    private readonly List<AugmentationSystem> ownedAugments = new List<AugmentationSystem>();
+    private const int MaxSlotCapacity = 12;
 
-    // 외부에서는 읽기만 가능하게 공개
-    public IReadOnlyList<AugmentationSystem> OwnedAugments => ownedAugments;
+    [Header("슬롯 설정")]
+    [SerializeField] private int baseSlotCount = 6;
+    [SerializeField] private int currentSlotCount = 6;
 
-    // 현재 몇 개 보유 중인지
-    public int OwnedCount => ownedAugments.Count;
+    [Header("현재 런 슬롯 데이터")]
+    [SerializeField] private AugmentSlotData[] ownedSlots = new AugmentSlotData[MaxSlotCapacity];
 
-    // 더 먹을 수 있는지 여부
-    public bool CanPickMore => ownedAugments.Count < maxAugmentCount;
+    #endregion
+
+    #region Property
+
+    public int CurrentSlotCount => currentSlotCount;
+    public AugmentSlotData[] OwnedSlots => ownedSlots;
+
+    #endregion
+
+    #region Unity
 
     private void Awake()
     {
@@ -31,45 +36,335 @@ public class AugmentRunManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        currentSlotCount = Mathf.Clamp(baseSlotCount, 1, MaxSlotCapacity);
+
+        for (int i = 0; i < ownedSlots.Length; i++)
+        {
+            if (ownedSlots[i] == null)
+                ownedSlots[i] = new AugmentSlotData();
+        }
     }
 
-    public bool HasAugment(AugmentationSystem aug)
+    #endregion
+
+    #region Public
+
+    /// <summary>
+    /// 해당 증강이 현재 슬롯 규칙상 선택 가능 상태인지 판단
+    /// </summary>
+    public bool CanOfferAugment(AugmentationSystem aug)
     {
-        // 특정 증강을 이미 가지고 있는지 체크
-        return ownedAugments.Contains(aug);
+        if (aug == null) return false;
+        if (!aug.isUnlocked) return false;
+
+        switch (aug.category)
+        {
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                return CanOfferSubSkill(aug);
+
+            case AugmentationSystem.AugmentCategory.Passive:
+                return CanOfferPassive(aug);
+
+            case AugmentationSystem.AugmentCategory.Special:
+                return CanOfferSpecial(aug);
+        }
+
+        return false;
     }
 
+    /// <summary>
+    /// 선택된 증강을 실제 슬롯에 반영
+    /// </summary>
     public bool TryAddAugment(AugmentationSystem aug)
     {
-        // null이면 추가 불가
         if (aug == null) return false;
 
-        // 최대 개수면 추가 불가
-        if (!CanPickMore) return false;
+        switch (aug.category)
+        {
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                return TryAddSubSkill(aug);
 
-        // 이미 가진 증강이면 중복 추가 불가
-        if (ownedAugments.Contains(aug)) return false;
+            case AugmentationSystem.AugmentCategory.Passive:
+                return TryAddPassive(aug);
 
-        // 정상적으로 추가
-        ownedAugments.Add(aug);
-        return true;
+            case AugmentationSystem.AugmentCategory.Special:
+                return TryAddSpecial(aug);
+        }
+
+        return false;
     }
 
     public void ResetRun()
     {
-        // 런 초기화 시 보유 증강 전부 제거
-        ownedAugments.Clear();
+        currentSlotCount = Mathf.Clamp(baseSlotCount, 1, MaxSlotCapacity);
 
-        // 증강 UI 슬롯도 같이 초기화
-        if (AugUIManager.instance != null)
+        for (int i = 0; i < ownedSlots.Length; i++)
         {
-            AugUIManager.instance.RefreshOwnedAugmentUI();
+            if (ownedSlots[i] != null)
+                ownedSlots[i].Clear();
         }
 
-        // 플레이어 스탯도 원래 상태로 다시 계산
+        NotifyChanged();
+    }
+
+    #endregion
+
+    #region Offer Check
+
+    private bool CanOfferSubSkill(AugmentationSystem aug)
+    {
+        int sameSkillIndex = FindSameSubSkillByID(aug.augmentID);
+        if (sameSkillIndex >= 0)
+        {
+            return ownedSlots[sameSkillIndex].currentLevel < aug.maxLevel;
+        }
+
+        int sameTypeIndex = FindSameSubSkillByType(aug.subSkillType);
+        if (sameTypeIndex >= 0)
+        {
+            return true; // 동일 타입이면 교체 가능
+        }
+
+        return FindFirstEmptySlotIndex() >= 0;
+    }
+
+    private bool CanOfferPassive(AugmentationSystem aug)
+    {
+        int sameEffectIndex = FindSamePassiveByType(aug.passiveType);
+        if (sameEffectIndex >= 0)
+        {
+            return ownedSlots[sameEffectIndex].stackCount < aug.maxLevel;
+        }
+
+        return FindFirstEmptySlotIndex() >= 0;
+    }
+
+    private bool CanOfferSpecial(AugmentationSystem aug)
+    {
+        if (HasSpecial(aug.augmentID))
+            return false;
+
+        return FindFirstEmptySlotIndex() >= 0;
+    }
+
+    #endregion
+
+    #region Add Logic
+
+    private bool TryAddSubSkill(AugmentationSystem aug)
+    {
+        // 1. 동일 스킬이면 레벨 증가
+        int sameSkillIndex = FindSameSubSkillByID(aug.augmentID);
+        if (sameSkillIndex >= 0)
+        {
+            if (ownedSlots[sameSkillIndex].currentLevel >= aug.maxLevel)
+                return false;
+
+            ownedSlots[sameSkillIndex].currentLevel++;
+            NotifyChanged();
+            return true;
+        }
+
+        // 2. 동일 타입이면 기존 스킬 교체
+        int sameTypeIndex = FindSameSubSkillByType(aug.subSkillType);
+        if (sameTypeIndex >= 0)
+        {
+            ownedSlots[sameTypeIndex].Set(aug);
+            NotifyChanged();
+            return true;
+        }
+
+        // 3. 다른 타입이면 빈 슬롯 추가
+        int emptyIndex = FindFirstEmptySlotIndex();
+        if (emptyIndex < 0)
+            return false;
+
+        ownedSlots[emptyIndex].Set(aug);
+        NotifyChanged();
+        return true;
+    }
+
+    private bool TryAddPassive(AugmentationSystem aug)
+    {
+        // 동일 효과면 중첩
+        int sameEffectIndex = FindSamePassiveByType(aug.passiveType);
+        if (sameEffectIndex >= 0)
+        {
+            if (ownedSlots[sameEffectIndex].stackCount >= aug.maxLevel)
+                return false;
+
+            ownedSlots[sameEffectIndex].stackCount++;
+            NotifyChanged();
+            return true;
+        }
+
+        // 다른 효과면 추가
+        int emptyIndex = FindFirstEmptySlotIndex();
+        if (emptyIndex < 0)
+            return false;
+
+        ownedSlots[emptyIndex].Set(aug);
+        NotifyChanged();
+        return true;
+    }
+
+    private bool TryAddSpecial(AugmentationSystem aug)
+    {
+        if (HasSpecial(aug.augmentID))
+            return false;
+
+        int emptyIndex = FindFirstEmptySlotIndex();
+        if (emptyIndex < 0)
+            return false;
+
+        ownedSlots[emptyIndex].Set(aug);
+        NotifyChanged();
+        return true;
+    }
+
+    #endregion
+
+    #region Find
+
+    private int FindFirstEmptySlotIndex()
+    {
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            if (ownedSlots[i] == null) continue;
+            if (!ownedSlots[i].isOccupied) return i;
+        }
+
+        return -1;
+    }
+
+    private int FindSameSubSkillByID(string augmentID)
+    {
+        if (string.IsNullOrEmpty(augmentID)) return -1;
+
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+            if (slot == null || !slot.isOccupied || slot.augmentData == null) continue;
+            if (slot.augmentData.category != AugmentationSystem.AugmentCategory.SubSkill) continue;
+
+            if (slot.augmentData.augmentID == augmentID)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private int FindSameSubSkillByType(AugmentationSystem.SubSkillType subSkillType)
+    {
+        if (subSkillType == AugmentationSystem.SubSkillType.None) return -1;
+
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+            if (slot == null || !slot.isOccupied || slot.augmentData == null) continue;
+            if (slot.augmentData.category != AugmentationSystem.AugmentCategory.SubSkill) continue;
+
+            if (slot.augmentData.subSkillType == subSkillType)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private int FindSamePassiveByType(AugmentationSystem.PassiveType passiveType)
+    {
+        if (passiveType == AugmentationSystem.PassiveType.None) return -1;
+
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+            if (slot == null || !slot.isOccupied || slot.augmentData == null) continue;
+            if (slot.augmentData.category != AugmentationSystem.AugmentCategory.Passive) continue;
+
+            if (slot.augmentData.passiveType == passiveType)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private bool HasSpecial(string augmentID)
+    {
+        if (string.IsNullOrEmpty(augmentID)) return false;
+
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+            if (slot == null || !slot.isOccupied || slot.augmentData == null) continue;
+            if (slot.augmentData.category != AugmentationSystem.AugmentCategory.Special) continue;
+
+            if (slot.augmentData.augmentID == augmentID)
+                return true;
+        }
+
+        return false;
+    }
+    
+    public int GetPreviewLevel(AugmentationSystem aug)
+    {
+        if (aug == null) return 1;
+
+        for (int i = 0; i < currentSlotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+            if (slot == null) continue;
+            if (!slot.isOccupied) continue;
+            if (slot.augmentData == null) continue;
+
+            // 같은 증강이면 다음 레벨 미리보기
+            if (slot.augmentData.augmentID == aug.augmentID)
+            {
+                if (aug.category == AugmentationSystem.AugmentCategory.SubSkill)
+                {
+                    return Mathf.Clamp(slot.currentLevel + 1, 1, aug.maxLevel);
+                }
+
+                if (aug.category == AugmentationSystem.AugmentCategory.Passive)
+                {
+                    return Mathf.Clamp(slot.stackCount + 1, 1, aug.maxLevel);
+                }
+
+                if (aug.category == AugmentationSystem.AugmentCategory.Special)
+                {
+                    return 1;
+                }
+            }
+
+            // 패시브형은 동일 효과 중첩이니까 같은 passiveType도 체크
+            if (aug.category == AugmentationSystem.AugmentCategory.Passive &&
+                slot.augmentData.category == AugmentationSystem.AugmentCategory.Passive &&
+                slot.augmentData.passiveType == aug.passiveType)
+            {
+                return Mathf.Clamp(slot.stackCount + 1, 1, aug.maxLevel);
+            }
+        }
+
+        // 처음 먹는 증강이면 Lv1
+        return 1;
+    }
+
+    #endregion
+
+    #region Utility
+
+    private void NotifyChanged()
+    {
         if (PlayerController.Instance != null)
         {
             PlayerController.Instance.RebuildPlayerStats();
         }
+
+        if (AugUIManager.instance != null)
+        {
+            AugUIManager.instance.RefreshOwnedAugmentUI();
+        }
     }
+
+    #endregion
 }

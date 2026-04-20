@@ -277,18 +277,14 @@ MonoBehaviour:
   moveSpeed: 11
   attackPerSecond: 1
   playerState: 0
-  playerAttackType: 0
   isAttack: 0
   isDie: 0
   isFireInput: 0
   canControl: 1
   bodyAnimator: {fileID: 845225410227853194}
   aimDirection: {x: 0, y: -1}
-  facingDir: 6
-  isAttackAnimLocked: 0
-  lockedAttackFacingDir: 6
+  animDirection: {x: 0, y: -1}
   lockedAttackAimDirection: {x: 0, y: -1}
-  attackBufferTime: 0.15
   isHitAnimating: 0
   lastMoveDirection: {x: 0, y: -1}
   dashDistance: 5
@@ -304,29 +300,30 @@ MonoBehaviour:
   curProjectilePrefab: {fileID: 33401344934054971, guid: 2df8a4b864d0583439ada03a3c3799b2, type: 3}
   weaponDamage: 0
   itemDamage: 0
-  damageMultiplier: 1
-  slowDamageMultiplier: 0
-  hpToDamagePercentPer10Hp: 0
-  bulletPerShot: 1
-  bulletSpreadAngle: 10
-  healOnKillAmount: 0
-  hpRegenPerSecond: 0
-  lifeStealAmount: 0
-  shieldEnabled: 0
-  shieldReady: 0
-  shieldInterval: 30
-  shieldVisualObject: {fileID: 2059917093533829590}
-  isHealToAutoAttackActive: 0
-  accumulatedHealAmount: 0
-  autoAttackHealThreshold: 5
-  autoAttackDamageRatio: 0.5
-  ignoreObstacle: 0
-  obstacleLayerName: Obstacle
-  enemyLayerName: Monster
-  cheatDeathOnce: 0
-  characterScaleMultiplier: 1
-  invincibleDuration: 1
-  isInvincible: 0
+  currentShotAugment: {fileID: 0}
+  currentTrajectoryAugment: {fileID: 0}
+  currentEffectAugment: {fileID: 0}
+  currentShotLevel: 0
+  currentTrajectoryLevel: 0
+  currentEffectLevel: 0
+  shotProjectileCountAdd: 0
+  shotDamageMultiplier: 1
+  shotSpreadAngle: 0
+  shotChargeTime: 0
+  trajectoryHomingStrength: 0
+  trajectoryDuration: 0
+  trajectoryBounceCount: 0
+  trajectoryPierceCount: 0
+  effectExplosionRadius: 0
+  effectExplosionDamageMultiplier: 1
+  effectChainCount: 0
+  effectChainRange: 0
+  effectDotDamagePerSecond: 0
+  effectDotDuration: 0
+  passiveDamageMultiplier: 1
+  passiveAttackSpeedPercent: 0
+  passiveMaxHpAdd: 0
+  passiveLifeStealPercent: 0
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}
   crosshairTransform: {fileID: 0}
@@ -531,7 +528,7 @@ Animator:
   m_GameObject: {fileID: 4803840776975053172}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f2206c82d22089f4dbc4ef563dff06b1, type: 2}
+  m_Controller: {fileID: 9100000, guid: 664611471f450da4395caf8c8bc2f80d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 2
   m_ApplyRootMotion: 0

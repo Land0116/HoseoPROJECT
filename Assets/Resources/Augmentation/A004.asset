@@ -12,13 +12,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: A004
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
-  augmentationID: A004
-  augmentationType: 0
-  augmentationName: "\uBD09\uC81C \uACFC\uBD80\uD558"
-  augmentationDesc: "\uACF5\uACA9\uC18D\uB3C4 \uC99D\uAC00"
+  augmentID: A004
+  augmentationName: "\uD3ED\uBC1C\uD0C4"
+  augmentationDesc: "\uD3ED\uBC1C \uBC18\uACBD + {0}\n\uB370\uBBF8\uC9C0 \uC99D\uAC00
+    + {1}"
   icon: {fileID: -2276772264460779712, guid: c66c913a132c87b4dba63f71a0ebe646, type: 3}
-  effectType: 3
-  value: 0
-  duration: 0.5
-  maxStack: 1
+  category: 0
+  subSkillType: 3
+  passiveType: 0
+  specialType: 0
+  stackRule: 1
   isUnlocked: 1
+  weight: 40
+  maxLevel: 3
+  subSkillLevels:
+  - level: 1
+    shotFireMode: 0
+    burstInterval: 0
+    projectileCountAdd: 0
+    damageMultiplier: 1
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 2.5
+    explosionDamageMultiplier: 1.2
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  - level: 2
+    shotFireMode: 0
+    burstInterval: 0
+    projectileCountAdd: 0
+    damageMultiplier: 1
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 3
+    explosionDamageMultiplier: 1.3
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  - level: 3
+    shotFireMode: 0
+    burstInterval: 0
+    projectileCountAdd: 0
+    damageMultiplier: 1
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 3.5
+    explosionDamageMultiplier: 1.5
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  passiveLevels: []
+  specialLevels: []

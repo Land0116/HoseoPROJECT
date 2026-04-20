@@ -28,18 +28,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         Death //죽음
     }
     
-    private readonly string[] dirNames =
-    {
-        "Right",         // 0
-        "Qback_Right",   // 1
-        "Back",          // 2
-        "Qback_Left",    // 3
-        "Left",          // 4
-        "Qfront_Left",   // 5
-        "Front",         // 6
-        "Qfront_Right"   // 7
-    };
-    
 
     [Header("플레이어 기본 정보")] 
     [SerializeField] private int baseMaxHp = 50; // 게임 시작 시 기준 최대 체력
@@ -55,7 +43,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("플레이어 상태 제어")] 
     [SerializeField] private PlayerState playerState = PlayerState.Idle; // 현재 상태머신 상태
-    [SerializeField] private AttackType playerAttackType = AttackType.Base; //공격 상태가 단추인지 아이템인지.
+    //[SerializeField] private AttackType playerAttackType = AttackType.Base; //공격 상태가 단추인지 아이템인지.
     [SerializeField] private bool isAttack = false; // 공격 쿨타임 중인지 여부
     [SerializeField] private bool isDie = false; // 사망 여부
     [SerializeField] private bool isFireInput = false; //발사입력
@@ -65,14 +53,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private Animator bodyAnimator;
 // 현재 마우스를 향하는 방향 벡터
     [SerializeField] private Vector2 aimDirection = Vector2.down;
-// 현재 바라보는 방향 인덱스
-    [SerializeField] private int facingDir = 6; // 기본 아래
-    private string currentAnimState;
-    [Header("공격 애니메이션 방향 잠금")]
-    [SerializeField] private bool isAttackAnimLocked = false;   // 현재 공격 애니메이션 방향 고정 여부
-    [SerializeField] private int lockedAttackFacingDir = 6;     // 공격 시작 순간 고정된 방향
+    [SerializeField] private Vector2 animDirection = Vector2.down; 
     [Header("공격 잠금 방향")]
     [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
+    
+    private static readonly int MoveXHash = Animator.StringToHash("MoveX");
+    private static readonly int MoveYHash = Animator.StringToHash("MoveY");
+    private static readonly int IsMoveHash = Animator.StringToHash("IsMove");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int HitHash = Animator.StringToHash("Hit");
+    private static readonly int IsDeathHash = Animator.StringToHash("IsDeath");
     
     [Header("피격")]
     [SerializeField] private bool isHitAnimating = false;
@@ -98,43 +88,51 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
     
     
-    [Header("증강 - 공격")] 
-    [SerializeField] private float damageMultiplier = 1f; // 총알/아이템 공통 데미지 배율
-    [SerializeField] private float slowDamageMultiplier = 0f; // 느리지만 강한 공격 추가 배율
-    [SerializeField] private float hpToDamagePercentPer10Hp = 0f; // 최대 체력 10당 최종 데미지 증가율
-    [SerializeField] private int bulletPerShot = 1; // 총알 개수증가
+    #region 증강 - 서브 스킬형
 
-    [SerializeField] private float bulletSpreadAngle = 10f; // 2개의 총알 날아가는 방향각
+    [Header("증강 - 서브 스킬 / 현재 장착 증강")]
+    [SerializeField] private AugmentationSystem currentShotAugment;
+    [SerializeField] private AugmentationSystem currentTrajectoryAugment;
+    [SerializeField] private AugmentationSystem currentEffectAugment;
 
-//유틸 및 수비형 증강
-    [Header("증강 - 체력 / 방어")] 
-    [SerializeField] private int healOnKillAmount = 0;
-    [SerializeField] private float hpRegenPerSecond = 0f;
-    [SerializeField] private float lifeStealAmount = 0f;
+    [SerializeField] private int currentShotLevel = 0;
+    [SerializeField] private int currentTrajectoryLevel = 0;
+    [SerializeField] private int currentEffectLevel = 0;
 
-    [SerializeField] private bool shieldEnabled = false;
-    [SerializeField] private bool shieldReady = false;
-    [SerializeField] private float shieldInterval = 30f;
-    [Header("쉴드 시각 효과")]
-    [SerializeField] private GameObject shieldVisualObject;
+    [Header("증강 - 서브 스킬 / 발사")]
+    [SerializeField] private AugmentationSystem.ShotFireMode shotFireMode = AugmentationSystem.ShotFireMode.Single;
+    [SerializeField] private int shotProjectileCountAdd = 0;        // 기본 1발에서 추가
+    [SerializeField] private float shotDamageMultiplier = 1f;       // 발사 구조 데미지 배율
+    [SerializeField] private float shotSpreadAngle = 0f;            // 부채꼴 발사 각도
+    [SerializeField] private float shotChargeTime = 0f;             // 차지샷용
+    [SerializeField] private int shotBurstCount = 1;                // 버스트 발사 수
+    [SerializeField] private float shotBurstInterval = 0f;          // 버스트 간격
 
+    [Header("증강 - 서브 스킬 / 궤적")]
+    [SerializeField] private float trajectoryHomingStrength = 0f;
+    [SerializeField] private float trajectoryDuration = 0f;
+    [SerializeField] private int trajectoryBounceCount = 0;
+    [SerializeField] private int trajectoryPierceCount = 0;
 
-    [Header("증강 - 회복 자동 공격")] 
-    [SerializeField] private bool isHealToAutoAttackActive = false; // 증강 활성화 여부
-    [SerializeField] private int accumulatedHealAmount = 0; // 실제 누적 회복량
-    [SerializeField] private int autoAttackHealThreshold = 5; // 회복량 5당 1회 발동
-    [SerializeField] private float autoAttackDamageRatio = 0.5f; // 최종 데미지 x 0.5
+    [Header("증강 - 서브 스킬 / 효과")]
+    [SerializeField] private float effectExplosionRadius = 0f;
+    [SerializeField] private float effectExplosionDamageMultiplier = 1f;
+    [SerializeField] private int effectChainCount = 0;
+    [SerializeField] private float effectChainRange = 0f;
+    [SerializeField] private float effectDotDamagePerSecond = 0f;
+    [SerializeField] private float effectDotDuration = 0f;
 
-    [Header("증강 - 이동 / 유틸 / 치명피해 1회무시")] 
-    [SerializeField] private bool ignoreObstacle = false; // 현재 장애물 충돌 무시 증강이 적용되어 있는지
-    [SerializeField] private string obstacleLayerName = "Obstacle"; // 장애물 레이어 이름
-    [SerializeField] private string enemyLayerName = "Monster"; // 몬스터 레이어 ( 몬스터도 장애물 무시하기에 충돌 유지를 위함. )
-    [SerializeField] private bool cheatDeathOnce = false; // 1회 부활 효과 여부
-    [SerializeField] private float characterScaleMultiplier = 1f; // 캐릭터 크기 누적 배율
-    private Vector3 originalScale; // 게임 시작 시 원본 스케일
-    [SerializeField] private float invincibleDuration = 1f; // 치명적 피해 극복 후 무적 시간
-    [SerializeField] private bool isInvincible = false; // 현재 무적 여부
+    #endregion
 
+    #region 증강 - 패시브형
+
+    [Header("증강 - 패시브 / 최종 적용값")]
+    [SerializeField] private float passiveDamageMultiplier = 1f;
+    [SerializeField] private float passiveAttackSpeedPercent = 0f;
+    [SerializeField] private int passiveMaxHpAdd = 0;
+    [SerializeField] private float passiveLifeStealPercent = 0f;
+
+    #endregion
 
     [Header("컴포넌트 참조")] 
     [SerializeField] private Rigidbody2D rb;
@@ -149,8 +147,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("총알 소환 위치 관련")] 
     public Transform gunTip;
 
-    private Coroutine shieldCoroutine;
-    private Coroutine hpRegenCoroutine;
+    private Coroutine burstShootCoroutine;
     private bool isPointerOverUIThisFrame = false;
 
     //수정하면서 추가한 부분
@@ -226,7 +223,26 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isHitAnimating;
         set => isHitAnimating = value;
     }
+    
+    #region 증강 Getter
 
+    public int FinalProjectileCount => Mathf.Max(1, 1 + shotProjectileCountAdd);
+    public float FinalShotSpreadAngle => shotSpreadAngle;
+    public float FinalShotChargeTime => shotChargeTime;
+
+    public float FinalHomingStrength => trajectoryHomingStrength;
+    public float FinalTrajectoryDuration => trajectoryDuration;
+    public int FinalBounceCount => trajectoryBounceCount;
+    public int FinalPierceCount => trajectoryPierceCount;
+
+    public float FinalExplosionRadius => effectExplosionRadius;
+    public float FinalExplosionDamageMultiplier => effectExplosionDamageMultiplier;
+    public int FinalChainCount => effectChainCount;
+    public float FinalChainRange => effectChainRange;
+    public float FinalDotDamagePerSecond => effectDotDamagePerSecond;
+    public float FinalDotDuration => effectDotDuration;
+
+    #endregion
 
     private void Awake()
     {
@@ -235,7 +251,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         rb.freezeRotation = true;
         rb.gravityScale = 0f;
-        originalScale = transform.localScale;
+        
         
         if (Instance != null && Instance != this)
         {
@@ -247,6 +263,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         DontDestroyOnLoad(gameObject);
         
         _mainCamera = Camera.main;
+        
+        if (bodyAnimator == null && playerBody != null)
+        {
+            bodyAnimator = playerBody.GetComponent<Animator>();
+        }
         
         maxHp = baseMaxHp;//체력수정.아이템
         Hp = maxHp;
@@ -268,7 +289,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Start()
     {
         if (hideSystemCursor) Cursor.visible = false;
-        bodyAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.updateMode = AnimatorUpdateMode.UnscaledTime;
+            bodyAnimator.SetBool(IsMoveHash, false);
+            bodyAnimator.SetBool(IsDeathHash, false);
+            bodyAnimator.SetFloat(MoveXHash, animDirection.x);
+            bodyAnimator.SetFloat(MoveYHash, animDirection.y);
+        }
 
         RebuildPlayerStats();
         if (AugUIManager.instance != null && AugmentRunManager.Instance != null)
@@ -278,6 +306,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         ApplyWeapon(basicWeapon);
         ApplyItem(currentItem);
+        
+        SyncLocomotionState();
     }
 
     // Update is called once per frame
@@ -289,62 +319,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         PlayerMouseMovement();
         
         isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
+        UpdateAnimatorLocomotion();
+        CheckAttackStateRelease();
         HandleAttack();//새로 추가한 부분
 
+        UpdateAnimatorPlaybackSpeed();
+
+    }
     
-        
-    }
-    private void HandleAttack()
-    {
-        
-
-        if (!isFireInput) return;
-
-        bool canAttack = CanStartAttackNow();
-        
-
-        if (!canAttack) return;
-
-        ;
-
-        if (Time.time >= nextAttackTime)
-        {
-            
-
-            nextAttackTime = Time.time + (1f / attackPerSecond);
-
-            PlayAttackAnimation();
-            Shoot();
-        }
-    }
-    private bool IsPointerOverUI()
-    {
-        if (EventSystem.current == null)
-            return false;
-
-        PointerEventData eventData = new PointerEventData(EventSystem.current);
-        eventData.position = Mouse.current.position.ReadValue();
-
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-
-        for (int i = 0; i < results.Count; i++)
-        {
-            Debug.Log("[UI CHECK] hit: " + results[i].gameObject.name +
-          " / parent: " + results[i].gameObject.transform.root.name);
-
-            if (results[i].gameObject.layer == LayerMask.NameToLayer("UI"))
-            {
-                
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     void FixedUpdate()
     {
         if (IsDie)
@@ -353,12 +335,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             playerState = PlayerState.Death;
             return;
         }
+
         if (!canControl)
         {
             rb.linearVelocity = Vector2.zero;
             return;
         }
-        
+
         if (isDashing)
         {
             if (Time.time >= dashEndTime)
@@ -371,19 +354,17 @@ public class PlayerController : MonoBehaviour, IDamageable
                 return;
             }
         }
-        
+
         switch (playerState)
         {
             case PlayerState.Idle:
             {
                 rb.linearVelocity = Vector2.zero;
-                
+
                 if (inputDirection.sqrMagnitude > 0.01f)
                 {
                     playerState = PlayerState.Walk;
-                    break;
                 }
-                PlayDirectionalAnimation("Idle");
                 break;
             }
             case PlayerState.Walk:
@@ -394,21 +375,18 @@ public class PlayerController : MonoBehaviour, IDamageable
                     moveVector.Normalize();
 
                 rb.linearVelocity = moveVector * moveSpeed;
-                
 
                 if (inputDirection.sqrMagnitude <= 0.01f)
                 {
                     rb.linearVelocity = Vector2.zero;
                     playerState = PlayerState.Idle;
-                    break;
                 }
-                PlayDirectionalAnimation("Walk");
                 break;
             }
             case PlayerState.Attack:
             {
-                // 공격 중에도 이동 입력이 있으면 실제 이동은 허용
                 Vector2 moveVector = inputDirection;
+
                 if (moveVector.magnitude > 1f)
                     moveVector.Normalize();
 
@@ -422,14 +400,15 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
             case PlayerState.Death:
             {
-                // 죽은 상태에서는 이동도 공격도 하지 않음
                 rb.linearVelocity = Vector2.zero;
+                
                 break;
             }
         }
     }
     
-
+    
+    #region 플레이어 마우스 움직임
     void PlayerMouseMovement()
     {
         if (IsDie) return;
@@ -449,49 +428,122 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (direction.sqrMagnitude > 0.0001f)
         {
             aimDirection = direction.normalized;
-            facingDir = Get8DirectionIndex(aimDirection);
+            if (playerState != PlayerState.Attack &&
+                playerState != PlayerState.Hit &&
+                playerState != PlayerState.Death)
+            {
+                animDirection = aimDirection;
+                ApplyBlendTreeDirection(animDirection);
+            }
         }
 
     }
-    
-    /// <summary>
-    /// 8방향 인덱스 반환
-    /// 0=Right, 1=UpRight, 2=Up, 3=UpLeft,
-    /// 4=Left, 5=DownLeft, 6=Down, 7=DownRight
-    /// </summary>
-    private int Get8DirectionIndex(Vector2 dir)
+    #endregion
+
+    #region 애니메이션 관련 함수
+    private void ApplyBlendTreeDirection(Vector2 dir)
     {
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (bodyAnimator == null) return;
 
-        if (angle < 0f)
-            angle += 360f;
+        if (dir.sqrMagnitude <= 0.0001f)
+            dir = Vector2.down;
 
-        int index = Mathf.RoundToInt(angle / 45f) % 8;
-        return index;
+        bodyAnimator.SetFloat(MoveXHash, dir.x);
+        bodyAnimator.SetFloat(MoveYHash, dir.y);
     }
-    
-    private Vector2 GetDirectionVectorFromFacingDir(int dirIndex)
+    private void SyncLocomotionState()
     {
-        switch (dirIndex)
+        bool hasMoveInput =
+            !IsDie &&
+            canControl &&
+            !isDashing &&
+            inputDirection.sqrMagnitude > 0.01f;
+
+        // 상태머신 동기화
+        if (playerState != PlayerState.Attack &&
+            playerState != PlayerState.Hit &&
+            playerState != PlayerState.Death)
         {
-            case 0: return Vector2.right;                         // Right
-            case 1: return new Vector2(1f, 1f).normalized;       // Qback_Right
-            case 2: return Vector2.up;                            // Back
-            case 3: return new Vector2(-1f, 1f).normalized;      // Qback_Left
-            case 4: return Vector2.left;                          // Left
-            case 5: return new Vector2(-1f, -1f).normalized;     // Qfront_Left
-            case 6: return Vector2.down;                          // Front
-            case 7: return new Vector2(1f, -1f).normalized;      // Qfront_Right
-            default: return Vector2.down;
+            playerState = hasMoveInput ? PlayerState.Walk : PlayerState.Idle;
+        }
+
+        // Animator의 IsMove는 "실제 이동 입력" 기준으로만 넣는다.
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.SetBool(IsMoveHash, hasMoveInput);
         }
     }
 
-    
-    
-    public void EndAttackAnimationEvent()
+    private void UpdateAnimatorLocomotion()
     {
+        if (bodyAnimator == null) return;
+
+        bool hasMoveInput =
+            !IsDie &&
+            canControl &&
+            !isDashing &&
+            inputDirection.sqrMagnitude > 0.01f;
+
+        bodyAnimator.SetBool(IsMoveHash, hasMoveInput);
+    }
+    
+    private bool IsAnimatorInAttackState()
+    {
+        if (bodyAnimator == null) return false;
+
+        AnimatorStateInfo currentState = bodyAnimator.GetCurrentAnimatorStateInfo(0);
+
+        if (currentState.IsTag("Attack"))
+            return true;
+
+        if (bodyAnimator.IsInTransition(0))
+        {
+            AnimatorStateInfo nextState = bodyAnimator.GetNextAnimatorStateInfo(0);
+
+            if (nextState.IsTag("Attack"))
+                return true;
+        }
+
+        return false;
+    }
+    private void CheckAttackStateRelease()
+    {
+        if (playerState != PlayerState.Attack)
+            return;
+
+        // 아직 Attack Tag 상태면 유지
+        if (IsAnimatorInAttackState())
+            return;
+
+        // Animator는 이미 공격 상태를 빠져나왔는데
+        // 코드만 Attack에 남아있으면 여기서 해제
         ReleaseAttackState();
     }
+    
+    private void UpdateAnimatorPlaybackSpeed()
+    {
+        if (bodyAnimator == null)
+            return;
+
+        // 죽음 / 피격 / 일반 이동 / 대기 상태는 항상 기본 속도
+        if (IsDie || playerState == PlayerState.Hit || playerState == PlayerState.Death)
+        {
+            bodyAnimator.speed = 1f;
+            return;
+        }
+
+        // Attack 상태이면서 실제 Animator도 Attack Tag 상태일 때만 공격속도 반영
+        if (playerState == PlayerState.Attack && IsAnimatorInAttackState())
+        {
+            bodyAnimator.speed = AttackPerSecond;
+            return;
+        }
+
+        // 그 외에는 기본 속도
+        bodyAnimator.speed = 1f;
+    }
+    #endregion
+    
     
     public void EndHitAnimationEvent()
     {
@@ -503,99 +555,99 @@ public class PlayerController : MonoBehaviour, IDamageable
             ? PlayerState.Walk
             : PlayerState.Idle;
 
+        if (aimDirection.sqrMagnitude > 0.0001f)
+        {
+            animDirection = aimDirection;
+            ApplyBlendTreeDirection(animDirection);
+        }
+
+        SyncLocomotionState();
+    }
+    private void HandleAttack()
+    {
+        if (!isFireInput) return;
+
+        bool canAttack = CanStartAttackNow();
+        if (!canAttack) return;
+
+        if (Time.time >= nextAttackTime)
+        {
+            nextAttackTime = Time.time + (1f / attackPerSecond);
+
+            PlayAttackAnimation();
+
+            switch (shotFireMode)
+            {
+                case AugmentationSystem.ShotFireMode.Burst:
+                    if (burstShootCoroutine != null)
+                    {
+                        StopCoroutine(burstShootCoroutine);
+                    }
+                    burstShootCoroutine = StartCoroutine(BurstShootRoutine());
+                    break;
+
+                case AugmentationSystem.ShotFireMode.MultiShot:
+                    ShootMultiShot();
+                    break;
+
+                default:
+                    ShootSingle();
+                    break;
+            }
+        }
     }
     
-    private void PlayDirectionalAnimation(string actionPrefix, int forcedDir = -1)
-    {
-        if (bodyAnimator == null) return;
-
-        int dirIndex = forcedDir >= 0 ? forcedDir : facingDir;
-        string nextState = "";
-
-        if (actionPrefix == "Attack")
-        {
-            if (inputDirection.sqrMagnitude > 0.01f)
-            {
-                nextState = "Walk_Attack_" + dirNames[dirIndex];
-            }
-            else
-            {
-                nextState = "Idle_Attack_" + dirNames[dirIndex];
-            }
-        }
-        else if (actionPrefix == "Idle")
-        {
-            nextState = "Idle_Weapon_" + dirNames[dirIndex];
-        }
-        else if (actionPrefix == "Walk")
-        {
-            nextState = "Walk_Weapon_" + dirNames[dirIndex];
-        }
-        else if (actionPrefix == "Hit")
-        {
-            nextState = "Hit_" + dirNames[dirIndex];
-        }
-        else if (actionPrefix == "Death")
-        {
-            nextState = "Death_" + dirNames[dirIndex];
-        }
-        else
-        {
-            return;
-        }
-
-        int stateHash = Animator.StringToHash(nextState);
-
-        if (!bodyAnimator.HasState(0, stateHash))
-        {
-            
-            return;
-        }
-
-        bool isAttackAnim = actionPrefix == "Attack";
-        bool isHitAnim = actionPrefix == "Hit";
-        bool isDeathAnim = actionPrefix == "Death";
-
-        if (!isAttackAnim && !isHitAnim && !isDeathAnim && currentAnimState == nextState)
-            return;
-
-        bodyAnimator.CrossFade(stateHash, (isAttackAnim || isHitAnim || isDeathAnim) ? 0.02f : 0.05f, 0, 0f);
-        if (isAttackAnim)
-        {
-            // 공격 애니메이션은 무조건 처음부터 재생 (이벤트 씹힘 방지)
-            bodyAnimator.Play(stateHash, 0, 0f);
-        }
-        else
-        {
-            bodyAnimator.CrossFade(stateHash, (isHitAnim || isDeathAnim) ? 0.02f : 0.05f, 0, 0f);
-        }
-
-        currentAnimState = nextState;
-    }
-
     //단추(기본공격) 발사
-    void Shoot()
+    #region 공격 발사
+
+    private void ShootSingle()
     {
         if (IsDie) return;
         if (curProjectilePrefab == null) return;
+        if (gunTip == null) return;
 
-        int currentBulletCount = Mathf.Max(1, bulletPerShot);
+        Vector2 shotDirection = lockedAttackAimDirection;
 
-        float startAngle = -bulletSpreadAngle * (currentBulletCount - 1) * 0.5f;
-
-        Vector2 shotDirection = playerState == PlayerState.Attack
-    ? lockedAttackAimDirection
-    : aimDirection;
         if (shotDirection.sqrMagnitude <= 0.0001f)
-        {
-            shotDirection = GetDirectionVectorFromFacingDir(facingDir);
-        }
+            shotDirection = animDirection;
+
+        if (shotDirection.sqrMagnitude <= 0.0001f)
+            shotDirection = Vector2.down;
+
         float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle);
+
+        GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
+        ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
+
+        if (bulletScript != null)
+        {
+            bulletScript.SetDamage(GetFinalDamage());
+        }
+    }
+    private void ShootMultiShot()
+    {
+        if (IsDie) return;
+        if (curProjectilePrefab == null) return;
+        if (gunTip == null) return;
+
+        int currentBulletCount = Mathf.Max(1, 1 + shotProjectileCountAdd);
+        float currentSpreadAngle = shotSpreadAngle;
+
+        Vector2 shotDirection = lockedAttackAimDirection;
+
+        if (shotDirection.sqrMagnitude <= 0.0001f)
+            shotDirection = animDirection;
+
+        if (shotDirection.sqrMagnitude <= 0.0001f)
+            shotDirection = Vector2.down;
+
+        float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+        float startAngle = -currentSpreadAngle * (currentBulletCount - 1) * 0.5f;
 
         for (int i = 0; i < currentBulletCount; i++)
         {
-            float addAngle = startAngle + (bulletSpreadAngle * i);
-
+            float addAngle = startAngle + (currentSpreadAngle * i);
             Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle + addAngle);
 
             GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
@@ -608,94 +660,113 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
+    private IEnumerator BurstShootRoutine()
+    {
+        int burstCount = Mathf.Max(1, 1 + shotProjectileCountAdd);
+        float interval = Mathf.Max(0.01f, shotBurstInterval);
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            ShootSingle();
+
+            if (i < burstCount - 1)
+                yield return new WaitForSeconds(interval);
+        }
+
+        burstShootCoroutine = null;
+    }
+    #endregion
+
     public void SetControl(bool value)
     {
         canControl = value;
-        
+
         if (!canControl)
         {
             isDashing = false;
             dashEndTime = -999f;
-            
+
             inputDirection = Vector2.zero;
             isFireInput = false;
             IsAttack = false;
             rb.linearVelocity = Vector2.zero;
             playerState = PlayerState.Idle;
+
+            if (bodyAnimator != null)
+            {
+                bodyAnimator.SetBool(IsMoveHash, false);
+                bodyAnimator.ResetTrigger(AttackHash);
+            }
+        }
+        else
+        {
+            SyncLocomotionState();
         }
     }
-    
     private void OnMove(InputValue movementValue)
     {
-        // 메인 씬에서는 입력 차단
         if (!IsGameplayScene())
         {
             inputDirection = Vector2.zero;
+            SyncLocomotionState();
             return;
         }
+
         if (IsDie)
         {
             inputDirection = Vector2.zero;
+            SyncLocomotionState();
             return;
         }
+
         if (!canControl)
         {
             inputDirection = Vector2.zero;
+            SyncLocomotionState();
             return;
         }
+
         inputDirection = movementValue.Get<Vector2>();
+
         if (inputDirection.sqrMagnitude > 0.0001f)
         {
             lastMoveDirection = inputDirection.normalized;
         }
-        
+
+        // 입력 들어오자마자 애니메이터와 상태 동기화
+        SyncLocomotionState();
     }
     private void OnAttack(InputValue value)
     {
         if (!IsGameplayScene())
         {
             isFireInput = false;
-
             return;
         }
 
         if (IsDie)
         {
             isFireInput = false;
-
             return;
         }
 
         if (!canControl)
         {
             isFireInput = false;
-
             return;
         }
 
         isFireInput = value.isPressed;
-
-        if (isFireInput)
-        {
-
-            isFireInput = value.isPressed;
-        }
-        else
-        {
-
-            isFireInput = value.isPressed;
-        }
     }
     private bool CanStartAttackNow()
     {
-        bool isUI = IsPointerOverUI();
-
-        
         if (!IsGameplayScene()) return false;
         if (IsDie) return false;
         if (!canControl) return false;
-        if (isUI) return false;
+        if (isPointerOverUIThisFrame) return false;
         if (isDashing) return false;
+        if (playerState == PlayerState.Hit) return false;
+        if (playerState == PlayerState.Death) return false;
 
         return true;
     }
@@ -704,54 +775,64 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         playerState = PlayerState.Attack;
 
-        lockedAttackFacingDir = facingDir;
-        lockedAttackAimDirection = aimDirection;
+        lockedAttackAimDirection = aimDirection.sqrMagnitude > 0.0001f
+            ? aimDirection
+            : animDirection;
 
-        bodyAnimator.speed = attackPerSecond;
-        PlayDirectionalAnimation("Attack", lockedAttackFacingDir);
+        animDirection = lockedAttackAimDirection;
+        ApplyBlendTreeDirection(animDirection);
+
+        if (bodyAnimator != null)
+        {
+            if (bodyAnimator.GetBool(IsMoveHash))
+            {
+                bodyAnimator.speed = 1.0f;
+            }
+            else
+            {
+                bodyAnimator.speed = AttackPerSecond;
+            }
+            bodyAnimator.ResetTrigger(HitHash);
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.SetTrigger(AttackHash);
+        }
     }
     private void ReleaseAttackState()
     {
-        isAttackAnimLocked = false;
-        currentAnimState = string.Empty;
+        if (playerState != PlayerState.Attack)
+            return;
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.speed = 1f;
+            bodyAnimator.ResetTrigger(AttackHash);
+        }
 
-        // 애니메이션 속도 원복
-        bodyAnimator.speed = 1f;
-
+        // 공격 끝난 직후 현재 입력 기준으로 상태 복귀
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
             : PlayerState.Idle;
+
+        // 다시 마우스 방향으로 BlendTree 방향 갱신
+        if (aimDirection.sqrMagnitude > 0.0001f)
+        {
+            animDirection = aimDirection;
+            ApplyBlendTreeDirection(animDirection);
+        }
+
+        // 이동 상태 재동기화
+        SyncLocomotionState();
     }
 
-
-
     
+    #region 피격 처리
+
     public void OnDamage(float damage)
     {
         if (IsDie) return;
-        if (isInvincible) return;
-
-        if (shieldEnabled && shieldReady)
-        {
-            shieldReady = false;
-            SetShieldVisual(false);
-            Debug.Log("보호막으로 공격 1회 무효");
-            return;
-        }
 
         int incomingDamage = Mathf.RoundToInt(damage);
-
-        if (cheatDeathOnce && Hp - incomingDamage <= 0)
-        {
-            cheatDeathOnce = false;
-            Hp = 1;
-            EnterHitState();
-            StartCoroutine(TemporaryInvincibleRoutine());
-            Debug.Log("치명적 피해 1회 무효 발동");
-            return;
-        }
-
         Hp -= incomingDamage;
+
         Debug.Log("플레이어 체력: " + Hp + " / " + maxHp);
 
         if (Hp <= 0)
@@ -762,6 +843,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         EnterHitState();
     }
+
+    #endregion
     
     private void EnterHitState()
     {
@@ -770,36 +853,42 @@ public class PlayerController : MonoBehaviour, IDamageable
         IsHitAnimating = true;
         playerState = PlayerState.Hit;
 
-        // 피격 시 대쉬/공격 정리
         isDashing = false;
         dashEndTime = -999f;
         rb.linearVelocity = Vector2.zero;
 
-        isAttackAnimLocked = false;
-        currentAnimState = string.Empty;
+        animDirection = aimDirection.sqrMagnitude > 0.0001f
+            ? aimDirection
+            : animDirection;
 
-        PlayDirectionalAnimation("Hit", facingDir);
+        ApplyBlendTreeDirection(animDirection);
+
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.speed = 1f;
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.SetTrigger(HitHash);
+        }
+
+        UpdateAnimatorLocomotion();
     }
     
+    #region 최종 데미지 계산
+
     public float GetFinalDamage()
     {
         float baseDamage = weaponDamage + itemDamage;
 
-        
-        float damageByMultiplier = baseDamage * damageMultiplier;
-        
-        float slowBonusDamage = baseDamage * slowDamageMultiplier;
+        // 서브 스킬형(발사)의 기본 공격 구조 변경 반영
+        float subSkillAppliedDamage = baseDamage * shotDamageMultiplier;
 
-        float subtotal = damageByMultiplier + slowBonusDamage;
+        // 패시브형 반영
+        float passiveAppliedDamage = subSkillAppliedDamage * passiveDamageMultiplier;
 
-        int hpStack = maxHp / 10;
-        float hpBonusDamage = subtotal * (hpStack * hpToDamagePercentPer10Hp);
-
-        float finalDamage = subtotal + hpBonusDamage;
-        
-        // 음수 방지 + 보기 좋은 값으로 반올림
-        return Mathf.Max(0f, Mathf.Round(finalDamage));
+        return Mathf.Max(0f, Mathf.Round(passiveAppliedDamage));
     }
+
+    #endregion
     
     private void OnDash(InputValue value)
     {
@@ -840,11 +929,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         // 대쉬 시작 즉시 속도 반영
         rb.linearVelocity = dashDirection * DashSpeed;
-
-        // 공격 연출 잠금 해제
-        isAttackAnimLocked = false;
-        currentAnimState = string.Empty;
-
+        
         // 필요 시 공격 상태 끊기
         playerState = PlayerState.Idle;
     }
@@ -862,6 +947,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void Death()
     {
         if (IsDie) return;
+
         IsDie = true;
         playerState = PlayerState.Death;
         Cursor.visible = true;
@@ -869,182 +955,48 @@ public class PlayerController : MonoBehaviour, IDamageable
         inputDirection = Vector2.zero;
         isFireInput = false;
         IsAttack = false;
-        
+
         isDashing = false;
         dashEndTime = -999f;
-        
-        // 이동 완전 정지
+
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
         }
 
         canControl = false;
-        
-        isAttackAnimLocked = false;
-        currentAnimState = string.Empty;
 
-        // 죽는 방향 기준으로 Death 애니메이션 재생
-        PlayDirectionalAnimation("Death", facingDir);
+        animDirection = aimDirection.sqrMagnitude > 0.0001f
+            ? aimDirection
+            : animDirection;
+
+        ApplyBlendTreeDirection(animDirection);
+
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.speed = 1f;
+            bodyAnimator.SetBool(IsMoveHash, false);
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.SetBool(IsDeathHash, true);
+        }
 
         StopAllCoroutines();
-        
+
         if (crosshairTransform != null)
         {
             crosshairTransform.gameObject.SetActive(false);
         }
-
     }
 
     public void EndDeathAnimationEvent()
     {
         if (PlayerUIManager.Instance != null)
         {
+            bodyAnimator.SetBool(IsDeathHash, false);
             PlayerUIManager.Instance.ShowPlayerDyingUI();
         }
     }
     
-    
-     public void ApplyAugmentation(AugmentationSystem aug)
-    {
-        // 잘못된 참조 방지
-        if (aug == null) return;
-
-        switch (aug.effectType)
-        {
-            // =========================
-            // [최종 데미지 관련]
-            // =========================
-            case AugmentationSystem.AugmentEffectType.DamageMultiplier:
-                damageMultiplier *= aug.value;
-                AttackPerSecond += aug.duration;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.SlowDamageMultiplier:
-                slowDamageMultiplier += aug.value;
-                break;
-
-            // =========================
-            // [공격 관련]
-            // =========================
-            case AugmentationSystem.AugmentEffectType.BulletCountAdd:
-                bulletPerShot += Mathf.RoundToInt(aug.value);
-                bulletPerShot = Mathf.Max(1, bulletPerShot);
-                break;
-
-            case AugmentationSystem.AugmentEffectType.AttackPerSecondAdd:
-                // 공격속도증가
-                AttackPerSecond += aug.value;
-                break;
-
-            // =========================
-            // [체력 / 방어 관련]
-            // =========================
-            case AugmentationSystem.AugmentEffectType.MaxHpMultiplier:
-            {
-                // 최대 체력 배율 적용
-                // 현재 체력 비율을 유지한 채 최대 체력 갱신
-                int oldMaxHp = maxHp;
-                maxHp = Mathf.Max(1, Mathf.RoundToInt(maxHp * aug.value));
-
-                if (oldMaxHp > 0)
-                {
-                    float hpRatio = (float)Hp / oldMaxHp;
-                    Hp = Mathf.RoundToInt(maxHp * hpRatio);
-                }
-                else
-                {
-                    Hp = maxHp;
-                }
-
-                break;
-            }
-
-            case AugmentationSystem.AugmentEffectType.HpToDamagePercentPerHp:
-                // enum 이름은 PerHp지만,
-                // 실제 사용 의도는 "최대 체력 10당 최종 데미지 증가율"로 처리
-                hpToDamagePercentPer10Hp += aug.value;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.HealOnKill:
-                // 적 처치 시 회복량 증가
-                healOnKillAmount += Mathf.RoundToInt(aug.value);
-                break;
-
-            case AugmentationSystem.AugmentEffectType.HpRegenPerSecond:
-                // 초당 체력 회복량 누적
-                hpRegenPerSecond += aug.value;
-
-                // 체젠 코루틴이 아직 없으면 시작
-                if (hpRegenCoroutine == null)
-                {
-                    hpRegenCoroutine = StartCoroutine(HpRegenRoutine());
-                }
-
-                break;
-
-            case AugmentationSystem.AugmentEffectType.HealToAutoAttack:
-                // 이 증강은 별도 전용 로직 사용
-                // value, duration에 의존하지 않고 bool만 켬
-                isHealToAutoAttackActive = true;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.LifeStealOnHit:
-                // 공격 적중 시 회복량 누적
-                lifeStealAmount += aug.value;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.ShieldByInterval:
-                // 보호막 기능 활성화
-                shieldEnabled = true;
-
-                // duration이 있으면 duration 우선 사용
-                // 없으면 value를 보호막 주기로 사용
-                if (aug.duration > 0f)
-                {
-                    shieldInterval = aug.duration;
-                }
-                else if (aug.value > 0f)
-                {
-                    shieldInterval = aug.value;
-                }
-
-                // 기존 보호막 코루틴이 있으면 재시작
-                if (shieldCoroutine != null)
-                {
-                    StopCoroutine(shieldCoroutine);
-                }
-
-                shieldCoroutine = StartCoroutine(ShieldRoutine());
-                break;
-
-            // =========================
-            // [이동 / 유틸 관련]
-            // =========================
-            case AugmentationSystem.AugmentEffectType.MoveSpeedMultiplier:
-                // 이동속도 배율 적용
-                MoveSpeed *= aug.value;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.CharacterScaleMultiplier:
-                // 누적 배율을 별도 저장한 뒤
-                // 원본 스케일 기준으로 다시 계산
-                characterScaleMultiplier *= aug.value;
-                transform.localScale = originalScale * characterScaleMultiplier;
-                break;
-
-            case AugmentationSystem.AugmentEffectType.IgnoreObstacleCollision:
-                // 장애물 충돌 무시 활성화
-                ignoreObstacle = true;
-                ApplyObstacleCollisionState();
-                break;
-
-            case AugmentationSystem.AugmentEffectType.CheatDeathOnce:
-                // 1회만 치명상 무효
-                cheatDeathOnce = true;
-                break;
-        }
-    }
      
      //무기 및 아이템
     public void ApplyItem(ItemData item)
@@ -1096,95 +1048,26 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     
-    //증강 - 자동 공격
-    private void SpawnHealAutoAttack()
-    {
-        // 필수 참조가 없으면 종료
-        if (curProjectilePrefab == null) return;
-        if (gunTip == null) return;
-
-        // 현재 플레이어가 바라보는 방향 사용
-        Vector2 shotDirection = aimDirection;
-
-        // 방향값이 이상하면 facingDir 기준 방향으로 보정
-        if (shotDirection.sqrMagnitude <= 0.0001f)
-        {
-            shotDirection = GetDirectionVectorFromFacingDir(facingDir);
-        }
-
-        float angle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
-        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, angle);
-
-        GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
-        ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
-
-        if (bulletScript != null)
-        {
-            float autoAttackDamage = GetFinalDamage() * autoAttackDamageRatio;
-            bulletScript.SetDamage(autoAttackDamage);
-        }
-    }
     //증강 - 적 처치시 체력회복
-    public void OnKillEnemy()
-    {
-        if (healOnKillAmount <= 0) return;
+    #region 회복 / 흡혈
 
-        // 설정된 회복량만큼 회복
-        Heal(healOnKillAmount);
-    }
-    //증강 - 체력흡수
     public void OnHitEnemy()
     {
-        if (lifeStealAmount <= 0f) return;
+        if (passiveLifeStealPercent <= 0f) return;
 
-        Heal(lifeStealAmount);
+        float healAmount = GetFinalDamage() * passiveLifeStealPercent;
+        Heal(healAmount);
     }
-    //증강 - 힐
+
     public void Heal(float value)
     {
-        // 죽은 상태면 회복 처리 안 함
         if (IsDie) return;
-
-        // 잘못된 회복값 방지
         if (value <= 0f) return;
 
-        // 회복 전 체력 저장
-        int beforeHp = Hp;
-
-        // 실제 회복 적용
         Hp += Mathf.RoundToInt(value);
-
-        // 실제로 회복된 양 계산
-        // 최대 체력에 막히면 요청한 회복량보다 적게 찰 수 있음
-        int actualHealed = Hp - beforeHp;
-
-        // 실제 회복량이 0 이하라면 종료
-        if (actualHealed <= 0) return;
-
-        // 회복 -> 자동 공격 증강이 활성화된 경우에만 누적
-        if (isHealToAutoAttackActive)
-        {
-            accumulatedHealAmount += actualHealed;
-
-            // 누적 회복량이 기준치(기본 5)를 넘을 때마다 자동 공격 1회 발동
-            while (accumulatedHealAmount >= autoAttackHealThreshold)
-            {
-                accumulatedHealAmount -= autoAttackHealThreshold;
-                SpawnHealAutoAttack();
-            }
-        }
     }
-    //증강 - 쉴드생성
-    private void SetShieldVisual(bool isOn)
-    {
-        if (shieldVisualObject == null) return;
 
-        if (shieldVisualObject.activeSelf != isOn)
-        {
-            shieldVisualObject.SetActive(isOn);
-        }
-    }
-    
+    #endregion
     
     //UI-Esc일시정지
     private void OnPause(InputValue value)
@@ -1203,178 +1086,213 @@ public class PlayerController : MonoBehaviour, IDamageable
             crosshairTransform.gameObject.SetActive(!isPaused);
     }
     
-    
-    
-    //장애물 충돌 무시 
-    private void ApplyObstacleCollisionState()
-    {
-        int playerLayer = gameObject.layer;
-        int obstacleLayer = LayerMask.NameToLayer(obstacleLayerName);
-        int enemyLayer = LayerMask.NameToLayer(enemyLayerName);
-
-        if (obstacleLayer == -1)
-        {
-            Debug.LogWarning($"장애물 레이어 이름이 잘못됨 : {obstacleLayerName}");
-            return;
-        }
-
-        // 장애물만 무시
-        Physics2D.IgnoreLayerCollision(playerLayer, obstacleLayer, ignoreObstacle);
-
-        // 몬스터는 항상 충돌 유지
-        if (enemyLayer != -1)
-        {
-            Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-        }
-    }
-
-    
-    
-    IEnumerator ShieldRoutine()
-    {
-        shieldReady = true;
-        SetShieldVisual(true);
-
-        while (shieldEnabled)
-        {
-            if (!shieldReady)
-            {
-                SetShieldVisual(false);
-
-                yield return new WaitForSeconds(shieldInterval);
-
-                shieldReady = true;
-                SetShieldVisual(true);
-                Debug.Log("보호막 재충전 완료");
-            }
-
-            yield return null;
-        }
-
-        SetShieldVisual(false);
-    }
-
-    //힐 리젠
-    private IEnumerator HpRegenRoutine()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1f);
-
-            if (Hp > 0 && Hp < MaxHp)
-            {
-                Heal(hpRegenPerSecond);
-            }
-        }
-    }
-
-    //치명상 무효 후 잠깐 무적
-    private IEnumerator TemporaryInvincibleRoutine()
-    {
-        // 무적 시작
-        isInvincible = true;
-
-        // 설정한 무적 시간 동안 대기
-        yield return new WaitForSeconds(invincibleDuration);
-
-        // 무적 종료
-        isInvincible = false;
-    }
-    
     //증강변수 초기화
-    public void RebuildPlayerStats()
+   #region 증강 재빌드
+
+public void RebuildPlayerStats()
+{
+    // =========================
+    // 1. 기본 스탯 복원
+    // =========================
+    maxHp = baseMaxHp;
+    moveSpeed = baseMoveSpeed;
+    AttackPerSecond = baseAttackPerSecond;
+
+    weaponDamage = 0f;
+    itemDamage = 0f;
+    curProjectilePrefab = null;
+
+    // =========================
+    // 2. 장비 재적용
+    // =========================
+    if (currentWeapon == null && basicWeapon != null)
     {
-        // =========================
-        // 1. 플레이어 기본 스탯 복원
-        // =========================
-        maxHp = baseMaxHp;
-        moveSpeed = baseMoveSpeed;
-        AttackPerSecond = baseAttackPerSecond;
-
-        // 무기/아이템 기본 데미지 초기화
-        weaponDamage = 0f;
-        itemDamage = 0f;
-        curProjectilePrefab = null;
-
-        // =========================
-        // 2. 증강 런타임 값 초기화
-        // =========================
-        damageMultiplier = 1f;
-        slowDamageMultiplier = 0f;
-        bulletPerShot = 1;
-        hpToDamagePercentPer10Hp = 0f;
-
-        healOnKillAmount = 0;
-        hpRegenPerSecond = 0f;
-        lifeStealAmount = 0f;
-
-        shieldEnabled = false;
-        shieldReady = false;
-        shieldInterval = 30f;
-
-        isHealToAutoAttackActive = false;
-        accumulatedHealAmount = 0;
-        autoAttackHealThreshold = 5;
-        autoAttackDamageRatio = 0.5f;
-
-        ignoreObstacle = false;
-        cheatDeathOnce = false;
-
-        characterScaleMultiplier = 1f;
-        transform.localScale = originalScale;
-
-        // =========================
-        // 3. 증강 관련 코루틴 정리
-        // =========================
-        if (hpRegenCoroutine != null)
-        {
-            StopCoroutine(hpRegenCoroutine);
-            hpRegenCoroutine = null;
-        }
-
-        if (shieldCoroutine != null)
-        {
-            StopCoroutine(shieldCoroutine);
-            shieldCoroutine = null;
-        }
-
-        // =========================
-        // 4. 현재 장착 무기 다시 적용
-        // =========================
-        if (currentWeapon == null && basicWeapon != null)
-        {
-            currentWeapon = basicWeapon;
-        }
-
-        if (currentWeapon != null)
-        {
-            ApplyWeapon(currentWeapon);
-        }
-        // =========================
-        // 5. 현재 장착 아이템 다시 적용
-        // =========================
-        if (currentItem != null)
-        {
-            ApplyItem(currentItem);
-        }
-
-        // =========================
-        // 6. 현재 보유 증강 전부 다시 적용
-        // =========================
-        if (AugmentRunManager.Instance != null)
-        {
-            for (int i = 0; i < AugmentRunManager.Instance.OwnedAugments.Count; i++)
-            {
-                ApplyAugmentation(AugmentRunManager.Instance.OwnedAugments[i]);
-            }
-        }
-
-        // =========================
-        // 7. 체력 범위 보정 및 충돌 상태 반영
-        // =========================
-        Hp = Mathf.Clamp(Hp, 0, maxHp);
-        ApplyObstacleCollisionState();
+        currentWeapon = basicWeapon;
     }
+
+    if (currentWeapon != null)
+    {
+        ApplyWeapon(currentWeapon);
+    }
+
+    if (currentItem != null)
+    {
+        ApplyItem(currentItem);
+    }
+
+    // =========================
+    // 3. 증강 런타임 값 초기화
+    // =========================
+    ResetAugmentRuntimeValues();
+
+    // =========================
+    // 4. 보유 슬롯 재적용
+    // =========================
+    if (AugmentRunManager.Instance != null)
+    {
+        AugmentSlotData[] slots = AugmentRunManager.Instance.OwnedSlots;
+        int slotCount = AugmentRunManager.Instance.CurrentSlotCount;
+
+        for (int i = 0; i < slotCount; i++)
+        {
+            if (slots[i] == null) continue;
+            if (!slots[i].isOccupied) continue;
+            if (slots[i].augmentData == null) continue;
+
+            ApplyOwnedAugmentSlot(slots[i]);
+        }
+    }
+
+    // =========================
+    // 5. 패시브 최종 반영
+    // =========================
+    maxHp += passiveMaxHpAdd;
+    maxHp = Mathf.Max(1, maxHp);
+
+    AttackPerSecond = Mathf.Max(0.1f, attackPerSecond * (1f + passiveAttackSpeedPercent));
+
+    // 체력 범위 보정
+    Hp = Mathf.Clamp(Hp, 0, maxHp);
+}
+
+private void ResetAugmentRuntimeValues()
+{
+    // 서브 스킬 초기값
+    currentShotAugment = null;
+    currentTrajectoryAugment = null;
+    currentEffectAugment = null;
+
+    currentShotLevel = 0;
+    currentTrajectoryLevel = 0;
+    currentEffectLevel = 0;
+
+    shotProjectileCountAdd = 0;
+    shotDamageMultiplier = 1f;
+    shotSpreadAngle = 0f;
+    shotChargeTime = 0f;
+    shotBurstCount = 1;
+    shotFireMode = AugmentationSystem.ShotFireMode.Single;
+    shotBurstInterval = 0f;
+
+    trajectoryHomingStrength = 0f;
+    trajectoryDuration = 0f;
+    trajectoryBounceCount = 0;
+    trajectoryPierceCount = 0;
+
+    effectExplosionRadius = 0f;
+    effectExplosionDamageMultiplier = 1f;
+    effectChainCount = 0;
+    effectChainRange = 0f;
+    effectDotDamagePerSecond = 0f;
+    effectDotDuration = 0f;
+
+    // 패시브 초기값
+    passiveDamageMultiplier = 1f;
+    passiveAttackSpeedPercent = 0f;
+    passiveMaxHpAdd = 0;
+    passiveLifeStealPercent = 0f;
+}
+
+private void ApplyOwnedAugmentSlot(AugmentSlotData slot)
+{
+    if (slot == null) return;
+    if (!slot.isOccupied) return;
+    if (slot.augmentData == null) return;
+
+    AugmentationSystem aug = slot.augmentData;
+
+    switch (aug.category)
+    {
+        case AugmentationSystem.AugmentCategory.SubSkill:
+            ApplySubSkillAugment(aug, slot.currentLevel);
+            break;
+
+        case AugmentationSystem.AugmentCategory.Passive:
+            ApplyPassiveAugment(aug, slot.stackCount);
+            break;
+
+        case AugmentationSystem.AugmentCategory.Special:
+            ApplySpecialAugment(aug, slot.currentLevel);
+            break;
+    }
+}
+
+private void ApplySubSkillAugment(AugmentationSystem aug, int level)
+{
+    AugmentationSystem.SubSkillLevelData data = aug.GetSubSkillLevelData(level);
+    if (data == null) return;
+
+    switch (aug.subSkillType)
+    {
+        case AugmentationSystem.SubSkillType.Shot:
+            currentShotAugment = aug;
+            currentShotLevel = level;
+
+            shotFireMode = data.shotFireMode;
+            shotProjectileCountAdd = data.projectileCountAdd;
+            shotDamageMultiplier = data.damageMultiplier;
+            shotSpreadAngle = data.spreadAngle;
+            shotChargeTime = data.chargeTime;
+            shotBurstInterval = data.burstInterval;
+            break;
+
+        case AugmentationSystem.SubSkillType.Trajectory:
+            currentTrajectoryAugment = aug;
+            currentTrajectoryLevel = level;
+            trajectoryHomingStrength = data.homingStrength;
+            trajectoryDuration = data.trajectoryDuration;
+            trajectoryBounceCount = data.bounceCount;
+            trajectoryPierceCount = data.pierceCount;
+            break;
+
+        case AugmentationSystem.SubSkillType.Effect:
+            currentEffectAugment = aug;
+            currentEffectLevel = level;
+            effectExplosionRadius = data.explosionRadius;
+            effectExplosionDamageMultiplier = data.explosionDamageMultiplier;
+            effectChainCount = data.chainCount;
+            effectChainRange = data.chainRange;
+            effectDotDamagePerSecond = data.dotDamagePerSecond;
+            effectDotDuration = data.dotDuration;
+            break;
+    }
+}
+
+private void ApplyPassiveAugment(AugmentationSystem aug, int stackCount)
+{
+    // 패시브는 "동일 효과 중첩" 규칙이므로
+    // 현재 stackCount를 레벨처럼 사용해서 해당 단계 수치를 가져온다.
+    int appliedLevel = Mathf.Clamp(stackCount, 1, aug.maxLevel);
+    AugmentationSystem.PassiveLevelData data = aug.GetPassiveLevelData(appliedLevel);
+    if (data == null) return;
+
+    switch (aug.passiveType)
+    {
+        case AugmentationSystem.PassiveType.Damage:
+            passiveDamageMultiplier *= data.damageMultiplier;
+            break;
+
+        case AugmentationSystem.PassiveType.AttackSpeed:
+            passiveAttackSpeedPercent += data.attackSpeedPercent;
+            break;
+
+        case AugmentationSystem.PassiveType.MaxHp:
+            passiveMaxHpAdd += data.maxHpAdd;
+            break;
+
+        case AugmentationSystem.PassiveType.LifeSteal:
+            passiveLifeStealPercent += data.lifeStealPercent;
+            break;
+    }
+}
+
+private void ApplySpecialAugment(AugmentationSystem aug, int level)
+{
+    // 저장/슬롯/중복불가 구조만 구현하고, PlayerController 런타임 전투 반영은 비워둔다.
+    // 나중에 특수형 상세 기획 확정 시 여기만 확장하면 된다.
+}
+
+#endregion
     
     //게임다시하기
     public void ResetPlayerForRestart()
@@ -1386,7 +1304,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         lastDashTime = -999f;
         IsDie = false;
         canControl = true;
-        isInvincible = false;
         isFireInput = false;
         IsAttack = false;
         inputDirection = Vector2.zero;
@@ -1394,10 +1311,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Gold = 10;
 
-        // 완전 처음부터 시작이면 기본 무기로 되돌림
         currentWeapon = basicWeapon;
-
-        // 시작 아이템이 없는 구조면 null
         currentItem = null;
 
         RebuildPlayerStats();
@@ -1408,12 +1322,26 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.linearVelocity = Vector2.zero;
         }
 
+        animDirection = Vector2.down;
+        lockedAttackAimDirection = Vector2.down;
+        aimDirection = Vector2.down;
+
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.speed = 1f;
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.ResetTrigger(HitHash);
+            bodyAnimator.SetBool(IsMoveHash, false);
+            bodyAnimator.SetBool(IsDeathHash, false);
+            bodyAnimator.SetFloat(MoveXHash, animDirection.x);
+            bodyAnimator.SetFloat(MoveYHash, animDirection.y);
+        }
+
         if (crosshairTransform != null)
         {
             crosshairTransform.gameObject.SetActive(true);
         }
 
-        
         Cursor.visible = !hideSystemCursor;
     }
     
@@ -1443,7 +1371,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             crosshairTransform.gameObject.SetActive(!IsDie);
         }
-        
         
         // 증강 아이콘 UI 갱신
         if (AugUIManager.instance != null)
@@ -1518,6 +1445,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         isFireInput = false;
         IsAttack = false;
         playerState = PlayerState.Idle;
+
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.SetBool(IsMoveHash, false);
+            bodyAnimator.ResetTrigger(AttackHash);
+        }
     }
 
     /// <summary>
@@ -1607,10 +1540,5 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!value.isPressed) return;
 
         PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.E);
-    }
-
-    public void FireOnAnimationEvent()
-    {
-       // Shoot();
     }
 }

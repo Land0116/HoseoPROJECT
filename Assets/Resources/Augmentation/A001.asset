@@ -12,13 +12,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: A001
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
-  augmentationID: A001
-  augmentationType: 0
-  augmentationName: "A\uAE09 \uC218\uC120"
-  augmentationDesc: "\uB370\uBBF8\uC9C0 \uC99D\uAC00"
-  icon: {fileID: -8915327726919978405, guid: acd9a5d00a0b9f84cb49d0626ac4356c, type: 3}
-  effectType: 0
-  value: 1.5
-  duration: 0
-  maxStack: 1
+  augmentID: A001
+  augmentationName: "3\uC5F0\uBC1C"
+  augmentationDesc: "\uD22C\uC0AC\uCCB4 \uBC1C\uC0AC \uCD94\uAC00 + {0}\n\uACF5\uACA9\uB825
+    \uC99D\uAC00 + {1}"
+  icon: {fileID: -8915327726919978405, guid: ae8b30280664483459941df7c3e55ec1, type: 3}
+  category: 0
+  subSkillType: 1
+  passiveType: 0
+  specialType: 0
+  stackRule: 1
   isUnlocked: 1
+  weight: 40
+  maxLevel: 3
+  subSkillLevels:
+  - level: 1
+    shotFireMode: 2
+    burstInterval: 0
+    projectileCountAdd: 2
+    damageMultiplier: 0.8
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 0
+    explosionDamageMultiplier: 0
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  - level: 2
+    shotFireMode: 2
+    burstInterval: 0
+    projectileCountAdd: 3
+    damageMultiplier: 0.75
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 0
+    explosionDamageMultiplier: 0
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  - level: 3
+    shotFireMode: 2
+    burstInterval: 0
+    projectileCountAdd: 4
+    damageMultiplier: 0.7
+    spreadAngle: 0
+    chargeTime: 0
+    homingStrength: 0
+    trajectoryDuration: 0
+    bounceCount: 0
+    pierceCount: 0
+    explosionRadius: 0
+    explosionDamageMultiplier: 0
+    chainCount: 0
+    chainRange: 0
+    dotDamagePerSecond: 0
+    dotDuration: 0
+  passiveLevels: []
+  specialLevels: []
