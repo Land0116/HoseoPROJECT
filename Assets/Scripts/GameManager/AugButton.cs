@@ -10,6 +10,7 @@ public class AugButton : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descText;
+    [SerializeField] private TMP_Text levelText;
 
     [Header("선택 버튼")]
     [SerializeField] private Button selectBtn;
@@ -36,6 +37,20 @@ public class AugButton : MonoBehaviour
         if (descText != null)
             descText.text = GetFormattedDescription(data, displayLevel);
 
+        if (levelText != null)
+        {
+            if (data != null)
+            {
+                bool isMaxLevel = currentDisplayLevel >= data.maxLevel;
+                levelText.text = isMaxLevel ? "MAX" : $"Lv.{currentDisplayLevel}";
+                levelText.gameObject.SetActive(true);
+            }
+            else
+            {
+                levelText.text = "";
+                levelText.gameObject.SetActive(false);
+            }
+        }
         if (iconImage != null)
         {
             iconImage.sprite = data != null ? data.icon : null;

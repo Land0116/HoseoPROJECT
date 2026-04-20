@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ButtonSpawn : MonoBehaviour
 {
-    public float lifeTime = 1f;
+    public float lifeTime = 0.5f;
 
     [SerializeField] private float speed = 5.0f;
     private float damage;

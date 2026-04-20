@@ -28,7 +28,7 @@ MonoBehaviour:
   subSkillLevels:
   - level: 1
     shotFireMode: 2
-    burstInterval: 0.5
+    burstInterval: 0.1
     projectileCountAdd: 2
     damageMultiplier: 0.8
     spreadAngle: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     dotDuration: 0
   - level: 2
     shotFireMode: 2
-    burstInterval: 0.5
+    burstInterval: 0.1
     projectileCountAdd: 3
     damageMultiplier: 0.75
     spreadAngle: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     dotDuration: 0
   - level: 3
     shotFireMode: 2
-    burstInterval: 0.5
+    burstInterval: 0.1
     projectileCountAdd: 4
     damageMultiplier: 0.7
     spreadAngle: 0
