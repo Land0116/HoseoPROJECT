@@ -76,6 +76,9 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Image dashCooldownOverlay;
     [SerializeField] private TextMeshProUGUI dashCooldownText;
 
+    [SerializeField] private GameObject dashPanel_UI;
+    [SerializeField] private Slider dashCooldownSlider;
+
     /// <summary>
     /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
     /// None        : 그냥 게임으로 복귀
@@ -374,18 +377,14 @@ public class PlayerUIManager : MonoBehaviour
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(true);
     }
-    
-    
+
+
     private void UpdateDashCooldownUI()
     {
         if (playerController == null)
         {
-            if (dashCooldownOverlay != null)
-                dashCooldownOverlay.gameObject.SetActive(false);
-
-            if (dashCooldownText != null)
-                dashCooldownText.text = "";
-
+            if (dashPanel_UI != null)
+                dashPanel_UI.SetActive(false);
             return;
         }
 
@@ -396,22 +395,39 @@ public class PlayerUIManager : MonoBehaviour
         // 쿨타임 중
         if (onCooldown)
         {
+            // UI 켜기
+            if (dashPanel_UI != null)
+                dashPanel_UI.SetActive(true);
+
+            // Slider 감소 (1 → 0)
+            if (dashCooldownSlider != null)
+                dashCooldownSlider.value = ratio;
+
+            // Overlay (선택)
             if (dashCooldownOverlay != null)
             {
                 dashCooldownOverlay.gameObject.SetActive(true);
                 dashCooldownOverlay.fillAmount = ratio;
             }
 
+            // 텍스트
             if (dashCooldownText != null)
             {
                 dashCooldownText.gameObject.SetActive(true);
                 dashCooldownText.text = Mathf.Max(0f, remain).ToString("F1");
             }
-
         }
-        // 사용 가능
+        // 쿨타임 끝
         else
         {
+            // UI 꺼버림
+            if (dashPanel_UI != null)
+                dashPanel_UI.SetActive(false);
+
+            // 값 초기화
+            if (dashCooldownSlider != null)
+                dashCooldownSlider.value = 0f;
+
             if (dashCooldownOverlay != null)
             {
                 dashCooldownOverlay.fillAmount = 0f;
@@ -421,16 +437,14 @@ public class PlayerUIManager : MonoBehaviour
             if (dashCooldownText != null)
             {
                 dashCooldownText.text = "";
-                dashCooldownText.gameObject.SetActive(true);
+                dashCooldownText.gameObject.SetActive(false);
             }
-
-            
         }
     }
-    
-    
-    
-    
+
+
+
+
     /// <summary>
     /// 옵션 패널 열기
     /// </summary>
@@ -663,9 +677,15 @@ public class PlayerUIManager : MonoBehaviour
         currentPanel = null;
         escReturnTarget = EscReturnTarget.None;
     }
-    
+
     private void ResetDashUI()
     {
+        if (dashPanel_UI != null)
+            dashPanel_UI.SetActive(false);
+
+        if (dashCooldownSlider != null)
+            dashCooldownSlider.value = 0f;
+
         if (dashCooldownOverlay != null)
         {
             dashCooldownOverlay.fillAmount = 0f;
@@ -675,9 +695,8 @@ public class PlayerUIManager : MonoBehaviour
         if (dashCooldownText != null)
         {
             dashCooldownText.text = "";
-            dashCooldownText.gameObject.SetActive(true);
+            dashCooldownText.gameObject.SetActive(false);
         }
-
     }
 
     /// <summary>
