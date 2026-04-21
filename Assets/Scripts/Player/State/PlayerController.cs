@@ -30,15 +30,15 @@ public class PlayerController : MonoBehaviour, IDamageable
     
 
     [Header("플레이어 기본 정보")] 
-    [SerializeField] private int baseMaxHp = 50; // 게임 시작 시 기준 최대 체력
-    [SerializeField] private float baseMoveSpeed = 3.0f; // 게임 시작 시 기준 이동속도
+    [SerializeField] private int baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
+    [SerializeField] private float baseMoveSpeed = 8.0f; // 게임 시작 시 기준 이동속도
     [SerializeField] private float baseAttackPerSecond = 1.0f; // 게임 시작 시 기준 초당 공격 횟수
 
     [Header("플레이어 현재 상태값")] 
     [SerializeField] private int hp; // 현재 체력
     [SerializeField] private int maxHp; // 현재 최대 체력
-    [SerializeField] private int gold = 20; // 현재 소지 골드
-    [SerializeField] private float moveSpeed = 3.0f; // 현재 이동속도
+    [SerializeField] private int gold = 10; // 현재 소지 골드
+    [SerializeField] private float moveSpeed; // 현재 이동속도
     [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
 
     [Header("플레이어 상태 제어")] 
@@ -146,8 +146,10 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("총알 소환 위치 관련")] 
     public Transform gunTip;
-
+    
+    [SerializeField] private float deathUIShowDelay = 0.5f; // 죽음 애니메이션 종료 후 UI 표시 지연 시간
     private Coroutine burstShootCoroutine;
+    private Coroutine deathUICoroutine;
     private bool isPointerOverUIThisFrame = false;
 
     //수정하면서 추가한 부분
@@ -401,7 +403,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             case PlayerState.Death:
             {
                 rb.linearVelocity = Vector2.zero;
-                
                 break;
             }
         }
@@ -981,20 +982,46 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         StopAllCoroutines();
+        deathUICoroutine = null;
 
         if (crosshairTransform != null)
         {
             crosshairTransform.gameObject.SetActive(false);
         }
     }
-
+    
+    
     public void EndDeathAnimationEvent()
     {
+        if (!IsDie) return;
+        if (PlayerUIManager.Instance == null) return;
+
+        // 애니메이션 이벤트가 중복으로 들어와도 한 번만 실행
+        if (deathUICoroutine != null) return;
+
+        deathUICoroutine = StartCoroutine(ShowDeathUI());
+    }
+
+    private IEnumerator ShowDeathUI()
+    {
+        if (deathUIShowDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(deathUIShowDelay);
+        }
+
+        // 딜레이 도중 재시작되었거나 살아났으면 UI 띄우지 않음
+        if (!IsDie)
+        {
+            deathUICoroutine = null;
+            yield break;
+        }
+
         if (PlayerUIManager.Instance != null)
         {
-            bodyAnimator.SetBool(IsDeathHash, false);
             PlayerUIManager.Instance.ShowPlayerDyingUI();
         }
+
+        deathUICoroutine = null;
     }
     
      
@@ -1298,6 +1325,7 @@ private void ApplySpecialAugment(AugmentationSystem aug, int level)
     public void ResetPlayerForRestart()
     {
         StopAllCoroutines();
+        deathUICoroutine = null;
 
         isDashing = false;
         dashEndTime = -999f;
@@ -1329,6 +1357,10 @@ private void ApplySpecialAugment(AugmentationSystem aug, int level)
         if (bodyAnimator != null)
         {
             bodyAnimator.speed = 1f;
+
+            bodyAnimator.Rebind();
+            bodyAnimator.Update(0f);
+
             bodyAnimator.ResetTrigger(AttackHash);
             bodyAnimator.ResetTrigger(HitHash);
             bodyAnimator.SetBool(IsMoveHash, false);

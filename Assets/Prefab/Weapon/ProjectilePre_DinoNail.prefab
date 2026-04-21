@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 520f3bc5686ed6242821ad85bf590cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonSpawn
-  lifeTime: 3
-  speed: 27
+  lifeTime: 0.5
+  speed: 25
 --- !u!50 &5249865015128772287
 Rigidbody2D:
   serializedVersion: 5

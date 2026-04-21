@@ -275,7 +275,7 @@ MonoBehaviour:
   hp: 0
   maxHp: 0
   gold: 10
-  moveSpeed: 11
+  moveSpeed: 0
   attackPerSecond: 1
   playerState: 0
   isAttack: 0
@@ -332,8 +332,9 @@ MonoBehaviour:
   inputDirection: {x: 0, y: 0}
   crosshairTransform: {fileID: 0}
   hideSystemCursor: 1
-  playerBody: {fileID: 621105006712859011}
+  playerBody: {fileID: 6444624563947541171}
   gunTip: {fileID: 6879044860308773687}
+  deathUIShowDelay: 0.5
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5
