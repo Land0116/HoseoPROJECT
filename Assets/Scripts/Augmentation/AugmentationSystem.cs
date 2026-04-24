@@ -8,51 +8,62 @@ public class AugmentationSystem : ScriptableObject
 
     public enum AugmentCategory
     {
-        SubSkill,   // 서브 스킬형
-        Passive,    // 패시브형
-        Special     // 특수형
+        SubSkill,       //서브스킬형
+        Passive,        //패시브형
+        Special         //스페셜형
     }
 
     public enum SubSkillType
     {
-        None,
-        Shot,       // 발사
-        Trajectory, // 궤적
-        Effect      // 효과
+        None,          
+        Shot,           
+        Trajectory,    
+        Effect
     }
 
     public enum PassiveType
     {
         None,
-        Damage,         // 공격력 증가
-        AttackSpeed,    // 공격 속도 증가
-        MaxHp,          // 최대 체력 증가
-        LifeSteal       // 흡혈
+        Damage,
+        AttackSpeed,
+        MaxHp,
+        LifeSteal,
+        AutoFire      // 자동연사 패시브
     }
 
     public enum SpecialType
     {
         None,
-        UniqueRule      // 현재 문서상 구체 효과 미정, 고유 규칙형으로만 분류
+        MoveSpeedBoost,         // 이동 속도 증가
+        CharacterShrink,        // 캐릭터 축소
+        IgnoreObstacleCollision,// 장애물 충돌 무시
+        CheatDeath,             // 치명적 피해 극복
+        HpToDamageByMaxHp,      // 체력 -> 공격력 변환
+        HealOnKill,             // 적 처치 시 체력 회복
+        HpRegen,                // 초당 체력 회복
+        HealToAutoAttack,       // 회복 시 자동 공격
+        PeriodicShield          // 주기적 보호막
     }
 
     public enum StackRule
     {
         None,
-        LevelUpSameSkill,   // 동일 스킬이면 레벨 증가
-        StackSameEffect,    // 동일 효과면 중첩
-        Unique              // 중복 불가
+        LevelUpSameSkill,
+        StackSameEffect,
+        Unique
     }
+
     public enum ShotFireMode
     {
-        Single,     // 기본 단발
+        Single,     // 기본 단발 패턴
         MultiShot,  // 산탄처럼 동시에 여러 발
         Burst       // 3연발처럼 시간차 연사
     }
+
     #endregion
 
     #region Level Data
- 
+
     [Serializable]
     public class SubSkillLevelData
     {
@@ -61,16 +72,31 @@ public class AugmentationSystem : ScriptableObject
         [Header("발사")]
         public ShotFireMode shotFireMode = ShotFireMode.Single;
         public float burstInterval = 0f;
-        public int projectileCountAdd = 0;      // 기본 1발에서 추가 수
-        public float damageMultiplier = 1f;     // 발사 구조 변경으로 인한 데미지 배율
-        public float spreadAngle = 0f;          // 산탄 등 부채꼴 각도
-        public float chargeTime = 0f;           // 차지샷용
+        public int projectileCountAdd = 0;
+        public float damageMultiplier = 1f;
+        public float spreadAngle = 0f;
+        public float chargeTime = 0f;
+
+        [Tooltip("자동연사처럼 공격 속도를 올리는 경우 사용. 0.20 = 20% 증가")]
+        public float attackSpeedBonusPercent = 0f;
+
+        [Tooltip("산탄처럼 유효 사거리를 줄일 때 사용. 1 = 기본, 0.6 = 40% 감소")]
+        public float projectileLifeMultiplier = 1f;
 
         [Header("궤적")]
         public float homingStrength = 0f;
         public float trajectoryDuration = 0f;
         public int bounceCount = 0;
         public int pierceCount = 0;
+        
+        [Header("주위탄")]
+        public bool useOrbitProjectile = false;      // 이 레벨에서 주위탄을 사용하는지
+        public int orbitProjectileCount = 0;         // 주위탄 개수
+        public float orbitRadius = 1.5f;             // 플레이어로부터 도는 반경
+        public float orbitAngularSpeed = 180f;       // 초당 회전 각도
+        public float orbitHitInterval = 0.2f;        // 같은 적을 다시 때릴 수 있는 최소 간격
+        public float orbitDamageMultiplier = 1f;     // 주위탄 전용 데미지 배율
+        public float orbitLifetime = 0f;             // 0이면 무한 유지
 
         [Header("효과")]
         public float explosionRadius = 0f;
@@ -85,17 +111,50 @@ public class AugmentationSystem : ScriptableObject
     public class PassiveLevelData
     {
         [Min(1)] public int level = 1;
-
-        public float damageMultiplier = 1f;     // 1.15 = 15% 증가
-        public float attackSpeedPercent = 0f;   // 0.20 = 20% 증가
+        
+        [Header("기본 패시브 수치")]
+        public float damageMultiplier = 1f;
+        public float attackSpeedPercent = 0f;
         public int maxHpAdd = 0;
-        public float lifeStealPercent = 0f;     // 0.05 = 5%
+        public float lifeStealPercent = 0f;
+        
+        [Header("자동연사 패시브")]
+        public bool autoFireEnabled = false;
+
+        [Tooltip("자동연사 시 발사 간격 보정값. 0.10 = 간격 10% 감소")]
+        public float autoFireIntervalPercent = 0f;
     }
 
     [Serializable]
     public class SpecialLevelData
     {
         [Min(1)] public int level = 1;
+
+        [Header("이동 / 외형 / 충돌")]
+        public float moveSpeedMultiplier = 1f;
+        public float moveSpeedAdd = 0f;
+        public float characterScaleMultiplier = 1f;
+        public bool ignoreObstacleCollision = false;
+
+        [Header("생존")]
+        public bool enableCheatDeath = false;
+        public int cheatDeathRemainHp = 1;
+        public float cheatDeathInvincibleDuration = 1f;
+
+        [Header("공격 / 회복")]
+        [Tooltip("최대 체력 10당 최종 데미지 추가 배율. 5%면 0.05")]
+        public float hpToDamagePercentPer10Hp = 0f;
+        public float healOnKill = 0f;
+        public float hpRegenPerSecond = 0f;
+
+        [Header("회복 시 자동 공격")]
+        public float healToAutoAttackThreshold = 0f;
+        public float healToAutoAttackDamageMultiplier = 0f;
+
+        [Header("보호막")]
+        public float shieldInterval = 0f;
+        public int shieldMaxCount = 0;
+
         [TextArea] public string ruleDescription;
     }
 

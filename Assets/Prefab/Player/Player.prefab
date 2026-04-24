@@ -277,6 +277,7 @@ MonoBehaviour:
   gold: 10
   moveSpeed: 0
   attackPerSecond: 1
+  bulletSpawnOffset: 0.2
   playerState: 0
   isAttack: 0
   isDie: 0
@@ -312,7 +313,6 @@ MonoBehaviour:
   shotDamageMultiplier: 1
   shotSpreadAngle: 0
   shotChargeTime: 0
-  shotBurstCount: 1
   shotBurstInterval: 0
   trajectoryHomingStrength: 0
   trajectoryDuration: 0
@@ -324,10 +324,41 @@ MonoBehaviour:
   effectChainRange: 0
   effectDotDamagePerSecond: 0
   effectDotDuration: 0
+  orbitProjectilePrefab: {fileID: 1322400900471655668, guid: 32e16161aca8316499c0f1df6ff70d85, type: 3}
+  shotUseOrbitProjectile: 0
+  shotOrbitProjectileCount: 0
+  shotOrbitRadius: 1.5
+  shotOrbitAngularSpeed: 180
+  shotOrbitHitInterval: 0.2
+  shotOrbitDamageMultiplier: 1
+  shotOrbitLifetime: 0
+  shotAttackSpeedBonusPercent: 0
+  shotProjectileLifeMultiplier: 1
   passiveDamageMultiplier: 1
   passiveAttackSpeedPercent: 0
   passiveMaxHpAdd: 0
   passiveLifeStealPercent: 0
+  passiveAutoFireEnabled: 0
+  passiveAutoFireIntervalPercent: 0
+  requestSingleShot: 0
+  firedThisPress: 0
+  specialMoveSpeedMultiplier: 1
+  specialMoveSpeedAdd: 0
+  specialCharacterScaleMultiplier: 1
+  specialIgnoreObstacleCollision: 0
+  specialCheatDeath: 0
+  specialCheatDeathUsed: 0
+  specialCheatDeathHp: 1
+  specialCheatDeathInvincibleDuration: 1
+  specialHpToDamagePercentPer10Hp: 0
+  specialHealOnKill: 0
+  specialHpRegenPerSecond: 0
+  specialHealToAutoAttackThreshold: 0
+  specialHealToAutoAttackDamageMultiplier: 0
+  specialShieldInterval: 0
+  specialShieldMaxCount: 0
+  currentShieldCount: 0
+  obstacleLayerName: Obstacle
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}
   crosshairTransform: {fileID: 0}

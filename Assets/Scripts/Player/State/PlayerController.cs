@@ -13,7 +13,8 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour, IDamageable
 {
     public static PlayerController Instance;
-     public enum AttackType
+
+    public enum AttackType
     {
         Base, //단추
         Item //아이템
@@ -27,71 +28,74 @@ public class PlayerController : MonoBehaviour, IDamageable
         Hit, //피격
         Death //죽음
     }
-    
 
-    [Header("플레이어 기본 정보")] 
-    [SerializeField] private int baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
+
+    [Header("플레이어 기본 정보")] [SerializeField]
+    private int baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
+
     [SerializeField] private float baseMoveSpeed = 8.0f; // 게임 시작 시 기준 이동속도
     [SerializeField] private float baseAttackPerSecond = 1.0f; // 게임 시작 시 기준 초당 공격 횟수
 
-    [Header("플레이어 현재 상태값")] 
-    [SerializeField] private int hp; // 현재 체력
+    [Header("플레이어 현재 상태값")] [SerializeField]
+    private int hp; // 현재 체력
+
     [SerializeField] private int maxHp; // 현재 최대 체력
     [SerializeField] private int gold = 10; // 현재 소지 골드
     [SerializeField] private float moveSpeed; // 현재 이동속도
     [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
+    [Header("총알 생성 보정")]
+    [SerializeField] private float bulletSpawnOffset = 0.2f;
 
-    [Header("플레이어 상태 제어")] 
-    [SerializeField] private PlayerState playerState = PlayerState.Idle; // 현재 상태머신 상태
+    [Header("플레이어 상태 제어")] [SerializeField]
+    private PlayerState playerState = PlayerState.Idle; // 현재 상태머신 상태
+
     //[SerializeField] private AttackType playerAttackType = AttackType.Base; //공격 상태가 단추인지 아이템인지.
     [SerializeField] private bool isAttack = false; // 공격 쿨타임 중인지 여부
     [SerializeField] private bool isDie = false; // 사망 여부
     [SerializeField] private bool isFireInput = false; //발사입력
     [SerializeField] private bool canControl = true; // 조작 가능 여부
-    
-    [Header("비주얼 / 애니메이션")]
-    [SerializeField] private Animator bodyAnimator;
+
+    [Header("비주얼 / 애니메이션")] [SerializeField]
+    private Animator bodyAnimator;
+
 // 현재 마우스를 향하는 방향 벡터
     [SerializeField] private Vector2 aimDirection = Vector2.down;
-    [SerializeField] private Vector2 animDirection = Vector2.down; 
-    [Header("공격 잠금 방향")]
-    [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
-    
+    [SerializeField] private Vector2 animDirection = Vector2.down;
+    [Header("공격 잠금 방향")] [SerializeField] private Vector2 lockedAttackAimDirection = Vector2.down;
+
     private static readonly int MoveXHash = Animator.StringToHash("MoveX");
     private static readonly int MoveYHash = Animator.StringToHash("MoveY");
     private static readonly int IsMoveHash = Animator.StringToHash("IsMove");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
     private static readonly int HitHash = Animator.StringToHash("Hit");
     private static readonly int IsDeathHash = Animator.StringToHash("IsDeath");
-    
-    [Header("피격")]
-    [SerializeField] private bool isHitAnimating = false;
-    
-    [Header("대쉬")]
-    [SerializeField] private Vector2 lastMoveDirection = Vector2.down; // 마지막 이동 방향 저장
-    [SerializeField] private float dashDistance;   // 짧게 이동할 거리
-    [SerializeField] private float dashDuration = 0.3f;  // 대쉬 지속 시간
-    [SerializeField] private float dashCooldown = 2.0f;   // 쿨타임 2초(임시)
 
-    [SerializeField] private bool isDashing = false;      // 현재 대쉬 중인지
+    [Header("피격")] [SerializeField] private bool isHitAnimating = false;
+
+    [Header("대쉬")] [SerializeField] private Vector2 lastMoveDirection = Vector2.down; // 마지막 이동 방향 저장
+    [SerializeField] private float dashDistance; // 짧게 이동할 거리
+    [SerializeField] private float dashDuration = 0.3f; // 대쉬 지속 시간
+    [SerializeField] private float dashCooldown = 2.0f; // 쿨타임 2초(임시)
+
+    [SerializeField] private bool isDashing = false; // 현재 대쉬 중인지
     [SerializeField] private Vector2 dashDirection = Vector2.down; // 대쉬 방향
-    [SerializeField] private float dashEndTime = -999f;   // 대쉬 종료 시각
-    [SerializeField] private float lastDashTime = -999f;  // 마지막 대쉬 사용 시각
+    [SerializeField] private float dashEndTime = -999f; // 대쉬 종료 시각
+    [SerializeField] private float lastDashTime = -999f; // 마지막 대쉬 사용 시각
 
-    [Header("장비")]
-    [SerializeField] private WeaponData basicWeapon; // 시작 무기
+    [Header("장비")] [SerializeField] private WeaponData basicWeapon; // 시작 무기
     [SerializeField] private WeaponData currentWeapon; //현재 장착 중인 총알
-    
+
     [SerializeField] private ItemData currentItem; // 현재 장착 중인 아이템
     [SerializeField] private GameObject curProjectilePrefab; // 현재 발사할 투사체 프리팹
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
-    
-    
+
+
     #region 증강 - 서브 스킬형
 
-    [Header("증강 - 서브 스킬 / 현재 장착 증강")]
-    [SerializeField] private AugmentationSystem currentShotAugment;
+    [Header("증강 - 서브 스킬 / 현재 장착 증강")] [SerializeField]
+    private AugmentationSystem currentShotAugment;
+
     [SerializeField] private AugmentationSystem currentTrajectoryAugment;
     [SerializeField] private AugmentationSystem currentEffectAugment;
 
@@ -99,54 +103,124 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private int currentTrajectoryLevel = 0;
     [SerializeField] private int currentEffectLevel = 0;
 
-    [Header("증강 - 서브 스킬 / 발사")]
-    [SerializeField] private AugmentationSystem.ShotFireMode shotFireMode = AugmentationSystem.ShotFireMode.Single;
-    [SerializeField] private int shotProjectileCountAdd = 0;        // 기본 1발에서 추가
-    [SerializeField] private float shotDamageMultiplier = 1f;       // 발사 구조 데미지 배율
-    [SerializeField] private float shotSpreadAngle = 0f;            // 부채꼴 발사 각도
-    [SerializeField] private float shotChargeTime = 0f;             // 차지샷용
-    [SerializeField] private int shotBurstCount = 1;                // 버스트 발사 수
-    [SerializeField] private float shotBurstInterval = 0f;          // 버스트 간격
+    [Header("증강 - 서브 스킬 / 발사")] [SerializeField]
+    private AugmentationSystem.ShotFireMode shotFireMode = AugmentationSystem.ShotFireMode.Single;
 
-    [Header("증강 - 서브 스킬 / 궤적")]
-    [SerializeField] private float trajectoryHomingStrength = 0f;
+    [SerializeField] private int shotProjectileCountAdd = 0; // 기본 1발에서 추가
+    [SerializeField] private float shotDamageMultiplier = 1f; // 발사 구조 데미지 배율
+    [SerializeField] private float shotSpreadAngle = 0f; // 부채꼴 발사 각도
+    [SerializeField] private float shotChargeTime = 0f; // 차지샷용
+    [SerializeField] private float shotBurstInterval = 0f; // 버스트 간격
+
+    [Header("증강 - 서브 스킬 / 궤적")] [SerializeField]
+    private float trajectoryHomingStrength = 0f;
+
     [SerializeField] private float trajectoryDuration = 0f;
     [SerializeField] private int trajectoryBounceCount = 0;
     [SerializeField] private int trajectoryPierceCount = 0;
 
-    [Header("증강 - 서브 스킬 / 효과")]
-    [SerializeField] private float effectExplosionRadius = 0f;
+    [Header("증강 - 서브 스킬 / 효과")] [SerializeField]
+    private float effectExplosionRadius = 0f;
+
     [SerializeField] private float effectExplosionDamageMultiplier = 1f;
     [SerializeField] private int effectChainCount = 0;
     [SerializeField] private float effectChainRange = 0f;
     [SerializeField] private float effectDotDamagePerSecond = 0f;
     [SerializeField] private float effectDotDuration = 0f;
+    
+    [Header("증강 - 서브 스킬 / 주위탄")]
+    [SerializeField] private GameObject orbitProjectilePrefab; // 주위탄 전용 프리팹
+    [SerializeField] private bool shotUseOrbitProjectile = false;
+    [SerializeField] private int shotOrbitProjectileCount = 0;
+    [SerializeField] private float shotOrbitRadius = 1.5f;
+    [SerializeField] private float shotOrbitAngularSpeed = 180f;
+    [SerializeField] private float shotOrbitHitInterval = 0.2f;
+    [SerializeField] private float shotOrbitDamageMultiplier = 1f;
+    [SerializeField] private float shotOrbitLifetime = 0f;
+
+// 현재 유지 중인 주위탄들
+    private readonly List<OrbitProjectile> activeOrbitProjectiles = new List<OrbitProjectile>();
+
+    #endregion
+
+    #region 증강 - 서브 스킬 추가 런타임값
+
+    [Header("증강 - 서브 스킬 / 추가 적용값")] 
+    [SerializeField] private float shotAttackSpeedBonusPercent = 0f;
+    [SerializeField] private float shotProjectileLifeMultiplier = 1f;
 
     #endregion
 
     #region 증강 - 패시브형
 
-    [Header("증강 - 패시브 / 최종 적용값")]
+    [Header("증강 - 패시브 / 최종 적용값")] 
     [SerializeField] private float passiveDamageMultiplier = 1f;
+
     [SerializeField] private float passiveAttackSpeedPercent = 0f;
     [SerializeField] private int passiveMaxHpAdd = 0;
     [SerializeField] private float passiveLifeStealPercent = 0f;
+    
+    [Header("증강 - 패시브 / 자동연사")]
+    [SerializeField] private bool passiveAutoFireEnabled = false;
+    [SerializeField] private float passiveAutoFireIntervalPercent = 0f;
+
+    // 기본 공격 1회 발사용 입력 버퍼
+    [SerializeField] private bool requestSingleShot = false;
+
+    // 현재 누르고 있는 입력에서 이미 발사했는지
+    [SerializeField] private bool firedThisPress = false;
 
     #endregion
 
-    [Header("컴포넌트 참조")] 
-    [SerializeField] private Rigidbody2D rb;
+    #region 증강 - 특수형
+
+    [Header("증강 - 특수형 / 최종 적용값")] [SerializeField]
+    private float specialMoveSpeedMultiplier = 1f;
+
+    [SerializeField] private float specialMoveSpeedAdd = 0f;
+    [SerializeField] private float specialCharacterScaleMultiplier = 1f;
+    [SerializeField] private bool specialIgnoreObstacleCollision = false;
+
+    [SerializeField] private bool specialCheatDeath = false;
+    [SerializeField] private bool specialCheatDeathUsed = false;
+    [SerializeField] private int specialCheatDeathHp = 1;
+    [SerializeField] private float specialCheatDeathInvincibleDuration = 1f;
+
+    [SerializeField] private float specialHpToDamagePercentPer10Hp = 0f;
+    [SerializeField] private float specialHealOnKill = 0f;
+    [SerializeField] private float specialHpRegenPerSecond = 0f;
+
+    [SerializeField] private float specialHealToAutoAttackThreshold = 0f;
+    [SerializeField] private float specialHealToAutoAttackDamageMultiplier = 0f;
+
+    [SerializeField] private float specialShieldInterval = 0f;
+    [SerializeField] private int specialShieldMaxCount = 0;
+    [SerializeField] private int currentShieldCount = 0;
+
+    [SerializeField] private string obstacleLayerName = "Obstacle";
+
+    private float nextShieldChargeTime = -1f;
+    private float invincibleUntilTime = -1f;
+    private float hpRegenAccumulator = 0f;
+    private float healAccumulatorForAutoAttack = 0f;
+
+    private Vector3 defaultPlayerScale = Vector3.one;
+    private Collider2D playerCollider2D;
+
+    #endregion
+
+    private float chargeStartTime = -1f;
+
+    [Header("컴포넌트 참조")] [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Vector2 inputDirection;
     private Camera _mainCamera;
 
-    [Header("조준점 설정")] 
-    [SerializeField] private Transform crosshairTransform; // 계층 구조의 Crosshair 오브젝트 연결
+    [Header("조준점 설정")] [SerializeField] private Transform crosshairTransform; // 계층 구조의 Crosshair 오브젝트 연결
     [SerializeField] private bool hideSystemCursor = true; // 시스템 커서 숨김 여부
     [SerializeField] private Transform playerBody;
 
-    [Header("총알 소환 위치 관련")] 
-    public Transform gunTip;
-    
+    [Header("총알 소환 위치 관련")] public Transform gunTip;
+
     [SerializeField] private float deathUIShowDelay = 0.5f; // 죽음 애니메이션 종료 후 UI 표시 지연 시간
     private Coroutine burstShootCoroutine;
     private Coroutine deathUICoroutine;
@@ -188,7 +262,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isAttack;
         set => isAttack = value;
     }
-    
+
     private float DashSpeed
     {
         get
@@ -225,7 +299,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isHitAnimating;
         set => isHitAnimating = value;
     }
-    
+
     #region 증강 Getter
 
     public int FinalProjectileCount => Mathf.Max(1, 1 + shotProjectileCountAdd);
@@ -248,13 +322,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        
+
         rb = GetComponent<Rigidbody2D>();
+        playerCollider2D = GetComponent<Collider2D>();
+        defaultPlayerScale = transform.localScale;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         rb.freezeRotation = true;
         rb.gravityScale = 0f;
-        
-        
+
+
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -263,30 +339,31 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        
+
         _mainCamera = Camera.main;
-        
+
         if (bodyAnimator == null && playerBody != null)
         {
             bodyAnimator = playerBody.GetComponent<Animator>();
         }
-        
-        maxHp = baseMaxHp;//체력수정.아이템
+
+        maxHp = baseMaxHp; //체력수정.아이템
         Hp = maxHp;
-        
-        
-        if(basicWeapon != null)
+
+
+        if (basicWeapon != null)
         {
             ApplyWeapon(basicWeapon);
 
         }
+
         moveSpeed = baseMoveSpeed; //아이템관련 수정
-        if (currentItem != null)//수정한 부분.아이템
+        if (currentItem != null) //수정한 부분.아이템
         {
             ApplyItem(currentItem);
         }
     }
-    
+
 
     void Start()
     {
@@ -308,7 +385,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         ApplyWeapon(basicWeapon);
         ApplyItem(currentItem);
-        
+
         SyncLocomotionState();
     }
 
@@ -319,16 +396,18 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         PlayerMouseMovement();
-        
+
         isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         UpdateAnimatorLocomotion();
         CheckAttackStateRelease();
-        HandleAttack();//새로 추가한 부분
 
+        TickSpecialRuntime();
+
+        HandleAttack();
         UpdateAnimatorPlaybackSpeed();
 
     }
-    
+
     void FixedUpdate()
     {
         if (IsDie)
@@ -367,6 +446,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 {
                     playerState = PlayerState.Walk;
                 }
+
                 break;
             }
             case PlayerState.Walk:
@@ -383,6 +463,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     rb.linearVelocity = Vector2.zero;
                     playerState = PlayerState.Idle;
                 }
+
                 break;
             }
             case PlayerState.Attack:
@@ -407,9 +488,10 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
     }
-    
-    
+
+
     #region 플레이어 마우스 움직임
+
     void PlayerMouseMovement()
     {
         if (IsDie) return;
@@ -439,9 +521,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
     }
+
     #endregion
 
     #region 애니메이션 관련 함수
+
     private void ApplyBlendTreeDirection(Vector2 dir)
     {
         if (bodyAnimator == null) return;
@@ -452,6 +536,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         bodyAnimator.SetFloat(MoveXHash, dir.x);
         bodyAnimator.SetFloat(MoveYHash, dir.y);
     }
+
     private void SyncLocomotionState()
     {
         bool hasMoveInput =
@@ -487,7 +572,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         bodyAnimator.SetBool(IsMoveHash, hasMoveInput);
     }
-    
+
     private bool IsAnimatorInAttackState()
     {
         if (bodyAnimator == null) return false;
@@ -507,6 +592,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         return false;
     }
+
     private void CheckAttackStateRelease()
     {
         if (playerState != PlayerState.Attack)
@@ -520,7 +606,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 코드만 Attack에 남아있으면 여기서 해제
         ReleaseAttackState();
     }
-    
+
     private void UpdateAnimatorPlaybackSpeed()
     {
         if (bodyAnimator == null)
@@ -543,9 +629,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 그 외에는 기본 속도
         bodyAnimator.speed = 1f;
     }
+
     #endregion
-    
-    
+
+
     public void EndHitAnimationEvent()
     {
         if (IsDie) return;
@@ -564,41 +651,155 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         SyncLocomotionState();
     }
+
     private void HandleAttack()
     {
+        if (shotUseOrbitProjectile)
+        {
+            // 입력 버퍼도 같이 비워서
+            // 클릭을 눌러도 공격 요청이 남지 않게 처리
+            requestSingleShot = false;
+            firedThisPress = false;
+            return;
+        }
+
+        if (!CanStartAttackNow()) return;
+
+        // 자동연사 패시브가 없을 때
+        if (!passiveAutoFireEnabled)
+        {
+            HandleSingleClickAttack();
+            return;
+        }
+
+        // 자동연사 패시브가 있을 때
+        HandleAutoFireAttack();
+    }
+    private void HandleSingleClickAttack()
+    {
+        // 이번 입력에서 아직 쏠 요청이 없으면 종료
+        if (!requestSingleShot) return;
+
+        // 이미 이번 입력에서 발사했으면 종료
+        if (firedThisPress) return;
+
+        // 차지샷이면 누르고 있는 시간 체크
+        if (shotChargeTime > 0f)
+        {
+            // 차지 완료 전이면 아직 발사 안 함
+            if (!isFireInput) return;
+
+            if (chargeStartTime < 0f)
+                chargeStartTime = Time.time;
+
+            if (Time.time < chargeStartTime + shotChargeTime)
+                return;
+        }
+
+        // 공격 쿨타임 아직 안 끝났으면 대기
+        if (Time.time < nextAttackTime)
+            return;
+
+        // 실제 발사
+        FireCurrentAttackPattern(false);
+
+        // 이번 클릭 요청 소비
+        requestSingleShot = false;
+        firedThisPress = true;
+    }
+    private void HandleAutoFireAttack()
+    {
+        // 자동연사 패시브를 먹었더라도
+        // 마우스를 안 누르고 있으면 반복 발사 안 함
         if (!isFireInput) return;
 
-        bool canAttack = CanStartAttackNow();
-        if (!canAttack) return;
-
-        if (Time.time >= nextAttackTime)
+        // 차지샷이면 차지 완료 후 발사
+        if (shotChargeTime > 0f)
         {
-            nextAttackTime = Time.time + (1f / attackPerSecond);
+            if (chargeStartTime < 0f)
+                chargeStartTime = Time.time;
 
-            PlayAttackAnimation();
+            if (Time.time < chargeStartTime + shotChargeTime)
+                return;
+        }
 
-            switch (shotFireMode)
-            {
-                case AugmentationSystem.ShotFireMode.Burst:
-                    if (burstShootCoroutine != null)
-                    {
-                        StopCoroutine(burstShootCoroutine);
-                    }
-                    burstShootCoroutine = StartCoroutine(BurstShootRoutine());
-                    break;
+        if (Time.time < nextAttackTime)
+            return;
 
-                case AugmentationSystem.ShotFireMode.MultiShot:
-                    ShootMultiShot();
-                    break;
+        FireCurrentAttackPattern(true);
 
-                default:
-                    ShootSingle();
-                    break;
-            }
+        // 자동연사는 클릭 버퍼를 따로 유지할 필요 없음
+        requestSingleShot = false;
+        firedThisPress = true;
+    }
+    private void FireCurrentAttackPattern(bool useAutoFireIntervalCorrection)
+    {
+        // ------------------------------------------------------------
+        // 역할:
+        // 1. 현재 공격주기에 맞춰 nextAttackTime 갱신
+        // 2. 차지샷이면 다음 차지를 위해 시작 시간 초기화
+        // 3. 애니메이션 재생
+        // 4. 현재 ShotFireMode에 맞는 발사 실행
+        // ------------------------------------------------------------
+
+        float attackInterval = GetCurrentAttackInterval(useAutoFireIntervalCorrection);
+        nextAttackTime = Time.time + attackInterval;
+
+        // 차지샷은 한 번 쏜 뒤 다시 차지 시작
+        if (shotChargeTime > 0f)
+        {
+            chargeStartTime = Time.time;
+        }
+
+        PlayAttackAnimation();
+
+        switch (shotFireMode)
+        {
+            case AugmentationSystem.ShotFireMode.Burst:
+                if (burstShootCoroutine != null)
+                {
+                    StopCoroutine(burstShootCoroutine);
+                }
+
+                burstShootCoroutine = StartCoroutine(BurstShootRoutine());
+                break;
+
+            case AugmentationSystem.ShotFireMode.MultiShot:
+                ShootMultiShot();
+                break;
+
+            default:
+                ShootSingle();
+                break;
         }
     }
-    
+    private float GetCurrentAttackInterval(bool useAutoFireIntervalCorrection)
+    {
+        // ------------------------------------------------------------
+        // 기본 공격 간격 = 1 / 초당 공격 횟수
+        // 예: attackPerSecond = 2 이면 0.5초마다 1발
+        // ------------------------------------------------------------
+        float interval = 1f / attackPerSecond;
+
+        // ------------------------------------------------------------
+        // 자동연사 패시브가 있고,
+        // 현재 자동연사 발사 상황이면 간격 보정 적용
+        //
+        // 예:
+        // autoFireIntervalPercent = 0.10 이면
+        // interval * 0.9f  => 10% 더 빠르게 발사
+        // ------------------------------------------------------------
+        if (useAutoFireIntervalCorrection && passiveAutoFireEnabled)
+        {
+            float correctionMultiplier = Mathf.Clamp(1f - passiveAutoFireIntervalPercent, 0.05f, 1f);
+            interval *= correctionMultiplier;
+        }
+
+        return Mathf.Max(0.01f, interval);
+    }
+
     //단추(기본공격) 발사
+
     #region 공격 발사
 
     private void ShootSingle()
@@ -615,17 +816,31 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (shotDirection.sqrMagnitude <= 0.0001f)
             shotDirection = Vector2.down;
 
+        shotDirection.Normalize();
+
         float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
         Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle);
 
-        GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
+        // ------------------------------------------------------------
+        // 총알을 gunTip 위치에서 바로 생성하지 않고,
+        // 발사 방향 앞으로 조금 밀어서 생성
+        // 이유:
+        // 1. 플레이어 몸 안에서 생성되는 현상 방지
+        // 2. 생성 직후 자기 자신과 겹쳐보이는 문제 방지
+        // ------------------------------------------------------------
+        Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
+
+        GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
         {
-            bulletScript.SetDamage(GetFinalDamage());
+            bulletScript.SetOwner(gameObject);
         }
+
+        ApplyProjectileAugmentToBullet(bulletScript, GetFinalDamage());
     }
+
     private void ShootMultiShot()
     {
         if (IsDie) return;
@@ -643,21 +858,34 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (shotDirection.sqrMagnitude <= 0.0001f)
             shotDirection = Vector2.down;
 
+        shotDirection.Normalize();
+
         float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
         float startAngle = -currentSpreadAngle * (currentBulletCount - 1) * 0.5f;
 
         for (int i = 0; i < currentBulletCount; i++)
         {
             float addAngle = startAngle + (currentSpreadAngle * i);
-            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle + addAngle);
+            float finalAngle = baseAngle + addAngle;
 
-            GameObject bullet = Instantiate(curProjectilePrefab, gunTip.position, bulletRotation);
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, finalAngle);
+
+            Vector2 finalDir = new Vector2(
+                Mathf.Cos(finalAngle * Mathf.Deg2Rad),
+                Mathf.Sin(finalAngle * Mathf.Deg2Rad)
+            ).normalized;
+
+            Vector3 spawnPos = gunTip.position + (Vector3)(finalDir * bulletSpawnOffset);
+
+            GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
             if (bulletScript != null)
             {
-                bulletScript.SetDamage(GetFinalDamage());
+                bulletScript.SetOwner(gameObject);
             }
+
+            ApplyProjectileAugmentToBullet(bulletScript, GetFinalDamage());
         }
     }
 
@@ -676,7 +904,24 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         burstShootCoroutine = null;
     }
+
     #endregion
+
+    private void ApplyProjectileAugmentToBullet(ButtonSpawn bulletScript, float damage)
+    {
+        if (bulletScript == null) return;
+
+        bulletScript.SetDamage(damage);
+        bulletScript.SetProjectileLifeMultiplier(shotProjectileLifeMultiplier);
+
+        bulletScript.SetHoming(FinalHomingStrength, FinalTrajectoryDuration);
+        bulletScript.SetBounce(FinalBounceCount);
+        bulletScript.SetPierce(FinalPierceCount);
+
+        bulletScript.SetExplosion(FinalExplosionRadius, FinalExplosionDamageMultiplier);
+        bulletScript.SetChain(FinalChainCount, FinalChainRange);
+        bulletScript.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
+    }
 
     public void SetControl(bool value)
     {
@@ -704,6 +949,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             SyncLocomotionState();
         }
     }
+
     private void OnMove(InputValue movementValue)
     {
         if (!IsGameplayScene())
@@ -737,28 +983,76 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 입력 들어오자마자 애니메이터와 상태 동기화
         SyncLocomotionState();
     }
+
     private void OnAttack(InputValue value)
     {
+        // ------------------------------------------------------------
+        // 역할:
+        // 1. 마우스가 눌렸는지/떼졌는지 상태 저장
+        // 2. "이번 클릭에서 한 번 쏴야 한다"는 요청(requestSingleShot) 생성
+        // 3. 패시브 자동연사가 없을 때는 이 requestSingleShot만 소비해서
+        //    1회 발사만 하게 만든다.
+        // ------------------------------------------------------------
+        if (shotUseOrbitProjectile)
+        {
+            isFireInput = false;
+            requestSingleShot = false;
+            firedThisPress = false;
+            chargeStartTime = -1f;
+            return;
+        }
         if (!IsGameplayScene())
         {
             isFireInput = false;
+            requestSingleShot = false;
+            firedThisPress = false;
+            chargeStartTime = -1f;
             return;
         }
 
         if (IsDie)
         {
             isFireInput = false;
+            requestSingleShot = false;
+            firedThisPress = false;
+            chargeStartTime = -1f;
             return;
         }
 
         if (!canControl)
         {
             isFireInput = false;
+            requestSingleShot = false;
+            firedThisPress = false;
+            chargeStartTime = -1f;
             return;
         }
 
-        isFireInput = value.isPressed;
+        bool pressed = value.isPressed;
+
+        // ------------------------------------------------------------
+        // 마우스를 "처음" 눌렀을 때만 1회 발사 요청 생성
+        // 즉, 기본 공격은 클릭 1번 = 1발 구조가 된다.
+        // ------------------------------------------------------------
+        if (pressed && !isFireInput)
+        {
+            requestSingleShot = true;
+            firedThisPress = false;
+            chargeStartTime = Time.time;
+        }
+
+        // ------------------------------------------------------------
+        // 마우스를 떼면 현재 입력 사이클 종료
+        // ------------------------------------------------------------
+        if (!pressed)
+        {
+            firedThisPress = false;
+            chargeStartTime = -1f;
+        }
+
+        isFireInput = pressed;
     }
+
     private bool CanStartAttackNow()
     {
         if (!IsGameplayScene()) return false;
@@ -793,11 +1087,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 bodyAnimator.speed = AttackPerSecond;
             }
+
             bodyAnimator.ResetTrigger(HitHash);
             bodyAnimator.ResetTrigger(AttackHash);
             bodyAnimator.SetTrigger(AttackHash);
         }
     }
+
     private void ReleaseAttackState()
     {
         if (playerState != PlayerState.Attack)
@@ -824,14 +1120,35 @@ public class PlayerController : MonoBehaviour, IDamageable
         SyncLocomotionState();
     }
 
-    
+
     #region 피격 처리
 
     public void OnDamage(float damage)
     {
         if (IsDie) return;
 
+        if (Time.time < invincibleUntilTime)
+            return;
+
+        // 보호막 먼저 소모
+        if (currentShieldCount > 0)
+        {
+            currentShieldCount--;
+            invincibleUntilTime = Time.time + 0.1f;
+            return;
+        }
+
         int incomingDamage = Mathf.RoundToInt(damage);
+
+        // 치명적 피해 극복
+        if (Hp - incomingDamage <= 0 && specialCheatDeath && !specialCheatDeathUsed)
+        {
+            specialCheatDeathUsed = true;
+            Hp = Mathf.Max(1, specialCheatDeathHp);
+            invincibleUntilTime = Time.time + specialCheatDeathInvincibleDuration;
+            return;
+        }
+
         Hp -= incomingDamage;
 
         Debug.Log("플레이어 체력: " + Hp + " / " + maxHp);
@@ -846,7 +1163,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     #endregion
-    
+
     private void EnterHitState()
     {
         if (IsDie) return;
@@ -873,24 +1190,29 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         UpdateAnimatorLocomotion();
     }
-    
+
     #region 최종 데미지 계산
 
     public float GetFinalDamage()
     {
         float baseDamage = weaponDamage + itemDamage;
 
-        // 서브 스킬형(발사)의 기본 공격 구조 변경 반영
         float subSkillAppliedDamage = baseDamage * shotDamageMultiplier;
-
-        // 패시브형 반영
         float passiveAppliedDamage = subSkillAppliedDamage * passiveDamageMultiplier;
 
-        return Mathf.Max(0f, Mathf.Round(passiveAppliedDamage));
+        float hpBonusMultiplier = 1f;
+        if (specialHpToDamagePercentPer10Hp > 0f)
+        {
+            hpBonusMultiplier += (maxHp / 10f) * specialHpToDamagePercentPer10Hp;
+        }
+
+        float finalDamage = passiveAppliedDamage * hpBonusMultiplier;
+
+        return Mathf.Max(0f, Mathf.Round(finalDamage));
     }
 
     #endregion
-    
+
     private void OnDash(InputValue value)
     {
         if (!value.isPressed) return;
@@ -903,7 +1225,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         StartDash();
     }
-    
+
     private void StartDash()
     {
         Vector2 dir = Vector2.zero;
@@ -930,7 +1252,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         // 대쉬 시작 즉시 속도 반영
         rb.linearVelocity = dashDirection * DashSpeed;
-        
+
         // 필요 시 공격 상태 끊기
         playerState = PlayerState.Idle;
     }
@@ -944,7 +1266,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             ? PlayerState.Walk
             : PlayerState.Idle;
     }
-    
+
     public void Death()
     {
         if (IsDie) return;
@@ -988,9 +1310,71 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             crosshairTransform.gameObject.SetActive(false);
         }
+        ClearOrbitProjectiles();
     }
     
-    
+    private void RefreshOrbitProjectiles()
+    {
+        ClearOrbitProjectiles();
+
+        if (!shotUseOrbitProjectile) return;
+        if (shotOrbitProjectileCount <= 0) return;
+        if (orbitProjectilePrefab == null) return;
+
+        Transform orbitOwner = playerBody != null ? playerBody : transform;
+
+        for (int i = 0; i < shotOrbitProjectileCount; i++)
+        {
+            float startAngle = (360f / shotOrbitProjectileCount) * i;
+
+            GameObject orbitObj = Instantiate(
+                orbitProjectilePrefab,
+                orbitOwner.position,
+                Quaternion.identity,
+                transform // 플레이어 밑에 붙여서 씬 이동 시 같이 유지
+            );
+
+            OrbitProjectile orbit = orbitObj.GetComponent<OrbitProjectile>();
+            if (orbit == null)
+            {
+                Destroy(orbitObj);
+                continue;
+            }
+
+            float orbitDamage = GetFinalDamage() * shotOrbitDamageMultiplier;
+
+            orbit.Initialize(
+                orbitOwner,
+                startAngle,
+                shotOrbitRadius,
+                shotOrbitAngularSpeed,
+                orbitDamage,
+                shotOrbitHitInterval,
+                shotOrbitLifetime
+            );
+            orbit.SetOwner(gameObject);
+            // 현재 효과형 증강도 주위탄에 같이 먹이고 싶으면 여기서 넘긴다
+            orbit.SetExplosion(FinalExplosionRadius, FinalExplosionDamageMultiplier);
+            orbit.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
+
+            activeOrbitProjectiles.Add(orbit);
+        }
+    }
+
+    private void ClearOrbitProjectiles()
+    {
+        for (int i = 0; i < activeOrbitProjectiles.Count; i++)
+        {
+            if (activeOrbitProjectiles[i] != null)
+            {
+                Destroy(activeOrbitProjectiles[i].gameObject);
+            }
+        }
+
+        activeOrbitProjectiles.Clear();
+    }
+
+
     public void EndDeathAnimationEvent()
     {
         if (!IsDie) return;
@@ -1023,9 +1407,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         deathUICoroutine = null;
     }
-    
-     
-     //무기 및 아이템
+
+
+    //무기 및 아이템
     public void ApplyItem(ItemData item)
     {
         if (item == null) return;
@@ -1042,13 +1426,15 @@ public class PlayerController : MonoBehaviour, IDamageable
             CurItemUI.Instance.SetItem(item);
         }
     }
+
     public void EquipItem(ItemData newItem)
     {
         if (newItem == null) return;
-        
-        
+
+
         ApplyItem(newItem);
     }
+
     public void ApplyWeapon(WeaponData weapon)
     {
         currentWeapon = weapon;
@@ -1058,24 +1444,26 @@ public class PlayerController : MonoBehaviour, IDamageable
             curProjectilePrefab = null;
             return;
         }
-        
+
         weaponDamage = weapon.damage;
         curProjectilePrefab = weapon.projectilePrefab;
-        
+
         if (CurWeaponUI.Instance != null)
         {
             CurWeaponUI.Instance.SetWeapon(weapon);
         }
 
     }
+
     public void EquipWeapon(WeaponData newWeapon)
     {
-        
+
         ApplyWeapon(newWeapon);
     }
 
-    
+
     //증강 - 적 처치시 체력회복
+
     #region 회복 / 흡혈
 
     public void OnHitEnemy()
@@ -1086,238 +1474,478 @@ public class PlayerController : MonoBehaviour, IDamageable
         Heal(healAmount);
     }
 
-    public void Heal(float value)
+    public void OnKillEnemy()
+    {
+        if (specialHealOnKill > 0f)
+        {
+            Heal(specialHealOnKill, true);
+        }
+    }
+
+    public void Heal(float value, bool triggerAutoAttack = true)
     {
         if (IsDie) return;
         if (value <= 0f) return;
 
+        int beforeHp = Hp;
         Hp += Mathf.RoundToInt(value);
+        int actualHealed = Hp - beforeHp;
+
+        if (actualHealed <= 0) return;
+
+        if (triggerAutoAttack &&
+            specialHealToAutoAttackThreshold > 0f &&
+            specialHealToAutoAttackDamageMultiplier > 0f)
+        {
+            healAccumulatorForAutoAttack += actualHealed;
+
+            while (healAccumulatorForAutoAttack >= specialHealToAutoAttackThreshold)
+            {
+                healAccumulatorForAutoAttack -= specialHealToAutoAttackThreshold;
+                SpawnHealAutoAttack();
+            }
+        }
+    }
+
+    private void SpawnHealAutoAttack()
+    {
+        if (IsDie) return;
+        if (curProjectilePrefab == null) return;
+        if (gunTip == null) return;
+
+        Vector2 shotDirection = aimDirection.sqrMagnitude > 0.0001f
+            ? aimDirection
+            : animDirection;
+
+        if (shotDirection.sqrMagnitude <= 0.0001f)
+            shotDirection = Vector2.down;
+
+        shotDirection.Normalize();
+
+        float baseAngle = Mathf.Atan2(shotDirection.y, shotDirection.x) * Mathf.Rad2Deg;
+        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, baseAngle);
+
+        Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
+
+        GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+        ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
+
+        if (bulletScript != null)
+        {
+            bulletScript.SetOwner(gameObject);
+        }
+
+        float autoAttackDamage = GetFinalDamage() * specialHealToAutoAttackDamageMultiplier;
+        ApplyProjectileAugmentToBullet(bulletScript, autoAttackDamage);
+    }
+    #endregion
+
+    #region 특수형 지속 시간 처리
+
+    private void TickSpecialRuntime()
+    {
+        // 초당 체력 회복
+        if (specialHpRegenPerSecond > 0f)
+        {
+            hpRegenAccumulator += specialHpRegenPerSecond * Time.deltaTime;
+
+            if (hpRegenAccumulator >= 1f)
+            {
+                int healInt = Mathf.FloorToInt(hpRegenAccumulator);
+                hpRegenAccumulator -= healInt;
+
+                Heal(healInt, true);
+            }
+        }
+
+        // 보호막 충전
+        if (specialShieldInterval > 0f && specialShieldMaxCount > 0)
+        {
+            if (Time.time >= nextShieldChargeTime)
+            {
+                currentShieldCount = Mathf.Min(currentShieldCount + 1, specialShieldMaxCount);
+                nextShieldChargeTime = Time.time + specialShieldInterval;
+            }
+        }
     }
 
     #endregion
-    
+
     //UI-Esc일시정지
     private void OnPause(InputValue value)
     {
         if (!value.isPressed) return;
         if (!IsGameplayScene()) return;
         if (IsDie) return;
-        
+
     }
-    
-    public void SetPause(bool isPaused) 
+
+    public void SetPause(bool isPaused)
     {
         Cursor.visible = isPaused;
 
         if (crosshairTransform != null)
             crosshairTransform.gameObject.SetActive(!isPaused);
     }
-    
+
     //증강변수 초기화
-   #region 증강 재빌드
 
-public void RebuildPlayerStats()
-{
-    // =========================
-    // 1. 기본 스탯 복원
-    // =========================
-    maxHp = baseMaxHp;
-    moveSpeed = baseMoveSpeed;
-    AttackPerSecond = baseAttackPerSecond;
+    #region 증강 재빌드
 
-    weaponDamage = 0f;
-    itemDamage = 0f;
-    curProjectilePrefab = null;
-
-    // =========================
-    // 2. 장비 재적용
-    // =========================
-    if (currentWeapon == null && basicWeapon != null)
+    public void RebuildPlayerStats()
     {
-        currentWeapon = basicWeapon;
-    }
+        // 1. 기본값 복원
+        maxHp = baseMaxHp;
+        moveSpeed = baseMoveSpeed;
+        AttackPerSecond = baseAttackPerSecond;
 
-    if (currentWeapon != null)
-    {
-        ApplyWeapon(currentWeapon);
-    }
+        weaponDamage = 0f;
+        itemDamage = 0f;
+        curProjectilePrefab = null;
 
-    if (currentItem != null)
-    {
-        ApplyItem(currentItem);
-    }
-
-    // =========================
-    // 3. 증강 런타임 값 초기화
-    // =========================
-    ResetAugmentRuntimeValues();
-
-    // =========================
-    // 4. 보유 슬롯 재적용
-    // =========================
-    if (AugmentRunManager.Instance != null)
-    {
-        AugmentSlotData[] slots = AugmentRunManager.Instance.OwnedSlots;
-        int slotCount = AugmentRunManager.Instance.CurrentSlotCount;
-
-        for (int i = 0; i < slotCount; i++)
+        // 2. 장비 재적용
+        if (currentWeapon == null && basicWeapon != null)
         {
-            if (slots[i] == null) continue;
-            if (!slots[i].isOccupied) continue;
-            if (slots[i].augmentData == null) continue;
+            currentWeapon = basicWeapon;
+        }
 
-            ApplyOwnedAugmentSlot(slots[i]);
+        if (currentWeapon != null)
+        {
+            ApplyWeapon(currentWeapon);
+        }
+
+        if (currentItem != null)
+        {
+            ApplyItem(currentItem);
+        }
+
+        // 3. 증강 런타임 초기화
+        ResetAugmentRuntimeValues();
+
+        // 4. 보유 증강 재적용
+        if (AugmentRunManager.Instance != null)
+        {
+            AugmentSlotData[] slots = AugmentRunManager.Instance.OwnedSlots;
+            int slotCount = AugmentRunManager.Instance.CurrentSlotCount;
+
+            for (int i = 0; i < slotCount; i++)
+            {
+                if (slots[i] == null) continue;
+                if (!slots[i].isOccupied) continue;
+                if (slots[i].augmentData == null) continue;
+
+                ApplyOwnedAugmentSlot(slots[i]);
+            }
+        }
+
+        // 5. 패시브 / 특수 최종 반영
+        maxHp += passiveMaxHpAdd;
+        maxHp = Mathf.Max(1, maxHp);
+
+        moveSpeed = (moveSpeed * specialMoveSpeedMultiplier) + specialMoveSpeedAdd;
+        moveSpeed = Mathf.Max(0f, moveSpeed);
+
+        AttackPerSecond = Mathf.Max(
+            0.1f,
+            attackPerSecond * (1f + passiveAttackSpeedPercent + shotAttackSpeedBonusPercent)
+        );
+
+        transform.localScale = defaultPlayerScale * specialCharacterScaleMultiplier;
+        ApplyObstacleCollisionRule(specialIgnoreObstacleCollision);
+
+        if (specialShieldInterval > 0f && specialShieldMaxCount > 0)
+        {
+            currentShieldCount = 0;
+            nextShieldChargeTime = Time.time + specialShieldInterval;
+        }
+        else
+        {
+            currentShieldCount = 0;
+            nextShieldChargeTime = -1f;
+        }
+
+        Hp = Mathf.Clamp(Hp, 0, maxHp);
+        RefreshOrbitProjectiles();
+    }
+
+    
+    private void ResetAugmentRuntimeValues()
+    {
+        // 서브 스킬 초기값
+        currentShotAugment = null;
+        currentTrajectoryAugment = null;
+        currentEffectAugment = null;
+
+        currentShotLevel = 0;
+        currentTrajectoryLevel = 0;
+        currentEffectLevel = 0;
+
+        shotProjectileCountAdd = 0;
+        shotDamageMultiplier = 1f;
+        shotSpreadAngle = 0f;
+        shotChargeTime = 0f;
+        shotFireMode = AugmentationSystem.ShotFireMode.Single;
+        shotBurstInterval = 0f;
+        shotAttackSpeedBonusPercent = 0f;
+        shotProjectileLifeMultiplier = 1f;
+
+        trajectoryHomingStrength = 0f;
+        trajectoryDuration = 0f;
+        trajectoryBounceCount = 0;
+        trajectoryPierceCount = 0;
+
+        effectExplosionRadius = 0f;
+        effectExplosionDamageMultiplier = 1f;
+        effectChainCount = 0;
+        effectChainRange = 0f;
+        effectDotDamagePerSecond = 0f;
+        effectDotDuration = 0f;
+        
+        shotUseOrbitProjectile = false;
+        shotOrbitProjectileCount = 0;
+        shotOrbitRadius = 1.5f;
+        shotOrbitAngularSpeed = 180f;
+        shotOrbitHitInterval = 0.2f;
+        shotOrbitDamageMultiplier = 1f;
+        shotOrbitLifetime = 0f;
+
+        ClearOrbitProjectiles();
+
+        // 패시브 초기값
+        passiveDamageMultiplier = 1f;
+        passiveAttackSpeedPercent = 0f;
+        passiveMaxHpAdd = 0;
+        passiveLifeStealPercent = 0f;
+
+        // 자동연사 패시브 초기값
+        passiveAutoFireEnabled = false;
+        passiveAutoFireIntervalPercent = 0f;
+
+        // 특수형 초기값
+        specialMoveSpeedMultiplier = 1f;
+        specialMoveSpeedAdd = 0f;
+        specialCharacterScaleMultiplier = 1f;
+        specialIgnoreObstacleCollision = false;
+
+        specialCheatDeath = false;
+        specialCheatDeathUsed = false;
+        specialCheatDeathHp = 1;
+        specialCheatDeathInvincibleDuration = 1f;
+
+        specialHpToDamagePercentPer10Hp = 0f;
+        specialHealOnKill = 0f;
+        specialHpRegenPerSecond = 0f;
+        specialHealToAutoAttackThreshold = 0f;
+        specialHealToAutoAttackDamageMultiplier = 0f;
+
+        specialShieldInterval = 0f;
+        specialShieldMaxCount = 0;
+        currentShieldCount = 0;
+
+        nextShieldChargeTime = -1f;
+        invincibleUntilTime = -1f;
+        hpRegenAccumulator = 0f;
+        healAccumulatorForAutoAttack = 0f;
+
+        requestSingleShot = false;
+        firedThisPress = false;
+
+        transform.localScale = defaultPlayerScale;
+        ApplyObstacleCollisionRule(false);
+    }
+
+    private void ApplyOwnedAugmentSlot(AugmentSlotData slot)
+    {
+        if (slot == null) return;
+        if (!slot.isOccupied) return;
+        if (slot.augmentData == null) return;
+
+        AugmentationSystem aug = slot.augmentData;
+
+        switch (aug.category)
+        {
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                ApplySubSkillAugment(aug, slot.currentLevel);
+                break;
+
+            case AugmentationSystem.AugmentCategory.Passive:
+                ApplyPassiveAugment(aug, slot.stackCount);
+                break;
+
+            case AugmentationSystem.AugmentCategory.Special:
+                ApplySpecialAugment(aug, slot.currentLevel);
+                break;
         }
     }
 
-    // =========================
-    // 5. 패시브 최종 반영
-    // =========================
-    maxHp += passiveMaxHpAdd;
-    maxHp = Mathf.Max(1, maxHp);
-
-    AttackPerSecond = Mathf.Max(0.1f, attackPerSecond * (1f + passiveAttackSpeedPercent));
-
-    // 체력 범위 보정
-    Hp = Mathf.Clamp(Hp, 0, maxHp);
-}
-
-private void ResetAugmentRuntimeValues()
-{
-    // 서브 스킬 초기값
-    currentShotAugment = null;
-    currentTrajectoryAugment = null;
-    currentEffectAugment = null;
-
-    currentShotLevel = 0;
-    currentTrajectoryLevel = 0;
-    currentEffectLevel = 0;
-
-    shotProjectileCountAdd = 0;
-    shotDamageMultiplier = 1f;
-    shotSpreadAngle = 0f;
-    shotChargeTime = 0f;
-    shotBurstCount = 1;
-    shotFireMode = AugmentationSystem.ShotFireMode.Single;
-    shotBurstInterval = 0f;
-
-    trajectoryHomingStrength = 0f;
-    trajectoryDuration = 0f;
-    trajectoryBounceCount = 0;
-    trajectoryPierceCount = 0;
-
-    effectExplosionRadius = 0f;
-    effectExplosionDamageMultiplier = 1f;
-    effectChainCount = 0;
-    effectChainRange = 0f;
-    effectDotDamagePerSecond = 0f;
-    effectDotDuration = 0f;
-
-    // 패시브 초기값
-    passiveDamageMultiplier = 1f;
-    passiveAttackSpeedPercent = 0f;
-    passiveMaxHpAdd = 0;
-    passiveLifeStealPercent = 0f;
-}
-
-private void ApplyOwnedAugmentSlot(AugmentSlotData slot)
-{
-    if (slot == null) return;
-    if (!slot.isOccupied) return;
-    if (slot.augmentData == null) return;
-
-    AugmentationSystem aug = slot.augmentData;
-
-    switch (aug.category)
+    private void ApplySubSkillAugment(AugmentationSystem aug, int level)
     {
-        case AugmentationSystem.AugmentCategory.SubSkill:
-            ApplySubSkillAugment(aug, slot.currentLevel);
-            break;
+        AugmentationSystem.SubSkillLevelData data = aug.GetSubSkillLevelData(level);
+        if (data == null) return;
 
-        case AugmentationSystem.AugmentCategory.Passive:
-            ApplyPassiveAugment(aug, slot.stackCount);
-            break;
+        switch (aug.subSkillType)
+        {
+            case AugmentationSystem.SubSkillType.Shot:
+                currentShotAugment = aug;
+                currentShotLevel = level;
 
-        case AugmentationSystem.AugmentCategory.Special:
-            ApplySpecialAugment(aug, slot.currentLevel);
-            break;
+                // -----------------------------
+                // 1. 기본 수동 발사 패턴 세팅
+                // -----------------------------
+                shotFireMode = data.shotFireMode;
+                shotProjectileCountAdd = data.projectileCountAdd;
+                shotDamageMultiplier = data.damageMultiplier;
+                shotSpreadAngle = data.spreadAngle;
+                shotChargeTime = data.chargeTime;
+                shotBurstInterval = data.burstInterval;
+                shotAttackSpeedBonusPercent = data.attackSpeedBonusPercent;
+                shotProjectileLifeMultiplier = data.projectileLifeMultiplier;
+                
+                // -----------------------------
+                // 2. 주위탄 보조 시스템 세팅
+                // -----------------------------
+                shotUseOrbitProjectile = data.useOrbitProjectile;
+                shotOrbitProjectileCount = data.orbitProjectileCount;
+                shotOrbitRadius = data.orbitRadius;
+                shotOrbitAngularSpeed = data.orbitAngularSpeed;
+                shotOrbitHitInterval = data.orbitHitInterval;
+                shotOrbitDamageMultiplier = data.orbitDamageMultiplier;
+                shotOrbitLifetime = data.orbitLifetime;
+
+                // -----------------------------
+                // 3. 주위탄은 "상시 회전 보조 오브젝트"다.
+                //    즉 manual shot mode와 개념이 다르다.
+                //    주위탄 사용 시 manual 발사는 기본 Single 유지 권장.
+                // -----------------------------
+                if (shotUseOrbitProjectile)
+                {
+                    shotFireMode = AugmentationSystem.ShotFireMode.Single;
+                    shotProjectileCountAdd = 0;
+                    shotSpreadAngle = 0f;
+                    shotChargeTime = 0f;
+                    shotBurstInterval = 0f;
+                    shotDamageMultiplier = 1f;
+                }
+                break;
+
+            case AugmentationSystem.SubSkillType.Trajectory:
+                currentTrajectoryAugment = aug;
+                currentTrajectoryLevel = level;
+                trajectoryHomingStrength = data.homingStrength;
+                trajectoryDuration = data.trajectoryDuration;
+                trajectoryBounceCount = data.bounceCount;
+                trajectoryPierceCount = data.pierceCount;
+                break;
+
+            case AugmentationSystem.SubSkillType.Effect:
+                currentEffectAugment = aug;
+                currentEffectLevel = level;
+                effectExplosionRadius = data.explosionRadius;
+                effectExplosionDamageMultiplier = data.explosionDamageMultiplier;
+                effectChainCount = data.chainCount;
+                effectChainRange = data.chainRange;
+                effectDotDamagePerSecond = data.dotDamagePerSecond;
+                effectDotDuration = data.dotDuration;
+                break;
+        }
     }
-}
 
-private void ApplySubSkillAugment(AugmentationSystem aug, int level)
-{
-    AugmentationSystem.SubSkillLevelData data = aug.GetSubSkillLevelData(level);
-    if (data == null) return;
-
-    switch (aug.subSkillType)
+    private void ApplyPassiveAugment(AugmentationSystem aug, int stackCount)
     {
-        case AugmentationSystem.SubSkillType.Shot:
-            currentShotAugment = aug;
-            currentShotLevel = level;
+        // ------------------------------------------------------------
+        // 패시브는 동일 효과 중첩형 기준으로
+        // stackCount를 레벨처럼 사용
+        // ------------------------------------------------------------
+        int appliedLevel = Mathf.Clamp(stackCount, 1, aug.maxLevel);
+        AugmentationSystem.PassiveLevelData data = aug.GetPassiveLevelData(appliedLevel);
+        if (data == null) return;
 
-            shotFireMode = data.shotFireMode;
-            shotProjectileCountAdd = data.projectileCountAdd;
-            shotDamageMultiplier = data.damageMultiplier;
-            shotSpreadAngle = data.spreadAngle;
-            shotChargeTime = data.chargeTime;
-            shotBurstInterval = data.burstInterval;
-            break;
+        switch (aug.passiveType)
+        {
+            case AugmentationSystem.PassiveType.Damage:
+                passiveDamageMultiplier *= data.damageMultiplier;
+                break;
 
-        case AugmentationSystem.SubSkillType.Trajectory:
-            currentTrajectoryAugment = aug;
-            currentTrajectoryLevel = level;
-            trajectoryHomingStrength = data.homingStrength;
-            trajectoryDuration = data.trajectoryDuration;
-            trajectoryBounceCount = data.bounceCount;
-            trajectoryPierceCount = data.pierceCount;
-            break;
+            case AugmentationSystem.PassiveType.AttackSpeed:
+                passiveAttackSpeedPercent += data.attackSpeedPercent;
+                break;
 
-        case AugmentationSystem.SubSkillType.Effect:
-            currentEffectAugment = aug;
-            currentEffectLevel = level;
-            effectExplosionRadius = data.explosionRadius;
-            effectExplosionDamageMultiplier = data.explosionDamageMultiplier;
-            effectChainCount = data.chainCount;
-            effectChainRange = data.chainRange;
-            effectDotDamagePerSecond = data.dotDamagePerSecond;
-            effectDotDuration = data.dotDuration;
-            break;
+            case AugmentationSystem.PassiveType.MaxHp:
+                passiveMaxHpAdd += data.maxHpAdd;
+                break;
+
+            case AugmentationSystem.PassiveType.LifeSteal:
+                passiveLifeStealPercent += data.lifeStealPercent;
+                break;
+
+            case AugmentationSystem.PassiveType.AutoFire:
+                passiveAutoFireEnabled = data.autoFireEnabled;
+                passiveAutoFireIntervalPercent = Mathf.Max(
+                    passiveAutoFireIntervalPercent,
+                    data.autoFireIntervalPercent
+                );
+                break;
+        }
     }
-}
 
-private void ApplyPassiveAugment(AugmentationSystem aug, int stackCount)
-{
-    // 패시브는 "동일 효과 중첩" 규칙이므로
-    // 현재 stackCount를 레벨처럼 사용해서 해당 단계 수치를 가져온다.
-    int appliedLevel = Mathf.Clamp(stackCount, 1, aug.maxLevel);
-    AugmentationSystem.PassiveLevelData data = aug.GetPassiveLevelData(appliedLevel);
-    if (data == null) return;
-
-    switch (aug.passiveType)
+    private void ApplySpecialAugment(AugmentationSystem aug, int level)
     {
-        case AugmentationSystem.PassiveType.Damage:
-            passiveDamageMultiplier *= data.damageMultiplier;
-            break;
+        AugmentationSystem.SpecialLevelData data = aug.GetSpecialLevelData(level);
+        if (data == null) return;
 
-        case AugmentationSystem.PassiveType.AttackSpeed:
-            passiveAttackSpeedPercent += data.attackSpeedPercent;
-            break;
+        switch (aug.specialType)
+        {
+            case AugmentationSystem.SpecialType.MoveSpeedBoost:
+                specialMoveSpeedMultiplier *= data.moveSpeedMultiplier;
+                specialMoveSpeedAdd += data.moveSpeedAdd;
+                break;
 
-        case AugmentationSystem.PassiveType.MaxHp:
-            passiveMaxHpAdd += data.maxHpAdd;
-            break;
+            case AugmentationSystem.SpecialType.CharacterShrink:
+                specialCharacterScaleMultiplier *= data.characterScaleMultiplier;
+                break;
 
-        case AugmentationSystem.PassiveType.LifeSteal:
-            passiveLifeStealPercent += data.lifeStealPercent;
-            break;
+            case AugmentationSystem.SpecialType.IgnoreObstacleCollision:
+                specialIgnoreObstacleCollision = data.ignoreObstacleCollision;
+                specialMoveSpeedAdd += data.moveSpeedAdd;
+                break;
+
+            case AugmentationSystem.SpecialType.CheatDeath:
+                specialCheatDeath = data.enableCheatDeath;
+                specialCheatDeathHp = data.cheatDeathRemainHp;
+                specialCheatDeathInvincibleDuration = data.cheatDeathInvincibleDuration;
+                break;
+
+            case AugmentationSystem.SpecialType.HpToDamageByMaxHp:
+                specialHpToDamagePercentPer10Hp += data.hpToDamagePercentPer10Hp;
+                break;
+
+            case AugmentationSystem.SpecialType.HealOnKill:
+                specialHealOnKill += data.healOnKill;
+                break;
+
+            case AugmentationSystem.SpecialType.HpRegen:
+                specialHpRegenPerSecond += data.hpRegenPerSecond;
+                break;
+
+            case AugmentationSystem.SpecialType.HealToAutoAttack:
+                specialHealToAutoAttackThreshold = data.healToAutoAttackThreshold;
+                specialHealToAutoAttackDamageMultiplier = data.healToAutoAttackDamageMultiplier;
+                break;
+
+            case AugmentationSystem.SpecialType.PeriodicShield:
+                specialShieldInterval = data.shieldInterval;
+                specialShieldMaxCount = Mathf.Max(specialShieldMaxCount, data.shieldMaxCount);
+                break;
+        }
     }
-}
+    
+    private void ApplyObstacleCollisionRule(bool ignore)
+    {
+        int obstacleLayer = LayerMask.NameToLayer(obstacleLayerName);
+        if (obstacleLayer < 0) return;
 
-private void ApplySpecialAugment(AugmentationSystem aug, int level)
-{
-    // 저장/슬롯/중복불가 구조만 구현하고, PlayerController 런타임 전투 반영은 비워둔다.
-    // 나중에 특수형 상세 기획 확정 시 여기만 확장하면 된다.
-}
+        Physics2D.IgnoreLayerCollision(gameObject.layer, obstacleLayer, ignore);
+    }
 
 #endregion
     
@@ -1375,6 +2003,7 @@ private void ApplySpecialAugment(AugmentationSystem aug, int level)
         }
 
         Cursor.visible = !hideSystemCursor;
+        ClearOrbitProjectiles();
     }
     
     private void OnEnable()

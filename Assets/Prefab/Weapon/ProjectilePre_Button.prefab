@@ -106,8 +106,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 520f3bc5686ed6242821ad85bf590cb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ButtonSpawn
-  lifeTime: 0.5
   speed: 25
+  baseLifeTime: 1
+  damage: 1
+  projectileLifeMultiplier: 1
+  homingStrength: 0
+  homingDuration: 0
+  homingSearchRadius: 8
+  bounceCount: 0
+  pierceCount: 0
+  explosionRadius: 0
+  explosionDamageMultiplier: 1
+  chainCount: 0
+  chainRange: 0
+  dotDamagePerSecond: 0
+  dotDuration: 0
 --- !u!50 &2884918893859666582
 Rigidbody2D:
   serializedVersion: 5

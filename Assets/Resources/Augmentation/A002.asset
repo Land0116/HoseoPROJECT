@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
   augmentID: A002
   augmentationName: "\uC0B0\uD0C4"
-  augmentationDesc: "\uD22C\uC0AC\uCCB4 \uBC1C\uC0AC \uCD94\uAC00 + {0}\n\uBC1C\uC0AC
-    \uAC01\uB3C4 + {2}\xBA"
+  augmentationDesc: "\uC5EC\uB7EC \uD22C\uC0AC\uCCB4\uB97C \uBD80\uCC44\uAF34\uB85C
+    \uBC1C\uC0AC\uD55C\uB2E4. \n\uAC00\uAE4C\uC6B4 \uAC70\uB9AC\uC5D0\uC11C \uAC15\uB825\uD558\uB2E4."
   icon: {fileID: -837275676153275556, guid: ea6103b800389a14f80c94d02974bf39, type: 3}
   category: 0
   subSkillType: 1
@@ -29,14 +29,23 @@ MonoBehaviour:
   - level: 1
     shotFireMode: 1
     burstInterval: 0
-    projectileCountAdd: 4
+    projectileCountAdd: 5
     damageMultiplier: 1
-    spreadAngle: 30
+    spreadAngle: 12
     chargeTime: 0
+    attackSpeedBonusPercent: 0
+    projectileLifeMultiplier: 0.6
     homingStrength: 0
     trajectoryDuration: 0
     bounceCount: 0
     pierceCount: 0
+    useOrbitProjectile: 0
+    orbitProjectileCount: 0
+    orbitRadius: 1.5
+    orbitAngularSpeed: 180
+    orbitHitInterval: 0.2
+    orbitDamageMultiplier: 1
+    orbitLifetime: 0
     explosionRadius: 0
     explosionDamageMultiplier: 0
     chainCount: 0
@@ -46,14 +55,23 @@ MonoBehaviour:
   - level: 2
     shotFireMode: 1
     burstInterval: 0
-    projectileCountAdd: 5
+    projectileCountAdd: 6
     damageMultiplier: 1
-    spreadAngle: 40
+    spreadAngle: 10
     chargeTime: 0
+    attackSpeedBonusPercent: 0
+    projectileLifeMultiplier: 0.7
     homingStrength: 0
     trajectoryDuration: 0
     bounceCount: 0
     pierceCount: 0
+    useOrbitProjectile: 0
+    orbitProjectileCount: 0
+    orbitRadius: 1.5
+    orbitAngularSpeed: 180
+    orbitHitInterval: 0.2
+    orbitDamageMultiplier: 1
+    orbitLifetime: 0
     explosionRadius: 0
     explosionDamageMultiplier: 0
     chainCount: 0
@@ -64,13 +82,22 @@ MonoBehaviour:
     shotFireMode: 1
     burstInterval: 0
     projectileCountAdd: 6
-    damageMultiplier: 1
-    spreadAngle: 50
+    damageMultiplier: 1.1
+    spreadAngle: 8
     chargeTime: 0
+    attackSpeedBonusPercent: 0
+    projectileLifeMultiplier: 0.8
     homingStrength: 0
     trajectoryDuration: 0
     bounceCount: 0
     pierceCount: 0
+    useOrbitProjectile: 0
+    orbitProjectileCount: 0
+    orbitRadius: 1.5
+    orbitAngularSpeed: 180
+    orbitHitInterval: 0.2
+    orbitDamageMultiplier: 1
+    orbitLifetime: 0
     explosionRadius: 0
     explosionDamageMultiplier: 0
     chainCount: 0
