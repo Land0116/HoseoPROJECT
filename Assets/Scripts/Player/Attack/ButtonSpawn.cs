@@ -46,6 +46,7 @@ public class ButtonSpawn : MonoBehaviour
     [Header("연쇄")]
     [SerializeField] private int chainCount = 0;
     [SerializeField] private float chainRange = 0f;
+    
 
     [Header("도트")]
     [SerializeField] private float dotDamagePerSecond = 0f;
@@ -71,6 +72,14 @@ public class ButtonSpawn : MonoBehaviour
     private Collider2D[] ownerColliders;
     private Collider2D[] myColliders;
 
+    [Header("타겟 필터")]
+    [SerializeField] private LayerMask enemyLayerMask;
+    [SerializeField] private LayerMask wallLayerMask;
+
+// NonAlloc 버퍼
+    private static readonly Collider2D[] targetBuffer = new Collider2D[32];
+    private static readonly Collider2D[] hitBuffer = new Collider2D[32];
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -171,7 +180,14 @@ public class ButtonSpawn : MonoBehaviour
         if (target == null) return;
 
         Vector2 toTarget = ((Vector2)target.position - (Vector2)transform.position).normalized;
-        moveDirection = Vector2.Lerp(moveDirection, toTarget, homingStrength * Time.deltaTime).normalized;
+
+        // homingStrength를 "회전 강도 계수"로 사용
+        // 0.3 / 0.6 / 0.9 같은 수치도 체감되도록 증폭
+        float turnSpeedDegPerSec = homingStrength * 720f;
+        float maxRadiansDelta = turnSpeedDegPerSec * Mathf.Deg2Rad * Time.deltaTime;
+
+        Vector3 rotated = Vector3.RotateTowards(moveDirection, toTarget, maxRadiansDelta, 0f);
+        moveDirection = ((Vector2)rotated).normalized;
     }
 
     private void UpdateRotation()
@@ -204,18 +220,20 @@ public class ButtonSpawn : MonoBehaviour
         if (isDestroyed) return;
         if (collision.contactCount <= 0) return;
 
-        // -----------------------------
-        // 발사자와의 충돌은 무조건 무시
-        // -----------------------------
         if (IsOwnerCollider(collision.collider))
             return;
 
+        // 적이면 적 처리
         IDamageable damageable = GetDamageable(collision.collider);
         if (damageable != null)
         {
             HandleEnemyHit(collision.collider, damageable);
             return;
         }
+
+        // 벽/장애물만 반사 또는 소멸 처리
+        if (!IsWallLayer(collision.collider.gameObject))
+            return;
 
         if (remainingBounceCount > 0)
         {
@@ -228,6 +246,7 @@ public class ButtonSpawn : MonoBehaviour
         if (explosionRadius > 0f)
         {
             ExplodeAt(collision.GetContact(0).point, null);
+            //PlayExplosionVfx(collision.GetContact(0).point, explosionRadius);
         }
 
         DestroyProjectile();
@@ -277,9 +296,14 @@ public class ButtonSpawn : MonoBehaviour
         if (remainingPierceCount > 0)
         {
             remainingPierceCount--;
+
+            // 마지막 허용 관통을 다 썼으면 여기서 종료
+            if (remainingPierceCount <= 0)
+            {
+                DestroyProjectile();
+            }
             return;
         }
-
         DestroyProjectile();
     }
 
@@ -334,14 +358,19 @@ public class ButtonSpawn : MonoBehaviour
 
     private Transform FindClosestTarget()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, homingSearchRadius);
+        int count = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            homingSearchRadius,
+            targetBuffer,
+            enemyLayerMask
+        );
 
         float closestSqr = float.MaxValue;
         Transform closestTarget = null;
 
-        for (int i = 0; i < hits.Length; i++)
+        for (int i = 0; i < count; i++)
         {
-            Collider2D col = hits[i];
+            Collider2D col = targetBuffer[i];
             if (col == null) continue;
             if (IsOwnerCollider(col)) continue;
 
@@ -374,6 +403,10 @@ public class ButtonSpawn : MonoBehaviour
         if (isDestroyed) return;
         isDestroyed = true;
         Destroy(gameObject);
+    }
+    private bool IsWallLayer(GameObject target)
+    {
+        return ((1 << target.layer) & wallLayerMask) != 0;
     }
 
     #region PlayerController Setter 연결 함수

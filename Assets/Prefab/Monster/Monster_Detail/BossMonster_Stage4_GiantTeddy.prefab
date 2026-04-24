@@ -108,10 +108,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  animator: {fileID: 0}
   attackPattern: {fileID: 6916277379513226809}
   movePattern: {fileID: 6395952001008251220}
   moveSpeed: 3
   maxHP: 50
+  minGold: 1
+  maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0
   itemDropChance: 0
@@ -119,6 +122,9 @@ MonoBehaviour:
   itemPrefab: {fileID: 2407056021327369741, guid: c727415534854cb41a2ec49804e22702, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
+  isAttacking: 0
+  hitAnimationTime: 0.5
+  deathAnimationTime: 0.7
 --- !u!114 &6916277379513226809
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -910,7 +910,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void ApplyProjectileAugmentToBullet(ButtonSpawn bulletScript, float damage)
     {
         if (bulletScript == null) return;
-
+        
         bulletScript.SetDamage(damage);
         bulletScript.SetProjectileLifeMultiplier(shotProjectileLifeMultiplier);
 
