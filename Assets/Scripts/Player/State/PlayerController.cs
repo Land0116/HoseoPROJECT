@@ -498,15 +498,22 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (crosshairTransform == null || playerBody == null) return;
         if (_mainCamera == null) return;
 
+        RectTransform rect = crosshairTransform as RectTransform;
+        if (rect != null)
+        {
+            rect.position = Mouse.current.position.ReadValue();
+        }
+
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
             mouseScreenPos.x,
             mouseScreenPos.y,
             -_mainCamera.transform.position.z));
         mouseWorldPos.z = 0f;
+        //Debug.Log(crosshairTransform.GetType());
+        //crosshairTransform.position = mouseWorldPos;
 
-        crosshairTransform.position = mouseWorldPos;
-
+        //
         Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position);
         if (direction.sqrMagnitude > 0.0001f)
         {
@@ -2018,29 +2025,47 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 메인 씬으로 돌아왔으면 플레이어는 존재하면 안 됨
+        Debug.Log($"[SceneLoad] {scene.name}");
+
         if (scene.name == "Main")
         {
             Destroy(gameObject);
             return;
         }
-        // 새 씬의 Main Camera 다시 연결
+
         _mainCamera = Camera.main;
 
-        // 죽은 상태가 아니면 크로스헤어 다시 켜기
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(!IsDie);
-        }
-        
-        // 증강 아이콘 UI 갱신
+        StartCoroutine(WaitForCrosshair());
+
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
     }
-    
-    
+
+
+    private IEnumerator WaitForCrosshair()
+    {
+        int tryCount = 120;
+
+        while (tryCount-- > 0)
+        {
+            if (CrosshairSingleton.Instance != null &&
+                CrosshairSingleton.Instance.Crosshair != null)
+            {
+                crosshairTransform = CrosshairSingleton.Instance.Crosshair;
+
+                Debug.Log("[Crosshair] 연결 성공");
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        Debug.LogError("[Crosshair] 끝까지 실패");
+    }
+
+
     /// <summary>
     /// Player가 처음 생성된 직후 PlayerSpawner가 호출
     /// 
@@ -2078,12 +2103,25 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         // 새 씬의 메인 카메라 다시 연결
         _mainCamera = Camera.main;
-
-        // 살아있으면 크로스헤어 다시 켜기
+        //*
         if (crosshairTransform != null)
         {
+            // 핵심 추가
+            Canvas canvas = GameObject.Find("Canvas_Crosshair").GetComponent<Canvas>();
+            if (canvas != null)
+            {
+                crosshairTransform.SetParent(canvas.transform, false);
+            }
+
             crosshairTransform.gameObject.SetActive(!IsDie);
         }
+        //*
+        // 살아있으면 크로스헤어 다시 켜기
+        /*if (crosshairTransform != null)
+        {
+            crosshairTransform.gameObject.SetActive(!IsDie);
+        }*/
+        //*
     }
 
     /// <summary>

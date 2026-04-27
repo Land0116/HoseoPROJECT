@@ -122,6 +122,7 @@ public class OptionUI : MonoBehaviour
             case 2: mode = FullScreenMode.ExclusiveFullScreen; break;
         }
         Screen.SetResolution(res.width, res.height, mode);
+        Cursor.lockState = CursorLockMode.Confined;
 
         UpdateBrightnessOverlay();
     }

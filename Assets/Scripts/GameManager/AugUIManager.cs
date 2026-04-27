@@ -258,7 +258,7 @@ public class AugUIManager : MonoBehaviour
 
         slotImages = iconList.ToArray();
 
-        Debug.Log($"[AugUIManager] 보유 증강 아이콘 바인딩 완료: {slotImages.Length}개");
+        //Debug.Log($"[AugUIManager] 보유 증강 아이콘 바인딩 완료: {slotImages.Length}개");
     }
     
     

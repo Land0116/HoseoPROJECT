@@ -118,7 +118,7 @@ public class InGameShopUIManager : MonoBehaviour
         if (shopRoot != null)
         {
             shopPanel = shopRoot.gameObject;
-            Debug.Log("InGameShopPanel ¿¬°áµÊ");
+           // Debug.Log("InGameShopPanel ¿¬°áµÊ");
         }
         else
         {
