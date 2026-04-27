@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -59,6 +60,7 @@ public class ButtonSpawn : MonoBehaviour
 
     private int remainingBounceCount;
     private int remainingPierceCount;
+    private int remainingChainCount;
 
     private bool isDestroyed = false;
 
@@ -93,6 +95,7 @@ public class ButtonSpawn : MonoBehaviour
 
         remainingBounceCount = bounceCount;
         remainingPierceCount = pierceCount;
+        remainingChainCount = chainCount;
 
         if (homingDuration > 0f)
             homingEndTime = Time.time + homingDuration;
@@ -256,15 +259,17 @@ public class ButtonSpawn : MonoBehaviour
     {
         if (targetCollider == null || damageable == null) return;
 
-        // owner는 맞지 않음
+        // 발사자는 맞지 않음
         if (IsOwnerCollider(targetCollider))
             return;
 
+        // 이미 맞은 적은 다시 맞지 않게 처리
         if (hitTargets.Contains(targetCollider))
             return;
 
         hitTargets.Add(targetCollider);
 
+        // 1. 직접 피해
         damageable.OnDamage(damage);
 
         if (PlayerController.Instance != null)
@@ -272,70 +277,186 @@ public class ButtonSpawn : MonoBehaviour
             PlayerController.Instance.OnHitEnemy();
         }
 
+        // 2. 화상 / 도트 적용
         if (dotDamagePerSecond > 0f && dotDuration > 0f)
         {
-            ProjectileDotReceiver dotReceiver = targetCollider.GetComponent<ProjectileDotReceiver>();
-            if (dotReceiver == null)
+            ProjectileDotReceiver dotReceiver = GetOrCreateDotReceiver(targetCollider, damageable);
+            if (dotReceiver != null)
             {
-                dotReceiver = targetCollider.gameObject.AddComponent<ProjectileDotReceiver>();
+                dotReceiver.ApplyDot(dotDamagePerSecond, dotDuration);
             }
-
-            dotReceiver.ApplyDot(dotDamagePerSecond, dotDuration);
         }
 
-        if (chainCount > 0 && chainRange > 0f)
-        {
-            ApplyChainDamage(targetCollider);
-        }
-
+        // 3. 폭발 적용
         if (explosionRadius > 0f)
         {
             ExplodeAt(targetCollider.transform.position, targetCollider);
         }
 
+        // 4. 연쇄탄 처리
+        // 기존처럼 주변 적에게 즉시 데미지를 주는 게 아니라,
+        // 총알의 이동 방향을 다음 적 방향으로 바꾼다.
+        if (TryMoveToNextChainTarget(targetCollider))
+        {
+            return;
+        }
+
+        // 5. 관통 처리
         if (remainingPierceCount > 0)
         {
             remainingPierceCount--;
 
-            // 마지막 허용 관통을 다 썼으면 여기서 종료
-            if (remainingPierceCount <= 0)
-            {
-                DestroyProjectile();
-            }
+            // 몬스터 Collider가 IsTrigger = false인 경우,
+            // 물리 충돌 때문에 총알이 몬스터 몸에 막히거나 밀릴 수 있다.
+            // 그래서 이미 맞은 몬스터와의 물리 충돌을 무시시켜 실제로 통과하게 만든다.
+            IgnoreTargetCollision(targetCollider, damageable);
+
+            // 관통 가능 횟수를 사용했으므로 총알은 계속 진행한다.
             return;
         }
+
+        // 6. 관통 횟수가 없으면 적을 맞은 뒤 총알 제거
         DestroyProjectile();
     }
-
-    private void ApplyChainDamage(Collider2D originTarget)
+    
+    /// <summary>
+    /// 관통한 대상과 총알의 물리 충돌을 무시한다.
+    /// 
+    /// 이유:
+    /// - 몬스터 Collider가 IsTrigger = false일 경우
+    ///   총알이 데미지는 주지만 실제 물리 충돌 때문에 막힐 수 있다.
+    /// - 관통탄은 몬스터를 뚫고 지나가야 하므로,
+    ///   이미 맞은 몬스터의 Collider들과 총알 Collider들의 충돌을 무시한다.
+    /// </summary>
+    private void IgnoreTargetCollision(Collider2D targetCollider, IDamageable damageable)
     {
-        Collider2D[] nearby = Physics2D.OverlapCircleAll(originTarget.transform.position, chainRange);
+        if (targetCollider == null) return;
 
-        int appliedCount = 0;
+        if (myColliders == null || myColliders.Length == 0)
+            myColliders = GetComponentsInChildren<Collider2D>(true);
 
-        for (int i = 0; i < nearby.Length; i++)
+        Collider2D[] targetColliders = null;
+
+        // IDamageable이 MonoBehaviour라면 그 오브젝트 기준으로 자식 Collider까지 전부 가져온다.
+        // 적이 자식 콜라이더 여러 개를 가지고 있어도 모두 무시하기 위함.
+        if (damageable is Component damageComponent)
         {
-            Collider2D candidate = nearby[i];
+            targetColliders = damageComponent.GetComponentsInChildren<Collider2D>(true);
+        }
+
+        // fallback: targetCollider 하나만 사용
+        if (targetColliders == null || targetColliders.Length == 0)
+        {
+            targetColliders = new Collider2D[] { targetCollider };
+        }
+
+        for (int i = 0; i < myColliders.Length; i++)
+        {
+            Collider2D myCol = myColliders[i];
+            if (myCol == null) continue;
+
+            for (int j = 0; j < targetColliders.Length; j++)
+            {
+                Collider2D targetCol = targetColliders[j];
+                if (targetCol == null) continue;
+
+                Physics2D.IgnoreCollision(myCol, targetCol, true);
+            }
+        }
+    }
+
+    private bool TryMoveToNextChainTarget(Collider2D originTarget)
+    {
+        if (remainingChainCount <= 0) return false;
+        if (chainRange <= 0f) return false;
+        if (originTarget == null) return false;
+
+        Collider2D nextTarget = FindClosestChainTarget(originTarget);
+
+        if (nextTarget == null)
+            return false;
+
+        Vector2 nextDirection = ((Vector2)nextTarget.transform.position - (Vector2)transform.position);
+
+        if (nextDirection.sqrMagnitude <= 0.0001f)
+            return false;
+
+        // 연쇄 횟수 1회 소비
+        remainingChainCount--;
+
+        // 총알이 다음 적을 향해 날아가도록 방향 변경
+        moveDirection = nextDirection.normalized;
+        transform.right = moveDirection;
+
+        // 총알 수명이 너무 짧으면 다음 적에게 가기도 전에 사라질 수 있으므로
+        // 최소한 chainRange / speed 만큼은 더 살아있게 보정
+        float extraLifeTime = chainRange / Mathf.Max(1f, speed) + 0.1f;
+        destroyTime = Mathf.Max(destroyTime, Time.time + extraLifeTime);
+
+        return true;
+    }
+    
+    private Collider2D FindClosestChainTarget(Collider2D originTarget)
+    {
+        int count = Physics2D.OverlapCircleNonAlloc(
+            originTarget.transform.position,
+            chainRange,
+            hitBuffer,
+            enemyLayerMask
+        );
+
+        Collider2D closestTarget = null;
+        float closestSqr = float.MaxValue;
+
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D candidate = hitBuffer[i];
             if (candidate == null) continue;
             if (candidate == originTarget) continue;
             if (IsOwnerCollider(candidate)) continue;
-
-            IDamageable damageable = GetDamageable(candidate);
-            if (damageable == null) continue;
             if (hitTargets.Contains(candidate)) continue;
 
-            damageable.OnDamage(damage);
-            hitTargets.Add(candidate);
-            appliedCount++;
+            IDamageable candidateDamageable = GetDamageable(candidate);
+            if (candidateDamageable == null) continue;
 
-            if (PlayerController.Instance != null)
+            float sqr = ((Vector2)candidate.transform.position - (Vector2)originTarget.transform.position).sqrMagnitude;
+
+            if (sqr < closestSqr)
             {
-                PlayerController.Instance.OnHitEnemy();
+                closestSqr = sqr;
+                closestTarget = candidate;
+            }
+        }
+
+        return closestTarget;
+    }
+
+    private ProjectileDotReceiver GetOrCreateDotReceiver(Collider2D targetCollider, IDamageable damageable)
+    {
+        if (targetCollider == null) return null;
+
+        // IDamageable이 붙어있는 본체 오브젝트에 DotReceiver를 붙이는 쪽이 안전하다.
+        // 자식 콜라이더마다 따로 DotReceiver가 붙는 문제를 막기 위함.
+        if (damageable is Component damageComponent)
+        {
+            ProjectileDotReceiver receiver = damageComponent.GetComponent<ProjectileDotReceiver>();
+
+            if (receiver == null)
+            {
+                receiver = damageComponent.gameObject.AddComponent<ProjectileDotReceiver>();
             }
 
-            if (appliedCount >= chainCount)
-                break;
+            return receiver;
         }
+
+        ProjectileDotReceiver fallback = targetCollider.GetComponent<ProjectileDotReceiver>();
+
+        if (fallback == null)
+        {
+            fallback = targetCollider.gameObject.AddComponent<ProjectileDotReceiver>();
+        }
+
+        return fallback;
     }
 
     private void ExplodeAt(Vector2 center, Collider2D excludeTarget)
@@ -449,6 +570,8 @@ public class ButtonSpawn : MonoBehaviour
     {
         chainCount = Mathf.Max(0, count);
         chainRange = Mathf.Max(0f, range);
+        
+        remainingChainCount = chainCount;
     }
 
     public void SetDot(float dps, float duration)

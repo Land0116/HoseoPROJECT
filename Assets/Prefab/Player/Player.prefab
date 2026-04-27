@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9139514254418439615}
   - component: {fileID: 2915404773871214574}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -279,7 +279,6 @@ MonoBehaviour:
   attackPerSecond: 1
   bulletSpawnOffset: 0.2
   playerState: 0
-  isAttack: 0
   isDie: 0
   isFireInput: 0
   canControl: 1
@@ -314,6 +313,24 @@ MonoBehaviour:
   shotSpreadAngle: 0
   shotChargeTime: 0
   shotBurstInterval: 0
+  burstEnabled: 0
+  burstProjectileCount: 1
+  burstInterval: 0.12
+  multiShotEnabled: 0
+  multiShotProjectileCount: 1
+  multiShotSpreadAngle: 0
+  chargeShotEnabled: 0
+  chargeShotTime: 0
+  chargeShotDamageMultiplier: 1
+  isAttackSequenceRunning: 0
+  orbitFormationSpacing: 0.35
+  orbitStartAngleOffset: 90
+  maxOrbitProjectileTotal: 40
+  orbitAutoAttackEnemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  orbitAutoAttackRangeAdd: 3
+  orbitAutoAttackMoveSpeed: 12
   trajectoryHomingStrength: 0
   trajectoryDuration: 0
   trajectoryBounceCount: 0
@@ -358,6 +375,7 @@ MonoBehaviour:
   specialShieldInterval: 0
   specialShieldMaxCount: 0
   currentShieldCount: 0
+  shieldVisualObject: {fileID: 2059917093533829590}
   obstacleLayerName: Obstacle
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}

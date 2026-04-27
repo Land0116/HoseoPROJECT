@@ -14,6 +14,13 @@ public class AugButton : MonoBehaviour
 
     [Header("선택 버튼")]
     [SerializeField] private Button selectBtn;
+    
+    [Header("카테고리 색상")]
+    [SerializeField] private Image backgroundImage;
+    [SerializeField] private Color subSkillColor = new Color(1f, 0.35f, 0.35f, 1f);
+    [SerializeField] private Color passiveColor = new Color(0.35f, 1f, 0.45f, 1f);
+    [SerializeField] private Color specialColor = new Color(1f, 0.85f, 0.25f, 1f);
+    [SerializeField] private Color emptyColor = Color.white;
 
     private int currentDisplayLevel = 1;
     private AugmentationSystem currentData;
@@ -63,10 +70,63 @@ public class AugButton : MonoBehaviour
             selectBtn.onClick.AddListener(OnClickSelect);
             selectBtn.interactable = data != null && manager != null;
         }
+        
+        ApplyCategoryColor(data);
     }
 
     #endregion
+    /// <summary>
+    /// 증강 카테고리에 따라 카드 배경색을 변경한다.
+    /// 
+    /// 서브스킬형: 빨강
+    /// 패시브형: 초록
+    /// 스페셜형: 노랑
+    /// </summary>
+    private void ApplyCategoryColor(AugmentationSystem data)
+    {
+        Image targetImage = backgroundImage;
 
+        if (targetImage == null && selectBtn != null)
+            targetImage = selectBtn.image;
+
+        if (targetImage == null)
+            return;
+
+        if (data == null)
+        {
+            targetImage.color = emptyColor;
+            return;
+        }
+
+        switch (data.category)
+        {
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                targetImage.color = subSkillColor;
+                break;
+
+            case AugmentationSystem.AugmentCategory.Passive:
+                targetImage.color = passiveColor;
+                break;
+
+            case AugmentationSystem.AugmentCategory.Special:
+                targetImage.color = specialColor;
+                break;
+
+            default:
+                targetImage.color = emptyColor;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 외부에서 버튼 클릭 가능 여부를 제어할 때 사용한다.
+    /// AugUIManager가 선택 연출 중 중복 클릭을 막기 위해 호출한다.
+    /// </summary>
+    public void SetInteractable(bool value)
+    {
+        if (selectBtn != null)
+            selectBtn.interactable = value;
+    }
     #region Description Format
 
     /// <summary>
@@ -112,22 +172,29 @@ public class AugButton : MonoBehaviour
         if (levelData == null)
             return data.augmentationDesc;
 
+        // 레벨별 설명이 있으면 그걸 우선 사용
+        string template = !string.IsNullOrEmpty(levelData.levelDescription)
+            ? levelData.levelDescription
+            : data.augmentationDesc;
+
         try
         {
             switch (data.subSkillType)
             {
                 case AugmentationSystem.SubSkillType.Shot:
                     return string.Format(
-                        data.augmentationDesc,
+                        template,
                         levelData.projectileCountAdd,
                         levelData.damageMultiplier,
                         levelData.spreadAngle,
-                        levelData.chargeTime
+                        levelData.chargeTime,
+                        levelData.orbitProjectileCount,
+                        levelData.orbitDamageMultiplier
                     );
 
                 case AugmentationSystem.SubSkillType.Trajectory:
                     return string.Format(
-                        data.augmentationDesc,
+                        template,
                         levelData.homingStrength,
                         levelData.trajectoryDuration,
                         levelData.bounceCount,
@@ -136,7 +203,7 @@ public class AugButton : MonoBehaviour
 
                 case AugmentationSystem.SubSkillType.Effect:
                     return string.Format(
-                        data.augmentationDesc,
+                        template,
                         levelData.explosionRadius,
                         levelData.explosionDamageMultiplier,
                         levelData.chainCount,
@@ -148,10 +215,10 @@ public class AugButton : MonoBehaviour
         }
         catch
         {
-            return data.augmentationDesc;
+            return template;
         }
 
-        return data.augmentationDesc;
+        return template;
     }
     
     /// <summary>
@@ -164,29 +231,36 @@ public class AugButton : MonoBehaviour
         if (levelData == null)
             return data.augmentationDesc;
 
+        string template = !string.IsNullOrEmpty(levelData.levelDescription)
+            ? levelData.levelDescription
+            : data.augmentationDesc;
+
         try
         {
             switch (data.passiveType)
             {
                 case AugmentationSystem.PassiveType.Damage:
-                    return string.Format(data.augmentationDesc, levelData.damageMultiplier);
+                    return string.Format(template, levelData.damageMultiplier);
 
                 case AugmentationSystem.PassiveType.AttackSpeed:
-                    return string.Format(data.augmentationDesc, levelData.attackSpeedPercent * 100f);
+                    return string.Format(template, levelData.attackSpeedPercent * 100f);
 
                 case AugmentationSystem.PassiveType.MaxHp:
-                    return string.Format(data.augmentationDesc, levelData.maxHpAdd);
+                    return string.Format(template, levelData.maxHpAdd);
 
                 case AugmentationSystem.PassiveType.LifeSteal:
-                    return string.Format(data.augmentationDesc, levelData.lifeStealPercent * 100f);
+                    return string.Format(template, levelData.lifeStealPercent * 100f);
+
+                case AugmentationSystem.PassiveType.AutoFire:
+                    return string.Format(template, levelData.autoFireIntervalPercent * 100f);
             }
         }
         catch
         {
-            return data.augmentationDesc;
+            return template;
         }
 
-        return data.augmentationDesc;
+        return template;
     }
 
     /// <summary>

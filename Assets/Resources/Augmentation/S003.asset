@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
+  m_Name: S003
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  shotModifierType: 0
+  augmentID: S003
+  augmentationName: "\uC7A5\uC560\uBB3C \uD1B5\uACFC"
+  augmentationDesc: .
+  icon: {fileID: 1289079217369458388, guid: 5ae2c3278d82e054f991239e6dbf85ca, type: 3}
+  category: 2
+  subSkillType: 0
+  passiveType: 0
+  specialType: 3
+  stackRule: 3
+  isUnlocked: 1
+  weight: 20
+  maxLevel: 1
+  subSkillLevels: []
+  passiveLevels: []
+  specialLevels:
+  - level: 1
+    moveSpeedMultiplier: 1
+    moveSpeedAdd: 1.5
+    characterScaleMultiplier: 1
+    ignoreObstacleCollision: 1
+    enableCheatDeath: 0
+    cheatDeathRemainHp: 1
+    cheatDeathInvincibleDuration: 1
+    hpToDamagePercentPer10Hp: 0
+    healOnKill: 0
+    hpRegenPerSecond: 0
+    healToAutoAttackThreshold: 0
+    healToAutoAttackDamageMultiplier: 0
+    shieldInterval: 0
+    shieldMaxCount: 0
+    ruleDescription: "\uC7A5\uC560\uBB3C\uACFC \uCDA9\uB3CC\uD558\uC9C0 \uC54A\uC73C\uBA70
+      \uC774\uB3D9 \uC18D\uB3C4\uAC00 1.5 \uC99D\uAC00"

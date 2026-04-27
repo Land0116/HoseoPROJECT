@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
+  m_Name: P003
+  m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  augmentID: P003
+  augmentationName: "\uCD5C\uB300 \uCCB4\uB825 \uC99D\uAC00"
+  augmentationDesc: .
+  icon: {fileID: 2015937658109151966, guid: 5ae2c3278d82e054f991239e6dbf85ca, type: 3}
+  category: 1
+  subSkillType: 0
+  passiveType: 3
+  specialType: 0
+  stackRule: 2
+  isUnlocked: 1
+  weight: 40
+  maxLevel: 3
+  subSkillLevels: []
+  passiveLevels:
+  - level: 1
+    levelDescription: "\uCD5C\uB300 \uCCB4\uB825\uC774 50 \uC99D\uAC00"
+    damageMultiplier: 1
+    attackSpeedPercent: 0
+    maxHpAdd: 50
+    lifeStealPercent: 0
+    autoFireEnabled: 0
+    autoFireIntervalPercent: 0
+  - level: 2
+    levelDescription: "\uCD5C\uB300 \uCCB4\uB825\uC774 100 \uC99D\uAC00"
+    damageMultiplier: 1
+    attackSpeedPercent: 0
+    maxHpAdd: 100
+    lifeStealPercent: 0
+    autoFireEnabled: 0
+    autoFireIntervalPercent: 0
+  - level: 3
+    levelDescription: "\uCD5C\uB300 \uCCB4\uB825\uC774 150 \uC99D\uAC00"
+    damageMultiplier: 1
+    attackSpeedPercent: 0
+    maxHpAdd: 150
+    lifeStealPercent: 0
+    autoFireEnabled: 0
+    autoFireIntervalPercent: 0
+  specialLevels: []

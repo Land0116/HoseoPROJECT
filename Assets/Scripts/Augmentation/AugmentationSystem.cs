@@ -59,7 +59,17 @@ public class AugmentationSystem : ScriptableObject
         MultiShot,  // 산탄처럼 동시에 여러 발
         Burst       // 3연발처럼 시간차 연사
     }
-
+    
+    public enum ShotModifierType
+    {
+        None,
+        Burst,      // 3연발
+        MultiShot,  // 산탄
+        Charge,     // 차지샷
+        Orbit       // 주위탄
+    }
+    [Header("발사형 세부 타입")]
+    public ShotModifierType shotModifierType = ShotModifierType.None;
     #endregion
 
     #region Level Data
@@ -68,7 +78,9 @@ public class AugmentationSystem : ScriptableObject
     public class SubSkillLevelData
     {
         [Min(1)] public int level = 1;
-
+        [Header("레벨별 설명")]
+        [TextArea] public string levelDescription;
+        
         [Header("발사")]
         public ShotFireMode shotFireMode = ShotFireMode.Single;
         public float burstInterval = 0f;
@@ -111,6 +123,8 @@ public class AugmentationSystem : ScriptableObject
     public class PassiveLevelData
     {
         [Min(1)] public int level = 1;
+        [Header("레벨별 설명")]
+        [TextArea] public string levelDescription;
         
         [Header("기본 패시브 수치")]
         public float damageMultiplier = 1f;

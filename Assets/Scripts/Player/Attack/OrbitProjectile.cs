@@ -31,6 +31,24 @@ public class OrbitProjectile : MonoBehaviour
     [SerializeField] private float dotDamagePerSecond = 0f;
     [SerializeField] private float dotDuration = 0f;
     
+    [Header("편대 배치")]
+    [SerializeField] private Vector2 formationOffset = Vector2.zero;
+
+    [Header("주위탄 자동공격")]
+    [SerializeField] private bool autoAttackEnabled = false;
+    [SerializeField] private float autoAttackRange = 4f;
+    [SerializeField] private float autoAttackCooldown = 1f;
+    [SerializeField] private float autoAttackMoveSpeed = 12f;
+    [SerializeField] private LayerMask autoAttackEnemyLayerMask;
+
+    private float nextAutoAttackTime = -1f;
+    private Transform autoAttackTarget;
+    private bool isAutoAttacking = false;
+    private bool isReturningToOrbit = false;
+
+    private static readonly Collider2D[] autoAttackBuffer = new Collider2D[32];
+    
+    
     private Transform ownerRoot;
     private Collider2D[] ownerColliders;
     private Collider2D[] myColliders;
@@ -49,7 +67,8 @@ public class OrbitProjectile : MonoBehaviour
         float newAngularSpeed,
         float newDamage,
         float newHitInterval,
-        float newLifeTime)
+        float newLifeTime,
+        Vector2 newFormationOffset)
     {
         owner = newOwner;
         currentAngle = startAngle;
@@ -58,15 +77,12 @@ public class OrbitProjectile : MonoBehaviour
         damage = newDamage;
         hitInterval = Mathf.Max(0.01f, newHitInterval);
         lifeTime = newLifeTime;
+        formationOffset = newFormationOffset;
 
         if (lifeTime > 0f)
-        {
             destroyTime = Time.time + lifeTime;
-        }
         else
-        {
             destroyTime = -1f;
-        }
     }
 
     public void SetExplosion(float radiusValue, float damageMultiplierValue)
@@ -83,36 +99,174 @@ public class OrbitProjectile : MonoBehaviour
 
     private void Update()
     {
-        // 플레이어가 사라졌으면 주위탄도 같이 제거
         if (owner == null)
         {
             Destroy(gameObject);
             return;
         }
 
-        // 수명 제한이 있으면 시간 지나면 제거
         if (destroyTime > 0f && Time.time >= destroyTime)
         {
             Destroy(gameObject);
             return;
         }
 
-        // 각도 갱신
         currentAngle += angularSpeed * Time.deltaTime;
 
-        // owner 기준 원운동 위치 계산
-        float rad = currentAngle * Mathf.Deg2Rad;
-        Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * radius;
+        Vector2 orbitPosition = GetOrbitWorldPosition();
 
-        transform.position = owner.position + (Vector3)offset;
-
-        // 주위탄의 바깥 방향으로 회전 보정 (원하면 비주얼용)
-        if (offset.sqrMagnitude > 0.0001f)
+        if (autoAttackEnabled)
         {
-            transform.right = offset.normalized;
+            UpdateAutoAttack(orbitPosition);
+            return;
+        }
+
+        transform.position = orbitPosition;
+        UpdateVisualDirection(orbitPosition);
+    }
+    
+    /// <summary>
+    /// 현재 주위탄이 있어야 할 원래 궤도 위치를 계산한다.
+    /// </summary>
+    private Vector2 GetOrbitWorldPosition()
+    {
+        float rad = currentAngle * Mathf.Deg2Rad;
+
+        Vector2 radialDir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
+        Vector2 tangentDir = new Vector2(-radialDir.y, radialDir.x).normalized;
+
+        Vector2 orbitOffset =
+            radialDir * radius +
+            tangentDir * formationOffset.x +
+            radialDir * formationOffset.y;
+
+        return (Vector2)owner.position + orbitOffset;
+    }
+    /// <summary>
+    /// 주위탄 자동공격 처리.
+    /// 
+    /// 흐름:
+    /// 1. 평소에는 원래 궤도 위치를 따라 돈다.
+    /// 2. 쿨타임이 끝났고 범위 안에 적이 있으면 적에게 날아간다.
+    /// 3. 적을 때리거나 대상이 사라지면 원래 궤도로 복귀한다.
+    /// </summary>
+    private void UpdateAutoAttack(Vector2 orbitPosition)
+    {
+        if (!isAutoAttacking && !isReturningToOrbit)
+        {
+            transform.position = orbitPosition;
+            UpdateVisualDirection(orbitPosition);
+
+            if (Time.time >= nextAutoAttackTime)
+            {
+                autoAttackTarget = FindClosestAutoAttackTarget();
+
+                if (autoAttackTarget != null)
+                {
+                    isAutoAttacking = true;
+                    nextAutoAttackTime = Time.time + autoAttackCooldown;
+                }
+            }
+
+            return;
+        }
+
+        if (isAutoAttacking)
+        {
+            if (autoAttackTarget == null)
+            {
+                isAutoAttacking = false;
+                isReturningToOrbit = true;
+                return;
+            }
+
+            Vector2 targetPos = autoAttackTarget.position;
+
+            transform.position = Vector2.MoveTowards(
+                transform.position,
+                targetPos,
+                autoAttackMoveSpeed * Time.deltaTime
+            );
+
+            Vector2 dir = targetPos - (Vector2)transform.position;
+            if (dir.sqrMagnitude > 0.0001f)
+                transform.right = dir.normalized;
+
+            if (Vector2.Distance(transform.position, targetPos) <= 0.1f)
+            {
+                isAutoAttacking = false;
+                isReturningToOrbit = true;
+            }
+
+            return;
+        }
+
+        if (isReturningToOrbit)
+        {
+            transform.position = Vector2.MoveTowards(
+                transform.position,
+                orbitPosition,
+                autoAttackMoveSpeed * Time.deltaTime
+            );
+
+            Vector2 dir = orbitPosition - (Vector2)transform.position;
+            if (dir.sqrMagnitude > 0.0001f)
+                transform.right = dir.normalized;
+
+            if (Vector2.Distance(transform.position, orbitPosition) <= 0.05f)
+            {
+                isReturningToOrbit = false;
+            }
         }
     }
+    
+    /// <summary>
+    /// 자동공격 범위 안에서 가장 가까운 적을 찾는다.
+    /// NonAlloc 사용으로 GC 발생을 줄인다.
+    /// </summary>
+    private Transform FindClosestAutoAttackTarget()
+    {
+        int count = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            autoAttackRange,
+            autoAttackBuffer,
+            autoAttackEnemyLayerMask
+        );
 
+        Transform closest = null;
+        float closestSqr = float.MaxValue;
+
+        for (int i = 0; i < count; i++)
+        {
+            Collider2D col = autoAttackBuffer[i];
+            if (col == null) continue;
+            if (IsOwnerCollider(col)) continue;
+
+            IDamageable damageable = GetDamageable(col);
+            if (damageable == null) continue;
+
+            float sqr = ((Vector2)col.transform.position - (Vector2)transform.position).sqrMagnitude;
+
+            if (sqr < closestSqr)
+            {
+                closestSqr = sqr;
+                closest = col.transform;
+            }
+        }
+
+        return closest;
+    }
+    
+    private void UpdateVisualDirection(Vector2 orbitPosition)
+    {
+        Vector2 dir = orbitPosition - (Vector2)owner.position;
+
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            transform.right = dir.normalized;
+        }
+    }
+    
     private void OnTriggerStay2D(Collider2D other)
     {
         if (IsOwnerCollider(other))
@@ -219,6 +373,25 @@ public class OrbitProjectile : MonoBehaviour
 
             damageable.OnDamage(damage * explosionDamageMultiplier);
         }
+    }
+    
+    /// <summary>
+    /// 주위탄 자동공격 설정.
+    /// 
+    /// 자동연사 패시브가 있을 때만 true가 들어온다.
+    /// </summary>
+    public void SetAutoAttack(
+        bool enabled,
+        float range,
+        float cooldown,
+        float moveSpeed,
+        LayerMask enemyLayerMask)
+    {
+        autoAttackEnabled = enabled;
+        autoAttackRange = Mathf.Max(0f, range);
+        autoAttackCooldown = Mathf.Max(0.05f, cooldown);
+        autoAttackMoveSpeed = Mathf.Max(1f, moveSpeed);
+        autoAttackEnemyLayerMask = enemyLayerMask;
     }
 
     private IDamageable GetDamageable(Collider2D col)

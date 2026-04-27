@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: A010
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  shotModifierType: 0
   augmentID: A010
   augmentationName: "\uD3ED\uBC1C\uD0C4"
-  augmentationDesc: "\uC801\uC744 \uBA85\uC911 \uC2DC \uD0C4\uC774 \uD3ED\uBC1C\uD558\uC5EC
-    \uC8FC\uBCC0 \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C \uC900\uB2E4."
+  augmentationDesc: .
   icon: {fileID: -5973860886773078451, guid: 5ae2c3278d82e054f991239e6dbf85ca, type: 3}
   category: 0
   subSkillType: 3
@@ -27,6 +27,9 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
+    levelDescription: "\uC801\uC744 \uBA85\uC911 \uC2DC \uD0C4\uC774 \uD3ED\uBC1C\uD558\uC5EC
+      2.5\uB9CC\uD07C\uC758 \uBC94\uC704\uC758 \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C
+      \uC900\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -53,6 +56,9 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
+    levelDescription: "\uC801\uC744 \uBA85\uC911 \uC2DC \uD0C4\uC774 \uD3ED\uBC1C\uD558\uC5EC
+      3\uB9CC\uD07C\uC758 \uBC94\uC704\uC758 \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C
+      \uC900\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -79,6 +85,9 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
+    levelDescription: "\uC801\uC744 \uBA85\uC911 \uC2DC \uD0C4\uC774 \uD3ED\uBC1C\uD558\uC5EC
+      3.5\uB9CC\uD07C\uC758 \uBC94\uC704\uC758 \uC801\uC5D0\uAC8C \uB370\uBBF8\uC9C0\uB97C
+      \uC900\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0

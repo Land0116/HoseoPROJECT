@@ -12251,6 +12251,11 @@ MonoBehaviour:
   descText: {fileID: 69205152}
   levelText: {fileID: 1030165489}
   selectBtn: {fileID: 479654293}
+  backgroundImage: {fileID: 479654294}
+  subSkillColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  passiveColor: {r: 0.35, g: 1, b: 0.45, a: 1}
+  specialColor: {r: 1, g: 0.85, b: 0.25, a: 1}
+  emptyColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &479654293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17886,6 +17891,20 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c3ac19e807cf88047901f57f7623de13, type: 2}
   - {fileID: 11400000, guid: 3d297366a49334044b519c9e8ec951eb, type: 2}
   - {fileID: 11400000, guid: b5513b0f3b8fdad47953a580dcb5ff5d, type: 2}
+  - {fileID: 11400000, guid: 01887535e09ea5b47a9b2df7d4553d27, type: 2}
+  - {fileID: 11400000, guid: f6f233b03f212dd4eb1cf1bb7c1ae76f, type: 2}
+  - {fileID: 11400000, guid: 008825644e02e324d99a7bc5f04be031, type: 2}
+  - {fileID: 11400000, guid: bc292fa86ef111f44b0286c443fa3065, type: 2}
+  - {fileID: 11400000, guid: 25400a8d239a18c49bfd88746374d822, type: 2}
+  - {fileID: 11400000, guid: 7f82db6b5aab2934fa51794e0f432da2, type: 2}
+  - {fileID: 11400000, guid: 264fe04d8a581174db3c561f4d405ba2, type: 2}
+  - {fileID: 11400000, guid: 0fa8c699ae31bbc47880094243b26f8a, type: 2}
+  - {fileID: 11400000, guid: b09694ad14c687e49966d948289530d4, type: 2}
+  - {fileID: 11400000, guid: 6d3e8899626bd9a45acdc7a65e118110, type: 2}
+  - {fileID: 11400000, guid: 063deb0010089304aa0360c43685dea1, type: 2}
+  - {fileID: 11400000, guid: ab3dae71e8a4ea34cafdfd7cb231e826, type: 2}
+  - {fileID: 11400000, guid: 567cc764d1d9c6e46a62d93b09128394, type: 2}
+  - {fileID: 11400000, guid: 94fca5858e448b9458e61658b950f364, type: 2}
   currentChoices:
   - {fileID: 0}
   - {fileID: 0}
@@ -21338,6 +21357,11 @@ MonoBehaviour:
   descText: {fileID: 670876121}
   levelText: {fileID: 1655789584}
   selectBtn: {fileID: 1168928648}
+  backgroundImage: {fileID: 1168928649}
+  subSkillColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  passiveColor: {r: 0.35, g: 1, b: 0.45, a: 1}
+  specialColor: {r: 1, g: 0.85, b: 0.25, a: 1}
+  emptyColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1168928648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30327,6 +30351,11 @@ MonoBehaviour:
   descText: {fileID: 1729496468}
   levelText: {fileID: 1480312279}
   selectBtn: {fileID: 1875229537}
+  backgroundImage: {fileID: 1875229538}
+  subSkillColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  passiveColor: {r: 0.35, g: 1, b: 0.45, a: 1}
+  specialColor: {r: 1, g: 0.85, b: 0.25, a: 1}
+  emptyColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!114 &1875229537
 MonoBehaviour:
   m_ObjectHideFlags: 0
