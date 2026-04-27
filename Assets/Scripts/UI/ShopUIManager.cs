@@ -88,7 +88,8 @@ public class ShopUIManager : MonoBehaviour
 
         if (CurItemUI.Instance != null)
         {
-            CurItemUI.Instance.SetItem(item);
+            //CurItemUI.Instance.SetItem(item);
+            //CurItemUI.Instance.SetItems(PlayerController.Instance.GetEquippedItems());
         }
 
         CloseShop();

@@ -23,7 +23,7 @@ public class ItemUIManager : MonoBehaviour
 
     [SerializeField] private GameObject alertItemPanel;
     [SerializeField] private GameObject alertWeaponPanel;
-
+    [SerializeField] private GameObject alertMaxItemPanel;
     private void Awake()
     {
         Instance = this;
@@ -52,17 +52,34 @@ public class ItemUIManager : MonoBehaviour
                 var itemData = item.GetItemData();
                 if (itemData != null)
                 {
-                    PlayerController.Instance.EquipItem(itemData);
-                    CurItemUI.Instance.SetItem(itemData);
+                    bool success = PlayerController.Instance.EquipItem(itemData);
 
-                    nearbyItems.Remove(item);
-                    Destroy(item.gameObject);
+                    if (success)
+                    {
+                        //CurItemUI.Instance.SetItem(itemData);
+                        CurItemUI.Instance.SetItems(PlayerController.Instance.GetEquippedItems());
 
+                        nearbyItems.Remove(item);
+                        Destroy(item.gameObject);
+
+                        currentTarget = null;
+                        if (itemPanel != null) itemPanel.SetActive(false);
+
+                        if (alertItemPanel != null)
+                            StartCoroutine(ShowAlertItemPaenl(1.5f));
+                    }
+                    else
+                    {
+                        Debug.Log("æ∆¿Ã≈€ ¿Â¬¯ Ω«∆– (ΩΩ∑‘ ≤À ¬¸)");
+
+                        
+                        if (alertMaxItemPanel != null)
+                            StartCoroutine(ShowAlertMaxItemPanel(1.5f));
+                    }
+
+                    
                     currentTarget = null;
                     if (itemPanel != null) itemPanel.SetActive(false);
-
-                    if (alertItemPanel != null)
-                        StartCoroutine(ShowAlertItemPaenl(1.5f));
                 }
             }
             else if (currentTarget is WeaponPickup weapon)
@@ -242,10 +259,22 @@ public class ItemUIManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         alertWeaponPanel.SetActive(false);
     }
+    private System.Collections.IEnumerator ShowAlertMaxItemPanel(float duration)
+    {
+        if (alertMaxItemPanel == null) yield break;
+
+        alertMaxItemPanel.SetActive(true);
+        yield return new WaitForSeconds(duration);
+        alertMaxItemPanel.SetActive(false);
+    }
 
     public void BindItemUI(GameObject systemUIRoot)
     {
         if (systemUIRoot == null) return;
+
+        Transform alertMaxItemRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AlertMaxItemPanel");
+        if (alertMaxItemRoot != null)
+            alertMaxItemPanel = alertMaxItemRoot.gameObject;
 
         Transform itemPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "ItemUIPanel");
         if (itemPanelRoot != null)
@@ -277,6 +306,7 @@ public class ItemUIManager : MonoBehaviour
         if (weaponPanel != null) weaponPanel.SetActive(false);
         if (alertItemPanel != null) alertItemPanel.SetActive(false);
         if (alertWeaponPanel != null) alertWeaponPanel.SetActive(false);
+        if (alertMaxItemPanel != null) alertMaxItemPanel.SetActive(false);
 
         playerController = FindFirstObjectByType<PlayerController>();
         if (playerController != null)

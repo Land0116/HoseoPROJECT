@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ public class CurItemUI : MonoBehaviour
     [SerializeField] private Image itemImage;
     [Header("게임 시작 시 장착된 기본 아이템")]
     [SerializeField] private ItemData defaultItem;
-
+    [SerializeField] private Image[] itemSlots;
     private void Awake()
     {
         if (Instance != null)
@@ -20,31 +21,27 @@ public class CurItemUI : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        //기본아이템
-        if (defaultItem != null && defaultItem.icon != null)
+
+        // 전부 비활성화
+        for (int i = 0; i < itemSlots.Length; i++)
         {
-            itemImage.sprite = defaultItem.icon;
-            itemImage.enabled = true;
-        }
-        else
-        {
-            itemImage.enabled = false;
+            itemSlots[i].enabled = false;
         }
     }
 
-    public void SetItem(ItemData itemData)
+    public void SetItems(List<ItemData> items)
     {
-
-        if (itemImage == null) return;
-
-        if (itemData != null && itemData.icon != null)
+        for (int i = 0; i < itemSlots.Length; i++)
         {
-            itemImage.sprite = itemData.icon;
-            itemImage.enabled = true;
-        }
-        else
-        {
-            itemImage.enabled = false;
+            if (i < items.Count && items[i] != null && items[i].icon != null)
+            {
+                itemSlots[i].sprite = items[i].icon;
+                itemSlots[i].enabled = true;
+            }
+            else
+            {
+                itemSlots[i].enabled = false;
+            }
         }
     }
 

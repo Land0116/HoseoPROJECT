@@ -90,6 +90,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
 
+    //아이템 5개까지 장착
+    private List<ItemData> equippedItems = new List<ItemData>();
+    private const int MAX_ITEM_COUNT = 5;
 
     #region 증강 - 서브 스킬형
 
@@ -1645,6 +1648,98 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// 주위탄 4개 + 산탄 6발 = 4 * 6 = 24개
     /// 주위탄 4개 + 3연발 4발 + 산탄 6발 = 4 * 4 * 6 = 96개지만 maxOrbitProjectileTotal로 제한
     /// </summary>
+
+
+    //무기 및 아이템
+    public void ApplyItem(ItemData item)
+    {
+        if (item == null) return;
+
+        // 장착 가능 여부 체크
+        if (equippedItems.Count >= MAX_ITEM_COUNT)
+        {
+            Debug.Log("아이템 장착 불가: 최대 5개");
+            return;
+        }
+
+        // 리스트에 추가
+        equippedItems.Add(item);
+
+        // 전체 스탯 재계산
+        RecalculateItemStats();
+    }
+
+    /*public void EquipItem(ItemData newItem)
+    {
+        if (newItem == null) return;
+
+        ApplyItem(newItem);
+    }*/
+    //* 2026.04.28 - 07:12
+    public bool EquipItem(ItemData itemData)
+    {
+        if (equippedItems.Count >= 5)
+        {
+            Debug.Log("아이템 최대치");
+            return false;
+        }
+
+        equippedItems.Add(itemData);
+
+        RecalculateItemStats();
+
+        return true;
+    }
+    private void RecalculateItemStats()
+    {
+        // 초기화 (아이템 영향 제거)
+        itemDamage = 0f;
+        moveSpeed = baseMoveSpeed;
+        attackPerSecond = baseAttackPerSecond;
+        maxHp = baseMaxHp;
+
+        // 모든 장착 아이템 적용
+        foreach (var item in equippedItems)
+        {
+            if (item == null) continue;
+
+            itemDamage += item.damage;
+            moveSpeed += item.moveSpeed;
+            attackPerSecond += item.bulletRate;
+            maxHp += item.hp;
+        }
+
+        // 체력 보정
+        Hp = Mathf.Clamp(Hp, 0, maxHp);
+    }
+
+    public void ApplyWeapon(WeaponData weapon)
+    {
+        currentWeapon = weapon;
+        if (weapon == null)
+        {
+            weaponDamage = 0f;
+            curProjectilePrefab = null;
+            return;
+        }
+
+        weaponDamage = weapon.damage;
+        curProjectilePrefab = weapon.projectilePrefab;
+
+        if (CurWeaponUI.Instance != null)
+        {
+            CurWeaponUI.Instance.SetWeapon(weapon);
+        }
+    }
+
+    public void EquipWeapon(WeaponData newWeapon)
+    {
+        ApplyWeapon(newWeapon);
+    }
+    public List<ItemData> GetEquippedItems()
+    {
+        return equippedItems;
+    }
     private void RefreshOrbitProjectiles()
     {
         ClearOrbitProjectiles();
@@ -1714,7 +1809,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
     }
-    
+
     /// <summary>
     /// 주위탄 한 줄에 몇 개를 배치할지 계산한다.
     /// 
@@ -1759,7 +1854,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         activeOrbitProjectiles.Clear();
     }
-    
+
     public void EndDeathAnimationEvent()
     {
         if (!IsDie) return;
@@ -1792,58 +1887,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         deathUICoroutine = null;
     }
-
-
-    //무기 및 아이템
-    public void ApplyItem(ItemData item)
-    {
-        if (item == null) return;
-        itemDamage = item.damage;
-        moveSpeed = baseMoveSpeed + item.moveSpeed;
-        attackPerSecond = baseAttackPerSecond + item.bulletRate;
-        maxHp = baseMaxHp + item.hp;
-        hp = Mathf.Clamp(Hp, 0, maxHp);
-
-        currentItem = item;
-
-        if (CurItemUI.Instance != null)
-        {
-            CurItemUI.Instance.SetItem(item);
-        }
-    }
-
-    public void EquipItem(ItemData newItem)
-    {
-        if (newItem == null) return;
-
-
-        ApplyItem(newItem);
-    }
-
-    public void ApplyWeapon(WeaponData weapon)
-    {
-        currentWeapon = weapon;
-        if (weapon == null)
-        {
-            weaponDamage = 0f;
-            curProjectilePrefab = null;
-            return;
-        }
-
-        weaponDamage = weapon.damage;
-        curProjectilePrefab = weapon.projectilePrefab;
-
-        if (CurWeaponUI.Instance != null)
-        {
-            CurWeaponUI.Instance.SetWeapon(weapon);
-        }
-    }
-
-    public void EquipWeapon(WeaponData newWeapon)
-    {
-        ApplyWeapon(newWeapon);
-    }
-
 
     //증강 - 적 처치시 체력회복
 
@@ -2002,11 +2045,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             ApplyWeapon(currentWeapon);
         }
-
-        if (currentItem != null)
+        // 아이템 전체 재적용
+        RecalculateItemStats();
+        //*
+        /*if (currentItem != null)
         {
             ApplyItem(currentItem);
-        }
+        }*/
 
         // 3. 증강 런타임 초기화
         ResetAugmentRuntimeValues();
@@ -2573,7 +2618,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         Gold = 10;
 
         currentWeapon = basicWeapon;
-        currentItem = null;
+        //currentItem = null;
+        equippedItems.Clear();//*
 
         RebuildPlayerStats();
         Hp = MaxHp;
@@ -2748,51 +2794,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     private bool IsGameplayScene()
     {
         return SceneManager.GetActiveScene().name != "Main";
-    }
-
-    public void OnShop(InputValue value)
-    {
-        if (!value.isPressed) return;
-        Debug.Log("B");
-
-        if (InGameShopUIManager.Instance == null)
-        {
-            Debug.Log(" ShopUIManager 없음");
-            return;
-        }
-
-        Debug.Log(" ShopUIManager 있음");
-
-        InGameShopUIManager.Instance.ToggleShop();
-    }
-
-    public void OnInventory(InputValue value)
-    {
-        if (!value.isPressed) return;
-
-        if (!IsGameplayScene()) return;
-        if (IsDie) return;
-
-        if (InventoryManager.Instance == null)
-        {
-            Debug.Log("InventoryManager 없음");
-            return;
-        }
-
-        if (!InventoryManager.Instance.canOpenInventory)
-        {
-            Debug.Log("인벤토리 비활성 상태");
-            return;
-        }
-
-        // 상점 열려있으면 먼저 닫기
-        if (InGameShopUIManager.Instance != null && InGameShopUIManager.Instance.IsShopOpen())
-        {
-            InGameShopUIManager.Instance.CloseShop();
-            return;
-        }
-
-        InventoryManager.Instance.ToggleInventory();
     }
 
     private void OnUseQ(InputValue value)
