@@ -1,53 +1,70 @@
-using System;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class CrossHairController : MonoBehaviour
 {
-    [SerializeField] private GameObject[] crossHair;
-    
+    [SerializeField] private Image[] crossHair;
+
+    private Camera mainCamera;
+
     private void Awake()
     {
-        crossHair = new GameObject[transform.childCount];
-        int index = 0;
+        crossHair = GetComponentsInChildren<Image>();
+        mainCamera = Camera.main;
 
-        // 2. foreach 문으로 자식 오브젝트들을 배열에 담기
-        // (부모 자신은 제외하고 직계 자식들만 순회합니다)
-        foreach (Transform child in transform)
-        {
-            crossHair[index] = child.gameObject;
-            index++;
-        }
         Debug.Log("크로스헤어 동기화");
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Update()
     {
-        if (collision.gameObject.CompareTag("Monster"))
+        CheckEnemyUnderMouse();
+    }
+
+    void CheckEnemyUnderMouse()
+    {
+        if (mainCamera == null)
         {
-            foreach (GameObject go in crossHair)
+            
+            return;
+        }
+
+        Vector2 mouseWorld = mainCamera.ScreenToWorldPoint(
+            Mouse.current.position.ReadValue()
+        );
+
+        
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorld, Vector2.zero);
+
+        if (hits.Length == 0)
+        {
+            
+            SetColor(Color.white);
+            return;
+        }
+
+        foreach (var hit in hits)
+        {
+            
+
+            if (hit.collider.CompareTag("Monster"))
             {
-                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    sr.color =  Color.red;
-                    //Debug.Log("조준점에 적이 들어옴");
-                }
+                SetColor(Color.red);
+                return;
             }
         }
+
+        SetColor(Color.white);
     }
-    
-    private void OnTriggerExit2D(Collider2D collision)
+
+    private void SetColor(Color color)
     {
-        if (collision.gameObject.CompareTag("Monster"))
+        foreach (var img in crossHair)
         {
-            foreach (GameObject go in crossHair)
+            if (img != null)
             {
-                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    sr.color =  Color.white;
-                    //Debug.Log("조준점에 적이 나감");
-                }
+                img.color = color;
             }
         }
     }

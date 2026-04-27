@@ -186,7 +186,7 @@ public class Monster : MonoBehaviour, IDamageable
     public void OnDamage(float damage)
     {
         currentHP -= damage;
-        Debug.Log("[" + currentHP + "]" + "남음");
+        //Debug.Log("[" + currentHP + "]" + "남음");
         currentHP = Mathf.Max(currentHP, 0f);
 
         PlayHitAnimation();

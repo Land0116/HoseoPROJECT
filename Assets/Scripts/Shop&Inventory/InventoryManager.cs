@@ -51,7 +51,7 @@ public class InventoryManager : MonoBehaviour
 
     public void BindInventoryUI(GameObject systemUIRoot)
     {
-        Debug.Log("BindInventoryUI ½ÇÇàµÊ");
+        //Debug.Log("BindInventoryUI ½ÇÇàµÊ");
 
         Transform root = UIManager.FindChildRecursive(systemUIRoot.transform, "InventoryPanel");
         if (root != null)
