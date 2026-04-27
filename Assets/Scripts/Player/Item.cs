@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class Item : MonoBehaviour
 {
     [Header("아이템 스텟")]
+    public int itemStage;
     public float damage = 1f;
     public float moveSpeed = 0f;
     public float bulletRate = 0f;
@@ -26,8 +27,6 @@ public class Item : MonoBehaviour
         {
             isPlayerNear = true;
 
-            //나중에 UI띄우기
-            Debug.Log("F키로 상호작용 가능");
         }
     }
 

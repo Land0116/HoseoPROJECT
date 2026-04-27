@@ -12,7 +12,7 @@ public class ShopUIManager : MonoBehaviour
     public GameObject uiPanel;
     public ShopButton[] uiButtons;
 
-    public bool isSelectedAug = false;
+    public bool isSelectedItem = false;
 
     /// <summary>
     /// UIManager에서 씬 로드 후 호출 (Aug 방식 그대로)
@@ -21,7 +21,7 @@ public class ShopUIManager : MonoBehaviour
     {
         if (systemUIRoot == null) return;
 
-        Transform shopPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "ShopUIPanel");
+        Transform shopPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "ItemSelectUIPanel");
 
         if (shopPanelRoot != null)
         {

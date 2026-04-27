@@ -17765,6 +17765,7 @@ GameObject:
   - component: {fileID: 942148004}
   - component: {fileID: 942148003}
   - component: {fileID: 942148006}
+  - component: {fileID: 942148007}
   m_Layer: 5
   m_Name: System_UI
   m_TagString: Untagged
@@ -17928,6 +17929,22 @@ MonoBehaviour:
   - {fileID: 1139664599}
   - {fileID: 760500632}
   - {fileID: 1499681681}
+--- !u!114 &942148007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 942148001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8aa67f230326d42a9cc9520a324a1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopUIManager
+  itemDatabase: []
+  uiPanel: {fileID: 0}
+  uiButtons: []
+  isSelectedItem: 0
 --- !u!1 &946871519
 GameObject:
   m_ObjectHideFlags: 0
@@ -27765,7 +27782,7 @@ GameObject:
   - component: {fileID: 1717098007}
   - component: {fileID: 1717098006}
   m_Layer: 5
-  m_Name: ShopUIPanel
+  m_Name: ItemSelectUIPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

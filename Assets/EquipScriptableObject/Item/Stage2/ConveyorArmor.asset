@@ -10,12 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
-  m_Name: RabbitLegs
+  m_Name: ConveyorArmor
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  stage: 0
   damage: 0
-  moveSpeed: 5
-  bulletRate: 0
-  hp: 0
+  moveSpeed: 0
+  bulletRate: -1
+  hp: 25
+  itemPrice: 140
   icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
-  itemName: "\uD1A0\uB07C\uC758 \uB2E4\uB9AC"
-  zoneType: 4
+  itemName: "\uCEE8\uBCA0\uC774\uC5B4\uAC11\uC637"
+  zoneType: 2

@@ -10,11 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
-  m_Name: Rope
+  m_Name: DioNail
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  damage: 1
+  stage: 0
+  damage: 0
   moveSpeed: 0
-  bulletRate: 0
+  bulletRate: 2
   hp: 0
-  icon: {fileID: 7374933494960137180, guid: 3bc90875f153f7f48bac5fe48f08eabd, type: 3}
-  itemName: "\uB85C\uD504"
+  itemPrice: 140
+  icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
+  itemName: "\uACF5\uB8E1\uC190\uD1B1"
+  zoneType: 2

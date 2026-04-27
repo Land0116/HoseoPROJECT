@@ -135,12 +135,12 @@ public class ItemUIManager : MonoBehaviour
             if (currentTarget is ItemPickup item)
             {
                 screenPos = Camera.main.WorldToScreenPoint(item.transform.position);
-                itemPanel.transform.position = screenPos + new Vector3(250f, 0, 0);
+                itemPanel.transform.position = screenPos + new Vector3(-250f, 0, 0);
             }
             else if (currentTarget is WeaponPickup weapon)
             {
                 screenPos = Camera.main.WorldToScreenPoint(weapon.transform.position);
-                weaponPanel.transform.position = screenPos + new Vector3(250f, 0, 0);
+                weaponPanel.transform.position = screenPos + new Vector3(-250f, 0, 0);
             }
         }
     }

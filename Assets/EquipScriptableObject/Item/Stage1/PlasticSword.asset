@@ -10,12 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
-  m_Name: CarBumper
+  m_Name: PlasticSword
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  damage: 0
+  stage: 1
+  damage: 1
   moveSpeed: 0
-  bulletRate: 0
-  hp: 5
+  bulletRate: 1
+  hp: 0
+  itemPrice: 120
   icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
-  itemName: "\uC790\uB3D9\uCC28\uBC94\uD37C"
-  zoneType: 1
+  itemName: "\uD50C\uB77C\uC2A4\uD2F1 \uAC80"
+  zoneType: 2

@@ -10,12 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
-  m_Name: SoldierArmor
+  m_Name: Ladder
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  damage: 0
+  stage: 0
+  damage: 2
   moveSpeed: 0
   bulletRate: 0
-  hp: 20
-  icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
-  itemName: "\uBCD1\uC815\uAC11\uC637"
-  zoneType: 3
+  hp: 0
+  itemPrice: 90
+  icon: {fileID: 7374933494960137180, guid: 3bc90875f153f7f48bac5fe48f08eabd, type: 3}
+  itemName: "\uC0AC\uB2E4\uB9AC"
+  zoneType: 1
