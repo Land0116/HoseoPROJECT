@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.EventSystems;
 public class CurItemUI : MonoBehaviour
 {
     public static CurItemUI Instance;
@@ -11,6 +11,7 @@ public class CurItemUI : MonoBehaviour
     [Header("게임 시작 시 장착된 기본 아이템")]
     [SerializeField] private ItemData defaultItem;
     [SerializeField] private Image[] itemSlots;
+
     private void Awake()
     {
         if (Instance != null)
@@ -22,10 +23,13 @@ public class CurItemUI : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // 전부 비활성화
         for (int i = 0; i < itemSlots.Length; i++)
         {
             itemSlots[i].enabled = false;
+
+
+            var slot = itemSlots[i].gameObject.AddComponent<ItemSlotUI>();
+            slot.index = i;
         }
     }
 
@@ -51,5 +55,36 @@ public class CurItemUI : MonoBehaviour
             Instance = null;
     }
 
+    public void OnRightClickSlot(int index)
+    {
+        if (PlayerController.Instance == null) return;
+
+        PlayerController.Instance.UnequipItem(index);
+
+        // UI 갱신
+        SetItems(PlayerController.Instance.GetEquippedItems());
+        PlayerUIManager.Instance?.ForceRefreshPlayerUI();
+
+    }
+
+    public void OnHoverSlot(int index)
+    {
+        if (PlayerController.Instance == null) return;
+
+        var items = PlayerController.Instance.GetEquippedItems();
+
+        if (index >= items.Count) return;
+
+        var data = items[index];
+        if (data == null) return;
+
+        // 슬롯 RectTransform 전달
+        ItemUIManager.Instance.ShowUIItemInfo(data, itemSlots[index].rectTransform);
+    }
+
+    public void OnExitSlot()
+    {
+        ItemUIManager.Instance.HideUIItemInfo();
+    }
 
 }

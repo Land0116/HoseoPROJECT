@@ -32,4 +32,9 @@ public class ItemPickup : MonoBehaviour
             itemUI.UnregisterItem(this);
         }
     }
+    public void SetItemData(ItemData data)
+    {
+        itemData = data;
+    }
+
 }

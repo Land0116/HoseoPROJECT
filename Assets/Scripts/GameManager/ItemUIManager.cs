@@ -24,12 +24,25 @@ public class ItemUIManager : MonoBehaviour
     [SerializeField] private GameObject alertItemPanel;
     [SerializeField] private GameObject alertWeaponPanel;
     [SerializeField] private GameObject alertMaxItemPanel;
+
+    [SerializeField] private GameObject uiItemPanel;
+    [SerializeField] private TextMeshProUGUI uiItemText;
+
+    private RectTransform uiItemRect;
+    private RectTransform canvasRect;
+
     private void Awake()
     {
         Instance = this;
 
         if (itemPanel != null) itemPanel.SetActive(false);
         if (weaponPanel != null) weaponPanel.SetActive(false);
+        if (uiItemPanel != null)
+        {
+            uiItemPanel.SetActive(false);
+            uiItemRect = uiItemPanel.GetComponent<RectTransform>();
+            canvasRect = uiItemPanel.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+        }
 
         playerController = FindFirstObjectByType<PlayerController>();
 
@@ -56,7 +69,6 @@ public class ItemUIManager : MonoBehaviour
 
                     if (success)
                     {
-                        //CurItemUI.Instance.SetItem(itemData);
                         CurItemUI.Instance.SetItems(PlayerController.Instance.GetEquippedItems());
 
                         nearbyItems.Remove(item);
@@ -70,14 +82,10 @@ public class ItemUIManager : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("아이템 장착 실패 (슬롯 꽉 참)");
-
-                        
                         if (alertMaxItemPanel != null)
                             StartCoroutine(ShowAlertMaxItemPanel(1.5f));
                     }
 
-                    
                     currentTarget = null;
                     if (itemPanel != null) itemPanel.SetActive(false);
                 }
@@ -137,11 +145,9 @@ public class ItemUIManager : MonoBehaviour
             }
         }
 
-        
         if (nearest != currentTarget)
         {
             currentTarget = nearest;
-            Debug.Log("currentTarget 변경됨: " + currentTarget);
             UpdateUI(currentTarget);
         }
 
@@ -164,29 +170,15 @@ public class ItemUIManager : MonoBehaviour
 
     private void UpdateUI(object target)
     {
-        Debug.Log("UpdateUI 호출됨: " + target);
         if (itemPanel != null) itemPanel.SetActive(false);
         if (weaponPanel != null) weaponPanel.SetActive(false);
 
-        if (target == null)
-        {
-            Debug.Log("target null이라 리턴");
-            return;
-        }
+        if (target == null) return;
 
         if (target is ItemPickup item)
         {
-
-            Debug.Log("Item UI 실행됨");
-
             var data = item.GetItemData();
-
-            if (data == null)
-            {
-                Debug.Log("itemData null임");
-                return;
-            }
-
+            if (data == null) return;
 
             string desc = $"[{data.itemName}]\n[F]키로 상호작용\n";
             if (data.damage != 0) desc += $"데미지 +{data.damage}\n";
@@ -208,42 +200,60 @@ public class ItemUIManager : MonoBehaviour
         }
     }
 
-    // 등록 / 해제
     public void RegisterItem(ItemPickup item)
     {
-        Debug.Log("RegisterItem 들어옴");
         if (!nearbyItems.Contains(item))
-        {
             nearbyItems.Add(item);
-            Debug.Log("아이템 리스트 추가됨: " + nearbyItems.Count);
-        }
     }
 
     public void UnregisterItem(ItemPickup item)
     {
         nearbyItems.Remove(item);
-
-        if (currentTarget is ItemPickup targetItem && targetItem == item)
-        {
-            currentTarget = null;
-            if (itemPanel != null) itemPanel.SetActive(false);
-        }
     }
 
     public void RegisterWeapon(WeaponPickup weapon)
     {
-        if (!nearbyWeapons.Contains(weapon)) nearbyWeapons.Add(weapon);
+        if (!nearbyWeapons.Contains(weapon))
+            nearbyWeapons.Add(weapon);
     }
 
     public void UnregisterWeapon(WeaponPickup weapon)
     {
         nearbyWeapons.Remove(weapon);
+    }
 
-        if (currentTarget is WeaponPickup targetWeapon && targetWeapon == weapon)
-        {
-            currentTarget = null;
-            if (weaponPanel != null) weaponPanel.SetActive(false);
-        }
+
+    public void ShowUIItemInfo(ItemData data, RectTransform slotRect)
+    {
+        if (data == null || uiItemPanel == null) return;
+
+        string desc = $"[{data.itemName}]\n";
+        if (data.damage != 0) desc += $"데미지 +{data.damage}\n";
+        if (data.moveSpeed != 0) desc += $"이동속도 +{data.moveSpeed}\n";
+        if (data.hp != 0) desc += $"체력 +{data.hp}\n";
+        if (data.bulletRate != 0) desc += $"공격속도 +{data.bulletRate}\n";
+
+        uiItemText.text = desc;
+        uiItemPanel.SetActive(true);
+
+        uiItemRect.anchoredPosition = Vector2.zero;
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(null, slotRect.position);
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPoint,
+            null,
+            out Vector2 localPoint
+        );
+
+        uiItemRect.anchoredPosition = localPoint + new Vector2(1150f, 550f);
+    }
+
+    public void HideUIItemInfo()
+    {
+        if (uiItemPanel != null)
+            uiItemPanel.SetActive(false);
     }
 
     private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
@@ -259,6 +269,7 @@ public class ItemUIManager : MonoBehaviour
         yield return new WaitForSeconds(duration);
         alertWeaponPanel.SetActive(false);
     }
+
     private System.Collections.IEnumerator ShowAlertMaxItemPanel(float duration)
     {
         if (alertMaxItemPanel == null) yield break;
@@ -281,12 +292,8 @@ public class ItemUIManager : MonoBehaviour
         {
             itemPanel = itemPanelRoot.gameObject;
             itemText = itemPanelRoot.GetComponentInChildren<TextMeshProUGUI>(true);
-            //Debug.Log("ItemPanel 연결됨");
         }
-        else
-        {
-            //Debug.LogError("ItemUIPanel 못찾음");
-        }
+
         Transform weaponPanelRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "WeaponUIPanel");
         if (weaponPanelRoot != null)
         {

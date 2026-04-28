@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     //아이템 5개까지 장착
     private List<ItemData> equippedItems = new List<ItemData>();
     private const int MAX_ITEM_COUNT = 5;
-
+    [SerializeField] private GameObject itemPickupPrefab;
     #region 증강 - 서브 스킬형
 
     [Header("증강 - 서브 스킬 / 현재 장착 증강")] [SerializeField]
@@ -1669,13 +1669,36 @@ public class PlayerController : MonoBehaviour, IDamageable
         RecalculateItemStats();
     }
 
-    /*public void EquipItem(ItemData newItem)
+    public void UnequipItem(int index)
     {
-        if (newItem == null) return;
+        if (index < 0 || index >= equippedItems.Count)
+            return;
 
-        ApplyItem(newItem);
-    }*/
-    //* 2026.04.28 - 07:12
+        ItemData item = equippedItems[index];
+        if (item == null)
+            return;
+
+        equippedItems.RemoveAt(index);
+
+
+        if (itemPickupPrefab != null)
+        {
+            Vector3 spawnPos = transform.position + Vector3.right * 1.0f;
+
+            GameObject drop = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
+
+            ItemPickup pickup = drop.GetComponent<ItemPickup>();
+            if (pickup != null)
+            {
+                pickup.SetItemData(item);
+            }
+        }
+
+
+        RebuildPlayerStats();
+
+        Hp = Mathf.Min(Hp, MaxHp);
+    }
     public bool EquipItem(ItemData itemData)
     {
         if (equippedItems.Count >= 5)
@@ -1740,6 +1763,23 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         return equippedItems;
     }
+   
+    private void DropItem(ItemData itemData)
+    {
+        if (itemPickupPrefab == null) return;
+
+        Vector3 dropPos = transform.position + Vector3.right * 1f;
+
+        GameObject obj = Instantiate(itemPickupPrefab, dropPos, Quaternion.identity);
+
+        ItemPickup pickup = obj.GetComponent<ItemPickup>();
+        if (pickup != null)
+        {
+            pickup.SetItemData(itemData);
+        }
+    }
+    
+
     private void RefreshOrbitProjectiles()
     {
         ClearOrbitProjectiles();
@@ -2047,11 +2087,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         // 아이템 전체 재적용
         RecalculateItemStats();
-        //*
-        /*if (currentItem != null)
-        {
-            ApplyItem(currentItem);
-        }*/
+        
 
         // 3. 증강 런타임 초기화
         ResetAugmentRuntimeValues();
@@ -2619,7 +2655,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         currentWeapon = basicWeapon;
         //currentItem = null;
-        equippedItems.Clear();//*
+        equippedItems.Clear();
 
         RebuildPlayerStats();
         Hp = MaxHp;

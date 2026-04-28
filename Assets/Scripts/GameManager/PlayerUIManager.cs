@@ -776,4 +776,9 @@ public class PlayerUIManager : MonoBehaviour
 
         slot.SetItem(item);
     }
+    public void ForceRefreshPlayerUI()
+    {
+        UpdatePlayerStateUI();
+    }
+
 }
