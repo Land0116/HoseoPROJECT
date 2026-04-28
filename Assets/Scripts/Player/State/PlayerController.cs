@@ -1679,8 +1679,17 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         equippedItems.RemoveAt(index);
+        //
+        RebuildPlayerStats();
 
+        
+        if (CurItemUI.Instance != null)
+        {
+            CurItemUI.Instance.SetItems(equippedItems);
+        }
 
+        //
+        ItemUIManager.Instance?.HideUIItemInfo();
         if (itemPickupPrefab != null)
         {
             Vector3 spawnPos = transform.position + Vector3.right * 1.0f;

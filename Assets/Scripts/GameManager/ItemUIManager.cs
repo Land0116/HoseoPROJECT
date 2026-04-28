@@ -181,10 +181,18 @@ public class ItemUIManager : MonoBehaviour
             if (data == null) return;
 
             string desc = $"[{data.itemName}]\n[F]키로 상호작용\n";
-            if (data.damage != 0) desc += $"데미지 +{data.damage}\n";
-            if (data.moveSpeed != 0) desc += $"이동속도 +{data.moveSpeed}\n";
-            if (data.hp != 0) desc += $"체력 +{data.hp}\n";
-            if (data.bulletRate != 0) desc += $"공격속도 +{data.bulletRate}\n";
+
+            if (data.damage != 0)
+                desc += FormatStat("데미지", data.damage);
+
+            if (data.moveSpeed != 0)
+                desc += FormatStat("이동속도", data.moveSpeed);
+
+            if (data.hp != 0)
+                desc += FormatStat("체력", data.hp);
+
+            if (data.bulletRate != 0)
+                desc += FormatStat("공격속도", data.bulletRate);
 
             itemText.text = desc;
             itemPanel.SetActive(true);
@@ -192,8 +200,11 @@ public class ItemUIManager : MonoBehaviour
         else if (target is WeaponPickup weapon)
         {
             var data = weapon.GetWeaponData();
+            if (data == null) return;
 
-            string desc = $"[{data.weaponName}]\n[F]키로 상호작용\n데미지 +{data.damage}\n";
+            string desc = $"[{data.weaponName}]\n[F]키로 상호작용\n";
+
+            desc += FormatStat("데미지", data.damage);
 
             weaponText.text = desc;
             weaponPanel.SetActive(true);
@@ -228,10 +239,18 @@ public class ItemUIManager : MonoBehaviour
         if (data == null || uiItemPanel == null) return;
 
         string desc = $"[{data.itemName}]\n";
-        if (data.damage != 0) desc += $"데미지 +{data.damage}\n";
-        if (data.moveSpeed != 0) desc += $"이동속도 +{data.moveSpeed}\n";
-        if (data.hp != 0) desc += $"체력 +{data.hp}\n";
-        if (data.bulletRate != 0) desc += $"공격속도 +{data.bulletRate}\n";
+
+        if (data.damage != 0)
+            desc += FormatStat("데미지", data.damage);
+
+        if (data.moveSpeed != 0)
+            desc += FormatStat("이동속도", data.moveSpeed);
+
+        if (data.hp != 0)
+            desc += FormatStat("체력", data.hp);
+
+        if (data.bulletRate != 0)
+            desc += FormatStat("공격속도", data.bulletRate);
 
         uiItemText.text = desc;
         uiItemPanel.SetActive(true);
@@ -322,5 +341,18 @@ public class ItemUIManager : MonoBehaviour
         currentTarget = null;
         nearbyItems.Clear();
         nearbyWeapons.Clear();
+    }
+    private string FormatStat(string statName, float value)
+    {
+        if (value > 0)
+        {
+            return $"{statName} <color=#4DA3FF>+{value}</color>\n";
+        }
+        else if (value < 0)
+        {
+            return $"{statName} <color=#FF3B3B>{value}</color>\n";
+        }
+
+        return "";
     }
 }

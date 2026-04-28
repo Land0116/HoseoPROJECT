@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 public class CurItemUI : MonoBehaviour
 {
     public static CurItemUI Instance;
@@ -44,11 +45,50 @@ public class CurItemUI : MonoBehaviour
             }
             else
             {
+                itemSlots[i].sprite = null;
                 itemSlots[i].enabled = false;
             }
         }
-    }
 
+        
+        RefreshHoverAfterUpdate(items);
+    }
+    private void RefreshHoverAfterUpdate(List<ItemData> items)
+    {
+        if (ItemUIManager.Instance == null) return;
+
+        // 현재 마우스 위치 UI Raycast로 다시 찾기
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Mouse.current.position.ReadValue();
+
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (var result in results)
+        {
+            ItemSlotUI slot = result.gameObject.GetComponent<ItemSlotUI>();
+            if (slot != null)
+            {
+                int index = slot.index;
+
+                if (index >= 0 && index < items.Count)
+                {
+                    var data = items[index];
+                    if (data != null)
+                    {
+                        ItemUIManager.Instance.ShowUIItemInfo(
+                            data,
+                            itemSlots[index].rectTransform
+                        );
+                    }
+                }
+                return;
+            }
+        }
+
+        // 슬롯 위 아니면 툴팁 끔
+        ItemUIManager.Instance.HideUIItemInfo();
+    }
     private void OnDestroy()
     {
         if (Instance == this)
@@ -61,10 +101,13 @@ public class CurItemUI : MonoBehaviour
 
         PlayerController.Instance.UnequipItem(index);
 
-        // UI 갱신
-        SetItems(PlayerController.Instance.GetEquippedItems());
+        var items = PlayerController.Instance.GetEquippedItems();
+
+        SetItems(items);
+
         PlayerUIManager.Instance?.ForceRefreshPlayerUI();
 
+        RefreshHoverAfterUpdate(items);
     }
 
     public void OnHoverSlot(int index)
@@ -73,12 +116,20 @@ public class CurItemUI : MonoBehaviour
 
         var items = PlayerController.Instance.GetEquippedItems();
 
-        if (index >= items.Count) return;
+        if (index < 0 || index >= items.Count)
+        {
+            ItemUIManager.Instance.HideUIItemInfo();
+            return;
+        }
 
         var data = items[index];
-        if (data == null) return;
 
-        // 슬롯 RectTransform 전달
+        if (data == null)
+        {
+            ItemUIManager.Instance.HideUIItemInfo();
+            return;
+        }
+
         ItemUIManager.Instance.ShowUIItemInfo(data, itemSlots[index].rectTransform);
     }
 
