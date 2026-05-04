@@ -269,13 +269,10 @@ public class ButtonSpawn : MonoBehaviour
 
         hitTargets.Add(targetCollider);
 
-        // 1. 직접 피해
+        // 직접 피해
         damageable.OnDamage(damage);
-
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.OnHitEnemy();
-        }
+        // 실제 준 데미지 기준으로 흡혈 처리
+        NotifyOwnerHitEnemy(damage);
 
         // 2. 화상 / 도트 적용
         if (dotDamagePerSecond > 0f && dotDuration > 0f)
@@ -473,7 +470,12 @@ public class ButtonSpawn : MonoBehaviour
             IDamageable damageable = GetDamageable(hit);
             if (damageable == null) continue;
 
-            damageable.OnDamage(damage * explosionDamageMultiplier);
+            float explosionDamage = damage * explosionDamageMultiplier;
+
+            damageable.OnDamage(explosionDamage);
+
+            // 폭발 피해도 적중으로 인정해서 흡혈 처리
+            NotifyOwnerHitEnemy(explosionDamage);
         }
     }
 
@@ -528,6 +530,28 @@ public class ButtonSpawn : MonoBehaviour
     private bool IsWallLayer(GameObject target)
     {
         return ((1 << target.layer) & wallLayerMask) != 0;
+    }
+    
+    private void NotifyOwnerHitEnemy(float dealtDamage)
+    {
+        if (dealtDamage <= 0f) return;
+
+        PlayerController player = null;
+
+        if (ownerRoot != null)
+        {
+            player = ownerRoot.GetComponentInChildren<PlayerController>();
+        }
+
+        if (player == null)
+        {
+            player = PlayerController.Instance;
+        }
+
+        if (player != null)
+        {
+            player.OnHitEnemy(dealtDamage);
+        }
     }
 
     #region PlayerController Setter 연결 함수

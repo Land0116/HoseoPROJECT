@@ -200,20 +200,16 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (playerController == null) return;
         if (hpBar == null || hpText == null || goldText == null) return;
-
+        
         // HP가 0보다 아래로 내려가지 않게 보정
-        if (playerController.Hp <= 0)
-            playerController.Hp = 0;
+        if (playerController.Hp <= 0f)
+            playerController.Hp = 0f;
 
-        // HP 텍스트
-        hpText.text = playerController.Hp + " / " + playerController.MaxHp;
+        // HP 텍스트는 int처럼 표시
+        hpText.text = playerController.DisplayHp + " / " + playerController.DisplayMaxHp;
 
-        // HP 바 부드럽게 보간
-        hpBar.value = Mathf.Lerp(
-            hpBar.value,
-            (float)playerController.Hp / playerController.MaxHp,
-            Time.unscaledDeltaTime * 10f
-        );
+        // HP 바는 실제 float 체력 기준으로 표시
+        hpBar.value = Mathf.Lerp(hpBar.value, playerController.HpRatio, Time.unscaledDeltaTime * 10f);
 
         // 죽은 상태면 Gold 업데이트는 안 해도 됨
         if (playerController.IsDie) return;
