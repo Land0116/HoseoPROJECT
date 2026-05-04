@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 484b23f51ad480942bb73d788f0a1ec1, type: 3}
+  m_Name: TeleportSkill
+  m_EditorClassIdentifier: Assembly-CSharp::TeleportSkillData
+  skillName: "\uD154\uB808\uD3EC\uD2B8"
+  description: "\uC9C0\uC815 \uC704\uCE58\uB85C \uC21C\uAC04 \uC774\uB3D9\uD569\uB2C8\uB2E4.\n\uC5C5\uADF8\uB808\uC774\uB4DC
+    \uC2DC: \uC774\uB3D9 \uAC70\uB9AC\uAC00 \uC99D\uAC00\uD558\uACE0\n\uC7AC\uC0AC\uC6A9
+    \uC18D\uB3C4\uAC00 \uAC10\uC18C\uD569\uB2C8\uB2E4."
+  icon: {fileID: 2453693887861545992, guid: 29c15f4451ad40a4c9e78aff1f6c9004, type: 3}
+  maxLevel: 3
+  baseDamage: 0
+  damageMutiplier: 0
+  range: 0
+  duration: 0
+  cooldown: 0
+  price: 140

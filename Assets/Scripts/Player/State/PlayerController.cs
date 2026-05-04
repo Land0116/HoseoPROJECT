@@ -90,6 +90,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
     [SerializeField] private float itemDamage = 0f; // 아이템 공격력
 
+    [Header("스킬 배수")] //스킬 관련
+    private float attackMultiplier = 1f; //공격력 증가
+    private bool shieldActive = false; // 보호막
+    private bool speedBuffActive = false; //속도 버프
     //아이템 5개까지 장착
     private List<ItemData> equippedItems = new List<ItemData>();
     private const int MAX_ITEM_COUNT = 5;
@@ -168,7 +172,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float shotOrbitDamageMultiplier = 1f;
     [SerializeField] private float shotOrbitLifetime = 0f;
 
-// 현재 유지 중인 주위탄들
+    
+    // 현재 유지 중인 주위탄들
     private readonly List<OrbitProjectile> activeOrbitProjectiles = new List<OrbitProjectile>();
 
     #endregion
@@ -299,6 +304,23 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (dashDuration <= 0f) return 0f;
             return dashDistance / dashDuration;
         }
+    }
+    public void SetAttackMultiplier(float value) //*
+    {
+        attackMultiplier = Mathf.Max(0f, value);
+    }
+    public void SetShieldState(bool value)
+    {
+        shieldActive = value;
+    }
+    public void SetSpeedBuffState(bool value)
+    {
+        speedBuffActive = value;
+    }
+    public void ApplySpeedBuffMultiplier(float multiplier)
+    {
+        moveSpeed = baseMoveSpeed * multiplier;
+        attackPerSecond = baseAttackPerSecond * multiplier;
     }
 
     public bool IsDashOnCooldown()
@@ -1457,6 +1479,10 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         int incomingDamage = Mathf.RoundToInt(damage);
 
+        if (shieldActive)
+        {
+            incomingDamage = Mathf.CeilToInt(incomingDamage * 0.5f);
+        }
         // 치명적 피해 극복
         if (Hp - incomingDamage <= 0 && specialCheatDeath && !specialCheatDeathUsed)
         {
@@ -1529,7 +1555,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         // Round를 제거해야 낮은 데미지 구간에서도
         // 패시브 / 스페셜 데미지 증가가 체감된다.
-        return Mathf.Max(0f, finalDamage);
+        return Mathf.Max(0f, finalDamage * attackMultiplier);
     }
 
     #endregion
@@ -2841,17 +2867,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         return SceneManager.GetActiveScene().name != "Main";
     }
 
-    private void OnUseQ(InputValue value)
+    public void OnUseQ()
     {
-        if (!value.isPressed) return;
-
-        PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.Q);
+        SkillManager.Instance.UseQ();
     }
 
-    private void OnUseE(InputValue value)
+    public void OnUseE()
     {
-        if (!value.isPressed) return;
-
-        PlayerUIManager.Instance.UseEquipment(EquipmentSlot.SlotType.E);
+        SkillManager.Instance.UseE();
     }
 }

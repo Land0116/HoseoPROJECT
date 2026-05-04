@@ -45,11 +45,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private ShopUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
     [SerializeField] private InGameShopUIManager inGameShopUIManager;
-    [SerializeField] private InventoryManager inventoryManager;
-
 
     [SerializeField] private OptionSettings optionSettings;
-    public InventoryManager InventoryManager => inventoryManager;
+    [SerializeField] private SkillSelectUIManager skillUIManager;
+    [SerializeField] private GameObject selectSkillPanelOverlay;
     public ShopUIManager ShopUIManager => shopUIManager;
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
@@ -142,19 +141,7 @@ public class UIManager : MonoBehaviour
         // ================================
         if (scene.name != "Main")
         {
-            EquipmentSlot[] slots = FindObjectsByType<EquipmentSlot>(
-                FindObjectsInactive.Include,
-                FindObjectsSortMode.None
-            );
 
-            foreach (var slot in slots)
-            {
-                // ClearItem 쓰면 item 데이터까지 날아감 (사용 불가 원인)
-                // slot.ClearItem();
-
-                // UI만 초기화 (item 유지)
-                slot.ResetSlotUIOnly();
-            }
         }
 
         // ================================
@@ -223,10 +210,12 @@ public class UIManager : MonoBehaviour
         augUIManager = rootUI.GetComponentInChildren<AugUIManager>(true);
         shopUIManager = rootUI.GetComponentInChildren<ShopUIManager>(true);
         itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
-        inGameShopUIManager = rootUI.GetComponentInChildren<InGameShopUIManager>(true);
-        inventoryManager = rootUI.GetComponentInChildren<InventoryManager>(true);
+        skillUIManager = rootUI.GetComponentInChildren<SkillSelectUIManager>(true);
 
-        //Debug.Log(itemUIManager == null ? "ItemUIManager 못찾음" : "ItemUIManager 찾음");
+        
+        
+        
+
 
         if (playerUIManager != null && systemUI != null)
             playerUIManager.BindPlayerUI(systemUI);
@@ -240,11 +229,18 @@ public class UIManager : MonoBehaviour
         if (itemUIManager != null && systemUI != null)
             itemUIManager.BindItemUI(systemUI);
 
-        if (inGameShopUIManager != null && systemUI != null)
+        /*if (inGameShopUIManager != null && systemUI != null)
             inGameShopUIManager.BindShopUI(systemUI);
 
         if (inventoryManager != null && systemUI != null)
-            inventoryManager.BindInventoryUI(systemUI);
+            inventoryManager.BindInventoryUI(systemUI);*/
+
+        if (skillUIManager != null && systemUI != null)
+        {
+            selectSkillPanelOverlay = FindChildRecursive(rootUI.transform, "SelectSkillPanelOverlay")?.gameObject;
+
+            skillUIManager.BindSkillUI(systemUI, selectSkillPanelOverlay);
+        }
 
         BindMainSceneUI();
     }
@@ -420,11 +416,7 @@ public class UIManager : MonoBehaviour
             return; //  여기서 끝
         }
 
-        if (InventoryManager.Instance != null && InventoryManager.Instance.IsOpen())
-        {
-            InventoryManager.Instance.ToggleInventory();
-            return;
-        }
+        
         // 그 외는 PlayerUIManager에서 처리
         playerUIManager.HandleEscape();
     }
@@ -456,11 +448,7 @@ public class UIManager : MonoBehaviour
             augUIManager.ResetUIStateForRestart();
         }
 
-        if (InventoryManager.Instance != null)
-            InventoryManager.Instance.ResetInventory();
 
-        if (playerUIManager != null)
-            playerUIManager.ResetEquipmentUI();
 
         
 
@@ -469,7 +457,7 @@ public class UIManager : MonoBehaviour
         needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Stage_1_1");
-        InGameShopUIManager.Instance.ResetShop();
+       // InGameShopUIManager.Instance.ResetShop(); //*
 
     }
 

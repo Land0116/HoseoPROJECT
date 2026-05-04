@@ -21,6 +21,7 @@ public class MonsterAttack_Homing : AttackPattern
     public override void Execute()
     {
         if (monster == null || monster.Player == null) return;
+        if (monster.IsMovementLocked()) return;
 
         if (monster.IsHit()) return;
 
@@ -44,7 +45,7 @@ public class MonsterAttack_Homing : AttackPattern
 
         monster.PlayAttackAnimation(direction);//*
 
-        Vector2 newPos = monster.RB.position + direction * homingSpeed * Time.fixedDeltaTime;
+        Vector2 newPos = monster.RB.position + direction * (homingSpeed * monster.GetSpeedRatio()) * Time.fixedDeltaTime;
         monster.RB.MovePosition(newPos);
     }
 

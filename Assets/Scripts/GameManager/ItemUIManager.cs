@@ -31,10 +31,16 @@ public class ItemUIManager : MonoBehaviour
     private RectTransform uiItemRect;
     private RectTransform canvasRect;
 
+    [SerializeField] private GameObject itemInteractPanel; //*
+    [SerializeField] private TextMeshProUGUI itemInteractText; //*
+    private Transform currentInteractTarget;
+    private string currentInteractName;
+    private List<BagInteractable> nearbyBags = new List<BagInteractable>();
+
     private void Awake()
     {
         Instance = this;
-
+        if (itemInteractPanel != null) itemInteractPanel.SetActive(false); //*
         if (itemPanel != null) itemPanel.SetActive(false);
         if (weaponPanel != null) weaponPanel.SetActive(false);
         if (uiItemPanel != null)
@@ -166,6 +172,10 @@ public class ItemUIManager : MonoBehaviour
                 weaponPanel.transform.position = screenPos + new Vector3(-250f, 0, 0);
             }
         }
+
+       
+        UpdateInteractTarget();
+        UpdateInteractPanel();
     }
 
     private void UpdateUI(object target)
@@ -238,7 +248,7 @@ public class ItemUIManager : MonoBehaviour
     {
         if (data == null || uiItemPanel == null) return;
 
-        string desc = $"[{data.itemName}]\n";
+        string desc = $"[우클릭 시 장착 해제]\n[{data.itemName}]\n";
 
         if (data.damage != 0)
             desc += FormatStat("데미지", data.damage);
@@ -266,7 +276,7 @@ public class ItemUIManager : MonoBehaviour
             out Vector2 localPoint
         );
 
-        uiItemRect.anchoredPosition = localPoint + new Vector2(1150f, 550f);
+        uiItemRect.anchoredPosition = localPoint + new Vector2(200f, 0f);
     }
 
     public void HideUIItemInfo()
@@ -274,7 +284,44 @@ public class ItemUIManager : MonoBehaviour
         if (uiItemPanel != null)
             uiItemPanel.SetActive(false);
     }
+    public void ShowInteractPanel(Transform target, string name)
+    {
+        if (itemInteractPanel == null || Camera.main == null) return;
 
+        itemInteractText.text = $"[{name}]\n[F]키로 상호작용";
+
+        RectTransform interactRect = itemInteractPanel.GetComponent<RectTransform>();
+
+        
+        Vector3 worldOffsetPos = target.position + new Vector3(2f, 0f, 0f);
+        
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(
+            Camera.main,
+            worldOffsetPos
+        );
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPoint,
+            null,
+            out Vector2 localPoint
+        );
+
+        interactRect.anchoredPosition = localPoint;
+
+        itemInteractPanel.SetActive(true);
+    }
+    public void HideInteractPanel()
+    {
+        if (itemInteractPanel != null)//*
+            itemInteractPanel.SetActive(false);
+    }
+    public void SetInteractTarget(Transform target, string name)
+    {
+        currentInteractTarget = target;
+        currentInteractName = name;
+    }
     private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
     {
         alertItemPanel.SetActive(true);
@@ -301,6 +348,13 @@ public class ItemUIManager : MonoBehaviour
     public void BindItemUI(GameObject systemUIRoot)
     {
         if (systemUIRoot == null) return;
+
+        Transform interactRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "ItemInteractPanel");
+        if (interactRoot != null)
+        {
+            itemInteractPanel = interactRoot.gameObject; //*
+            itemInteractText = interactRoot.GetComponentInChildren<TextMeshProUGUI>(true);
+        }
 
         Transform alertMaxItemRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AlertMaxItemPanel");
         if (alertMaxItemRoot != null)
@@ -354,5 +408,79 @@ public class ItemUIManager : MonoBehaviour
         }
 
         return "";
+    }
+
+    private void UpdateInteractPanel()
+    {
+        if (itemInteractPanel == null || Camera.main == null)
+            return;
+
+        if (currentInteractTarget == null)
+        {
+            itemInteractPanel.SetActive(false);
+            return;
+        }
+
+        itemInteractText.text = $"[{currentInteractName}]\n[F]키로 상호작용";
+
+        RectTransform interactRect = itemInteractPanel.GetComponent<RectTransform>();
+
+        Vector3 worldOffsetPos = currentInteractTarget.position + new Vector3(2f, 0f, 0f);
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(
+            Camera.main,
+            worldOffsetPos
+        );
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPoint,
+            null,
+            out Vector2 localPoint
+        );
+
+        interactRect.anchoredPosition = localPoint;
+
+        if (!itemInteractPanel.activeSelf)
+            itemInteractPanel.SetActive(true);
+    }
+    public void RegisterBag(BagInteractable bag)
+    {
+        if (!nearbyBags.Contains(bag))
+            nearbyBags.Add(bag);
+    }
+
+    public void UnregisterBag(BagInteractable bag)
+    {
+        nearbyBags.Remove(bag);
+    }
+    private void UpdateInteractTarget()
+    {
+        if (player == null) return;
+
+        float minDist = float.MaxValue;
+        BagInteractable nearestBag = null;
+
+        foreach (var bag in nearbyBags)
+        {
+            if (bag == null) continue;
+
+            float dist = Vector2.Distance(player.position, bag.transform.position);
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearestBag = bag;
+            }
+        }
+
+        if (nearestBag == null)
+        {
+            currentInteractTarget = null;
+            return;
+        }
+
+        currentInteractTarget = nearestBag.transform;
+        currentInteractName = "[아이템 보따리]";
     }
 }

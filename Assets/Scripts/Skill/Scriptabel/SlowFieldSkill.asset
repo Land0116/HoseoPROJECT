@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 394886fd119b358439289a8ce9beaee0, type: 3}
+  m_Name: SlowFieldSkill
+  m_EditorClassIdentifier: Assembly-CSharp::SlowFieldSkillData
+  skillName: "\uC2AC\uB85C\uC6B0 \uD544\uB4DC"
+  description: "\uBC94\uC704 \uB0B4 \uC801\uC758 \uC774\uB3D9 \uC18D\uB3C4\uB97C
+    \uAC10\uC18C\uC2DC\uD0B5\uB2C8\uB2E4.\n\uC5C5\uB4DC\uB808\uC774\uB4DC \uC2DC:
+    \uAC10\uC18D \uBC94\uC704\uC640 \uC9C0\uC18D \uC2DC\uAC04\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4"
+  icon: {fileID: 736825603353018495, guid: 765fa78c614cc144599f8ca63d30f965, type: 3}
+  maxLevel: 3
+  baseDamage: 0
+  damageMutiplier: 0
+  range: 0
+  duration: 0
+  cooldown: 0
+  price: 150
+  slowFieldPrefab: {fileID: 3252494984829315718, guid: 90b0cfbd531350446997cdcca9147400, type: 3}

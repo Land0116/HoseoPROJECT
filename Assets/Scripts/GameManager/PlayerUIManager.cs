@@ -54,12 +54,6 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button reStart;
     [SerializeField] private Button dieToMain;
 
-    [Header("Equipment UI")]
-    [SerializeField] private Image qSlotIcon;
-    [SerializeField] private Image eSlotIcon;
-
-    [SerializeField] private EquipmentSlot qSlot;
-    [SerializeField] private EquipmentSlot eSlot;
 
     [Header("Cooldown UI")]
     [SerializeField] private Image qCooldownOverlay;
@@ -67,7 +61,7 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private Image eCooldownOverlay;
     [SerializeField] private TextMeshProUGUI eCooldownText;
-    
+
     [SerializeField] private GameObject dashPanel;
     [SerializeField] private Image dashIcon;
     [SerializeField] private Image dashCooldownOverlay;
@@ -119,57 +113,84 @@ public class PlayerUIManager : MonoBehaviour
     }
     private void UpdateCooldownUI()
     {
-        UpdateSlotCooldown(qSlot, qCooldownOverlay, qCooldownText);
-        UpdateSlotCooldown(eSlot, eCooldownOverlay, eCooldownText);
-        
         UpdateDashCooldownUI();
+        UpdateQCooldownUI();
+        UpdateECooldownUI();
     }
-
-    private void UpdateSlotCooldown(EquipmentSlot slot, Image overlay, TextMeshProUGUI text)
+    private void UpdateQCooldownUI()
     {
-        if (slot == null || overlay == null || text == null)
-            return;
+        if (SkillManager.Instance == null) return;
 
-        if (slot.item == null)
+        bool onCooldown = SkillManager.Instance.IsQOnCooldown();
+        float ratio = SkillManager.Instance.GetQCooldownRatio();
+        float remain = SkillManager.Instance.GetQCooldownRemain();
+
+        if (onCooldown)
         {
-            overlay.gameObject.SetActive(false);
-            text.text = "";
-            return;
-        }
+            // Overlay
+            if (qCooldownOverlay != null)
+            {
+                qCooldownOverlay.gameObject.SetActive(true);
+                qCooldownOverlay.fillAmount = ratio;
+            }
 
-        var item = slot.item;
-
-        if (item == null || item.data == null)
-        {
-            overlay.gameObject.SetActive(false);
-            text.text = "";
-            return;
-        }
-
-        if (item.lastUseTime < 0)
-        {
-            overlay.gameObject.SetActive(false);
-            text.text = "";
-            return;
-        }
-
-        float remain = (item.lastUseTime + item.data.cooldown) - Time.time;
-
-        if (remain > 0)
-        {
-            overlay.gameObject.SetActive(true);
-            text.gameObject.SetActive(true);
-
-            float ratio = remain / item.data.cooldown;
-            overlay.fillAmount = ratio;
-
-            text.text = Mathf.Ceil(remain).ToString();
+            // Text
+            if (qCooldownText != null)
+            {
+                qCooldownText.gameObject.SetActive(true);
+                qCooldownText.text = remain.ToString("F1");
+            }
         }
         else
         {
-            overlay.fillAmount = 0;
-            overlay.gameObject.SetActive(false);
-            text.text = "";
+            if (qCooldownOverlay != null)
+            {
+                qCooldownOverlay.fillAmount = 0f;
+                qCooldownOverlay.gameObject.SetActive(false);
+            }
+
+            if (qCooldownText != null)
+            {
+                qCooldownText.text = "";
+                qCooldownText.gameObject.SetActive(false);
+            }
+        }
+    }
+    private void UpdateECooldownUI()
+    {
+        if (SkillManager.Instance == null) return;
+
+        bool onCooldown = SkillManager.Instance.IsEOnCooldown();
+        float ratio = SkillManager.Instance.GetECooldownRatio();
+        float remain = SkillManager.Instance.GetECooldownRemain();
+
+        if (onCooldown)
+        {
+            if (eCooldownOverlay != null)
+            {
+                eCooldownOverlay.gameObject.SetActive(true);
+                eCooldownOverlay.fillAmount = ratio;
+            }
+
+            if (eCooldownText != null)
+            {
+                eCooldownText.gameObject.SetActive(true);
+                eCooldownText.text = remain.ToString("F1");
+            }
+        }
+        else
+        {
+            if (eCooldownOverlay != null)
+            {
+                eCooldownOverlay.fillAmount = 0f;
+                eCooldownOverlay.gameObject.SetActive(false);
+            }
+
+            if (eCooldownText != null)
+            {
+                eCooldownText.text = "";
+                eCooldownText.gameObject.SetActive(false);
+            }
         }
     }
     /// <summary>
@@ -707,40 +728,10 @@ public class PlayerUIManager : MonoBehaviour
         button.onClick.AddListener(action);
     }
 
-    //플레이어 상점 아이템 장착
-    public void SetEquipment(EquipmentSlot.SlotType type, ItemInstance item)
-    {
-        switch (type)
-        {
-            case EquipmentSlot.SlotType.Q:
-                if (item == null)
-                {
-                    qSlotIcon.sprite = null;
-                    qSlotIcon.enabled = false;
-                }
-                else
-                {
-                    qSlotIcon.sprite = item.data.icon;
-                    qSlotIcon.enabled = true;
-                }
-                break;
 
-            case EquipmentSlot.SlotType.E:
-                if (item == null)
-                {
-                    eSlotIcon.sprite = null;
-                    eSlotIcon.enabled = false;
-                }
-                else
-                {
-                    eSlotIcon.sprite = item.data.icon;
-                    eSlotIcon.enabled = true;
-                }
-                break;
-        }
-    }
 
-    public void ResetEquipmentUI()
+
+    /*public void ResetEquipmentUI()
     {
         // Q 슬롯 초기화
         if (qSlotIcon != null)
@@ -756,26 +747,21 @@ public class PlayerUIManager : MonoBehaviour
             eSlotIcon.enabled = false;
         }
 
-    }
-    public void UseEquipment(EquipmentSlot.SlotType type) //*
+    }*/
+    public void UseEquipment(SkillSlotType slot)
     {
-        switch (type)
+        if (slot == SkillSlotType.Q)
         {
-            case EquipmentSlot.SlotType.Q:
-                if (qSlot != null) qSlot.TryUse();
-                break;
-
-            case EquipmentSlot.SlotType.E:
-                if (eSlot != null) eSlot.TryUse();
-                break;
+            Debug.Log("Q 스킬 사용 요청");
+            SkillManager.Instance.UseQ();
+        }
+        else if (slot == SkillSlotType.E)
+        {
+            Debug.Log("E 스킬 사용 요청");
+            SkillManager.Instance.UseE();
         }
     }
-    public void RestoreEquipmentSlot(EquipmentSlot slot, ItemInstance item)
-    {
-        if (slot == null) return;
 
-        slot.SetItem(item);
-    }
     public void ForceRefreshPlayerUI()
     {
         UpdatePlayerStateUI();

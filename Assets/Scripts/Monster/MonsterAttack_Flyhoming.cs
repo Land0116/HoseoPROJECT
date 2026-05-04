@@ -16,6 +16,7 @@ public class MonsterAttack_Flyhoming : AttackPattern
     public override void Execute()
     {
         if (monster == null || monster.Player == null) return;
+        if (monster.IsMovementLocked()) return;
 
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
         if (distance <= detectRange)
@@ -27,7 +28,7 @@ public class MonsterAttack_Flyhoming : AttackPattern
         if (!isHoming) return;
 
         Vector2 direction = ((Vector2)monster.Player.position - monster.RB.position).normalized;
-        Vector2 newPos = monster.RB.position + direction * homingSpeed * Time.fixedDeltaTime;
+        Vector2 newPos = monster.RB.position + direction * monster.GetMoveSpeed() * Time.fixedDeltaTime;
         monster.RB.MovePosition(newPos);
 
 

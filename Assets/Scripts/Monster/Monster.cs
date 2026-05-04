@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Monster : MonoBehaviour, IDamageable
@@ -26,8 +27,18 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private GameObject hpUIPrefab;
     private MonsterHPUI hpUI;
 
+    private HashSet<SlowFieldInstance> slowFields = new HashSet<SlowFieldInstance>(); //*
+    private Dictionary<SlowFieldInstance, float> slowSources = new Dictionary<SlowFieldInstance, float>();
+
+    //³Ë¹é
+    private bool isKnockbacked;
+    public bool IsKnockbacked => isKnockbacked;
+    private float knockbackLockTime = 0.2f;
+
     private float currentHP;
 
+    private float slowMultiplier = 1f;
+    private int slowStack = 0;
     public float CurrentHP => currentHP;
     private Rigidbody2D rb;
     public Transform Player => player;
@@ -135,7 +146,7 @@ public class Monster : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         if (isDead) return;
-
+        if (isKnockbacked) return;
         if (player == null) return;
         Vector2 currentPos = rb.position;
         Vector2 moveDir = (currentPos - lastPosition).normalized;
@@ -364,6 +375,58 @@ public class Monster : MonoBehaviour, IDamageable
             rb.simulated = false;
     }
 
-    
+    public float GetMoveSpeed()
+    {
+        return moveSpeed * slowMultiplier;
+    }
+    public float GetSpeedRatio()
+    {
+        return slowMultiplier;
+    }
+
+    public void AddSlow(SlowFieldInstance source, float multiplier)
+    {
+        if (slowSources.ContainsKey(source)) return;
+
+        slowSources[source] = multiplier;
+        RecalculateSlow();
+    }
+
+    public void RemoveSlow(SlowFieldInstance source)
+    {
+        if (!slowSources.ContainsKey(source)) return;
+
+        slowSources.Remove(source);
+        RecalculateSlow();
+    }
+    private void RecalculateSlow()
+    {
+        slowMultiplier = 1f;
+
+        foreach (var s in slowSources.Values)
+        {
+            slowMultiplier *= s;
+        }
+    }
+    public bool IsSlowedBy(SlowFieldInstance source)
+    {
+        return slowSources.ContainsKey(source);
+    }
+    public void ApplyKnockback(Vector2 force)
+    {
+        rb.AddForce(force, ForceMode2D.Impulse);
+        StartCoroutine(KnockbackLock());
+    }
+
+    IEnumerator KnockbackLock()
+    {
+        isKnockbacked = true;
+        yield return new WaitForSeconds(0.2f);
+        isKnockbacked = false;
+    }
+    public bool IsMovementLocked()
+    {
+        return isKnockbacked || isHit;
+    }
 }
 

@@ -12,8 +12,26 @@ public class ShopUIManager : MonoBehaviour
     public GameObject uiPanel;
     public ShopButton[] uiButtons;
 
-    public bool isSelectedItem = false;
+    public GameObject itemPickupPrefab;
 
+    private bool isOpenedItem = false;
+
+    public bool IsOpenedItem
+    {
+        get => isOpenedItem;
+        set
+        {
+            if (isOpenedItem == value) return;
+
+            isOpenedItem = value;
+
+            if (isOpenedItem)
+            {
+                ShowShop();
+                isOpenedItem = false;
+            }
+        }
+    }
     /// <summary>
     /// UIManager에서 씬 로드 후 호출 (Aug 방식 그대로)
     /// </summary>
@@ -64,11 +82,11 @@ public class ShopUIManager : MonoBehaviour
     {
         switch (item.zoneType)
         {
-            case ItemZoneType.TutoZone: return Random.Range(1, 4);
-            case ItemZoneType.StorageZone: return Random.Range(3, 6);
-            case ItemZoneType.SortZone: return Random.Range(5, 8);
-            case ItemZoneType.NormalZone: return Random.Range(7, 10);
-            case ItemZoneType.PremiumZone: return Random.Range(9, 12);
+            case ItemZoneType.TutoZone: return Random.Range(0, 1);
+            case ItemZoneType.StorageZone: return Random.Range(0, 1);
+            case ItemZoneType.SortZone: return Random.Range(0, 1);
+            case ItemZoneType.NormalZone: return Random.Range(0, 1);
+            case ItemZoneType.PremiumZone: return Random.Range(0, 1);
         }
         return 1;
     }
@@ -84,15 +102,46 @@ public class ShopUIManager : MonoBehaviour
         }
 
         PlayerController.Instance.Gold -= price;
-        PlayerController.Instance.EquipItem(item);
 
-        if (CurItemUI.Instance != null)
+        bool success = PlayerController.Instance.EquipItem(item);
+
+        if (success)
         {
-            //CurItemUI.Instance.SetItem(item);
-            //CurItemUI.Instance.SetItems(PlayerController.Instance.GetEquippedItems());
+            // 정상 장착 → UI 갱신
+            if (CurItemUI.Instance != null)
+            {
+                CurItemUI.Instance.SetItems(
+                    PlayerController.Instance.GetEquippedItems()
+                );
+            }
+        }
+        else
+        {
+            // 슬롯 꽉참 → 플레이어 밑에 드랍
+            SpawnItemUnderPlayer(item);
         }
 
         CloseShop();
+    }
+    private void SpawnItemUnderPlayer(ItemData item)
+    {
+        if (itemPickupPrefab == null)
+        {
+            Debug.LogWarning("ItemPickup 프리팹 없음");
+            return;
+        }
+
+        if (PlayerController.Instance == null) return;
+
+        Vector3 spawnPos = PlayerController.Instance.transform.position;
+
+        GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
+
+        ItemPickup pickup = obj.GetComponent<ItemPickup>();
+        if (pickup != null)
+        {
+            pickup.SetItemData(item);
+        }
     }
     public bool IsShopVisible()
     {
