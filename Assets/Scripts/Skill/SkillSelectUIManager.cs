@@ -158,20 +158,7 @@ public class SkillSelectUIManager : MonoBehaviour
         // 신규면 Q/E 선택 대기 유지
     }
 
-    /*public void AssignToSlot(SkillSlotType slot)
-    {
-        Debug.Log("슬롯 클릭됨, selectedSkill: " + selectedSkill);
 
-        if (selectedSkill == null)
-        {
-            Debug.LogError("selectedSkill NULL이라 장착 안됨");
-            return;
-        }
-
-        SkillManager.Instance.EquipSkill(selectedSkill, slot);
-
-        ClosePanel();
-    }*/
     public void AssignToSlot(SkillSlotType slot)
     {
         if (state != SelectState.SkillSelected)

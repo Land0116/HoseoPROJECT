@@ -42,14 +42,13 @@ public class UIManager : MonoBehaviour
     // 하위 매니저
     [SerializeField] private PlayerUIManager playerUIManager;
     [SerializeField] private AugUIManager augUIManager;
-    [SerializeField] private ShopUIManager shopUIManager;
+    [SerializeField] private NewItemUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
-    [SerializeField] private InGameShopUIManager inGameShopUIManager;
 
     [SerializeField] private OptionSettings optionSettings;
     [SerializeField] private SkillSelectUIManager skillUIManager;
     [SerializeField] private GameObject selectSkillPanelOverlay;
-    public ShopUIManager ShopUIManager => shopUIManager;
+    public NewItemUIManager ShopUIManager => shopUIManager;
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
@@ -208,7 +207,7 @@ public class UIManager : MonoBehaviour
 
         playerUIManager = rootUI.GetComponentInChildren<PlayerUIManager>(true);
         augUIManager = rootUI.GetComponentInChildren<AugUIManager>(true);
-        shopUIManager = rootUI.GetComponentInChildren<ShopUIManager>(true);
+        shopUIManager = rootUI.GetComponentInChildren<NewItemUIManager>(true);
         itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
         skillUIManager = rootUI.GetComponentInChildren<SkillSelectUIManager>(true);
 
@@ -408,12 +407,6 @@ public class UIManager : MonoBehaviour
             augUIManager.HideCurrentAugmentationUI();
             playerUIManager.OpenEscPanelFromAugmentation();
             return;
-        }
-
-        if (inGameShopUIManager != null && inGameShopUIManager.IsShopOpen())
-        {
-            inGameShopUIManager.ToggleShop(); // 닫기
-            return; //  여기서 끝
         }
 
         
@@ -617,7 +610,7 @@ public class UIManager : MonoBehaviour
     }
 
     
-    public ShopUIManager GetShopUI()
+    public NewItemUIManager GetShopUI()
     {
         return shopUIManager;
     }

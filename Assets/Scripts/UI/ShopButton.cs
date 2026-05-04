@@ -13,9 +13,9 @@ public class ShopButton : MonoBehaviour
 
     private ItemData currentData;
     private int currentPrice;
-    private ShopUIManager manager;
+    private NewItemUIManager manager;
 
-    public void Setup(ItemData data, int price, ShopUIManager manager)
+    public void Setup(ItemData data, int price, NewItemUIManager manager)
     {
         if (data == null || manager == null) return;
         this.currentData = data;

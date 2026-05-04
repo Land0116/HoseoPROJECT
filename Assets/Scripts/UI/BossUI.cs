@@ -59,11 +59,7 @@ public class BossUI : MonoBehaviour
             Debug.Log(" Player 감지됨");
 
             hasShown = true;
-            
-            if(InGameShopUIManager.Instance != null)
-            {
-                InGameShopUIManager.Instance.canOpenShop = false;
-            }
+           
            
 
             StartCoroutine(DelayedStart());

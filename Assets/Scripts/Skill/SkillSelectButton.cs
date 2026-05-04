@@ -12,29 +12,6 @@ public class SkillSelectButton : MonoBehaviour
     private SkillData skill;
     private SkillSelectUIManager manager;
 
-    /*public void Setup(SkillData data, SkillSelectUIManager uiManager)
-    {
-        skill = data;
-        manager = uiManager;
-
-        nameText.text = data.skillName;
-        descText.text = data.description;
-
-        int level = 1;
-
-        if (SkillManager.Instance.qSkill == data)
-            level = SkillManager.Instance.GetQLevel();
-        else if (SkillManager.Instance.eSkill == data)
-            level = SkillManager.Instance.GetELevel();
-
-        
-        cooldownText.text = $"ÄðÅ¸ÀÓ: {data.GetCooldown(level)}ÃÊ";
-
-        iconImage.sprite = data.icon;
-
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => manager.SelectSkill(skill));
-    }*/
     public void Setup(SkillData data, SkillSelectUIManager uiManager)
     {
         skill = data;

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopUIManager : MonoBehaviour
+public class NewItemUIManager : MonoBehaviour
 {
     [Header("전체 아이템 데이터")]
     public ItemData[] itemDatabase;

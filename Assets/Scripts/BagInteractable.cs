@@ -5,12 +5,12 @@ public class BagInteractable : MonoBehaviour, IInteractable
 {
     private bool isPlayerInRange = false;
     private PlayerController player;
-    private ShopUIManager shopUIManager;
+    private NewItemUIManager shopUIManager;
     private static BagInteractable currentTarget;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
-        shopUIManager = FindFirstObjectByType<ShopUIManager>();
+        shopUIManager = FindFirstObjectByType<NewItemUIManager>();
     }
     private void Update()
     {
