@@ -326,11 +326,8 @@ public class OrbitProjectile : MonoBehaviour
         // 본체 데미지
         damageable.OnDamage(damage);
 
-        // 플레이어 흡혈 등 "적 명중" 트리거
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.OnHitEnemy();
-        }
+        // 실제 준 데미지 기준으로 흡혈 처리
+        NotifyOwnerHitEnemy(damage);
 
         // 도트 부여
         if (dotDamagePerSecond > 0f && dotDuration > 0f)
@@ -371,7 +368,10 @@ public class OrbitProjectile : MonoBehaviour
             IDamageable damageable = GetDamageable(hit);
             if (damageable == null) continue;
 
-            damageable.OnDamage(damage * explosionDamageMultiplier);
+            float explosionDamage = damage * explosionDamageMultiplier;
+
+            damageable.OnDamage(explosionDamage);
+            NotifyOwnerHitEnemy(explosionDamage);
         }
     }
     
@@ -402,6 +402,33 @@ public class OrbitProjectile : MonoBehaviour
         if (damageable != null) return damageable;
 
         return col.GetComponentInParent<IDamageable>();
+    }
+    
+    private void NotifyOwnerHitEnemy(float dealtDamage)
+    {
+        if (dealtDamage <= 0f) return;
+
+        PlayerController player = null;
+
+        if (ownerRoot != null)
+        {
+            player = ownerRoot.GetComponentInChildren<PlayerController>();
+        }
+
+        if (player == null && owner != null)
+        {
+            player = owner.GetComponentInParent<PlayerController>();
+        }
+
+        if (player == null)
+        {
+            player = PlayerController.Instance;
+        }
+
+        if (player != null)
+        {
+            player.OnHitEnemy(dealtDamage);
+        }
     }
 
 #if UNITY_EDITOR

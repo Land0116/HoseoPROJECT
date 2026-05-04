@@ -206,7 +206,10 @@ public class Monster : MonoBehaviour, IDamageable
         isHit = false;
 
         rb.linearVelocity = Vector2.zero;
-
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.OnKillEnemy();
+        }
         // 애니메이션 있으면 재생
         if (animator != null)
         {
@@ -220,11 +223,11 @@ public class Monster : MonoBehaviour, IDamageable
         }
         else
         {
-            
             DropReward();
             Destroy(gameObject);
         }
     }
+    
     private void DropReward()
     {
         if (PlayerController.Instance != null)

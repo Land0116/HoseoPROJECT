@@ -31,15 +31,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
 
     [Header("플레이어 기본 정보")] [SerializeField]
-    private int baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
+    private float baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
 
     [SerializeField] private float baseMoveSpeed = 8.0f; // 게임 시작 시 기준 이동속도
     [SerializeField] private float baseAttackPerSecond = 1.0f; // 게임 시작 시 기준 초당 공격 횟수
 
     [Header("플레이어 현재 상태값")] [SerializeField]
-    private int hp; // 현재 체력
+    private float hp; // 현재 체력
 
-    [SerializeField] private int maxHp; // 현재 최대 체력
+    [SerializeField] private float maxHp; // 현재 최대 체력
     [SerializeField] private int gold = 10; // 현재 소지 골드
     [SerializeField] private float moveSpeed; // 현재 이동속도
     [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
@@ -215,7 +215,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [SerializeField] private bool specialCheatDeath = false;
     [SerializeField] private bool specialCheatDeathUsed = false;
-    [SerializeField] private int specialCheatDeathHp = 1;
+    [SerializeField] private float specialCheatDeathHp = 1;
     [SerializeField] private float specialCheatDeathInvincibleDuration = 1f;
 
     [SerializeField] private float specialHpToDamagePercentPer10Hp = 0f;
@@ -263,14 +263,49 @@ public class PlayerController : MonoBehaviour, IDamageable
     //수정하면서 추가한 부분
     private float nextAttackTime = 0f;
 
-    public int Hp
+    public float Hp
     {
         get => hp;
         set => hp = Mathf.Clamp(value, 0, maxHp);
     }
 
-    public int MaxHp => maxHp;
+    public float MaxHp => maxHp;
+    /// <summary>
+    /// UI 표시용 현재 체력.
+    /// 실제 체력은 float지만, UI에는 int처럼 보여준다.
+    /// 체력이 0.1 남아있는데 0으로 표시되면 죽은 것처럼 보이므로 CeilToInt를 사용한다.
+    /// </summary>
+    public int DisplayHp
+    {
+        get
+        {
+            if (Hp <= 0f) return 0;
+            return Mathf.CeilToInt(Hp);
+        }
+    }
 
+    /// <summary>
+    /// UI 표시용 최대 체력.
+    /// </summary>
+    public int DisplayMaxHp
+    {
+        get
+        {
+            return Mathf.CeilToInt(MaxHp);
+        }
+    }
+
+    /// <summary>
+    /// HP바 전용 비율.
+    /// </summary>
+    public float HpRatio
+    {
+        get
+        {
+            if (MaxHp <= 0f) return 0f;
+            return Mathf.Clamp01(Hp / MaxHp);
+        }
+    }
 
     public float MoveSpeed
     {
@@ -452,8 +487,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsDie)
             return;
 
-        PlayerMouseMovement();
-
         isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         UpdateAnimatorLocomotion();
         CheckAttackStateRelease();
@@ -462,6 +495,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         HandleAttack();
         UpdateAnimatorPlaybackSpeed();
+    }
+
+    void LateUpdate()
+    {
+        PlayerMouseMovement();
     }
 
     void FixedUpdate()
@@ -1455,20 +1493,19 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
-        int incomingDamage = Mathf.RoundToInt(damage);
+        float incomingDamage = Mathf.Max(0f, damage);
 
         // 치명적 피해 극복
-        if (Hp - incomingDamage <= 0 && specialCheatDeath && !specialCheatDeathUsed)
+        if (Hp - incomingDamage <= 0f && specialCheatDeath && !specialCheatDeathUsed)
         {
             specialCheatDeathUsed = true;
-            Hp = Mathf.Max(1, specialCheatDeathHp);
+            Hp = Mathf.Max(1f, specialCheatDeathHp);
             invincibleUntilTime = Time.time + specialCheatDeathInvincibleDuration;
             return;
         }
 
         Hp -= incomingDamage;
-
-        Debug.Log("플레이어 체력: " + Hp + " / " + maxHp);
+        
 
         if (Hp <= 0)
         {
@@ -1941,20 +1978,41 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     #region 회복 / 흡혈
 
+    public void OnHitEnemy(float dealtDamage)
+    {
+        if (IsDie) return;
+        if (passiveLifeStealPercent <= 0f) return;
+        if (dealtDamage <= 0f) return;
+
+        float healAmount = dealtDamage * passiveLifeStealPercent;
+
+        Heal(healAmount, true);
+
+        Debug.Log(
+            "[흡혈] 준 데미지: " + dealtDamage.ToString("F2") +
+            " / 흡혈 비율: " + (passiveLifeStealPercent * 100f).ToString("F1") + "%" +
+            " / 회복량: " + healAmount.ToString("F2")
+        );
+    }
+
+    /// <summary>
+    /// 기존 코드 호환용.
+    /// 혹시 다른 곳에서 OnHitEnemy()를 아직 호출하고 있다면 에러 방지.
+    /// 가능하면 새 코드에서는 OnHitEnemy(float dealtDamage)를 사용할 것.
+    /// </summary>
     public void OnHitEnemy()
     {
-        if (passiveLifeStealPercent <= 0f) return;
-
-        float healAmount = GetFinalDamage() * passiveLifeStealPercent;
-        Heal(healAmount);
+        OnHitEnemy(GetFinalDamage());
     }
+
 
     public void OnKillEnemy()
     {
-        if (specialHealOnKill > 0f)
-        {
-            Heal(specialHealOnKill, true);
-        }
+        if (IsDie) return;
+        if (specialHealOnKill <= 0f) return;
+
+        Heal(specialHealOnKill, true);
+        
     }
 
     public void Heal(float value, bool triggerAutoAttack = true)
@@ -1962,11 +2020,20 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsDie) return;
         if (value <= 0f) return;
 
-        int beforeHp = Hp;
-        Hp += Mathf.RoundToInt(value);
-        int actualHealed = Hp - beforeHp;
+        float beforeHp = Hp;
 
-        if (actualHealed <= 0) return;
+        // float 회복량 그대로 적용
+        Hp += value;
+
+        float actualHealed = Hp - beforeHp;
+
+        if (actualHealed <= 0f) return;
+
+        Debug.Log(
+            "회복량: " + actualHealed.ToString("F2") +
+            " / 현재 체력: " + Hp.ToString("F2") +
+            " / 최대 체력: " + MaxHp.ToString("F2")
+        );
 
         if (triggerAutoAttack &&
             specialHealToAutoAttackThreshold > 0f &&
@@ -2023,15 +2090,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 초당 체력 회복
         if (specialHpRegenPerSecond > 0f)
         {
-            hpRegenAccumulator += specialHpRegenPerSecond * Time.deltaTime;
-
-            if (hpRegenAccumulator >= 1f)
-            {
-                int healInt = Mathf.FloorToInt(hpRegenAccumulator);
-                hpRegenAccumulator -= healInt;
-
-                Heal(healInt, true);
-            }
+            Heal(specialHpRegenPerSecond * Time.deltaTime, true);
         }
 
         // 보호막 충전
@@ -2072,8 +2131,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void RebuildPlayerStats()
     {
-        int beforeMaxHp = maxHp;
-        int beforeHp = Hp;
+        float beforeMaxHp = maxHp;
+        float beforeHp = Hp;
 
         // 1. 기본값 복원
         maxHp = baseMaxHp;
@@ -2145,7 +2204,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         
         RefreshShieldVisual();
         
-        int maxHpIncrease = maxHp - beforeMaxHp;
+        float maxHpIncrease = maxHp - beforeMaxHp;
 
         if (maxHpIncrease > 0)
         {
