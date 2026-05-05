@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 /// <summary>
 /// 게임 전체 UI의 최상위 매니저
@@ -180,6 +181,7 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator DelayedBind(string sceneName)
     {
+        yield return null;
         yield return null;
 
         BindSceneUI();
@@ -441,9 +443,13 @@ public class UIManager : MonoBehaviour
             augUIManager.ResetUIStateForRestart();
         }
 
+        if (CurItemUI.Instance != null)
+            CurItemUI.Instance.SetItems(new List<ItemData>());
+
+        if (SkillManager.Instance != null)
+            SkillManager.Instance.ResetSkills();
 
 
-        
 
         // 다음 씬 로드 후 처리 예약
         needResetPlayerOnNextScene = true;
@@ -470,6 +476,11 @@ public class UIManager : MonoBehaviour
         {
             augUIManager.ResetUIStateForRestart();
         }
+        if (CurItemUI.Instance != null)
+            CurItemUI.Instance.SetItems(new List<ItemData>());
+
+        if (SkillManager.Instance != null)
+            SkillManager.Instance.ResetSkills();
 
         needResetPlayerOnNextScene = true;
         needShowAugmentationOnNextScene = true;
@@ -493,6 +504,13 @@ public class UIManager : MonoBehaviour
         {
             augUIManager.ResetUIStateForRestart();
         }
+
+        if (CurItemUI.Instance != null)
+            CurItemUI.Instance.SetItems(new List<ItemData>());
+
+        if (SkillManager.Instance != null)
+            SkillManager.Instance.ResetSkills();
+
         if (PlayerController.Instance != null)
         {
             Transform crosshair = PlayerController.Instance.GetCrosshairTransform();

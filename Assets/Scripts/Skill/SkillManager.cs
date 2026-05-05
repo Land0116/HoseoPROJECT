@@ -197,6 +197,19 @@ public class SkillManager : MonoBehaviour
     {
         return eLevel;
     }
+    public void ResetSkills()
+    {
+        qSkill = null;
+        eSkill = null;
+
+        qLevel = 0;
+        eLevel = 0;
+
+        qLastUseTime = -999f;
+        eLastUseTime = -999f;
+
+        RefreshSlotUI();
+    }
 }
 
 public enum SkillSlotType
