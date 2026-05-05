@@ -45,6 +45,12 @@ public class ItemUIManager : MonoBehaviour
     private bool isShopUIForced = false;
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
         if (itemInteractPanel != null) itemInteractPanel.SetActive(false); //*
         if (itemPanel != null) itemPanel.SetActive(false);
@@ -588,5 +594,10 @@ public class ItemUIManager : MonoBehaviour
     public void UnregisterShop(IShopInteractable shop)
     {
         nearbyShops.Remove(shop);
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }

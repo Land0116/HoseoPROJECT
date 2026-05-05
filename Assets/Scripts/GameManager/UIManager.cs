@@ -120,13 +120,11 @@ public class UIManager : MonoBehaviour
     {
         // 이전 씬에서 TimeScale 멈춘 상태 방지
         Time.timeScale = 1f;
-
+        StartCoroutine(RebindLate());
         // UI 바인딩은 한 프레임 뒤에 (중요: 오브젝트 생성 타이밍 문제 방지)
         StartCoroutine(DelayedBind(scene.name));
 
-        // ================================
-        // 1. 플레이어 초기화 / 재연결
-        // ================================
+
         if (playerUIManager != null)
         {
             if (PlayerController.Instance != null)
@@ -136,17 +134,6 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        // ================================
-        // 2. 장비 슬롯 복구 (핵심 수정)
-        // ================================
-        if (scene.name != "Main")
-        {
-
-        }
-
-        // ================================
-        // 3. 플레이어 상태 초기화 (새 게임 / 재시작)
-        // ================================
         if (needResetPlayerOnNextScene)
         {
             if (PlayerController.Instance != null)
@@ -157,28 +144,27 @@ public class UIManager : MonoBehaviour
             needResetPlayerOnNextScene = false;
         }
 
-        // ================================
-        // 4. 증강 UI 예약 처리
-        // ================================
+
         if (needShowAugmentationOnNextScene)
         {
-            if (augUIManager != null)
-            {
-                // 필요하면 여기서 예약 로직 실행
-            }
-
             needShowAugmentationOnNextScene = false;
         }
 
-        // ================================
-        // 5. 카메라 재바인딩 (안전)
-        // ================================
         if (PlayerController.Instance != null)
         {
             BindCameraToPlayer(PlayerController.Instance);
         }
     }
+    private IEnumerator RebindLate()
+    {
+        yield return null;
+        yield return null;
 
+        BindSceneUI();
+
+        if (itemUIManager != null && systemUI != null)
+            itemUIManager.BindItemUI(systemUI);
+    }
     private IEnumerator DelayedBind(string sceneName)
     {
         yield return null;

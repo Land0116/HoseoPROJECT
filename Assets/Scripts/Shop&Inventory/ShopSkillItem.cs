@@ -138,6 +138,12 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 
     private void ShowUI()
     {
+        if (ItemUIManager.Instance == null)
+        {
+            Debug.LogError("ItemUIManager가 아직 생성되지 않음");
+            return;
+        }
+
         if (currentSkill == null) return;
 
         ItemUIManager.Instance.ShowShopInteract(
