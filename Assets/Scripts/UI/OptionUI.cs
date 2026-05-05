@@ -3,6 +3,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class OptionUI : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class OptionUI : MonoBehaviour
         new Resolution { width = 1920, height = 1080 },
         new Resolution { width = 2560, height = 1440 }
     };
-
+    public bool IsControlViewOpen => controlViewPanel != null && controlViewPanel.activeSelf;
     private void Awake()
     {
         
@@ -47,7 +48,13 @@ public class OptionUI : MonoBehaviour
         ApplySettings();
         UpdateUIElements();
     }
+    private void Update()
+    {
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame)
+            return;
 
+        HandleEscape();
+    }
     private void Start()
     {
         if (settings == null)
@@ -193,5 +200,29 @@ public class OptionUI : MonoBehaviour
         if (closeButtonButton != null)
             closeButtonButton.SetActive(true);
     }
+    private bool HandleEscape()
+    {
+        Debug.Log($"[OptionUI] HandleEscape 호출됨 | controlViewPanel active = {controlViewPanel?.activeSelf}");
 
+        if (controlViewPanel != null && controlViewPanel.activeSelf)
+        {
+            Debug.Log("[OptionUI] controlViewPanel 닫음 (ESC 소비)");
+            CloseControlView();
+            return true;
+        }
+
+        Debug.Log("[OptionUI] ESC 소비 안함 (false 반환)");
+        return false;
+    }
+
+    public bool HandleEscapeConsumed()
+    {
+        if (controlViewPanel != null && controlViewPanel.activeSelf)
+        {
+            CloseControlView();
+            return true;
+        }
+
+        return false;
+    }
 }

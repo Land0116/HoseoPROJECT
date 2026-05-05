@@ -20,10 +20,14 @@ public class SkillBagInteractable : MonoBehaviour, IInteractable
 
     public void Interact(PlayerController player)
     {
+
+
         if (SkillSelectUIManager.Instance != null)
         {
             SkillSelectUIManager.Instance.IsSkillOpened = true;
         }
+
+
 
         ItemUIManager.Instance?.HideInteractPanel();
 

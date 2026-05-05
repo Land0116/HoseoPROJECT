@@ -246,14 +246,18 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleEscape()
     {
+        Debug.Log($"[PlayerUIManager] HandleEscape 호출 | currentPanel = {currentPanel?.name}");
+
         if (currentPanel == null)
         {
+            Debug.Log("[PlayerUIManager] ESC → ESC 패널 오픈 (기본)");
             OpenEscPanelNormal();
             return;
         }
 
         if (currentPanel == optionPanel)
         {
+            Debug.Log("[PlayerUIManager] 옵션에서 ESC → ESC 패널로 이동");
             OpenPanel(escPanel);
 
             if (escToOptionCloseBtn != null)
@@ -264,12 +268,15 @@ public class PlayerUIManager : MonoBehaviour
 
         if (currentPanel == exitSurePanel || currentPanel == toMainSurePanel)
         {
+            Debug.Log("[PlayerUIManager] 확인창 ESC → ESC 패널로 이동");
             OpenPanel(escPanel);
             return;
         }
 
         if (currentPanel == escPanel)
         {
+            Debug.Log($"[PlayerUIManager] ESC 패널 상태에서 ESC | returnTarget = {escReturnTarget}");
+
             switch (escReturnTarget)
             {
                 case EscReturnTarget.Augmentation:
@@ -277,10 +284,12 @@ public class PlayerUIManager : MonoBehaviour
                     break;
 
                 case EscReturnTarget.Shop:
+                    Debug.Log("[PlayerUIManager] 상점 복귀");
                     CloseEscAndReturnToShop();
                     break;
 
                 default:
+                    Debug.Log("[PlayerUIManager] 게임 복귀");
                     CloseEscAndResumeGameplay();
                     break;
             }
@@ -724,26 +733,6 @@ public class PlayerUIManager : MonoBehaviour
         button.onClick.AddListener(action);
     }
 
-
-
-
-    /*public void ResetEquipmentUI()
-    {
-        // Q 슬롯 초기화
-        if (qSlotIcon != null)
-        {
-            qSlotIcon.sprite = null;
-            qSlotIcon.enabled = false;
-        }
-
-        // E 슬롯 초기화
-        if (eSlotIcon != null)
-        {
-            eSlotIcon.sprite = null;
-            eSlotIcon.enabled = false;
-        }
-
-    }*/
     public void UseEquipment(SkillSlotType slot)
     {
         if (slot == SkillSlotType.Q)

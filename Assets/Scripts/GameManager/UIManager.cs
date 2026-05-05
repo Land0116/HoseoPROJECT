@@ -56,7 +56,11 @@ public class UIManager : MonoBehaviour
     // 다음 게임 씬에 들어갔을 때 증강창을 바로 보여줘야 하는지
     private bool needShowAugmentationOnNextScene;
 
-     private void Awake()
+
+    private OptionUI optionUI;
+
+
+    private void Awake()
     {
         // 싱글톤 패턴
         if (Instance != null && Instance != this)
@@ -75,7 +79,7 @@ public class UIManager : MonoBehaviour
     {
         // 시작하자마자 현재 씬 UI 바인딩
         BindSceneUI();
-
+        optionUI = FindFirstObjectByType<OptionUI>();
         OptionUI.ApplySettingsStatic(optionSettings);
         // 현재 씬 이름에 맞는 초기 UI 상태 적용
         ApplySceneDefaultState(SceneManager.GetActiveScene().name);
@@ -93,13 +97,18 @@ public class UIManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void Update()
+    /*private void Update()
     {
         // 키보드가 없으면 종료
         if (Keyboard.current == null) return;
 
         // ESC 입력이 이번 프레임에 눌렸는지 확인
         if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+
+        if (optionUI != null && optionUI.HandleEscapeConsumed())
+        {
+            return;
+        }
 
         // 메인 씬인지, 게임 씬인지에 따라 ESC 동작 분기
         if (SceneManager.GetActiveScene().name == "Main")
@@ -110,6 +119,28 @@ public class UIManager : MonoBehaviour
         {
             HandleGameSceneEscape();
         }
+    }*/
+    private void Update()
+    {
+        if (Keyboard.current == null) return;
+        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
+
+        Debug.Log("[UIManager] ESC 입력 감지됨");
+
+       
+        if (optionUI != null && optionUI.HandleEscapeConsumed())
+        {
+            Debug.Log("[UIManager] OptionUI가 ESC 먹음");
+            return;
+        }
+
+        
+        Debug.Log("[UIManager] PlayerUIManager ESC 처리");
+
+        if (SceneManager.GetActiveScene().name == "Main")
+            HandleMainSceneEscape();
+        else
+            HandleGameSceneEscape();
     }
 
     /// <summary>
@@ -123,7 +154,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(RebindLate());
         // UI 바인딩은 한 프레임 뒤에 (중요: 오브젝트 생성 타이밍 문제 방지)
         StartCoroutine(DelayedBind(scene.name));
-
+        optionUI = FindFirstObjectByType<OptionUI>(); //*
 
         if (playerUIManager != null)
         {
@@ -228,7 +259,19 @@ public class UIManager : MonoBehaviour
 
             skillUIManager.BindSkillUI(systemUI, selectSkillPanelOverlay);
         }
+        
+        SkillSlotButton[] slots = FindObjectsByType<SkillSlotButton>(FindObjectsSortMode.None);
 
+        foreach (var slot in slots)
+        {
+            slot.UpdateIcon();
+        }
+
+        /*skillUIManager = rootUI.GetComponentInChildren<SkillSelectUIManager>(true); //*
+        if (skillUIManager != null)
+        {
+            SkillSelectUIManager.Instance = skillUIManager;
+        }*/
         BindMainSceneUI();
     }
     
@@ -386,6 +429,13 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void HandleGameSceneEscape()
     {
+        OptionUI optionUI = FindFirstObjectByType<OptionUI>();
+
+        if (optionUI != null && optionUI.HandleEscapeConsumed())
+        {
+            return;  //*
+        }
+
         if (playerUIManager == null) return;
 
         // 증강창이 열려 있는 상태에서 ESC를 누르면
@@ -413,7 +463,7 @@ public class UIManager : MonoBehaviour
     /// - 다음 씬에서 증강창 오픈 예약
     /// - TestScene 로드
     /// </summary>
-    public void StartGame()
+    /*public void StartGame()
     {
         Time.timeScale = 1f;
 
@@ -443,6 +493,33 @@ public class UIManager : MonoBehaviour
 
         SceneManager.LoadScene("Stage_1_1");
        // InGameShopUIManager.Instance.ResetShop(); //*
+
+    }*/
+    public void StartGame()
+    {
+        Time.timeScale = 1f;
+
+        if (AugmentRunManager.Instance != null)
+        {
+            AugmentRunManager.Instance.ResetRun();
+        }
+
+        if (augUIManager != null)
+        {
+            augUIManager.ResetUIStateForRestart();
+        }
+        if (CurItemUI.Instance != null)
+            CurItemUI.Instance.SetItems(new List<ItemData>());
+
+        if (SkillManager.Instance != null)
+            SkillManager.Instance.ResetSkills();
+
+
+
+        needResetPlayerOnNextScene = true;
+        needShowAugmentationOnNextScene = true;
+
+        SceneManager.LoadScene("Stage_1_1");
 
     }
 
@@ -490,7 +567,6 @@ public class UIManager : MonoBehaviour
         {
             augUIManager.ResetUIStateForRestart();
         }
-
         if (CurItemUI.Instance != null)
             CurItemUI.Instance.SetItems(new List<ItemData>());
 
@@ -508,6 +584,13 @@ public class UIManager : MonoBehaviour
 
             Destroy(PlayerController.Instance.gameObject);
         }
+        SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
+        
+
+        // static 초기화
+        typeof(SkillBagInteractable)
+            .GetField("currentTarget", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
+            .SetValue(null, null);
 
         SceneManager.LoadScene("Main");
         Cursor.visible = true; //*

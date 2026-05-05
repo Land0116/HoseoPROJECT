@@ -46,7 +46,15 @@ public class SkillSelectUIManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
+        isSkillOpened = false;
+        panel = null;
     }
 
     private void Start()
@@ -59,6 +67,7 @@ public class SkillSelectUIManager : MonoBehaviour
 
     public void BindSkillUI(GameObject systemUIRoot, GameObject overlay)
     {
+
         overlayUI = overlay;
 
         if (overlayUI != null)
@@ -69,6 +78,7 @@ public class SkillSelectUIManager : MonoBehaviour
         if (root != null)
         {
             panel = root.gameObject;
+
             buttons = root.GetComponentsInChildren<SkillSelectButton>(true);
 
             panel.SetActive(false);
@@ -83,6 +93,9 @@ public class SkillSelectUIManager : MonoBehaviour
                 closeSkillButton.onClick.AddListener(CancelSelection);
             }
         }
+
+        
+
     }
 
     private void OpenPanel()
@@ -91,7 +104,7 @@ public class SkillSelectUIManager : MonoBehaviour
 
         if (panel == null)
         {
-            Debug.LogError("Skill Panel NULL¿”");
+
             return;
         }
 
@@ -236,5 +249,10 @@ public class SkillSelectUIManager : MonoBehaviour
             closeSkillButton.gameObject.SetActive(true);
 
         isSkillOpened = false;
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }
