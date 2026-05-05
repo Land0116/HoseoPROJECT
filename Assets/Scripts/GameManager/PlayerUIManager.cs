@@ -215,7 +215,7 @@ public class PlayerUIManager : MonoBehaviour
         if (playerController.IsDie) return;
 
         // Gold 텍스트
-        goldText.text = "G : " + playerController.Gold;
+        goldText.text = "" + playerController.Gold;
     }
 
     /// <summary>

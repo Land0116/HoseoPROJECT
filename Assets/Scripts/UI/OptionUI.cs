@@ -17,8 +17,13 @@ public class OptionUI : MonoBehaviour
     [SerializeField] private Image brightnessOverlay;
 
     [Header("Settings Data")]
-    [SerializeField] private OptionSettings settings; 
+    [SerializeField] private OptionSettings settings;
 
+    [Header("Control View")]
+    [SerializeField] private GameObject controlViewPanel;
+    [SerializeField] private Button controlViewButton;
+    [SerializeField] private Button controlViewCloseButton;
+    [SerializeField] private GameObject closeButtonButton;
     private Resolution[] resolutions =
     {
         new Resolution { width = 1600, height = 900 },
@@ -50,7 +55,11 @@ public class OptionUI : MonoBehaviour
             Debug.LogError("OptionSettings ScriptableObject를 연결해주세요!");
             return;
         }
+        if (closeButtonButton != null)
+            closeButtonButton.SetActive(true);
 
+        controlViewButton.onClick.AddListener(OpenControlView);
+        controlViewCloseButton.onClick.AddListener(CloseControlView);
         InitResolutionDropdown();
         InitScreenModeDropdown();
         InitBrightness();
@@ -167,4 +176,22 @@ public class OptionUI : MonoBehaviour
         if (screenModeDropdown != null) screenModeDropdown.value = settings.screenModeIndex;
         if (brightnessSlider != null) brightnessSlider.value = settings.brightness;
     }
+    private void OpenControlView()
+    {
+        if (controlViewPanel != null)
+            controlViewPanel.SetActive(true);
+
+        if (closeButtonButton != null)
+            closeButtonButton.SetActive(false);
+    }
+
+    private void CloseControlView()
+    {
+        if (controlViewPanel != null)
+            controlViewPanel.SetActive(false);
+
+        if (closeButtonButton != null)
+            closeButtonButton.SetActive(true);
+    }
+
 }
