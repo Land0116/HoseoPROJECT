@@ -9,6 +9,7 @@ public class SkillSelectButton : MonoBehaviour
     [SerializeField] private TextMeshProUGUI cooldownText;
     [SerializeField] private Button button;
     [SerializeField] private Image iconImage;
+
     private SkillData skill;
     private SkillSelectUIManager manager;
 
@@ -26,18 +27,16 @@ public class SkillSelectButton : MonoBehaviour
 
         int nextLevel = Mathf.Min(currentLevel + 1, data.maxLevel);
 
-        // 이름 + 레벨 표시
         if (currentLevel == 0)
             nameText.text = $"{data.skillName} Lv.1";
         else
             nameText.text = $"{data.skillName} Lv.{currentLevel}";
 
         iconImage.sprite = data.icon;
+        iconImage.enabled = true;
 
-        // 플레이어 참조 (데미지 계산용)
         PlayerController player = PlayerController.Instance;
 
-        // ===== 1레벨 (처음 획득) =====
         if (currentLevel == 0)
         {
             float damage = data.GetFinalDamage(player, 1);
@@ -48,7 +47,6 @@ public class SkillSelectButton : MonoBehaviour
                 $"대미지: {damage}\n" +
                 $"쿨타임: {cooldown}초";
         }
-        // ===== MAX 상태 =====
         else if (currentLevel >= data.maxLevel)
         {
             float damage = data.GetFinalDamage(player, currentLevel);
@@ -60,7 +58,6 @@ public class SkillSelectButton : MonoBehaviour
                 $"쿨타임: {cooldown}초\n" +
                 $"(MAX)";
         }
-        // ===== 업그레이드 (2,3레벨) =====
         else
         {
             float currentDamage = data.GetFinalDamage(player, currentLevel);
@@ -70,12 +67,31 @@ public class SkillSelectButton : MonoBehaviour
             float nextCooldown = data.GetCooldown(nextLevel);
 
             descText.text =
-                 $"{data.description}\n\n" +
-                 $"대미지: {currentDamage} → {nextDamage}\n" +
-                 $"쿨타임: {currentCooldown} → {nextCooldown}초";
+                $"{data.description}\n\n" +
+                $"대미지: {currentDamage} → {nextDamage}\n" +
+                $"쿨타임: {currentCooldown} → {nextCooldown}초";
         }
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(() => manager.SelectSkill(skill));
+    }
+
+    public void SetupReplaceMode(int index, SkillSelectUIManager manager)
+    {
+        button.onClick.RemoveAllListeners();
+
+        iconImage.enabled = false;
+        descText.text = "";
+
+        if (index == 0)
+        {
+            nameText.text = "Q 슬롯 교체";
+            button.onClick.AddListener(() => manager.ReplaceSkill(SkillSlotType.Q));
+        }
+        else
+        {
+            nameText.text = "E 슬롯 교체";
+            button.onClick.AddListener(() => manager.ReplaceSkill(SkillSlotType.E));
+        }
     }
 }

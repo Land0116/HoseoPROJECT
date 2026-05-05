@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61df692eaeca27b4085b122b99a4e237, type: 3}
   m_Name: P001
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
+  shotModifierType: 0
   augmentID: P001
   augmentationName: "\uACF5\uACA9\uB825 \uC99D\uAC00"
   augmentationDesc: .
@@ -51,3 +52,4 @@ MonoBehaviour:
     autoFireEnabled: 0
     autoFireIntervalPercent: 0
   specialLevels: []
+  goldCost: 160

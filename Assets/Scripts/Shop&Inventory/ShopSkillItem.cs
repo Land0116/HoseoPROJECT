@@ -1,0 +1,152 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using UnityEngine.InputSystem;
+
+public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
+{
+    [Header("데이터")]
+    [SerializeField] private SkillData[] skillPool;
+
+    [Header("UI")]
+    [SerializeField] private Image iconImage;
+    [SerializeField] private TMP_Text priceText;
+
+    private SkillData currentSkill;
+    private int price;
+
+    private bool isPlayerInRange;
+    private PlayerController player;
+
+    private void Start()
+    {
+        GenerateItem();
+    }
+
+    private void Update()
+    {
+        if (!isPlayerInRange) return;
+        if (player == null) return;
+
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Player")) return;
+
+        isPlayerInRange = true;
+        player = collision.GetComponent<PlayerController>();
+
+        ItemUIManager.Instance?.RegisterShop(this);
+
+        ShowUI();
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Player")) return;
+
+        isPlayerInRange = false;
+        player = null;
+        ItemUIManager.Instance?.UnregisterShop(this);
+        ItemUIManager.Instance?.HideShopInteract();
+    }
+    private void GenerateItem()
+    {
+        if (skillPool == null || skillPool.Length == 0) return;
+
+        currentSkill = skillPool[Random.Range(0, skillPool.Length)];
+        if (currentSkill == null) return;
+
+        price = currentSkill.price;
+
+        if (iconImage != null)
+            iconImage.sprite = currentSkill.icon;
+
+        if (priceText != null)
+            priceText.text = price.ToString();
+    }
+
+    public void Interact(PlayerController player)
+    {
+        if (!isPlayerInRange) return;
+        if (player == null) return;
+        if (currentSkill == null) return;
+
+        this.player = player;
+
+        TryPurchase();
+    }
+
+    private void TryPurchase()
+    {
+        if (player.Gold < price)
+        {
+            Debug.Log("골드 부족");
+            return;
+        }
+
+        player.Gold -= price;
+
+        HandleSkillAcquire(currentSkill);
+
+        Debug.Log("스킬 구매 성공: " + currentSkill.skillName);
+
+        gameObject.SetActive(false);
+    }
+    private void HandleSkillAcquire(SkillData skill)
+    {
+        SkillManager sm = SkillManager.Instance;
+
+        // 1. 같은 스킬 있음 → 무조건 업글 (최우선)
+        if (sm.qSkill == skill)
+        {
+            sm.EquipSkill(skill, SkillSlotType.Q);
+            return;
+        }
+
+        if (sm.eSkill == skill)
+        {
+            sm.EquipSkill(skill, SkillSlotType.E);
+            return;
+        }
+
+        // 2. Q 비어있음 → Q 장착
+        if (sm.qSkill == null)
+        {
+            sm.EquipSkill(skill, SkillSlotType.Q);
+            return;
+        }
+
+        // 3. E 비어있음 → E 장착
+        if (sm.eSkill == null)
+        {
+            sm.EquipSkill(skill, SkillSlotType.E);
+            return;
+        }
+
+        // 4. 둘 다 있고 다른 스킬 → 선택 UI
+        OpenReplaceUI(skill);
+    }
+    private void OpenReplaceUI(SkillData skill)
+    {
+        SkillSelectUIManager ui = SkillSelectUIManager.Instance;
+
+        if (ui == null) return;
+
+        ui.ForceSelectSkillFromShop(skill);
+    }
+
+    private void ShowUI()
+    {
+        if (currentSkill == null) return;
+
+        ItemUIManager.Instance.ShowShopInteract(
+            this,
+            $"[{currentSkill.skillName}]\n{currentSkill.description}"
+        );
+    }
+    public Transform GetTransform()
+    {
+        return transform;
+    }
+}

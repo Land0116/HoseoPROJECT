@@ -2,6 +2,7 @@
 
 public class ItemPickup : MonoBehaviour
 {
+
     [SerializeField] private ItemData itemData;
     public ItemData GetItemData() => itemData;
 
@@ -36,5 +37,6 @@ public class ItemPickup : MonoBehaviour
     {
         itemData = data;
     }
+    
 
 }

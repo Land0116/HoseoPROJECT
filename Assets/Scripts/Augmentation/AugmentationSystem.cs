@@ -201,6 +201,8 @@ public class AugmentationSystem : ScriptableObject
     public PassiveLevelData[] passiveLevels;
     public SpecialLevelData[] specialLevels;
 
+    [Header("상점 가격")]
+    [Min(0)] public int goldCost = 0;
     #endregion
 
     #region Get Level Data

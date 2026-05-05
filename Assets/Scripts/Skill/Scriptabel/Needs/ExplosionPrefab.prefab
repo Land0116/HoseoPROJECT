@@ -81,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -141,3 +141,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f6323b9fd6980428b04b246e587f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExplosionSkillInstance
+  explosionFX: {fileID: 4875357332856875946, guid: 77ad9b05264fa924382c126191a1796a, type: 3}

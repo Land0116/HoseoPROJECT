@@ -39,4 +39,6 @@ public class SkillSlotButton : MonoBehaviour
             iconImage.enabled = false;
         }
     }
+
+
 }

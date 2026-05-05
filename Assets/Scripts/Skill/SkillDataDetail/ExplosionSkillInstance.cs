@@ -39,7 +39,8 @@ public class ExplosionSkillInstance : MonoBehaviour
         if (explosionFX != null)
         {
             GameObject fx = Instantiate(explosionFX, transform.position, Quaternion.identity);
-
+            float diameter = range * 2f;
+            fx.transform.localScale = new Vector3(diameter, diameter, 1f);
             // 3. 0.2초 뒤 삭제 (핵심)
             Destroy(fx, 0.2f);
         }

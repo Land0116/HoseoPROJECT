@@ -36,7 +36,13 @@ public class ItemUIManager : MonoBehaviour
     private Transform currentInteractTarget;
     private string currentInteractName;
     private List<BagInteractable> nearbyBags = new List<BagInteractable>();
-
+       
+    //상점 상호작용 UI
+    [SerializeField] private GameObject shopInteractPanel;
+    [SerializeField] private TextMeshProUGUI shopInteractText;
+    private List<IShopInteractable> nearbyShops = new List<IShopInteractable>();
+    private IShopInteractable currentShopTarget;
+    private bool isShopUIForced = false;
     private void Awake()
     {
         Instance = this;
@@ -58,14 +64,18 @@ public class ItemUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (playerController == null)
-            playerController = FindFirstObjectByType<PlayerController>();
-
-        if (player == null && playerController != null)
-            player = playerController.transform;
-
-        if (Keyboard.current.fKey.wasPressedThisFrame && currentTarget != null && PlayerController.Instance != null)
+        if (Keyboard.current.fKey.wasPressedThisFrame && PlayerController.Instance != null)
         {
+
+            if (currentShopTarget != null)
+            {
+                currentShopTarget.Interact(PlayerController.Instance);
+
+                // 상점은 1회 클릭 후 유지 원하면 이 줄 제거
+                return;
+            }
+
+
             if (currentTarget is ItemPickup item)
             {
                 var itemData = item.GetItemData();
@@ -91,12 +101,13 @@ public class ItemUIManager : MonoBehaviour
                         if (alertMaxItemPanel != null)
                             StartCoroutine(ShowAlertMaxItemPanel(1.5f));
                     }
-
-                    currentTarget = null;
-                    if (itemPanel != null) itemPanel.SetActive(false);
                 }
+
+                return;
             }
-            else if (currentTarget is WeaponPickup weapon)
+
+
+            if (currentTarget is WeaponPickup weapon)
             {
                 var weaponData = weapon.GetWeaponData();
                 if (weaponData != null)
@@ -113,6 +124,8 @@ public class ItemUIManager : MonoBehaviour
                     if (alertWeaponPanel != null)
                         StartCoroutine(ShowAlertWeaponPaenl(1.5f));
                 }
+
+                return;
             }
         }
     }
@@ -159,7 +172,7 @@ public class ItemUIManager : MonoBehaviour
 
         if (currentTarget != null && Camera.main != null)
         {
-            Vector3 screenPos = Vector3.zero;
+            Vector3 screenPos;
 
             if (currentTarget is ItemPickup item)
             {
@@ -173,10 +186,37 @@ public class ItemUIManager : MonoBehaviour
             }
         }
 
-       
+        float minShopDist = float.MaxValue;
+        IShopInteractable nearestShop = null;
+
+        foreach (var shop in nearbyShops)
+        {
+            if (shop == null) continue;
+
+            float dist = Vector2.Distance(
+                player.position,
+                shop.GetTransform().position
+            );
+
+            if (dist < minShopDist)
+            {
+                minShopDist = dist;
+                nearestShop = shop;
+            }
+        }
+
+        currentShopTarget = nearestShop;
+
+        if (currentShopTarget == null && !isShopUIForced)
+        {
+            shopInteractPanel.SetActive(false);
+        }
+
+        UpdateShopInteractUI();
         UpdateInteractTarget();
         UpdateInteractPanel();
     }
+
 
     private void UpdateUI(object target)
     {
@@ -482,5 +522,71 @@ public class ItemUIManager : MonoBehaviour
 
         currentInteractTarget = nearestBag.transform;
         currentInteractName = "[아이템 보따리]";
+    }
+
+    public void ShowShopInteract(IShopInteractable shop, string text)
+    {
+        if (shopInteractPanel == null || shop == null) return;
+
+        currentShopTarget = shop;
+        isShopUIForced = true;
+
+        shopInteractText.text = text;
+
+        if (!shopInteractPanel.activeSelf)
+            shopInteractPanel.SetActive(true);
+    }
+    private void UpdateShopInteractUI()
+    {
+        if (shopInteractPanel == null || Camera.main == null)
+            return;
+
+        if (!isShopUIForced && currentShopTarget == null)
+        {
+            shopInteractPanel.SetActive(false);
+            return;
+        }
+
+        if (currentShopTarget == null)
+            return;
+
+        RectTransform rect = shopInteractPanel.GetComponent<RectTransform>();
+
+        Vector3 worldPos = currentShopTarget.GetTransform().position + new Vector3(-3f, 0f, 0f);
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(
+            Camera.main,
+            worldPos
+        );
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            screenPoint,
+            null,
+            out Vector2 localPoint
+        );
+
+        rect.anchoredPosition = localPoint;
+
+        if (!shopInteractPanel.activeSelf)
+            shopInteractPanel.SetActive(true);
+    }
+    public void HideShopInteract()
+    {
+        currentShopTarget = null;
+        isShopUIForced = false;
+
+        if (shopInteractPanel != null)
+            shopInteractPanel.SetActive(false);
+    }
+    public void RegisterShop(IShopInteractable shop)
+    {
+        if (!nearbyShops.Contains(shop))
+            nearbyShops.Add(shop);
+    }
+
+    public void UnregisterShop(IShopInteractable shop)
+    {
+        nearbyShops.Remove(shop);
     }
 }
