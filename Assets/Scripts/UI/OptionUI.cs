@@ -37,7 +37,9 @@ public class OptionUI : MonoBehaviour
         
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-
+    private void Update()
+    {
+    }
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -47,13 +49,6 @@ public class OptionUI : MonoBehaviour
     {
         ApplySettings();
         UpdateUIElements();
-    }
-    private void Update()
-    {
-        if (!Keyboard.current.escapeKey.wasPressedThisFrame)
-            return;
-
-        HandleEscape();
     }
     private void Start()
     {
@@ -192,7 +187,7 @@ public class OptionUI : MonoBehaviour
             closeButtonButton.SetActive(false);
     }
 
-    private void CloseControlView()
+    public void CloseControlView()
     {
         if (controlViewPanel != null)
             controlViewPanel.SetActive(false);

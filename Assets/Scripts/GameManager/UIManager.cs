@@ -127,16 +127,26 @@ public class UIManager : MonoBehaviour
 
         Debug.Log("[UIManager] ESC 입력 감지됨");
 
-       
-        if (optionUI != null && optionUI.HandleEscapeConsumed())
+        //  매번 최신 OptionUI 가져오기
+        optionUI = FindFirstObjectByType<OptionUI>();
+
+        // 1순위: ControlViewPanel 닫기
+        if (optionUI != null && optionUI.IsControlViewOpen)
         {
-            Debug.Log("[UIManager] OptionUI가 ESC 먹음");
+            Debug.Log("[UIManager] ControlViewPanel 닫기");
+            optionUI.CloseControlView();
             return;
         }
 
-        
-        Debug.Log("[UIManager] PlayerUIManager ESC 처리");
+        // 2순위: OptionPanel 닫기
+        if (optionPanel != null && optionPanel.activeSelf)
+        {
+            Debug.Log("[UIManager] OptionPanel 닫기");
+            optionPanel.SetActive(false);
+            return;
+        }
 
+        // 3순위
         if (SceneManager.GetActiveScene().name == "Main")
             HandleMainSceneEscape();
         else
