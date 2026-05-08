@@ -250,9 +250,7 @@ public class AugButton : MonoBehaviour
 
                 case AugmentationSystem.PassiveType.LifeSteal:
                     return string.Format(template, levelData.lifeStealPercent * 100f);
-
-                case AugmentationSystem.PassiveType.AutoFire:
-                    return string.Format(template, levelData.autoFireIntervalPercent * 100f);
+                
             }
         }
         catch

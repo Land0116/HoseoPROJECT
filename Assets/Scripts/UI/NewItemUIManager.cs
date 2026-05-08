@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class NewItemUIManager : MonoBehaviour
 {
+    public static NewItemUIManager Instance;
+    
     [Header("전체 아이템 데이터")]
     public ItemData[] itemDatabase;
 

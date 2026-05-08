@@ -1,44 +1,76 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class StageClear : MonoBehaviour
 {
     public static StageClear Instance;
 
-    [Header("스테이지 씬 이름 배열 (순서대로 넣기)")]
-    [SerializeField] private string[] stageSceneNames;
+    public enum RouteType
+    {
+        None,
+        Shop,
+        Augment,
+        Skill,
+        Item,
+        Boss,
+        NextStage
+    }
 
-    [Header("몬스터 전멸 시 자동 클리어 여부")]
-    [SerializeField] private bool autoClearWhenNoMonster = true;
+    public enum RewardType
+    {
+        None,
+        Augment,
+        Skill,
+        Item
+    }
 
-    [Header("출구에 들어올 플레이어 태그")]
+    private enum RoomType
+    {
+        Combat,
+        Shop,
+        Boss
+    }
+
+    [Header("전투 씬 이름 배열")]
+    [SerializeField] private string[] combatSceneNames;
+
+    [Header("상점 씬 이름")]
+    [SerializeField] private string shopSceneName = "ShopStage";
+
+    [Header("플레이어 태그")]
     [SerializeField] private string playerTag = "Player";
+
     [Header("몬스터 태그")]
     [SerializeField] private string monsterTag = "Monster";
 
-    [Header("클리어 후 다음 씬 이동까지 딜레이")]
+    [Header("몬스터 전멸 시 자동 클리어")]
+    [SerializeField] private bool autoClearWhenNoMonster = true;
+
+    [Header("씬 이동 딜레이")]
     [SerializeField] private float clearDelay = 1.0f;
 
-    // 현재 씬이 배열에서 몇 번째인지 저장
-    private int currentSceneIndex = -1;
+    [Header("현재 스테이지 번호")]
+    [SerializeField] private int currentStageNumber = 1;
 
-    // 중복 클리어 방지
-    private bool isStageCleared = false;
-    // 이미 다음 씬으로 넘어가는 중인지
-    [SerializeField] private bool isLoadingNextScene = false;
+    [Header("현재 맵 번호")]
+    [SerializeField] private int currentMapNumber = 1;
 
-    // 출구 충돌체
-    [SerializeField] private CompositeCollider2D exitCompositeCollider;
-    [SerializeField] private Rigidbody2D exitRigidbody;
+    [Header("디버그")]
+    [SerializeField] private bool isStageCleared;
+    [SerializeField] private bool isLoadingNextScene;
 
-    // 씬 이동 코루틴 저장용
-    private Coroutine clearRoutine;
+    private RoomType currentRoomType = RoomType.Combat;
+    private RewardType pendingRewardType = RewardType.None;
 
-     private void Awake()
+    private SceneMoveTriggerRelay[] routeSlots;
+
+    private readonly List<RouteType> currentOpenedRoutes = new List<RouteType>();
+
+    private void Awake()
     {
-        // 싱글톤 처리
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -61,189 +93,532 @@ public class StageClear : MonoBehaviour
 
     private void Start()
     {
-        // 첫 시작 씬도 직접 한 번 바인딩
-        BindSceneMoveCollider();
-        currentSceneIndex = GetSceneIndex(SceneManager.GetActiveScene().name);
-        ResetStageClearState();
-
-        Debug.Log("현재 씬 인덱스 : " + currentSceneIndex + " / 씬 이름 : " + SceneManager.GetActiveScene().name);
+        BindRouteSlots();
+        ResetRoomState();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬 바뀔 때마다 새 SceneMoveColl 다시 찾기
-        BindSceneMoveCollider();
+        BindRouteSlots();
+        ResetRoomState();
 
-        // 씬 인덱스 다시 계산
-        currentSceneIndex = GetSceneIndex(scene.name);
-
-        // 스테이지 상태 초기화
-        ResetStageClearState();
-
-        Debug.Log("씬 로드 완료 / 현재 씬 인덱스 : " + currentSceneIndex + " / 씬 이름 : " + scene.name);
+        if (currentRoomType == RoomType.Shop)
+        {
+            OnEnterShopScene();
+        }
     }
-
-    private void BindSceneMoveCollider()
-    {
-        GameObject moveCollObj = GameObject.Find("SceneMoveColl");
-
-        if (moveCollObj == null)
-        {
-            exitCompositeCollider = null;
-            exitRigidbody = null;
-            Debug.LogError("SceneMoveColl 오브젝트를 찾지 못함");
-            return;
-        }
-
-        exitCompositeCollider = moveCollObj.GetComponent<CompositeCollider2D>();
-        exitRigidbody = moveCollObj.GetComponent<Rigidbody2D>();
-
-        if (exitCompositeCollider == null)
-        {
-            Debug.LogError("SceneMoveColl 오브젝트에 CompositeCollider2D가 없음");
-            return;
-        }
-
-        if (exitRigidbody == null)
-        {
-            Debug.LogError("SceneMoveColl 오브젝트에 Rigidbody2D가 없음");
-            return;
-        }
-
-        // 출구는 움직이지 않으므로 Static
-        exitRigidbody.bodyType = RigidbodyType2D.Static;
-
-        // 기본은 막힌 상태
-        exitCompositeCollider.isTrigger = false;
-    }
-
 
     private void Update()
     {
-        // 이미 클리어됐거나 씬 이동 중이면 검사 안 함
+        if (currentRoomType == RoomType.Shop) return;
         if (isStageCleared) return;
         if (isLoadingNextScene) return;
-
-        // 자동 클리어 검사 꺼져 있으면 검사 안 함
         if (!autoClearWhenNoMonster) return;
 
         GameObject[] monsters = GameObject.FindGameObjectsWithTag(monsterTag);
 
-        //Debug.Log("남은 몬스터 수 : " + monsters.Length);
-
-        // 몬스터가 0마리면 출구 열기
         if (monsters.Length == 0)
         {
-            autoClearWhenNoMonster = true;
             ClearStage();
         }
     }
 
-    /// <summary>
-    /// 씬 시작 시 상태 초기화
-    /// </summary>
-    private void ResetStageClearState()
+    private void BindRouteSlots()
+    {
+        routeSlots = FindObjectsByType<SceneMoveTriggerRelay>(FindObjectsSortMode.None);
+
+        if (routeSlots == null || routeSlots.Length < 3)
+        {
+            Debug.LogWarning("ExitSlot 출구 오브젝트가 3개보다 적음");
+        }
+
+        LockAllRouteSlots();
+    }
+
+    private void ResetRoomState()
     {
         isStageCleared = false;
         isLoadingNextScene = false;
 
-        if (exitCompositeCollider != null)
+        currentOpenedRoutes.Clear();
+
+        LockAllRouteSlots();
+    }
+
+    private void LockAllRouteSlots()
+    {
+        if (routeSlots == null) return;
+
+        for (int i = 0; i < routeSlots.Length; i++)
         {
-            exitCompositeCollider.isTrigger = false;
+            if (routeSlots[i] == null) continue;
+
+            routeSlots[i].SetRouteType(RouteType.None);
+
+            // 오브젝트를 끄지 않음.
+            // Collider의 isTrigger만 false로 바꿔서 막음.
+            routeSlots[i].SetRouteEnabled(false);
         }
     }
 
-    /// <summary>
-    /// 현재 씬 이름이 배열에서 몇 번째인지 찾는 함수
-    /// 없으면 -1 반환
-    /// </summary>
-    private int GetSceneIndex(string sceneName)
-    {
-        if (stageSceneNames == null || stageSceneNames.Length == 0)
-            return -1;
-
-        for (int i = 0; i < stageSceneNames.Length; i++)
-        {
-            if (stageSceneNames[i] == sceneName)
-                return i;
-        }
-
-        return -1;
-    }
-
-    /// <summary>
-    /// 현재 씬 다음 씬 이름 반환
-    /// 마지막 씬이면 null 반환
-    /// </summary>
-    private string GetNextSceneName()
-    {
-        if (currentSceneIndex < 0)
-            return null;
-
-        int nextIndex = currentSceneIndex + 1;
-
-        if (nextIndex >= stageSceneNames.Length)
-            return null;
-
-        return stageSceneNames[nextIndex];
-    }
-
-    /// <summary>
-    /// 스테이지 클리어 처리
-    /// 몬스터를 다 잡으면 출구를 Trigger로 열어줌
-    /// </summary>
     public void ClearStage()
     {
         if (isStageCleared) return;
 
         isStageCleared = true;
 
-        if (exitCompositeCollider != null)
+        Debug.Log($"맵 클리어 / 스테이지 : {currentStageNumber} / 맵 : {currentMapNumber}");
+
+        GivePendingReward();
+
+        HandleClearFlow();
+    }
+
+    private void HandleClearFlow()
+    {
+        // 1스테이지 1맵은 증강 고정
+        if (currentStageNumber == 1 && currentMapNumber == 1)
         {
-            exitCompositeCollider.isTrigger = true;
+            Debug.Log("1스테이지 1맵 클리어 - 증강 고정 지급");
+
+            GiveRewardImmediately(RewardType.Augment);
+
+            // 증강 선택 후 출구 3개 생성
+            OpenCombatClearRouteChoices();
+            return;
         }
 
-        Debug.Log("스테이지 클리어 - 출구 Trigger 활성화");
-        
-        if (AugUIManager.instance != null)
+        // 6맵 클리어 후에는 선택지 없이 보스 출구만 생성
+        if (currentMapNumber == 6)
         {
-            AugUIManager.instance.ShowAugmentation();
+            Debug.Log("6맵 클리어 - 보스 출구 생성");
+
+            OpenOnlyRoute(RouteType.Boss);
+            return;
+        }
+
+        // 7맵은 보스
+        if (currentMapNumber == 7)
+        {
+            Debug.Log("보스 클리어 - 다음 스테이지 출구 생성");
+
+            GiveBossReward();
+            OpenOnlyRoute(RouteType.NextStage);
+            return;
+        }
+
+        // 일반 전투맵 클리어
+        OpenCombatClearRouteChoices();
+    }
+
+    /// <summary>
+    /// 전투맵 클리어 시:
+    /// 상점 1개 고정 + 증강/스킬/아이템 중 2개 랜덤
+    /// </summary>
+    private void OpenCombatClearRouteChoices()
+    {
+        if (!HasEnoughRouteSlots()) return;
+
+        currentOpenedRoutes.Clear();
+
+        List<RouteType> selectedRoutes = new List<RouteType>();
+
+        // 상점은 무조건 포함
+        selectedRoutes.Add(RouteType.Shop);
+
+        // 보상 3종 중 2개 랜덤, 중복 불가
+        List<RouteType> rewardRoutes = new List<RouteType>
+        {
+            RouteType.Augment,
+            RouteType.Skill,
+            RouteType.Item
+        };
+
+        ShuffleRouteList(rewardRoutes);
+
+        selectedRoutes.Add(rewardRoutes[0]);
+        selectedRoutes.Add(rewardRoutes[1]);
+
+        // 출구 위치도 랜덤
+        ShuffleRouteList(selectedRoutes);
+
+        ApplyRoutesToSlots(selectedRoutes);
+
+        Debug.Log($"전투맵 출구 생성 : {selectedRoutes[0]} / {selectedRoutes[1]} / {selectedRoutes[2]}");
+    }
+
+    /// <summary>
+    /// 상점맵 종료 시:
+    /// 증강 / 스킬 / 아이템 3개를 랜덤 위치에 배정
+    /// </summary>
+    private void OpenShopClearRouteChoices()
+    {
+        if (!HasEnoughRouteSlots()) return;
+
+        currentOpenedRoutes.Clear();
+
+        // 만약 상점이 6번째 맵 위치라면,
+        // 보스 전 긴장감 유지를 위해 보스만 열어주는 게 안전함.
+        if (currentMapNumber >= 6)
+        {
+            Debug.Log("상점 종료 위치가 6맵 이상 - 보스 출구만 생성");
+            OpenOnlyRoute(RouteType.Boss);
+            return;
+        }
+
+        List<RouteType> selectedRoutes = new List<RouteType>
+        {
+            RouteType.Augment,
+            RouteType.Skill,
+            RouteType.Item
+        };
+
+        ShuffleRouteList(selectedRoutes);
+
+        ApplyRoutesToSlots(selectedRoutes);
+
+        Debug.Log($"상점맵 출구 생성 : {selectedRoutes[0]} / {selectedRoutes[1]} / {selectedRoutes[2]}");
+    }
+
+    /// <summary>
+    /// 보스 / 다음 스테이지처럼 출구 하나만 열 때 사용
+    /// </summary>
+    private void OpenOnlyRoute(RouteType routeType)
+    {
+        if (routeSlots == null || routeSlots.Length == 0)
+        {
+            Debug.LogError("출구 슬롯이 없음");
+            return;
+        }
+
+        currentOpenedRoutes.Clear();
+        currentOpenedRoutes.Add(routeType);
+
+        LockAllRouteSlots();
+
+        int randomIndex = Random.Range(0, routeSlots.Length);
+
+        routeSlots[randomIndex].SetRouteType(routeType);
+        routeSlots[randomIndex].SetRouteEnabled(true);
+
+        Debug.Log($"단일 출구 생성 : {routeType}");
+    }
+
+    private void ApplyRoutesToSlots(List<RouteType> selectedRoutes)
+    {
+        LockAllRouteSlots();
+
+        List<SceneMoveTriggerRelay> slotList = new List<SceneMoveTriggerRelay>();
+
+        for (int i = 0; i < routeSlots.Length; i++)
+        {
+            if (routeSlots[i] == null) continue;
+            slotList.Add(routeSlots[i]);
+        }
+
+        ShuffleSlotList(slotList);
+
+        int count = Mathf.Min(3, selectedRoutes.Count, slotList.Count);
+
+        for (int i = 0; i < count; i++)
+        {
+            RouteType routeType = selectedRoutes[i];
+
+            currentOpenedRoutes.Add(routeType);
+
+            slotList[i].SetRouteType(routeType);
+            slotList[i].SetRouteEnabled(true);
         }
     }
-    
-    /// <summary>
-    /// 다음 씬 이동 시도
-    /// </summary>
-    public void TryMoveNextScene(Collider2D other)
+
+    private bool HasEnoughRouteSlots()
+    {
+        if (routeSlots == null || routeSlots.Length < 3)
+        {
+            Debug.LogError("출구 슬롯은 최소 3개 필요함: ExitSlot_1, ExitSlot_2, ExitSlot_3");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ShuffleRouteList(List<RouteType> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int randomIndex = Random.Range(i, list.Count);
+
+            RouteType temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
+    }
+
+    private void ShuffleSlotList(List<SceneMoveTriggerRelay> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            int randomIndex = Random.Range(i, list.Count);
+
+            SceneMoveTriggerRelay temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
+        }
+    }
+
+    public void TryMoveNextScene(Collider2D other, RouteType routeType)
     {
         if (other == null) return;
-        if (!isStageCleared) return;
-        if (isLoadingNextScene) return;
         if (!other.CompareTag(playerTag)) return;
 
-        string nextSceneName = GetNextSceneName();
+        if (!isStageCleared) return;
+        if (isLoadingNextScene) return;
 
-        if (string.IsNullOrEmpty(nextSceneName))
+        if (!currentOpenedRoutes.Contains(routeType))
         {
-            Debug.Log("다음 씬이 없음. 마지막 스테이지일 가능성 있음.");
+            Debug.LogWarning($"현재 열려있지 않은 경로 : {routeType}");
+            return;
+        }
+
+        Debug.Log($"선택한 경로 : {routeType}");
+
+        switch (routeType)
+        {
+            case RouteType.Shop:
+                MoveToShopScene();
+                break;
+
+            case RouteType.Augment:
+                pendingRewardType = RewardType.Augment;
+                MoveToNextCombatMap();
+                break;
+
+            case RouteType.Skill:
+                pendingRewardType = RewardType.Skill;
+                MoveToNextCombatMap();
+                break;
+
+            case RouteType.Item:
+                pendingRewardType = RewardType.Item;
+                MoveToNextCombatMap();
+                break;
+
+            case RouteType.Boss:
+                MoveToBossMap();
+                break;
+
+            case RouteType.NextStage:
+                MoveToNextStage();
+                break;
+        }
+    }
+
+    private void MoveToShopScene()
+    {
+        if (string.IsNullOrEmpty(shopSceneName))
+        {
+            Debug.LogError("shopSceneName이 비어있음");
             return;
         }
 
         isLoadingNextScene = true;
-        StartCoroutine(LoadNextSceneRoutine(nextSceneName));
+
+        // 상점도 하나의 맵 위치를 사용함.
+        // 예: 1-1 클리어 후 상점 선택
+        // currentMapNumber 1 -> 2
+        currentMapNumber++;
+
+        currentRoomType = RoomType.Shop;
+
+        StartCoroutine(LoadSceneRoutine(shopSceneName));
     }
 
-    /// <summary>
-    /// 실제 다음 씬 이동 코루틴
-    /// </summary>
-    private IEnumerator LoadNextSceneRoutine(string nextSceneName)
+    private void MoveToNextCombatMap()
     {
-        // 혹시 멈춰있으면 해제
+        currentMapNumber++;
+
+        // 보상 선택 후 다음 위치가 7이면 보스맵으로 이동
+        if (currentMapNumber >= 7)
+        {
+            MoveToBossMap();
+            return;
+        }
+
+        string nextSceneName = GetCombatSceneNameByMapNumber(currentMapNumber);
+
+        if (string.IsNullOrEmpty(nextSceneName))
+        {
+            Debug.LogError($"전투 씬을 찾지 못함 / currentMapNumber : {currentMapNumber}");
+            return;
+        }
+
+        isLoadingNextScene = true;
+        currentRoomType = RoomType.Combat;
+
+        StartCoroutine(LoadSceneRoutine(nextSceneName));
+    }
+
+    private void MoveToBossMap()
+    {
+        currentMapNumber = 7;
+
+        string bossSceneName = GetCombatSceneNameByMapNumber(currentMapNumber);
+
+        if (string.IsNullOrEmpty(bossSceneName))
+        {
+            Debug.LogError("보스 씬을 찾지 못함");
+            return;
+        }
+
+        isLoadingNextScene = true;
+        currentRoomType = RoomType.Boss;
+
+        StartCoroutine(LoadSceneRoutine(bossSceneName));
+    }
+
+    private void MoveToNextStage()
+    {
+        Debug.Log("다음 스테이지 이동");
+
+        currentStageNumber++;
+        currentMapNumber = 1;
+        pendingRewardType = RewardType.None;
+        currentRoomType = RoomType.Combat;
+
+        string firstSceneName = GetCombatSceneNameByMapNumber(currentMapNumber);
+
+        if (string.IsNullOrEmpty(firstSceneName))
+        {
+            Debug.LogError("다음 스테이지 첫 씬 이름이 없음");
+            return;
+        }
+
+        isLoadingNextScene = true;
+
+        StartCoroutine(LoadSceneRoutine(firstSceneName));
+    }
+
+    private string GetCombatSceneNameByMapNumber(int mapNumber)
+    {
+        if (combatSceneNames == null || combatSceneNames.Length == 0)
+            return null;
+
+        // currentMapNumber는 1부터 시작.
+        // 배열 index는 0부터 시작.
+        // 그래서 mapNumber - 1 사용.
+        int index = mapNumber - 1;
+
+        if (index < 0 || index >= combatSceneNames.Length)
+            return null;
+
+        return combatSceneNames[index];
+    }
+
+    private IEnumerator LoadSceneRoutine(string sceneName)
+    {
         Time.timeScale = 1f;
 
-        // 다음 씬 진입 시 증강 UI 띄우기 예약
         yield return new WaitForSeconds(clearDelay);
 
-        SceneManager.LoadScene(nextSceneName);
+        SceneManager.LoadScene(sceneName);
+    }
+
+    private void GivePendingReward()
+    {
+        if (pendingRewardType == RewardType.None)
+            return;
+
+        Debug.Log($"예약 보상 지급 : {pendingRewardType}");
+
+        GiveRewardImmediately(pendingRewardType);
+
+        pendingRewardType = RewardType.None;
+    }
+
+    private void GiveRewardImmediately(RewardType rewardType)
+    {
+        switch (rewardType)
+        {
+            case RewardType.Augment:
+                if (AugUIManager.instance != null)
+                {
+                    AugUIManager.instance.ShowAugmentation();
+                }
+                break;
+
+            case RewardType.Skill:
+                if (SkillSelectUIManager.Instance != null)
+                {
+                    SkillSelectUIManager.Instance.IsSkillOpened = true;
+                }
+                break;
+
+            case RewardType.Item:
+                if (NewItemUIManager.Instance != null)
+                {
+                    NewItemUIManager.Instance.IsOpenedItem = true;
+                }
+                break;
+        }
+    }
+
+    private void GiveBossReward()
+    {
+        float rand = Random.Range(0f, 100f);
+
+        if (rand < 50f)
+        {
+            Debug.Log("보스 보상 : 증강");
+            GiveRewardImmediately(RewardType.Augment);
+        }
+        else
+        {
+            Debug.Log("보스 보상 : 스킬");
+            GiveRewardImmediately(RewardType.Skill);
+        }
+    }
+
+    private void OnEnterShopScene()
+    {
+        Debug.Log("상점 씬 입장");
+
+        if (NewItemUIManager.Instance != null)
+        {
+            NewItemUIManager.Instance.IsOpenedItem = true;
+        }
+    }
+
+    public void CompleteShop()
+    {
+        if (currentRoomType != RoomType.Shop)
+            return;
+
+        if (isStageCleared) return;
+
+        Debug.Log("상점 종료 - 보상 출구 3개 생성");
+
+        isStageCleared = true;
+
+        OpenShopClearRouteChoices();
+    }
+
+    public void ResetRun()
+    {
+        currentStageNumber = 1;
+        currentMapNumber = 1;
+        currentRoomType = RoomType.Combat;
+        pendingRewardType = RewardType.None;
+
+        isStageCleared = false;
+        isLoadingNextScene = false;
+
+        Time.timeScale = 1f;
+
+        string firstSceneName = GetCombatSceneNameByMapNumber(1);
+
+        if (!string.IsNullOrEmpty(firstSceneName))
+        {
+            SceneManager.LoadScene(firstSceneName);
+        }
     }
 }

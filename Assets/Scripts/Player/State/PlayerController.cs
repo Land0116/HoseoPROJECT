@@ -195,18 +195,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float passiveAttackSpeedPercent = 0f;
     [SerializeField] private int passiveMaxHpAdd = 0;
     [SerializeField] private float passiveLifeStealPercent = 0f;
-
-    [Header("증강 - 패시브 / 자동연사")] [SerializeField]
-    private bool passiveAutoFireEnabled = false;
-
-    [SerializeField] private float passiveAutoFireIntervalPercent = 0f;
-
+    
+    #region 기본 공격 입력 상태
     // 기본 공격 1회 발사용 입력 버퍼
     [SerializeField] private bool requestSingleShot = false;
 
     // 현재 누르고 있는 입력에서 이미 발사했는지
     [SerializeField] private bool firedThisPress = false;
 
+    #endregion
+    
     #endregion
 
     #region 증강 - 특수형
@@ -788,21 +786,34 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (!CanStartAttackNow()) return;
 
-        if (!passiveAutoFireEnabled)
+        if (isFireInput)
         {
-            HandleSingleClickAttack();
+            HandleAutoFireAttack();
             return;
         }
 
-        HandleAutoFireAttack();
+        HandleSingleClickAttack();
     }
 
 
+    /// <summary>
+    /// 마우스 클릭 1회 공격 처리.
+    /// 
+    /// 역할:
+    /// - 짧게 클릭한 입력이 Update 타이밍 때문에 씹히지 않게 처리한다.
+    /// - 공격속도 쿨타임이 끝났을 때 단발 1회를 실행한다.
+    /// - 꾹 누르는 자동연사는 HandleAutoFireAttack()이 담당한다.
+    /// </summary>
     private void HandleSingleClickAttack()
     {
-        if (!requestSingleShot) return;
-        if (firedThisPress) return;
+        if (!requestSingleShot)
+            return;
 
+        if (firedThisPress)
+            return;
+
+        // 차지샷은 누르고 있어야 차지가 진행된다.
+        // 짧게 클릭 후 뗀 상태라면 차지샷은 취소한다.
         if (FinalChargeShotTime > 0f)
         {
             if (!isFireInput)
@@ -815,7 +826,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (chargeStartTime < 0f)
                 BeginChargeShot();
 
-            // 차지 완료 전까지는 발사하지 않고 Charge_Hold 유지
             if (!IsChargeReady())
                 return;
         }
@@ -823,15 +833,20 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (Time.time < nextAttackTime)
             return;
 
-        // 발사 직전에 차지 애니메이션 종료
         EndChargeShot();
 
-        FireCurrentAttackPattern(false);
+        FireCurrentAttackPattern();
 
         requestSingleShot = false;
         firedThisPress = true;
     }
 
+    /// <summary>
+    /// 마우스를 누르고 있는 동안 attackPerSecond에 맞춰 자동연사한다.
+    /// 
+    /// 자동연사는 더 이상 증강 효과가 아니다.
+    /// 플레이어 기본 공격 입력 방식이다.
+    /// </summary>
     private void HandleAutoFireAttack()
     {
         if (!isFireInput)
@@ -854,13 +869,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         EndChargeShot();
 
-        FireCurrentAttackPattern(true);
+        FireCurrentAttackPattern();
 
         requestSingleShot = false;
         firedThisPress = true;
 
-        // 자동연사 + 차지샷이면 계속 누르고 있는 동안 다음 차지 시작
-        if (passiveAutoFireEnabled && FinalChargeShotTime > 0f && isFireInput)
+        // 차지샷을 꾹 누르고 있으면 다음 차지를 바로 다시 시작
+        if (FinalChargeShotTime > 0f && isFireInput)
         {
             BeginChargeShot();
         }
@@ -870,11 +885,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// 현재 발사 조합에 따라 공격 시퀀스를 시작한다.
     /// 
     /// 핵심:
-    /// - 3연발이 있으면 burst 횟수만큼 반복.
-    /// - 산탄이 있으면 각 burst마다 여러 발 발사.
-    /// - 자동연사는 시퀀스 전체가 끝난 뒤 다음 공격이 나가야 한다.
+    /// - 단발, 자동연사 모두 이 함수를 사용한다.
+    /// - 실제 공격 간격은 GetCurrentAttackInterval()에서 attackPerSecond 기준으로 통일한다.
+    /// - 3연발이 있으면 burst 횟수만큼 반복한다.
+    /// - 산탄이 있으면 각 burst마다 여러 발 발사한다.
     /// </summary>
-    private void FireCurrentAttackPattern(bool useAutoFireIntervalCorrection)
+    private void FireCurrentAttackPattern()
     {
         EndChargeShot();
 
@@ -887,7 +903,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (isAttackSequenceRunning)
             return;
 
-        float attackInterval = GetCurrentAttackInterval(useAutoFireIntervalCorrection);
+        float attackInterval = GetCurrentAttackInterval();
 
         float burstTotalTime = burstEnabled
             ? burstInterval * Mathf.Max(0, FinalBurstCount - 1)
@@ -1063,28 +1079,20 @@ public class PlayerController : MonoBehaviour, IDamageable
         return chargeShotDamageMultiplier;
     }
 
-    private float GetCurrentAttackInterval(bool useAutoFireIntervalCorrection)
+    /// <summary>
+    /// 현재 공격 간격 반환.
+    /// 
+    /// 자동연사는 패시브가 아니므로 별도 보정값을 적용하지 않는다.
+    /// 공격 간격은 항상 AttackPerSecond 기준이다.
+    /// 
+    /// 예:
+    /// AttackPerSecond = 1이면 1초마다 공격
+    /// AttackPerSecond = 2이면 0.5초마다 공격
+    /// AttackPerSecond = 4이면 0.25초마다 공격
+    /// </summary>
+    private float GetCurrentAttackInterval()
     {
-        // ------------------------------------------------------------
-        // 기본 공격 간격 = 1 / 초당 공격 횟수
-        // 예: attackPerSecond = 2 이면 0.5초마다 1발
-        // ------------------------------------------------------------
-        float interval = 1f / attackPerSecond;
-
-        // ------------------------------------------------------------
-        // 자동연사 패시브가 있고,
-        // 현재 자동연사 발사 상황이면 간격 보정 적용
-        //
-        // 예:
-        // autoFireIntervalPercent = 0.10 이면
-        // interval * 0.9f  => 10% 더 빠르게 발사
-        // ------------------------------------------------------------
-        if (useAutoFireIntervalCorrection && passiveAutoFireEnabled)
-        {
-            float correctionMultiplier = Mathf.Clamp(1f - passiveAutoFireIntervalPercent, 0.05f, 1f);
-            interval *= correctionMultiplier;
-        }
-
+        float interval = 1f / Mathf.Max(0.1f, AttackPerSecond);
         return Mathf.Max(0.01f, interval);
     }
 
@@ -1908,15 +1916,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
                 orbit.SetExplosion(FinalExplosionRadius, FinalExplosionDamageMultiplier);
                 orbit.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
-
+                
                 orbit.SetAutoAttack(
-                    passiveAutoFireEnabled,
+                    true,
                     shotOrbitRadius + orbitAutoAttackRangeAdd,
-                    GetCurrentAttackInterval(true),
+                    GetCurrentAttackInterval(),
                     orbitAutoAttackMoveSpeed,
                     orbitAutoAttackEnemyLayerMask
                 );
-
+                
                 activeOrbitProjectiles.Add(orbit);
             }
         }
@@ -2311,11 +2319,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         passiveAttackSpeedPercent = 0f;
         passiveMaxHpAdd = 0;
         passiveLifeStealPercent = 0f;
-
-        // 자동연사 패시브 초기값
-        passiveAutoFireEnabled = false;
-        passiveAutoFireIntervalPercent = 0f;
-
+        
         // 특수형 초기값
         specialMoveSpeedMultiplier = 1f;
         specialMoveSpeedAdd = 0f;
@@ -2589,14 +2593,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
             case AugmentationSystem.PassiveType.LifeSteal:
                 passiveLifeStealPercent += data.lifeStealPercent;
-                break;
-
-            case AugmentationSystem.PassiveType.AutoFire:
-                passiveAutoFireEnabled = data.autoFireEnabled;
-                passiveAutoFireIntervalPercent = Mathf.Max(
-                    passiveAutoFireIntervalPercent,
-                    data.autoFireIntervalPercent
-                );
                 break;
         }
     }

@@ -28,7 +28,6 @@ public class AugmentationSystem : ScriptableObject
         AttackSpeed,
         MaxHp,
         LifeSteal,
-        AutoFire      // 자동연사 패시브
     }
 
     public enum SpecialType
@@ -131,12 +130,6 @@ public class AugmentationSystem : ScriptableObject
         public float attackSpeedPercent = 0f;
         public int maxHpAdd = 0;
         public float lifeStealPercent = 0f;
-        
-        [Header("자동연사 패시브")]
-        public bool autoFireEnabled = false;
-
-        [Tooltip("자동연사 시 발사 간격 보정값. 0.10 = 간격 10% 감소")]
-        public float autoFireIntervalPercent = 0f;
     }
 
     [Serializable]
