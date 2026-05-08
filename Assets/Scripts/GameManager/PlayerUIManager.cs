@@ -25,8 +25,16 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI goldText;
-    [SerializeField] private TextMeshProUGUI CurrentMomster;
-    [SerializeField] private TextMeshProUGUI MaxMomsterCount;
+    [SerializeField] private TextMeshProUGUI currentMonsterCountText;
+    [SerializeField] private TextMeshProUGUI maxMonsterCountText;
+    
+    [Header("Monster Count UI")]
+    private int currentMonsterCountValue = 0;
+    private int maxMonsterCountValue = 0;
+    [SerializeField] private string monsterTag = "Monster";
+    [SerializeField] private float monsterCountRefreshInterval = 0.2f;
+
+    private float nextMonsterCountRefreshTime = 0f;
     
     [Header("Pause")]
     [SerializeField] private GameObject escPanel;
@@ -110,6 +118,7 @@ public class PlayerUIManager : MonoBehaviour
         if (playerController == null) return;
         // HP / Gold UI 갱신
         UpdatePlayerStateUI();
+        UpdateMonsterCountUI();
 
         UpdateCooldownUI();
     }
@@ -194,6 +203,61 @@ public class PlayerUIManager : MonoBehaviour
                 eCooldownText.gameObject.SetActive(false);
             }
         }
+    }
+    
+    /// <summary>
+    /// 현재 스테이지에 남아있는 몬스터 수 / 현재 스테이지에 존재했던 최대 몬스터 수 표시.
+    /// 
+    /// currentMonsterCountText = 현재 남은 몬스터 수 UI
+    /// maxMonsterCountText = 현재 스테이지 최대 몬스터 수 UI
+    /// </summary>
+    private void UpdateMonsterCountUI()
+    {
+        if (currentMonsterCountText == null && maxMonsterCountText == null)
+            return;
+
+        // 매 프레임 FindGameObjectsWithTag를 호출하면 부담이 있으므로
+        // 일정 시간마다만 갱신한다.
+        if (Time.unscaledTime < nextMonsterCountRefreshTime)
+            return;
+
+        nextMonsterCountRefreshTime = Time.unscaledTime + monsterCountRefreshInterval;
+
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag(monsterTag);
+
+        currentMonsterCountValue = monsters != null ? monsters.Length : 0;
+
+        // 현재 스테이지에서 관측된 가장 많은 몬스터 수를 최대 몬스터 수로 사용
+        if (currentMonsterCountValue > maxMonsterCountValue)
+        {
+            maxMonsterCountValue = currentMonsterCountValue;
+        }
+
+        if (currentMonsterCountText != null)
+        {
+            currentMonsterCountText.text = currentMonsterCountValue.ToString();
+        }
+
+        if (maxMonsterCountText != null)
+        {
+            maxMonsterCountText.text = maxMonsterCountValue.ToString();
+        }
+    }
+    
+    /// <summary>
+    /// 씬이 바뀌거나 UI가 다시 바인딩될 때 몬스터 카운트 초기화.
+    /// </summary>
+    private void ResetMonsterCountUI()
+    {
+        currentMonsterCountValue = 0;
+        maxMonsterCountValue = 0;
+        nextMonsterCountRefreshTime = 0f;
+
+        if (currentMonsterCountText != null)
+            currentMonsterCountText.text = "0";
+
+        if (maxMonsterCountText != null)
+            maxMonsterCountText.text = "0";
     }
     /// <summary>
     /// 플레이어 상태 UI 갱신
@@ -604,6 +668,10 @@ public class PlayerUIManager : MonoBehaviour
         hpBar = UIManager.FindChildRecursive(playerPanel, "PlayerHpBar")?.GetComponent<Slider>();
         hpText = UIManager.FindChildRecursive(playerPanel, "HpTxt")?.GetComponent<TextMeshProUGUI>();
         goldText = UIManager.FindChildRecursive(playerPanel, "GoldTxt")?.GetComponent<TextMeshProUGUI>();
+        
+        currentMonsterCountText = UIManager.FindChildRecursive(playerPanel, "CurrentMonsterCount")?.GetComponent<TextMeshProUGUI>();
+        maxMonsterCountText = UIManager.FindChildRecursive(playerPanel, "MaxMonsterCount")?.GetComponent<TextMeshProUGUI>();
+        ResetMonsterCountUI();
         // 패널들
         escPanel = UIManager.FindChildRecursive(playerPanel, "EscPanel")?.gameObject;
 

@@ -626,10 +626,23 @@ public class StageClear : MonoBehaviour
     {
         Debug.Log("상점 씬 입장");
 
+<<<<<<< Updated upstream
         if (NewItemUIManager.Instance != null)
         {
             //NewItemUIManager.Instance.IsOpenedItem = true;
         }
+=======
+        StartCoroutine(OpenShopRoutesAfterSceneReady());
+    }
+    
+    private IEnumerator OpenShopRoutesAfterSceneReady()
+    {
+        // 씬 로드 직후 모든 ExitSlot, markerSpawnPoint, 프리팹 위치가
+        // 완전히 준비되도록 1프레임 기다린다.
+        yield return null;
+
+        CompleteShop();
+>>>>>>> Stashed changes
     }
 
     public void CompleteShop()
