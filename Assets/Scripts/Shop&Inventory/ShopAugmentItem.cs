@@ -45,7 +45,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
             iconImage.sprite = currentAugment.icon;
 
         if (priceText != null)
-            priceText.text = price.ToString();
+            priceText.text = "Aug\n" + price.ToString() + "G";
     }
 
     public void Interact(PlayerController player)

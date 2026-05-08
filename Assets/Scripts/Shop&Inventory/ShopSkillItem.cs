@@ -63,7 +63,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
             iconImage.sprite = currentSkill.icon;
 
         if (priceText != null)
-            priceText.text = price.ToString();
+            priceText.text = "Skill\n"+price.ToString()+"G";
     }
 
     public void Interact(PlayerController player)

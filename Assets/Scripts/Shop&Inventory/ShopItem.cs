@@ -208,8 +208,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         {
             iconImage.sprite = currentItem.icon;
         }
-
-        priceText.text = price.ToString();
+        
+        priceText.text = "Item\n"+ price.ToString() + "G";
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -3521,7 +3521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2615087427254297924, guid: 071b89adc17a3134aa55b5e04be55eba, type: 3}
       propertyPath: maxHP
-      value: 45
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3117710496602542777, guid: 071b89adc17a3134aa55b5e04be55eba, type: 3}
       propertyPath: m_Name
@@ -8202,7 +8202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2615087427254297924, guid: 071b89adc17a3134aa55b5e04be55eba, type: 3}
       propertyPath: maxHP
-      value: 45
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3117710496602542777, guid: 071b89adc17a3134aa55b5e04be55eba, type: 3}
       propertyPath: m_Name
@@ -11599,11 +11599,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4375633214312305945, guid: 1dd9547b33ddbce4a81fd7fcaca7f466, type: 3}
       propertyPath: maxHP
-      value: 55
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4375633214312305945, guid: 1dd9547b33ddbce4a81fd7fcaca7f466, type: 3}
       propertyPath: moveSpeed
-      value: 7.5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6093785091757318781, guid: 1dd9547b33ddbce4a81fd7fcaca7f466, type: 3}
       propertyPath: m_LocalPosition.x
@@ -24892,6 +24892,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 18.003128
       objectReference: {fileID: 0}
@@ -24937,7 +24945,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: maxHP
-      value: 40
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: m_Color.b

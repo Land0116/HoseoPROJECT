@@ -173,7 +173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: maxHP
-      value: 28
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: m_Color.b
@@ -2963,7 +2963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: maxHP
-      value: 28
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
       propertyPath: m_Color.b
@@ -2986,6 +2986,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 856927124615464, guid: 16088478db7ec8f40a18dafd07492bd2, type: 3}
+      propertyPath: maxHP
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5733596665570298416, guid: 16088478db7ec8f40a18dafd07492bd2, type: 3}
       propertyPath: m_Name
       value: Monster_Stage2_ToyTank (1)
@@ -31823,7 +31827,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 856927124615464, guid: 16088478db7ec8f40a18dafd07492bd2, type: 3}
       propertyPath: maxHP
-      value: 30
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5733596665570298416, guid: 16088478db7ec8f40a18dafd07492bd2, type: 3}
       propertyPath: m_Name

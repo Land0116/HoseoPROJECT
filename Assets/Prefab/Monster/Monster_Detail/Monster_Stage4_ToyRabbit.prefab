@@ -114,11 +114,11 @@ MonoBehaviour:
   movePattern: {fileID: 3973549176726646443}
   moveSpeed: 3
   maxHP: 30
-  minGold: 1
-  maxGold: 3
+  minGold: 45
+  maxGold: 55
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
-  weaponPrefabDropChance: 0.7
-  itemDropChance: 0.8
+  weaponPrefabDropChance: 0
+  itemDropChance: 0
   weaponPrefab: {fileID: 4131610466162232398, guid: c3bab0e1274dda143b6f2d71bdbe9066, type: 3}
   itemPrefab: {fileID: 6685715579053595900, guid: 52c5b72870808ce45a2fab17f540ab0d, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}

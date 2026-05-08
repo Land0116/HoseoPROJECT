@@ -125,7 +125,7 @@ public class UIManager : MonoBehaviour
         if (Keyboard.current == null) return;
         if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
 
-        Debug.Log("[UIManager] ESC 입력 감지됨");
+
 
         //  매번 최신 OptionUI 가져오기
         optionUI = FindFirstObjectByType<OptionUI>();
@@ -133,7 +133,7 @@ public class UIManager : MonoBehaviour
         // 1순위: ControlViewPanel 닫기
         if (optionUI != null && optionUI.IsControlViewOpen)
         {
-            Debug.Log("[UIManager] ControlViewPanel 닫기");
+
             optionUI.CloseControlView();
             return;
         }
@@ -141,7 +141,7 @@ public class UIManager : MonoBehaviour
         // 2순위: OptionPanel 닫기
         if (optionPanel != null && optionPanel.activeSelf)
         {
-            Debug.Log("[UIManager] OptionPanel 닫기");
+
             optionPanel.SetActive(false);
             return;
         }
