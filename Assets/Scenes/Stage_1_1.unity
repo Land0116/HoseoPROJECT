@@ -28851,6 +28851,26 @@ MonoBehaviour:
   currentMapNumber: 1
   isStageCleared: 0
   isLoadingNextScene: 0
+  routeMarkerSpritePrefab: {fileID: 1637010933415674416, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
+  routeMarkerDatas:
+  - routeType: 1
+    displayName: "\uC0C1\uC810"
+    icon: {fileID: -7404242954330069509, guid: 1b8ea04a6b21a7546a62e91e55d76a5c, type: 3}
+  - routeType: 2
+    displayName: "\uC99D\uAC15"
+    icon: {fileID: 1272159686025863410, guid: bf4175f30f6a96141b9278194323c41b, type: 3}
+  - routeType: 3
+    displayName: "\uC2A4\uD0AC"
+    icon: {fileID: 8122768960578680610, guid: 17a24cb367249be498ff9b613d0f897d, type: 3}
+  - routeType: 4
+    displayName: "\uC544\uC774\uD15C"
+    icon: {fileID: 2947889778954733352, guid: 4652f8f2679ad6741a6da6ad95c79de2, type: 3}
+  - routeType: 5
+    displayName: "\uBCF4\uC2A4"
+    icon: {fileID: -7096004540601160239, guid: ed78dbce3092d7a48af93bfcd99db69e, type: 3}
+  - routeType: 6
+    displayName: "\uB2E4\uC74C \uC2A4\uD14C\uC774\uC9C0"
+    icon: {fileID: -2912409409873806573, guid: 2d844508d0956694e829e3eb4b04f107, type: 3}
 --- !u!4 &1881678463
 Transform:
   m_ObjectHideFlags: 0

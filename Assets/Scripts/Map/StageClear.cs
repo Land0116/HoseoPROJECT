@@ -7,6 +7,14 @@ using Random = UnityEngine.Random;
 public class StageClear : MonoBehaviour
 {
     public static StageClear Instance;
+    
+    [System.Serializable]
+    private class RouteMarkerData
+    {
+        public RouteType routeType;
+        public string displayName;
+        public Sprite icon;
+    }
 
     public enum RouteType
     {
@@ -64,6 +72,10 @@ public class StageClear : MonoBehaviour
 
     private RoomType currentRoomType = RoomType.Combat;
     private RewardType pendingRewardType = RewardType.None;
+    [Header("출구 보상 마커 ")]
+    [SerializeField] private GameObject routeMarkerSpritePrefab;
+
+    [SerializeField] private RouteMarkerData[] routeMarkerDatas;
 
     private SceneMoveTriggerRelay[] routeSlots;
 
@@ -154,10 +166,10 @@ public class StageClear : MonoBehaviour
             if (routeSlots[i] == null) continue;
 
             routeSlots[i].SetRouteType(RouteType.None);
-
-            // 오브젝트를 끄지 않음.
-            // Collider의 isTrigger만 false로 바꿔서 막음.
             routeSlots[i].SetRouteEnabled(false);
+
+            // 출구 잠글 때 기존 마커 제거
+            routeSlots[i].ClearRouteMarker();
         }
     }
 
@@ -301,6 +313,15 @@ public class StageClear : MonoBehaviour
         routeSlots[randomIndex].SetRouteType(routeType);
         routeSlots[randomIndex].SetRouteEnabled(true);
 
+        string displayName = GetRouteDisplayName(routeType);
+        Sprite icon = GetRouteIcon(routeType);
+
+        routeSlots[randomIndex].ShowSpriteRouteMarker(
+            routeMarkerSpritePrefab,
+            displayName,
+            icon
+        );
+
         Debug.Log($"단일 출구 생성 : {routeType}");
     }
 
@@ -328,6 +349,15 @@ public class StageClear : MonoBehaviour
 
             slotList[i].SetRouteType(routeType);
             slotList[i].SetRouteEnabled(true);
+
+            string displayName = GetRouteDisplayName(routeType);
+            Sprite icon = GetRouteIcon(routeType);
+
+            slotList[i].ShowSpriteRouteMarker(
+                routeMarkerSpritePrefab,
+                displayName,
+                icon
+            );
         }
     }
 
@@ -601,6 +631,43 @@ public class StageClear : MonoBehaviour
 
         OpenShopClearRouteChoices();
     }
+    
+    private RouteMarkerData GetRouteMarkerData(RouteType routeType)
+    {
+        if (routeMarkerDatas == null)
+            return null;
+
+        for (int i = 0; i < routeMarkerDatas.Length; i++)
+        {
+            if (routeMarkerDatas[i] == null) continue;
+
+            if (routeMarkerDatas[i].routeType == routeType)
+                return routeMarkerDatas[i];
+        }
+
+        return null;
+    }
+
+    private string GetRouteDisplayName(RouteType routeType)
+    {
+        RouteMarkerData data = GetRouteMarkerData(routeType);
+
+        if (data != null && !string.IsNullOrEmpty(data.displayName))
+            return data.displayName;
+
+        return routeType.ToString();
+    }
+
+    private Sprite GetRouteIcon(RouteType routeType)
+    {
+        RouteMarkerData data = GetRouteMarkerData(routeType);
+
+        if (data != null)
+            return data.icon;
+
+        return null;
+    }
+    
 
     public void ResetRun()
     {
