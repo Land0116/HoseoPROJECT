@@ -25,6 +25,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI goldText;
+    [SerializeField] private TextMeshProUGUI CurrentMomster;
+    [SerializeField] private TextMeshProUGUI MaxMomsterCount;
     
     [Header("Pause")]
     [SerializeField] private GameObject escPanel;

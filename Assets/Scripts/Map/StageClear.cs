@@ -261,22 +261,20 @@ public class StageClear : MonoBehaviour
 
     /// <summary>
     /// 상점맵 종료 시:
-    /// 증강 / 스킬 / 아이템 3개를 랜덤 위치에 배정
+    /// 출구 3개를 생성한다.
+    /// 
+    /// 핵심 규칙:
+    /// 1. 상점 안에서는 상점 출구가 다시 나오면 안 된다.
+    /// 2. 상점 안에서는 보스 / 다음 스테이지 출구도 직접 표시하지 않는다.
+    /// 3. 증강 / 스킬 / 아이템 3개만 출구에 표시한다.
+    /// 4. 상점도 하나의 맵 위치를 차지하므로,
+    ///    이 출구를 선택하면 MoveToNextCombatMap()에서 다음 위치로 이동한다.
     /// </summary>
     private void OpenShopClearRouteChoices()
     {
         if (!HasEnoughRouteSlots()) return;
 
         currentOpenedRoutes.Clear();
-
-        // 만약 상점이 6번째 맵 위치라면,
-        // 보스 전 긴장감 유지를 위해 보스만 열어주는 게 안전함.
-        if (currentMapNumber >= 6)
-        {
-            Debug.Log("상점 종료 위치가 6맵 이상 - 보스 출구만 생성");
-            OpenOnlyRoute(RouteType.Boss);
-            return;
-        }
 
         List<RouteType> selectedRoutes = new List<RouteType>
         {
@@ -285,6 +283,8 @@ public class StageClear : MonoBehaviour
             RouteType.Item
         };
 
+        // 위치만 랜덤.
+        // 구성은 항상 증강 / 스킬 / 아이템 3개 고정.
         ShuffleRouteList(selectedRoutes);
 
         ApplyRoutesToSlots(selectedRoutes);
@@ -408,6 +408,18 @@ public class StageClear : MonoBehaviour
         {
             Debug.LogWarning($"현재 열려있지 않은 경로 : {routeType}");
             return;
+        }
+
+        // 상점맵 내부에서는 상점 / 보스 / 다음 스테이지 출구를 직접 사용할 수 없다.
+        if (currentRoomType == RoomType.Shop)
+        {
+            if (routeType == RouteType.Shop ||
+                routeType == RouteType.Boss ||
+                routeType == RouteType.NextStage)
+            {
+                Debug.LogWarning($"상점맵에서는 사용할 수 없는 출구 타입 : {routeType}");
+                return;
+            }
         }
 
         Debug.Log($"선택한 경로 : {routeType}");

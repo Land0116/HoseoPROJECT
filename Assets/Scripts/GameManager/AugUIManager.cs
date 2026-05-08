@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -19,26 +18,20 @@ public class AugUIManager : MonoBehaviour
 
     #region Fields
 
-    [Header("전체 증강 데이터")]
-    [SerializeField] private AugmentationSystem[] augmentationDatabase;
+    [Header("전체 증강 데이터")] [SerializeField] private AugmentationSystem[] augmentationDatabase;
 
-    [Header("현재 표시 중인 3개 카드")]
-    [SerializeField] private AugmentationSystem[] currentChoices = new AugmentationSystem[ChoiceCount];
+    [Header("현재 표시 중인 3개 카드")] [SerializeField]
+    private AugmentationSystem[] currentChoices = new AugmentationSystem[ChoiceCount];
 
-    [Header("UI 버튼 3개")]
-    [SerializeField] private AugButton[] uiButtons;
+    [Header("UI 버튼 3개")] [SerializeField] private AugButton[] uiButtons;
 
-    [Header("증강 선택 패널")]
-    [SerializeField] private GameObject uiPanel;
+    [Header("증강 선택 패널")] [SerializeField] private GameObject uiPanel;
 
-    [Header("리셋 버튼")]
-    [SerializeField] private Button[] resetBtn;
+    [Header("리셋 버튼")] [SerializeField] private Button[] resetBtn;
     private bool[] rerollUsed = new bool[ChoiceCount];
-    [Header("카드별 리롤 버튼 텍스트")]
-    [SerializeField] private TMP_Text[] rerollButtonTexts = new TMP_Text[ChoiceCount];
 
-    [Header("보유 증강 슬롯 UI")]
-    [SerializeField] private Image[] slotImages;
+    [Header("보유 증강 슬롯 UI")] [SerializeField]
+    private Image[] slotImages;
 
     private readonly List<AugmentationSystem> candidateBuffer = new List<AugmentationSystem>(64);
 
@@ -60,7 +53,7 @@ public class AugUIManager : MonoBehaviour
     private void Start()
     {
         ClearOwnedAugmentUI();
-        RefreshRerollUI();
+        //RefreshRerollUI();
     }
 
     #endregion
@@ -212,6 +205,7 @@ public class AugUIManager : MonoBehaviour
 
             BindresetBtn(augPanelRoot);
         }
+
         BindOwnedSlotImages(systemUIRoot);
 
         RefreshOwnedAugmentUI();
@@ -269,8 +263,7 @@ public class AugUIManager : MonoBehaviour
 
         //Debug.Log($"[AugUIManager] 보유 증강 아이콘 바인딩 완료: {slotImages.Length}개");
     }
-    
-    
+
     #endregion
 
     #region Choice Generate
@@ -333,7 +326,8 @@ public class AugUIManager : MonoBehaviour
         return AugmentationSystem.AugmentCategory.Special;
     }
 
-    private AugmentationSystem.AugmentCategory AdjustCategoryToAvoidTripleDuplicate(int choiceIndex, AugmentationSystem.AugmentCategory targetCategory)
+    private AugmentationSystem.AugmentCategory AdjustCategoryToAvoidTripleDuplicate(int choiceIndex,
+        AugmentationSystem.AugmentCategory targetCategory)
     {
         if (choiceIndex < 2) return targetCategory;
         if (currentChoices[0] == null || currentChoices[1] == null) return targetCategory;
@@ -356,7 +350,8 @@ public class AugUIManager : MonoBehaviour
         return targetCategory;
     }
 
-    private AugmentationSystem PickWeightedAugment(List<AugmentationSystem> source, AugmentationSystem.AugmentCategory? categoryFilter)
+    private AugmentationSystem PickWeightedAugment(List<AugmentationSystem> source,
+        AugmentationSystem.AugmentCategory? categoryFilter)
     {
         int totalWeight = 0;
 
@@ -419,7 +414,7 @@ public class AugUIManager : MonoBehaviour
             }
         }
     }
-    
+
 
     private void ClearOwnedAugmentUI()
     {
@@ -437,142 +432,154 @@ public class AugUIManager : MonoBehaviour
     #endregion
 
     #region Button Event
-    
+
     private void ResetRerollState()
-{
-    if (rerollUsed == null || rerollUsed.Length != ChoiceCount)
-        rerollUsed = new bool[ChoiceCount];
-
-    for (int i = 0; i < rerollUsed.Length; i++)
     {
-        rerollUsed[i] = false;
-    }
-}
+        if (rerollUsed == null || rerollUsed.Length != ChoiceCount)
+            rerollUsed = new bool[ChoiceCount];
 
-private void BindresetBtn(Transform augPanelRoot)
-{
-    if (augPanelRoot == null) return;
-
-    if (resetBtn == null || resetBtn.Length != ChoiceCount)
-        resetBtn = new Button[ChoiceCount];
-
-    if (rerollButtonTexts == null || rerollButtonTexts.Length != ChoiceCount)
-        rerollButtonTexts = new TMP_Text[ChoiceCount];
-
-    for (int i = 0; i < ChoiceCount; i++)
-    {
-        resetBtn[i] = null;
-        rerollButtonTexts[i] = null;
-
-        Transform rerollBtnTr = UIManager.FindChildRecursive(augPanelRoot, $"RerollBtn_{i + 1}");
-        if (rerollBtnTr == null) continue;
-
-        resetBtn[i] = rerollBtnTr.GetComponent<Button>();
-        rerollButtonTexts[i] = rerollBtnTr.GetComponentInChildren<TMP_Text>(true);
-    }
-
-    for (int i = 0; i < resetBtn.Length; i++)
-    {
-        if (resetBtn[i] == null) continue;
-
-        int capturedIndex = i;
-        resetBtn[i].onClick.RemoveAllListeners();
-        resetBtn[i].onClick.AddListener(() => OnClickReroll(capturedIndex));
-    }
-}
-
-private void RefreshRerollUI()
-{
-    if (resetBtn == null) return;
-
-    for (int i = 0; i < resetBtn.Length; i++)
-    {
-        bool hasChoice = currentChoices != null &&
-                         i < currentChoices.Length &&
-                         currentChoices[i] != null;
-
-        if (resetBtn[i] != null)
+        for (int i = 0; i < rerollUsed.Length; i++)
         {
-            resetBtn[i].interactable = hasChoice &&
-                                            rerollUsed != null &&
-                                            i < rerollUsed.Length &&
-                                            !rerollUsed[i];
-        }
-
-        if (rerollButtonTexts != null &&
-            i < rerollButtonTexts.Length &&
-            rerollButtonTexts[i] != null)
-        {
-            bool used = rerollUsed != null &&
-                        i < rerollUsed.Length &&
-                        rerollUsed[i];
-
-            rerollButtonTexts[i].text = used ? "Used" : "Reroll";
+            rerollUsed[i] = false;
         }
     }
-}
 
-private void OnClickReroll(int choiceIndex)
-{
-    if (choiceIndex < 0 || choiceIndex >= ChoiceCount) return;
-    if (uiPanel == null || !uiPanel.activeSelf) return;
-    if (rerollUsed == null || choiceIndex >= rerollUsed.Length) return;
-    if (rerollUsed[choiceIndex]) return;
-
-    AugmentationSystem rerolled = GenerateSingleChoiceForRerollSlot();
-    if (rerolled == null) return;
-
-    currentChoices[choiceIndex] = rerolled;
-    rerollUsed[choiceIndex] = true;
-
-    ApplyChoiceToButton(choiceIndex);
-    RefreshRerollUI();
-}
-
-private AugmentationSystem GenerateSingleChoiceForRerollSlot()
-{
-    candidateBuffer.Clear();
-    FillCandidateBuffer();
-
-    if (candidateBuffer.Count == 0)
-        return null;
-
-    // 기존과 동일한 카테고리 확률 규칙
-    AugmentationSystem.AugmentCategory targetCategory = GetWeightedCategory();
-
-    // 기존과 동일한 weight 규칙
-    AugmentationSystem picked = PickWeightedAugment(candidateBuffer, targetCategory);
-
-    if (picked == null)
-        picked = PickWeightedAugment(candidateBuffer, null);
-
-    return picked;
-}
-
-private void ApplyChoiceToButton(int index)
-{
-    if (uiButtons == null) return;
-    if (index < 0 || index >= uiButtons.Length) return;
-    if (uiButtons[index] == null) return;
-
-    if (index < currentChoices.Length && currentChoices[index] != null)
+    private void BindresetBtn(Transform augPanelRoot)
     {
-        uiButtons[index].gameObject.SetActive(true);
+        if (augPanelRoot == null) return;
 
-        int previewLevel = 1;
+        if (resetBtn == null || resetBtn.Length != ChoiceCount)
+            resetBtn = new Button[ChoiceCount];
 
-        if (AugmentRunManager.Instance != null)
+        for (int i = 0; i < ChoiceCount; i++)
         {
-            previewLevel = AugmentRunManager.Instance.GetPreviewLevel(currentChoices[index]);
+            resetBtn[i] = null;
+
+            Transform rerollBtnTr = UIManager.FindChildRecursive(
+                augPanelRoot,
+                $"RerollBtn_{i + 1}"
+            );
+
+            if (rerollBtnTr == null)
+            {
+                Debug.LogWarning($"[AugUIManager] RerollBtn_{i + 1} 을 찾지 못함");
+                continue;
+            }
+
+            Button btn = rerollBtnTr.GetComponent<Button>();
+
+            if (btn == null)
+            {
+                Debug.LogWarning($"[AugUIManager] RerollBtn_{i + 1} 에 Button 컴포넌트가 없음");
+                continue;
+            }
+
+            resetBtn[i] = btn;
+
+            int capturedIndex = i;
+            resetBtn[i].onClick.RemoveAllListeners();
+            resetBtn[i].onClick.AddListener(() => OnClickReroll(capturedIndex));
+
+            // 기본값은 비활성화.
+            // 증강 패널이 열리고 선택지가 생성된 뒤 RefreshRerollUI()에서 켜준다.
+            resetBtn[i].interactable = false;
+        }
+    }
+
+    private void RefreshRerollUI()
+    {
+        if (resetBtn == null) return;
+
+        for (int i = 0; i < resetBtn.Length; i++)
+        {
+            if (resetBtn[i] == null) continue;
+
+            bool hasChoice =
+                currentChoices != null &&
+                i < currentChoices.Length &&
+                currentChoices[i] != null;
+
+            bool used =
+                rerollUsed != null &&
+                i < rerollUsed.Length &&
+                rerollUsed[i];
+
+            // 패널이 켜져 있고, 선택지가 있고, 아직 리롤을 안 쓴 경우만 클릭 가능
+            resetBtn[i].interactable =
+                uiPanel != null &&
+                uiPanel.activeSelf &&
+                hasChoice &&
+                !used;
+        }
+    }
+
+    private void OnClickReroll(int choiceIndex)
+    {
+        Debug.Log($"[AugUIManager] 리롤 버튼 클릭됨 / index: {choiceIndex}");
+
+        if (choiceIndex < 0 || choiceIndex >= ChoiceCount) return;
+        if (uiPanel == null || !uiPanel.activeSelf) return;
+        if (rerollUsed == null || choiceIndex >= rerollUsed.Length) return;
+        if (rerollUsed[choiceIndex]) return;
+
+        AugmentationSystem rerolled = GenerateSingleChoiceForRerollSlot();
+        if (rerolled == null)
+        {
+            Debug.LogWarning("[AugUIManager] 리롤 후보가 없음");
+            return;
         }
 
-        uiButtons[index].Setup(currentChoices[index], this, previewLevel);
+        currentChoices[choiceIndex] = rerolled;
+        rerollUsed[choiceIndex] = true;
+
+        ApplyChoiceToButton(choiceIndex);
+        RefreshRerollUI();
     }
-    else
+
+    private AugmentationSystem GenerateSingleChoiceForRerollSlot()
     {
-        uiButtons[index].gameObject.SetActive(false);
+        candidateBuffer.Clear();
+        FillCandidateBuffer();
+
+        if (candidateBuffer.Count == 0)
+            return null;
+
+        // 기존과 동일한 카테고리 확률 규칙
+        AugmentationSystem.AugmentCategory targetCategory = GetWeightedCategory();
+
+        // 기존과 동일한 weight 규칙
+        AugmentationSystem picked = PickWeightedAugment(candidateBuffer, targetCategory);
+
+        if (picked == null)
+            picked = PickWeightedAugment(candidateBuffer, null);
+
+        return picked;
     }
-}
+
+    private void ApplyChoiceToButton(int index)
+    {
+        if (uiButtons == null) return;
+        if (index < 0 || index >= uiButtons.Length) return;
+        if (uiButtons[index] == null) return;
+
+        if (index < currentChoices.Length && currentChoices[index] != null)
+        {
+            uiButtons[index].gameObject.SetActive(true);
+
+            int previewLevel = 1;
+
+            if (AugmentRunManager.Instance != null)
+            {
+                previewLevel = AugmentRunManager.Instance.GetPreviewLevel(currentChoices[index]);
+            }
+
+            uiButtons[index].Setup(currentChoices[index], this, previewLevel);
+        }
+        else
+        {
+            uiButtons[index].gameObject.SetActive(false);
+        }
+    }
 
     #endregion
 
