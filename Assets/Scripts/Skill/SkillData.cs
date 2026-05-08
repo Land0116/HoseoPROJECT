@@ -4,29 +4,29 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillData", menuName = "Game/Skill")]
 public class SkillData : ScriptableObject
 {
-    [Header("기본 정보")]
+    [Header("?? ????")]
     public string skillName;
     [TextArea] public string description;
 
-    [Header("아이콘")]
+    [Header("??????")]
     public Sprite icon;
 
-    [Header("레벨")]
+    [Header("????")]
     public int maxLevel = 3;
 
-    [Header("스텟")]
+    [Header("????")]
     public float baseDamage;
     public float damageMutiplier;
     public float range;
     public float duration;
     public float cooldown;
 
-    [Header("기타")]
+    [Header("???")]
     public int price;
 
     public virtual void Execute(GameObject caster)
     {
-        Debug.Log($"{skillName} 사용됨");
+        Debug.Log($"{skillName} ????");
     }
     public virtual float GetCooldown(int level)
     {

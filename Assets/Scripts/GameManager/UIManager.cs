@@ -53,8 +53,7 @@ public class UIManager : MonoBehaviour
 
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
-    // 다음 게임 씬에 들어갔을 때 증강창을 바로 보여줘야 하는지
-    private bool needShowAugmentationOnNextScene;
+
 
 
     private OptionUI optionUI;
@@ -184,13 +183,7 @@ public class UIManager : MonoBehaviour
 
             needResetPlayerOnNextScene = false;
         }
-
-
-        if (needShowAugmentationOnNextScene)
-        {
-            needShowAugmentationOnNextScene = false;
-        }
-
+        
         if (PlayerController.Instance != null)
         {
             BindCameraToPlayer(PlayerController.Instance);
@@ -462,69 +455,16 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Main Scene Button Methods
-
-    /// <summary>
-    /// 새 게임 시작
-    /// - 런 초기화
-    /// - 다음 씬에서 플레이어 초기화 예약
-    /// - 다음 씬에서 증강창 오픈 예약
-    /// - TestScene 로드
-    /// </summary>
-    /*public void StartGame()
-    {
-        Time.timeScale = 1f;
-
-        // 증강/런 정보 초기화
-        if (AugmentRunManager.Instance != null)
-        {
-            AugmentRunManager.Instance.ResetRun();
-        }
-
-        // 혹시 현재 씬에 augUI가 있다면 UI 상태 정리
-        if (augUIManager != null)
-        {
-            augUIManager.ResetUIStateForRestart();
-        }
-
-        if (CurItemUI.Instance != null)
-            CurItemUI.Instance.SetItems(new List<ItemData>());
-
-        if (SkillManager.Instance != null)
-            SkillManager.Instance.ResetSkills();
-
-
-
-        // 다음 씬 로드 후 처리 예약
-        needResetPlayerOnNextScene = true;
-        needShowAugmentationOnNextScene = true;
-
-        SceneManager.LoadScene("Stage_1_1");
-       // InGameShopUIManager.Instance.ResetShop()
-
-    }*/
+    
     public void StartGame()
     {
-        Time.timeScale = 1f;
+        ResetRunSystems();
 
-        if (AugmentRunManager.Instance != null)
+        if (StageClear.Instance != null)
         {
-            AugmentRunManager.Instance.ResetRun();
+            StageClear.Instance.StartNewRun();
+            return;
         }
-
-        if (augUIManager != null)
-        {
-            augUIManager.ResetUIStateForRestart();
-        }
-        if (CurItemUI.Instance != null)
-            CurItemUI.Instance.SetItems(new List<ItemData>());
-
-        if (SkillManager.Instance != null)
-            SkillManager.Instance.ResetSkills();
-
-
-
-        needResetPlayerOnNextScene = true;
-        needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Stage_1_1");
 
@@ -535,25 +475,13 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void RestartCurrentScene()
     {
-        Time.timeScale = 1f;
+        ResetRunSystems();
 
-        if (AugmentRunManager.Instance != null)
+        if (StageClear.Instance != null)
         {
-            AugmentRunManager.Instance.ResetRun();
+            StageClear.Instance.StartNewRun();
+            return;
         }
-
-        if (augUIManager != null)
-        {
-            augUIManager.ResetUIStateForRestart();
-        }
-        if (CurItemUI.Instance != null)
-            CurItemUI.Instance.SetItems(new List<ItemData>());
-
-        if (SkillManager.Instance != null)
-            SkillManager.Instance.ResetSkills();
-
-        needResetPlayerOnNextScene = true;
-        needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Stage_1_1");
     }
@@ -563,22 +491,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void GoToMainScene()
     {
-        Time.timeScale = 1f;
-
-        if (AugmentRunManager.Instance != null)
-        {
-            AugmentRunManager.Instance.ResetRun();
-        }
-
-        if (augUIManager != null)
-        {
-            augUIManager.ResetUIStateForRestart();
-        }
-        if (CurItemUI.Instance != null)
-            CurItemUI.Instance.SetItems(new List<ItemData>());
-
-        if (SkillManager.Instance != null)
-            SkillManager.Instance.ResetSkills();
+        ResetRunSystems();
 
         if (PlayerController.Instance != null)
         {
@@ -591,16 +504,16 @@ public class UIManager : MonoBehaviour
 
             Destroy(PlayerController.Instance.gameObject);
         }
-        SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
-        
 
-        // static 초기화
+        SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
+
         typeof(SkillBagInteractable)
             .GetField("currentTarget", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
             .SetValue(null, null);
 
         SceneManager.LoadScene("Main");
-        Cursor.visible = true; 
+
+        Cursor.visible = true;
     }
 
     /// <summary>
@@ -702,7 +615,43 @@ public class UIManager : MonoBehaviour
 
         return null;
     }
+    
+    private void ResetRunSystems()
+    {
+        Time.timeScale = 1f;
 
+        // 증강 보유 상태 초기화
+        if (AugmentRunManager.Instance != null)
+        {
+            AugmentRunManager.Instance.ResetRun();
+        }
+
+        // 증강 UI 초기화
+        if (augUIManager != null)
+        {
+            augUIManager.ResetUIStateForRestart();
+        }
+
+        // 아이템 UI 초기화
+        if (CurItemUI.Instance != null)
+        {
+            CurItemUI.Instance.SetItems(new List<ItemData>());
+        }
+
+        // 스킬 초기화
+        if (SkillManager.Instance != null)
+        {
+            SkillManager.Instance.ResetSkills();
+        }
+
+        // StageClear 진행 상태 초기화
+        if (StageClear.Instance != null)
+        {
+            StageClear.Instance.ResetRunStateOnly();
+        }
+
+        needResetPlayerOnNextScene = true;
+    }
     
     public NewItemUIManager GetShopUI()
     {
@@ -717,9 +666,5 @@ public class UIManager : MonoBehaviour
         return itemUIManager;
     }
     
-    public void RequestStageEntryUI()
-    {
-        needShowAugmentationOnNextScene = true;
-    }
 
 }

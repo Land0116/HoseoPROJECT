@@ -44,6 +44,9 @@ public class StageClear : MonoBehaviour
 
     [Header("전투 씬 이름 배열")]
     [SerializeField] private string[] combatSceneNames;
+    
+    [Header("메인 씬 이름")]
+    [SerializeField] private string mainSceneName = "Main";
 
     [Header("상점 씬 이름")]
     [SerializeField] private string shopSceneName = "ShopStage";
@@ -105,12 +108,25 @@ public class StageClear : MonoBehaviour
 
     private void Start()
     {
+        if (IsMainScene())
+        {
+            ResetRunStateOnly();
+            return;
+        }
         BindRouteSlots();
         ResetRoomState();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == mainSceneName)
+        {
+            ResetRunStateOnly();
+
+            Debug.Log("메인씬 로드 - 런 상태 초기화 / 출구 시스템 비활성화");
+            return;
+        }
+
         BindRouteSlots();
         ResetRoomState();
 
@@ -122,6 +138,7 @@ public class StageClear : MonoBehaviour
 
     private void Update()
     {
+        if (IsMainScene()) return;
         if (currentRoomType == RoomType.Shop) return;
         if (isStageCleared) return;
         if (isLoadingNextScene) return;
@@ -175,11 +192,24 @@ public class StageClear : MonoBehaviour
 
     public void ClearStage()
     {
+        if (IsMainScene()) return;
         if (isStageCleared) return;
 
         isStageCleared = true;
 
         Debug.Log($"맵 클리어 / 스테이지 : {currentStageNumber} / 맵 : {currentMapNumber}");
+
+        // 보스맵은 이전 선택 보상을 지급하면 안 됨
+        if (currentMapNumber == 7)
+        {
+            pendingRewardType = RewardType.None;
+
+            Debug.Log("보스 클리어 - 보스 보상 지급 후 다음 스테이지 출구 생성");
+
+            GiveBossReward();
+            OpenOnlyRoute(RouteType.NextStage);
+            return;
+        }
 
         GivePendingReward();
 
@@ -205,6 +235,7 @@ public class StageClear : MonoBehaviour
         {
             Debug.Log("6맵 클리어 - 보스 출구 생성");
 
+            pendingRewardType = RewardType.None;
             OpenOnlyRoute(RouteType.Boss);
             return;
         }
@@ -229,6 +260,7 @@ public class StageClear : MonoBehaviour
     /// </summary>
     private void OpenCombatClearRouteChoices()
     {
+        if (IsMainScene()) return;
         if (!HasEnoughRouteSlots()) return;
 
         currentOpenedRoutes.Clear();
@@ -272,6 +304,19 @@ public class StageClear : MonoBehaviour
     /// </summary>
     private void OpenShopClearRouteChoices()
     {
+        if (IsMainScene()) return;
+
+        // 상점이 6번째 위치라면 보상 선택 없이 보스룸으로 가야 함
+        if (currentMapNumber >= 6)
+        {
+            Debug.Log("6번째 위치 상점 종료 - 보스 출구만 생성");
+
+            pendingRewardType = RewardType.None;
+
+            OpenOnlyRoute(RouteType.Boss);
+            return;
+        }
+
         if (!HasEnoughRouteSlots()) return;
 
         currentOpenedRoutes.Clear();
@@ -283,8 +328,6 @@ public class StageClear : MonoBehaviour
             RouteType.Item
         };
 
-        // 위치만 랜덤.
-        // 구성은 항상 증강 / 스킬 / 아이템 3개 고정.
         ShuffleRouteList(selectedRoutes);
 
         ApplyRoutesToSlots(selectedRoutes);
@@ -297,6 +340,7 @@ public class StageClear : MonoBehaviour
     /// </summary>
     private void OpenOnlyRoute(RouteType routeType)
     {
+        if (IsMainScene()) return;
         if (routeSlots == null || routeSlots.Length == 0)
         {
             Debug.LogError("출구 슬롯이 없음");
@@ -398,6 +442,7 @@ public class StageClear : MonoBehaviour
 
     public void TryMoveNextScene(Collider2D other, RouteType routeType)
     {
+        if (IsMainScene()) return;
         if (other == null) return;
         if (!other.CompareTag(playerTag)) return;
 
@@ -446,6 +491,7 @@ public class StageClear : MonoBehaviour
                 break;
 
             case RouteType.Boss:
+                pendingRewardType = RewardType.None;
                 MoveToBossMap();
                 break;
 
@@ -503,6 +549,8 @@ public class StageClear : MonoBehaviour
     private void MoveToBossMap()
     {
         currentMapNumber = 7;
+
+        pendingRewardType = RewardType.None;
 
         string bossSceneName = GetCombatSceneNameByMapNumber(currentMapNumber);
 
@@ -625,13 +673,7 @@ public class StageClear : MonoBehaviour
     private void OnEnterShopScene()
     {
         Debug.Log("상점 씬 입장");
-
-<<<<<<< Updated upstream
-        if (NewItemUIManager.Instance != null)
-        {
-            //NewItemUIManager.Instance.IsOpenedItem = true;
-        }
-=======
+        
         StartCoroutine(OpenShopRoutesAfterSceneReady());
     }
     
@@ -642,7 +684,6 @@ public class StageClear : MonoBehaviour
         yield return null;
 
         CompleteShop();
->>>>>>> Stashed changes
     }
 
     public void CompleteShop()
@@ -695,8 +736,32 @@ public class StageClear : MonoBehaviour
         return null;
     }
     
+    private bool IsMainScene()
+    {
+        return SceneManager.GetActiveScene().name == mainSceneName;
+    }
 
-    public void ResetRun()
+    //private bool IsRouteScene()
+    //{
+      //  return !IsMainScene();
+    //}
+    
+    public void StartNewRun()
+    {
+        ResetRunStateOnly();
+
+        string firstSceneName = GetCombatSceneNameByMapNumber(1);
+
+        if (string.IsNullOrEmpty(firstSceneName))
+        {
+            Debug.LogError("첫 번째 전투 씬 이름이 없음");
+            return;
+        }
+
+        SceneManager.LoadScene(firstSceneName);
+    }
+    
+    public void ResetRunStateOnly()
     {
         currentStageNumber = 1;
         currentMapNumber = 1;
@@ -706,15 +771,20 @@ public class StageClear : MonoBehaviour
         isStageCleared = false;
         isLoadingNextScene = false;
 
+        currentOpenedRoutes.Clear();
+
+        if (routeSlots != null)
+        {
+            LockAllRouteSlots();
+        }
+
+        routeSlots = null;
+
         Time.timeScale = 1f;
 
-        string firstSceneName = GetCombatSceneNameByMapNumber(1);
-
-        if (!string.IsNullOrEmpty(firstSceneName))
-        {
-            SceneManager.LoadScene(firstSceneName);
-        }
+        Debug.Log("StageClear 런 상태 초기화 완료");
     }
+    
 
     
 }
