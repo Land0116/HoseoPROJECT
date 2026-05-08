@@ -164,7 +164,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(RebindLate());
         // UI 바인딩은 한 프레임 뒤에 (중요: 오브젝트 생성 타이밍 문제 방지)
         StartCoroutine(DelayedBind(scene.name));
-        optionUI = FindFirstObjectByType<OptionUI>(); //*
+        optionUI = FindFirstObjectByType<OptionUI>(); 
 
         if (playerUIManager != null)
         {
@@ -257,6 +257,7 @@ public class UIManager : MonoBehaviour
         if (itemUIManager != null && systemUI != null)
             itemUIManager.BindItemUI(systemUI);
 
+        
         /*if (inGameShopUIManager != null && systemUI != null)
             inGameShopUIManager.BindShopUI(systemUI);
 
@@ -277,11 +278,7 @@ public class UIManager : MonoBehaviour
             slot.UpdateIcon();
         }
 
-        /*skillUIManager = rootUI.GetComponentInChildren<SkillSelectUIManager>(true); //*
-        if (skillUIManager != null)
-        {
-            SkillSelectUIManager.Instance = skillUIManager;
-        }*/
+        
         BindMainSceneUI();
     }
     
@@ -443,7 +440,7 @@ public class UIManager : MonoBehaviour
 
         if (optionUI != null && optionUI.HandleEscapeConsumed())
         {
-            return;  //*
+            return; 
         }
 
         if (playerUIManager == null) return;
@@ -502,7 +499,7 @@ public class UIManager : MonoBehaviour
         needShowAugmentationOnNextScene = true;
 
         SceneManager.LoadScene("Stage_1_1");
-       // InGameShopUIManager.Instance.ResetShop(); //*
+       // InGameShopUIManager.Instance.ResetShop()
 
     }*/
     public void StartGame()
@@ -603,7 +600,7 @@ public class UIManager : MonoBehaviour
             .SetValue(null, null);
 
         SceneManager.LoadScene("Main");
-        Cursor.visible = true; //*
+        Cursor.visible = true; 
     }
 
     /// <summary>

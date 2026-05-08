@@ -555,6 +555,7 @@ public class StageClear : MonoBehaviour
 
     private void GivePendingReward()
     {
+        
         if (pendingRewardType == RewardType.None)
             return;
 
@@ -564,7 +565,7 @@ public class StageClear : MonoBehaviour
 
         pendingRewardType = RewardType.None;
     }
-
+    
     private void GiveRewardImmediately(RewardType rewardType)
     {
         switch (rewardType)
@@ -584,6 +585,7 @@ public class StageClear : MonoBehaviour
                 break;
 
             case RewardType.Item:
+                
                 if (NewItemUIManager.Instance != null)
                 {
                     NewItemUIManager.Instance.IsOpenedItem = true;
@@ -688,4 +690,6 @@ public class StageClear : MonoBehaviour
             SceneManager.LoadScene(firstSceneName);
         }
     }
+
+    
 }

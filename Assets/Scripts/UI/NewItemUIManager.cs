@@ -29,10 +29,22 @@ public class NewItemUIManager : MonoBehaviour
 
             if (isOpenedItem)
             {
+                
                 ShowShop();
                 isOpenedItem = false;
             }
         }
+    }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
     }
     /// <summary>
     /// UIManager에서 씬 로드 후 호출 (Aug 방식 그대로)
@@ -52,6 +64,7 @@ public class NewItemUIManager : MonoBehaviour
 
     public void ShowShop()
     {
+        Debug.Log($"itemDatabase: {itemDatabase?.Length}, uiPanel: {uiPanel}");
         if (itemDatabase == null || itemDatabase.Length == 0) return;
         if (uiPanel == null) return;
         if (uiPanel.activeSelf) return;

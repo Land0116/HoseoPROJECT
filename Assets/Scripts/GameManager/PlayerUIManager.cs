@@ -246,18 +246,18 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleEscape()
     {
-        Debug.Log($"[PlayerUIManager] HandleEscape 호출 | currentPanel = {currentPanel?.name}");
+
 
         if (currentPanel == null)
         {
-            Debug.Log("[PlayerUIManager] ESC → ESC 패널 오픈 (기본)");
+
             OpenEscPanelNormal();
             return;
         }
 
         if (currentPanel == optionPanel)
         {
-            Debug.Log("[PlayerUIManager] 옵션에서 ESC → ESC 패널로 이동");
+
             OpenPanel(escPanel);
 
             if (escToOptionCloseBtn != null)
