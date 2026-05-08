@@ -119,79 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1001 &244723537
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -19.428041
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 19.416876
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Name
-      value: Monster_Stage1_ToyCar (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: maxHP
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Color.b
-      value: 0.7122642
-      objectReference: {fileID: 0}
-    - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Color.g
-      value: 0.7122642
-      objectReference: {fileID: 0}
-    - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
 --- !u!1 &326565907
 GameObject:
   m_ObjectHideFlags: 0
@@ -2908,75 +2835,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!1001 &577689287
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.2144976
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 15.215321
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Name
-      value: Monster_Stage1_ToyCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 3445974034711736668, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: maxHP
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Color.b
-      value: 0.7137255
-      objectReference: {fileID: 0}
-    - target: {fileID: 4407589264824846988, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
-      propertyPath: m_Color.g
-      value: 0.7137255
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
 --- !u!1001 &583454984
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24406,6 +24264,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c227a58b4fa6bda408b174a1a687d545, type: 3}
+--- !u!1001 &1248713063
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -8.640846
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 12.543261
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_Name
+      value: Monster_Stage1_ToyCar (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
 --- !u!1001 &1262387802
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28976,6 +28891,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d65193008fc042740961f8ab573bbf58, type: 3}
+--- !u!1001 &1841579591
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -18.35506
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 18.49431
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291282506520081570, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+      propertyPath: m_Name
+      value: Monster_Stage1_ToyCar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
 --- !u!1001 &1874113620
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32924,8 +32896,6 @@ SceneRoots:
   - {fileID: 1486399966}
   - {fileID: 355185271}
   - {fileID: 2093451896}
-  - {fileID: 577689287}
-  - {fileID: 244723537}
   - {fileID: 1954980965}
   - {fileID: 583454984}
   - {fileID: 1262387802}
@@ -32936,3 +32906,5 @@ SceneRoots:
   - {fileID: 1874113620}
   - {fileID: 1877906925}
   - {fileID: 1559598618}
+  - {fileID: 1841579591}
+  - {fileID: 1248713063}

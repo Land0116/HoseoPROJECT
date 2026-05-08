@@ -28,7 +28,10 @@ public class MonsterAttack_Flyhoming : AttackPattern
         if (!isHoming) return;
 
         Vector2 direction = ((Vector2)monster.Player.position - monster.RB.position).normalized;
-        Vector2 newPos = monster.RB.position + direction * monster.GetMoveSpeed() * Time.fixedDeltaTime;
+        float speed = monster.GetMoveSpeed() * homingSpeed;
+
+        Vector2 newPos = monster.RB.position + direction * speed * Time.fixedDeltaTime;
+        //Vector2 newPos = monster.RB.position + direction * monster.GetMoveSpeed() * Time.fixedDeltaTime;
         monster.RB.MovePosition(newPos);
 
 

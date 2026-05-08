@@ -29,8 +29,8 @@ public class NewItemUIManager : MonoBehaviour
 
             if (isOpenedItem)
             {
-                
-                ShowShop();
+                SpawnRandomItems(); //* 05.08
+                //ShowShop();
                 isOpenedItem = false;
             }
         }
@@ -188,6 +188,42 @@ public class NewItemUIManager : MonoBehaviour
         {
             Time.timeScale = 1f;
             uiPanel.SetActive(false);
+        }
+    }
+
+    private void SpawnRandomItems()
+    {
+        if (itemDatabase == null || itemDatabase.Length == 0) return;
+        if (itemPickupPrefab == null) return;
+        if (PlayerController.Instance == null) return;
+
+        // 75%: 2개 / 25%: 3개
+        int itemCount = Random.value < 0.75f ? 2 : 3;
+
+        // 위치 배열
+        float[] xPositions = itemCount == 2
+            ? new float[] { -1.0f, 1.0f }
+            : new float[] { -2.0f, 0.0f, 2.0f };
+
+        // 랜덤 아이템 선택
+        List<ItemData> randomItems = itemDatabase
+            .OrderBy(x => Random.value)
+            .Take(itemCount)
+            .ToList();
+
+        Vector3 basePos = PlayerController.Instance.transform.position;
+
+        for (int i = 0; i < itemCount; i++)
+        {
+            Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
+
+            GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
+
+            ItemPickup pickup = obj.GetComponent<ItemPickup>();
+            if (pickup != null)
+            {
+                pickup.SetItemData(randomItems[i]);
+            }
         }
     }
 }
