@@ -15,13 +15,6 @@ public class AugButton : MonoBehaviour
     [Header("선택 버튼")]
     [SerializeField] private Button selectBtn;
     
-    [Header("카테고리 색상")]
-    [SerializeField] private Image backgroundImage;
-    [SerializeField] private Color subSkillColor = new Color(1f, 0.35f, 0.35f, 1f);
-    [SerializeField] private Color passiveColor = new Color(0.35f, 1f, 0.45f, 1f);
-    [SerializeField] private Color specialColor = new Color(1f, 0.85f, 0.25f, 1f);
-    [SerializeField] private Color emptyColor = Color.white;
-
     private int currentDisplayLevel = 1;
     private AugmentationSystem currentData;
     private AugUIManager currentManager;
@@ -71,52 +64,9 @@ public class AugButton : MonoBehaviour
             selectBtn.interactable = data != null && manager != null;
         }
         
-        ApplyCategoryColor(data);
     }
 
     #endregion
-    /// <summary>
-    /// 증강 카테고리에 따라 카드 배경색을 변경한다.
-    /// 
-    /// 서브스킬형: 빨강
-    /// 패시브형: 초록
-    /// 스페셜형: 노랑
-    /// </summary>
-    private void ApplyCategoryColor(AugmentationSystem data)
-    {
-        Image targetImage = backgroundImage;
-
-        if (targetImage == null && selectBtn != null)
-            targetImage = selectBtn.image;
-
-        if (targetImage == null)
-            return;
-
-        if (data == null)
-        {
-            targetImage.color = emptyColor;
-            return;
-        }
-
-        switch (data.category)
-        {
-            case AugmentationSystem.AugmentCategory.SubSkill:
-                targetImage.color = subSkillColor;
-                break;
-
-            case AugmentationSystem.AugmentCategory.Passive:
-                targetImage.color = passiveColor;
-                break;
-
-            case AugmentationSystem.AugmentCategory.Special:
-                targetImage.color = specialColor;
-                break;
-
-            default:
-                targetImage.color = emptyColor;
-                break;
-        }
-    }
 
     /// <summary>
     /// 외부에서 버튼 클릭 가능 여부를 제어할 때 사용한다.

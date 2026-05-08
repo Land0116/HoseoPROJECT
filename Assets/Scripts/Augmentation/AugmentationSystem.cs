@@ -173,7 +173,9 @@ public class AugmentationSystem : ScriptableObject
     public string augmentID;
     public string augmentationName;
     [TextArea] public string augmentationDesc;
+    [Header("UI 이미지")]
     public Sprite icon;
+    public Sprite slotSprite;
 
     [Header("분류")]
     public AugmentCategory category;

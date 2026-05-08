@@ -149,10 +149,19 @@ public class AugUIManager : MonoBehaviour
         for (int i = 0; i < slotCount; i++)
         {
             if (slotImages[i] == null) continue;
-            if (ownedSlots[i] == null || !ownedSlots[i].isOccupied || ownedSlots[i].augmentData == null) continue;
-            
-            slotImages[i].sprite = ownedSlots[i].augmentData.icon;
-            slotImages[i].enabled = ownedSlots[i].augmentData.icon != null;
+            if (ownedSlots[i] == null) continue;
+            if (!ownedSlots[i].isOccupied) continue;
+            if (ownedSlots[i].augmentData == null) continue;
+
+            AugmentationSystem aug = ownedSlots[i].augmentData;
+
+            // 핵심:
+            // 보유 슬롯에는 카드 아이콘(icon)이 아니라 슬롯 전용 이미지(slotSprite)를 넣는다.
+            slotImages[i].sprite = aug.slotSprite;
+            slotImages[i].enabled = aug.slotSprite != null;
+
+            // 카테고리별 색상 적용 없음
+            slotImages[i].color = Color.white;
         }
     }
 
@@ -421,7 +430,6 @@ public class AugUIManager : MonoBehaviour
             if (slotImages[i] == null) continue;
 
             slotImages[i].sprite = null;
-            slotImages[i].color = Color.white;
             slotImages[i].enabled = false;
         }
     }

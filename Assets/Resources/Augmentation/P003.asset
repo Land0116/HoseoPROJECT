@@ -16,7 +16,7 @@ MonoBehaviour:
   augmentID: P003
   augmentationName: "\uCD5C\uB300 \uCCB4\uB825 \uC99D\uAC00"
   augmentationDesc: .
-  icon: {fileID: 2015937658109151966, guid: 5ae2c3278d82e054f991239e6dbf85ca, type: 3}
+  icon: {fileID: -8417722647198211674, guid: 15f23cfc9ad74d243a6dbd67a2556541, type: 3}
   category: 1
   subSkillType: 0
   passiveType: 3
@@ -33,23 +33,17 @@ MonoBehaviour:
     attackSpeedPercent: 0
     maxHpAdd: 50
     lifeStealPercent: 0
-    autoFireEnabled: 0
-    autoFireIntervalPercent: 0
   - level: 2
     levelDescription: "\uCD5C\uB300 \uCCB4\uB825\uC774 100 \uC99D\uAC00"
     damageMultiplier: 1
     attackSpeedPercent: 0
     maxHpAdd: 100
     lifeStealPercent: 0
-    autoFireEnabled: 0
-    autoFireIntervalPercent: 0
   - level: 3
     levelDescription: "\uCD5C\uB300 \uCCB4\uB825\uC774 150 \uC99D\uAC00"
     damageMultiplier: 1
     attackSpeedPercent: 0
     maxHpAdd: 150
     lifeStealPercent: 0
-    autoFireEnabled: 0
-    autoFireIntervalPercent: 0
   specialLevels: []
   goldCost: 150
