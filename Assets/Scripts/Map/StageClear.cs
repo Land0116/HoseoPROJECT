@@ -628,7 +628,7 @@ public class StageClear : MonoBehaviour
 
         if (NewItemUIManager.Instance != null)
         {
-            NewItemUIManager.Instance.IsOpenedItem = true;
+            //NewItemUIManager.Instance.IsOpenedItem = true;
         }
     }
 
