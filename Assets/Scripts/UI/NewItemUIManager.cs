@@ -10,6 +10,9 @@ public class NewItemUIManager : MonoBehaviour
     [Header("전체 아이템 데이터")]
     public ItemData[] itemDatabase;
 
+    [Header("특수 아이템 데이터")]
+    public ItemData[] specialitemDatabase;
+
     [Header("UI")]
     public GameObject uiPanel;
     public ShopButton[] uiButtons;
@@ -206,14 +209,14 @@ public class NewItemUIManager : MonoBehaviour
             : new float[] { -2.0f, 0.0f, 2.0f };
 
         // 랜덤 아이템 선택
-        List<ItemData> randomItems = itemDatabase
+        /*List<ItemData> randomItems = itemDatabase
             .OrderBy(x => Random.value)
             .Take(itemCount)
-            .ToList();
+            .ToList();*/
 
-        Vector3 basePos = PlayerController.Instance.transform.position;
+        //Vector3 basePos = PlayerController.Instance.transform.position;
 
-        for (int i = 0; i < itemCount; i++)
+        /*for (int i = 0; i < itemCount; i++)
         {
             Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
 
@@ -224,6 +227,48 @@ public class NewItemUIManager : MonoBehaviour
             {
                 pickup.SetItemData(randomItems[i]);
             }
+        }*/
+        Vector3 basePos = PlayerController.Instance.transform.position;
+
+        for (int i = 0; i < itemCount; i++)
+        {
+            ItemData item = RollItem();
+
+            Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
+
+            GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
+
+            ItemPickup pickup = obj.GetComponent<ItemPickup>();
+            if (pickup != null)
+            {
+                pickup.SetItemData(item);
+            }
         }
+    }
+    private ItemData RollItem()
+    {
+        PlayerController player = PlayerController.Instance;
+
+        float baseChance = 0.1f; // 10%
+
+        float bonus = 0f;
+
+        if (player != null)
+        {
+            bonus = player.GetSpecialChanceAdd();
+            // 예: 90f
+        }
+
+        float finalChance = baseChance + (bonus / 100f);
+        finalChance = Mathf.Clamp01(finalChance);
+
+        bool isSpecial = Random.value < finalChance;
+
+        if (isSpecial && specialitemDatabase != null && specialitemDatabase.Length > 0)
+        {
+            return specialitemDatabase[Random.Range(0, specialitemDatabase.Length)];
+        }
+
+        return itemDatabase[Random.Range(0, itemDatabase.Length)];
     }
 }

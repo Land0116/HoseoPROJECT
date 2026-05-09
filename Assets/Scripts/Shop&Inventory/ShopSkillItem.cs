@@ -25,8 +25,8 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 
     private void Update()
     {
-        if (!isPlayerInRange) return;
-        if (player == null) return;
+        if (currentSkill == null) return;
+        RefreshPriceUI();
 
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -62,34 +62,39 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         if (iconImage != null)
             iconImage.sprite = currentSkill.icon;
 
-        if (priceText != null)
-            priceText.text = "Skill\n"+price.ToString()+"G";
+        if (priceText != null) 
+            priceText.text = "Skill\n"+ GetFinalPrice().ToString()+"G";
     }
 
-    public void Interact(PlayerController player)
+    private void RefreshPriceUI()
     {
-        if (!isPlayerInRange) return;
-        if (player == null) return;
+        if (priceText == null) return;
         if (currentSkill == null) return;
 
+        priceText.text = "Skill\n" + GetFinalPrice().ToString() + "G";
+    }
+    public void Interact(PlayerController player)
+    {
         this.player = player;
-
         TryPurchase();
     }
-
+    
     private void TryPurchase()
     {
-        if (player.Gold < price)
+        PlayerController p = PlayerController.Instance;
+        if (p == null) return;
+
+        int finalPrice = GetFinalPrice();
+
+        if (p.Gold < finalPrice)
         {
             Debug.Log("골드 부족");
             return;
         }
 
-        player.Gold -= price;
+        p.Gold -= finalPrice;
 
         HandleSkillAcquire(currentSkill);
-
-        Debug.Log("스킬 구매 성공: " + currentSkill.skillName);
 
         gameObject.SetActive(false);
     }
@@ -154,5 +159,13 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
     public Transform GetTransform()
     {
         return transform;
+    }
+    private int GetFinalPrice()
+    {
+        PlayerController p = PlayerController.Instance;
+        if (p == null) return price;
+
+        float discount = p.GetShopDiscountFromItems();
+        return Mathf.RoundToInt(price * (1f - discount));
     }
 }

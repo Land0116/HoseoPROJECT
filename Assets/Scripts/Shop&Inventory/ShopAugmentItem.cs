@@ -24,9 +24,8 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
     }
     private void Update()
     {
-        if (!isPlayerInRange) return;
-        if (player == null) return;
-
+        if (currentAugment == null) return;
+        RefreshPriceUI();
     }
 
     private void GenerateItem()
@@ -44,27 +43,24 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         if (iconImage != null)
             iconImage.sprite = currentAugment.icon;
 
+        RefreshPriceUI();
         if (priceText != null)
-            priceText.text = "Aug\n" + price.ToString() + "G";
+            priceText.text = "Aug\n" + GetFinalPrice().ToString() + "G";
+
     }
 
+    
     public void Interact(PlayerController player)
     {
-        if (!isPlayerInRange) return;
-        if (player == null) return;
-        if (currentAugment == null) return;
-
         this.player = player;
-
         TryPurchase();
     }
-
     private void TryPurchase()
     {
         if (player == null) return;
-
+        int finalPrice = GetFinalPrice();
         // ∞ÒµÂ ∫Œ¡∑
-        if (player.Gold < price)
+        if (player.Gold < finalPrice)
         {
             Debug.Log("∞ÒµÂ ∫Œ¡∑");
             return;
@@ -80,7 +76,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         // ∞ÒµÂ ¬˜∞®
-        player.Gold -= price;
+        player.Gold -= finalPrice;
 
         // UI ∞ªΩ≈ («ŸΩ…)
         if (AugUIManager.instance != null)
@@ -140,5 +136,22 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
     public Transform GetTransform()
     {
         return transform;
+    }
+
+    private int GetFinalPrice()
+    {
+        PlayerController p = PlayerController.Instance;
+        if (p == null) return price;
+
+        float discount = p.GetShopDiscountFromItems();
+        return Mathf.RoundToInt(price * (1f - discount));
+    }
+
+    private void RefreshPriceUI()
+    {
+        if (priceText == null) return;
+        if (currentAugment == null) return;
+
+        priceText.text = "Aug\n" + GetFinalPrice().ToString() + "G";
     }
 }

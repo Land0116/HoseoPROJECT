@@ -238,6 +238,11 @@ public class ItemUIManager : MonoBehaviour
 
             string desc = $"[{data.itemName}]\n[F]키로 상호작용\n";
 
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                desc += $"{data.description}\n";
+            }
+
             if (data.damage != 0)
                 desc += FormatStat("데미지", data.damage);
 
@@ -295,6 +300,11 @@ public class ItemUIManager : MonoBehaviour
         if (data == null || uiItemPanel == null) return;
 
         string desc = $"[우클릭 시 장착 해제]\n[{data.itemName}]\n";
+
+        if (!string.IsNullOrEmpty(data.description))
+        {
+            desc += $"{data.description}\n";
+        }
 
         if (data.damage != 0)
             desc += FormatStat("데미지", data.damage);

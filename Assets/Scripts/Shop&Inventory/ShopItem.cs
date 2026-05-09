@@ -48,9 +48,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
     private void Update()
     {
-        if (!isPlayerInRange) return;
-        if (player == null) return;
-
+        if (currentItem == null) return;
+        RefreshPriceUI();
     }
 
     // =========================
@@ -61,7 +60,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         if (player == null) return;
 
-        if (player.Gold < price)
+        int finalPrice = GetFinalPrice();
+        if (player.Gold < finalPrice)
         {
 
             return;
@@ -73,7 +73,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
             return;
         }
 
-        player.Gold -= price;
+        player.Gold -= finalPrice;
 
         if (isPotion)
         {
@@ -146,7 +146,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     // =========================
     // 아이템 생성
     // =========================
-    private void GenerateItem()
+    public void GenerateItem()
     {
         ItemData[] normalPool = null;
         ItemData[] premiumPool = null;
@@ -169,13 +169,15 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         float rand = Random.value;
 
-        if (rand <= 0.7f && normalPool != null && normalPool.Length > 0)
+        bool isPremium = RollPremium();
+
+        if (!isPremium && normalPool != null && normalPool.Length > 0)
         {
             currentItem = normalPool[Random.Range(0, normalPool.Length)];
             isPotion = false;
             price = Random.Range(75, 86);
         }
-        else if (rand <= 0.8f && premiumPool != null && premiumPool.Length > 0)
+        else if (premiumPool != null && premiumPool.Length > 0)
         {
             currentItem = premiumPool[Random.Range(0, premiumPool.Length)];
             isPotion = false;
@@ -208,8 +210,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         {
             iconImage.sprite = currentItem.icon;
         }
-        
-        priceText.text = "Item\n"+ price.ToString() + "G";
+
+        RefreshPriceUI();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -312,5 +314,35 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     public Transform GetTransform()
     {
         return transform;
+    }
+    private int GetFinalPrice()
+    {
+        PlayerController p = PlayerController.Instance;
+        if (p == null) return price;
+
+        float discount = p.GetShopDiscountFromItems();
+        return Mathf.RoundToInt(price * (1f - discount));
+    }
+    private void RefreshPriceUI()
+    {
+        if (priceText == null) return;
+        priceText.text = "Item\n" + GetFinalPrice().ToString() + "G";
+    }
+
+    private bool RollPremium()
+    {
+        PlayerController player = PlayerController.Instance;
+
+        float basePremiumChance = 0.2f; // 예시 (원래 20%)
+
+        float bonus = 0f;
+
+        if (player != null)
+        {
+            bonus = player.GetSpecialChanceAdd();
+        }
+
+        float final = basePremiumChance + (bonus / 100f);
+        return Random.value < Mathf.Clamp01(final);
     }
 }

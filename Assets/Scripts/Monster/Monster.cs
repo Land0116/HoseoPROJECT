@@ -244,7 +244,11 @@ public class Monster : MonoBehaviour, IDamageable
         if (PlayerController.Instance != null)
         {
             int rewardGold = Random.Range(minGold, maxGold + 1);
-            PlayerController.Instance.Gold += rewardGold;
+            //PlayerController.Instance.Gold += rewardGold;
+            float multiplier = PlayerController.Instance.GetGoldMultiplierFromItems();//*
+            int finalGold = Mathf.RoundToInt(rewardGold * multiplier);
+
+            PlayerController.Instance.Gold += finalGold;
         }
 
         if (Random.value < weaponPrefabDropChance)

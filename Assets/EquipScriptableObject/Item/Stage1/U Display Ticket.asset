@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66dcb5c53145d1f44af421db38d8a356, type: 3}
+  m_Name: U Display Ticket
+  m_EditorClassIdentifier: Assembly-CSharp::DisplayTicket
+  stage: 0
+  damage: 0
+  moveSpeed: 0
+  bulletRate: 0
+  hp: 0
+  itemPrice: 0
+  icon: {fileID: 3262261932253373388, guid: f208eeb91b39f464d9a659859e28f2e5, type: 3}
+  itemName: 
+  zoneType: 0
+  description: "\uD2B9\uC218 \uC544\uC774\uD15C \uB4F1\uC7A5 \uD655\uB960 +20%"
+  specialChanceAdd: 90

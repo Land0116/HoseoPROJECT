@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb84229c33d2d0547aa109ca854bcbe0, type: 3}
+  m_Name: U Shop Discount 10
+  m_EditorClassIdentifier: Assembly-CSharp::ShopDiscount10
+  stage: 0
+  damage: 0
+  moveSpeed: 0
+  bulletRate: 0
+  hp: 0
+  itemPrice: 0
+  icon: {fileID: -847447488510078139, guid: 8b2effb23daeb10499ddcff1c72cb311, type: 3}
+  itemName: "\uB3C4\uB451\uC9C8\uD0A4\uD2B8"
+  zoneType: 0
+  description: "\uC0C1\uC810\uC758 \uC544\uC774\uD15C \uAC00\uACA9\uC774 10% \uD560\uC778\uB41C\uB2E4."

@@ -39,10 +39,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("플레이어 현재 상태값")] [SerializeField]
     private float hp; // 현재 체력
 
-    [SerializeField] private float maxHp; // 현재 최대 체력
+    [SerializeField] public float maxHp; // 현재 최대 체력
     [SerializeField] private int gold = 10; // 현재 소지 골드
     [SerializeField] private float moveSpeed; // 현재 이동속도
-    [SerializeField] private float attackPerSecond = 1.0f; //발사 주기 바뀜*
+    [SerializeField] public float attackPerSecond = 1.0f; //발사 주기 바뀜*
     [Header("총알 생성 보정")] [SerializeField] private float bulletSpawnOffset = 0.2f;
 
     [Header("플레이어 상태 제어")] [SerializeField]
@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private ItemData currentItem; // 현재 장착 중인 아이템
     [SerializeField] private GameObject curProjectilePrefab; // 현재 발사할 투사체 프리팹
     [SerializeField] private float weaponDamage; // 무기 기본 공격력 (기존 attackDamage를 무기 공격력으로 사용)
-    [SerializeField] private float itemDamage = 0f; // 아이템 공격력
+    [SerializeField] public float itemDamage = 0f; // 아이템 공격력 //*
 
     [Header("스킬 배수")] //스킬 관련
     private float attackMultiplier = 1f; //공격력 증가
@@ -98,6 +98,17 @@ public class PlayerController : MonoBehaviour, IDamageable
     private List<ItemData> equippedItems = new List<ItemData>();
     private const int MAX_ITEM_COUNT = 5;
     [SerializeField] private GameObject itemPickupPrefab;
+
+    //조건부 아이템
+    [HideInInspector] public bool lowHp30Active;
+    [HideInInspector] public bool lowHp20Active;
+    [HideInInspector] public bool highGoldActive;
+    [HideInInspector] public bool highAttackSpeedActive;
+    private bool statsDirty = false;
+    public bool attackSpeed6Active; 
+    public bool gold100Active; //100골드 이상 보유시
+    public bool hasDisplayTicket;
+
     #region 증강 - 서브 스킬형
 
     [Header("증강 - 서브 스킬 / 현재 장착 증강")] [SerializeField]
@@ -334,7 +345,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             return dashDistance / dashDuration;
         }
     }
-    public void SetAttackMultiplier(float value) //*
+    public void SetAttackMultiplier(float value)
     {
         attackMultiplier = Mathf.Max(0f, value);
     }
@@ -504,6 +515,17 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+
+        foreach (var item in equippedItems)
+        {
+            item?.OnUpdate(this); //*
+        }
+        if (statsDirty) //*
+        {
+            statsDirty = false;
+            RebuildPlayerStats();
+        }
+
         UpdateAnimatorLocomotion();
         CheckAttackStateRelease();
 
@@ -1413,7 +1435,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 bodyAnimator.speed = AttackPerSecond;
             }
-
+            
             bodyAnimator.ResetTrigger(HitHash);
             bodyAnimator.ResetTrigger(AttackHash);
             bodyAnimator.SetTrigger(AttackHash);
@@ -1803,18 +1825,25 @@ public class PlayerController : MonoBehaviour, IDamageable
         maxHp = baseMaxHp;
 
         // 모든 장착 아이템 적용
-        foreach (var item in equippedItems)
+        foreach (var item in equippedItems) //조건부 아이템
         {
             if (item == null) continue;
 
+            // 기본 스탯은 항상 더함
             itemDamage += item.damage;
             moveSpeed += item.moveSpeed;
             attackPerSecond += item.bulletRate;
             maxHp += item.hp;
+
+            // 특수 효과 적용
+            item.ApplyEffectStat(this);
         }
 
         // 체력 보정
         Hp = Mathf.Clamp(Hp, 0, maxHp);
+
+        UpdateAnimatorPlaybackSpeed();
+        SyncLocomotionState();
     }
 
     public void ApplyWeapon(WeaponData weapon)
@@ -2145,6 +2174,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         float beforeMaxHp = maxHp;
         float beforeHp = Hp;
+        hasDisplayTicket = false;
 
         // 1. 기본값 복원
         maxHp = baseMaxHp;
@@ -2232,6 +2262,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             CancelNormalAttackBecauseOrbit();
         }
+        
+
+        maxHp = Mathf.Max(1, maxHp);//*
+
+        // HP는 유지, 단 최대값 초과만 방지
+        Hp = Mathf.Min(beforeHp, maxHp);
     }
 
 
@@ -2908,5 +2944,57 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void OnUseE()
     {
         SkillManager.Instance.UseE();
+    }
+    public float GetGoldMultiplierFromItems()//* 0509
+    {
+        float multiplier = 1f;
+
+        foreach (var item in equippedItems)
+        {
+            multiplier *= item.GetGoldMultiplier();
+        }
+
+        return multiplier;
+    }
+    public void MarkStatsDirty()
+    {
+        statsDirty = true;
+    }
+    public float GetShopDiscount()
+    {
+        float total = 0f;
+
+        foreach (var item in equippedItems)
+        {
+            total += item.GetShopDiscount();
+        }
+
+        return total;
+    }
+    public float GetShopDiscountFromItems()
+    {
+        float total = 0f;
+
+        foreach (var item in equippedItems)
+        {
+            if (item == null) continue;
+            total += item.GetShopDiscount();
+        }
+
+        return total;
+    }
+    public float GetSpecialChanceAdd() //* 진열대 티켓
+    {
+        float add = 0f;
+
+        foreach (var item in equippedItems)
+        {
+            if (item is DisplayTicket ticket)
+            {
+                add += ticket.specialChanceAdd;
+            }
+        }
+
+        return add;
     }
 }
