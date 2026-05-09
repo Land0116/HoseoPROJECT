@@ -139,11 +139,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [SerializeField] private float orbitStartAngleOffset = 90f;
     [SerializeField] private int maxOrbitProjectileTotal = 40;
-
-    [Header("주위탄 자동연사")] [SerializeField] private LayerMask orbitAutoAttackEnemyLayerMask;
-    [SerializeField] private float orbitAutoAttackRangeAdd = 3f;
-    [SerializeField] private float orbitAutoAttackMoveSpeed = 12f;
-
+    
 
     [Header("증강 - 서브 스킬 / 궤적")] [SerializeField]
     private float trajectoryHomingStrength = 0f;
@@ -1843,23 +1839,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         return equippedItems;
     }
-   
-    private void DropItem(ItemData itemData)
-    {
-        if (itemPickupPrefab == null) return;
-
-        Vector3 dropPos = transform.position + Vector3.right * 1f;
-
-        GameObject obj = Instantiate(itemPickupPrefab, dropPos, Quaternion.identity);
-
-        ItemPickup pickup = obj.GetComponent<ItemPickup>();
-        if (pickup != null)
-        {
-            pickup.SetItemData(itemData);
-        }
-    }
     
-
     private void RefreshOrbitProjectiles()
     {
         ClearOrbitProjectiles();
@@ -1917,13 +1897,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 orbit.SetExplosion(FinalExplosionRadius, FinalExplosionDamageMultiplier);
                 orbit.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
                 
-                orbit.SetAutoAttack(
-                    true,
-                    shotOrbitRadius + orbitAutoAttackRangeAdd,
-                    GetCurrentAttackInterval(),
-                    orbitAutoAttackMoveSpeed,
-                    orbitAutoAttackEnemyLayerMask
-                );
                 
                 activeOrbitProjectiles.Add(orbit);
             }

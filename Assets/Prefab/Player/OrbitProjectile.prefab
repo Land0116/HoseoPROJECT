@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2839300272242832844, guid: 5cb02ad13b9a8e14b80cd35b97d2b3da, type: 3}
+  m_Sprite: {fileID: 649223268058989734, guid: 9494805212b945340b52e548927852f9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -180,3 +180,4 @@ MonoBehaviour:
   explosionDamageMultiplier: 1
   dotDamagePerSecond: 0
   dotDuration: 0
+  formationOffset: {x: 0, y: 0}

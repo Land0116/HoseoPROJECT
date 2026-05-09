@@ -127,6 +127,16 @@ public class StageClear : MonoBehaviour
             return;
         }
 
+        // 보스룸에 들어온 순간 이전 보상 예약은 무조건 제거
+        if (IsBossSceneName(scene.name))
+        {
+            currentMapNumber = 7;
+            currentRoomType = RoomType.Boss;
+            pendingRewardType = RewardType.None;
+
+            Debug.Log("보스룸 입장 - 이전 선택 보상 예약 제거");
+        }
+
         BindRouteSlots();
         ResetRoomState();
 
@@ -135,7 +145,6 @@ public class StageClear : MonoBehaviour
             OnEnterShopScene();
         }
     }
-
     private void Update()
     {
         if (IsMainScene()) return;
@@ -190,6 +199,19 @@ public class StageClear : MonoBehaviour
         }
     }
 
+    private bool IsBossSceneName(string sceneName)
+    {
+        if (combatSceneNames == null || combatSceneNames.Length < 7)
+            return false;
+
+        return sceneName == combatSceneNames[6];
+    }
+
+    private bool IsBossRoom()
+    {
+        return currentRoomType == RoomType.Boss || currentMapNumber == 7;
+    }
+    
     public void ClearStage()
     {
         if (IsMainScene()) return;
@@ -615,7 +637,12 @@ public class StageClear : MonoBehaviour
 
     private void GivePendingReward()
     {
-        
+        if (IsBossRoom())
+        {
+            pendingRewardType = RewardType.None;
+            Debug.Log("보스룸이므로 이전 선택 보상 지급 차단");
+            return;
+        }
         if (pendingRewardType == RewardType.None)
             return;
 

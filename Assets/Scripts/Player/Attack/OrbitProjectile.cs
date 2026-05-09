@@ -33,20 +33,6 @@ public class OrbitProjectile : MonoBehaviour
     
     [Header("편대 배치")]
     [SerializeField] private Vector2 formationOffset = Vector2.zero;
-
-    [Header("주위탄 자동공격")]
-    [SerializeField] private bool autoAttackEnabled = false;
-    [SerializeField] private float autoAttackRange = 4f;
-    [SerializeField] private float autoAttackCooldown = 1f;
-    [SerializeField] private float autoAttackMoveSpeed = 12f;
-    [SerializeField] private LayerMask autoAttackEnemyLayerMask;
-
-    private float nextAutoAttackTime = -1f;
-    private Transform autoAttackTarget;
-    private bool isAutoAttacking = false;
-    private bool isReturningToOrbit = false;
-
-    private static readonly Collider2D[] autoAttackBuffer = new Collider2D[32];
     
     
     private Transform ownerRoot;
@@ -114,12 +100,7 @@ public class OrbitProjectile : MonoBehaviour
         currentAngle += angularSpeed * Time.deltaTime;
 
         Vector2 orbitPosition = GetOrbitWorldPosition();
-
-        if (autoAttackEnabled)
-        {
-            UpdateAutoAttack(orbitPosition);
-            return;
-        }
+        
 
         transform.position = orbitPosition;
         UpdateVisualDirection(orbitPosition);
@@ -142,120 +123,7 @@ public class OrbitProjectile : MonoBehaviour
 
         return (Vector2)owner.position + orbitOffset;
     }
-    /// <summary>
-    /// 주위탄 자동공격 처리.
-    /// 
-    /// 흐름:
-    /// 1. 평소에는 원래 궤도 위치를 따라 돈다.
-    /// 2. 쿨타임이 끝났고 범위 안에 적이 있으면 적에게 날아간다.
-    /// 3. 적을 때리거나 대상이 사라지면 원래 궤도로 복귀한다.
-    /// </summary>
-    private void UpdateAutoAttack(Vector2 orbitPosition)
-    {
-        if (!isAutoAttacking && !isReturningToOrbit)
-        {
-            transform.position = orbitPosition;
-            UpdateVisualDirection(orbitPosition);
-
-            if (Time.time >= nextAutoAttackTime)
-            {
-                autoAttackTarget = FindClosestAutoAttackTarget();
-
-                if (autoAttackTarget != null)
-                {
-                    isAutoAttacking = true;
-                    nextAutoAttackTime = Time.time + autoAttackCooldown;
-                }
-            }
-
-            return;
-        }
-
-        if (isAutoAttacking)
-        {
-            if (autoAttackTarget == null)
-            {
-                isAutoAttacking = false;
-                isReturningToOrbit = true;
-                return;
-            }
-
-            Vector2 targetPos = autoAttackTarget.position;
-
-            transform.position = Vector2.MoveTowards(
-                transform.position,
-                targetPos,
-                autoAttackMoveSpeed * Time.deltaTime
-            );
-
-            Vector2 dir = targetPos - (Vector2)transform.position;
-            if (dir.sqrMagnitude > 0.0001f)
-                transform.right = dir.normalized;
-
-            if (Vector2.Distance(transform.position, targetPos) <= 0.1f)
-            {
-                isAutoAttacking = false;
-                isReturningToOrbit = true;
-            }
-
-            return;
-        }
-
-        if (isReturningToOrbit)
-        {
-            transform.position = Vector2.MoveTowards(
-                transform.position,
-                orbitPosition,
-                autoAttackMoveSpeed * Time.deltaTime
-            );
-
-            Vector2 dir = orbitPosition - (Vector2)transform.position;
-            if (dir.sqrMagnitude > 0.0001f)
-                transform.right = dir.normalized;
-
-            if (Vector2.Distance(transform.position, orbitPosition) <= 0.05f)
-            {
-                isReturningToOrbit = false;
-            }
-        }
-    }
     
-    /// <summary>
-    /// 자동공격 범위 안에서 가장 가까운 적을 찾는다.
-    /// NonAlloc 사용으로 GC 발생을 줄인다.
-    /// </summary>
-    private Transform FindClosestAutoAttackTarget()
-    {
-        int count = Physics2D.OverlapCircleNonAlloc(
-            transform.position,
-            autoAttackRange,
-            autoAttackBuffer,
-            autoAttackEnemyLayerMask
-        );
-
-        Transform closest = null;
-        float closestSqr = float.MaxValue;
-
-        for (int i = 0; i < count; i++)
-        {
-            Collider2D col = autoAttackBuffer[i];
-            if (col == null) continue;
-            if (IsOwnerCollider(col)) continue;
-
-            IDamageable damageable = GetDamageable(col);
-            if (damageable == null) continue;
-
-            float sqr = ((Vector2)col.transform.position - (Vector2)transform.position).sqrMagnitude;
-
-            if (sqr < closestSqr)
-            {
-                closestSqr = sqr;
-                closest = col.transform;
-            }
-        }
-
-        return closest;
-    }
     
     private void UpdateVisualDirection(Vector2 orbitPosition)
     {
@@ -375,24 +243,6 @@ public class OrbitProjectile : MonoBehaviour
         }
     }
     
-    /// <summary>
-    /// 주위탄 자동공격 설정.
-    /// 
-    /// 자동연사 패시브가 있을 때만 true가 들어온다.
-    /// </summary>
-    public void SetAutoAttack(
-        bool enabled,
-        float range,
-        float cooldown,
-        float moveSpeed,
-        LayerMask enemyLayerMask)
-    {
-        autoAttackEnabled = enabled;
-        autoAttackRange = Mathf.Max(0f, range);
-        autoAttackCooldown = Mathf.Max(0.05f, cooldown);
-        autoAttackMoveSpeed = Mathf.Max(1f, moveSpeed);
-        autoAttackEnemyLayerMask = enemyLayerMask;
-    }
 
     private IDamageable GetDamageable(Collider2D col)
     {

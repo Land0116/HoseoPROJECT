@@ -384,6 +384,10 @@ MonoBehaviour:
   playerBody: {fileID: 6444624563947541171}
   gunTip: {fileID: 6879044860308773687}
   deathUIShowDelay: 0.5
+  attackAnimationBaseDuration: 0.1
+  minAttackAnimationSpeed: 1
+  maxAttackAnimationSpeed: 4
+  attackAnimationSpeedHoldTime: 0.12
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5

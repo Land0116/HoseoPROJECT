@@ -31,30 +31,28 @@ public class ProjectileDotReceiver : MonoBehaviour
         dotCoroutine = StartCoroutine(DotRoutine(damagePerSecond, duration));
     }
 
-    private IEnumerator DotRoutine(float damagePerSecond, float duration)
+    private IEnumerator DotRoutine(float tickDamage, float duration)
     {
-        float elapsed = 0f;
+        IDamageable damageable = GetComponent<IDamageable>();
 
-        while (elapsed < duration)
+        if (damageable == null)
+            damageable = GetComponentInParent<IDamageable>();
+
+        if (damageable == null)
+            yield break;
+
+        float endTime = Time.time + duration;
+
+        // 핵심:
+        // ApplyDot 즉시 데미지를 주지 않고,
+        // 1초 기다린 뒤 첫 틱 데미지를 준다.
+        yield return new WaitForSeconds(1f);
+
+        while (Time.time < endTime)
         {
-            IDamageable damageable = GetComponent<IDamageable>();
-            if (damageable == null)
-            {
-                damageable = GetComponentInParent<IDamageable>();
-            }
-
-            if (damageable == null)
-            {
-                dotCoroutine = null;
-                yield break;
-            }
-
-            // 초당 피해 -> tickInterval 기준 피해량으로 환산
-            float tickDamage = damagePerSecond * tickInterval;
             damageable.OnDamage(tickDamage);
 
-            yield return new WaitForSeconds(tickInterval);
-            elapsed += tickInterval;
+            yield return new WaitForSeconds(1f);
         }
 
         dotCoroutine = null;

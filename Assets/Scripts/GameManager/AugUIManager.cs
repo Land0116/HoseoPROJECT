@@ -615,7 +615,6 @@ public class AugUIManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
 
         if (sceneName == "Main") return false;
-        if (sceneName == "Stage_1_5") return false;
 
         return true;
     }
