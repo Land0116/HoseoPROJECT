@@ -722,10 +722,15 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         // 죽음 / 피격 / 일반 이동 / 대기 상태는 항상 기본 속도
-        if (IsDie || playerState == PlayerState.Hit || playerState == PlayerState.Death)
+        if (playerState == PlayerState.Hit || playerState == PlayerState.Death)
         {
             bodyAnimator.speed = 1f;
             return;
+        }
+
+        if (playerState == PlayerState.Walk)
+        {
+            bodyAnimator.speed = MoveSpeed;
         }
 
         // Attack 상태이면서 실제 Animator도 Attack Tag 상태일 때만 공격속도 반영
