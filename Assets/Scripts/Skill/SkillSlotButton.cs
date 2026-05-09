@@ -31,7 +31,7 @@ public class SkillSlotButton : MonoBehaviour
 
         if (skill != null)
         {
-            iconImage.sprite = skill.icon;
+            iconImage.sprite = skill.sloticon; //*
             iconImage.enabled = true;
         }
         else

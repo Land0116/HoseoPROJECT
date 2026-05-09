@@ -1,0 +1,585 @@
+fileFormatVersion: 2
+guid: bd0f6adfd00143d4fb83b5e90e86a619
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7856740172765627475
+    second: active_slow_field_slot_0
+  - first:
+      213: 5925251927377367237
+    second: active_slow_field_slot_1
+  - first:
+      213: 9162560327492395159
+    second: active_slow_field_slot_2
+  - first:
+      213: 687875329329366714
+    second: active_slow_field_slot_3
+  - first:
+      213: -3981262227144039355
+    second: active_slow_field_slot_4
+  - first:
+      213: -7106462300726281127
+    second: active_slow_field_slot_5
+  - first:
+      213: -3899263554021421909
+    second: active_slow_field_slot_6
+  - first:
+      213: -6110518429287263249
+    second: active_slow_field_slot_7
+  - first:
+      213: 8228324297568893533
+    second: active_slow_field_slot_8
+  - first:
+      213: 7592257039399604296
+    second: active_slow_field_slot_9
+  - first:
+      213: -2011956315249853784
+    second: active_slow_field_slot_10
+  - first:
+      213: -4830398802285272831
+    second: active_slow_field_slot_11
+  - first:
+      213: 4035064272638729413
+    second: active_slow_field_slot_12
+  - first:
+      213: -6517457189186419158
+    second: active_slow_field_slot_13
+  - first:
+      213: 8331447739134268804
+    second: active_slow_field_slot_14
+  - first:
+      213: 8380701423309698027
+    second: active_slow_field_slot_15
+  - first:
+      213: 4118893922814761171
+    second: active_slow_field_slot_16
+  - first:
+      213: -3787617148227436968
+    second: active_slow_field_slot_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: active_slow_field_slot_0
+      rect:
+        serializedVersion: 2
+        x: 91
+        y: 207
+        width: 39
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3548c327f8fb80d60800000000000000
+      internalID: 7856740172765627475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_1
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 215
+        width: 42
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c0d6001c39ba3250800000000000000
+      internalID: 5925251927377367237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_2
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 206
+        width: 39
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79065419214f72f70800000000000000
+      internalID: 9162560327492395159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_3
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 164
+        width: 26
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab68e6ea7f2db8900800000000000000
+      internalID: 687875329329366714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_4
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 188
+        width: 35
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54426691917bfb8c0800000000000000
+      internalID: -3981262227144039355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_5
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 75
+        width: 189
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95c318b6036c06d90800000000000000
+      internalID: -7106462300726281127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_6
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 189
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bac0de0f47803e9c0800000000000000
+      internalID: -3899263554021421909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_7
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 167
+        width: 27
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe3dadc0dd3133ba0800000000000000
+      internalID: -6110518429287263249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_8
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 125
+        width: 19
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5a3f456a51e03270800000000000000
+      internalID: 8228324297568893533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_9
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 131
+        width: 19
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8405fd44d8d1d5960800000000000000
+      internalID: 7592257039399604296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_10
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 89
+        width: 28
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aabded14681414e0800000000000000
+      internalID: -2011956315249853784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_11
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 63
+        width: 34
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1016052c1e9f6fcb0800000000000000
+      internalID: -4830398802285272831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_12
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 92
+        width: 25
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cc5088c39d6ff730800000000000000
+      internalID: 4035064272638729413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_13
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 64
+        width: 32
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a264ab7a7375d85a0800000000000000
+      internalID: -6517457189186419158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_14
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 50
+        width: 35
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48554dba39f3f9370800000000000000
+      internalID: 8331447739134268804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_15
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 49
+        width: 37
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be33cf8aa8b3e4470800000000000000
+      internalID: 8380701423309698027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_16
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 43
+        width: 38
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d893e03330492930800000000000000
+      internalID: 4118893922814761171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: active_slow_field_slot_17
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 43
+        width: 38
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85eb9b6754eaf6bc0800000000000000
+      internalID: -3787617148227436968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      active_slow_field_slot_0: 7856740172765627475
+      active_slow_field_slot_1: 5925251927377367237
+      active_slow_field_slot_10: -2011956315249853784
+      active_slow_field_slot_11: -4830398802285272831
+      active_slow_field_slot_12: 4035064272638729413
+      active_slow_field_slot_13: -6517457189186419158
+      active_slow_field_slot_14: 8331447739134268804
+      active_slow_field_slot_15: 8380701423309698027
+      active_slow_field_slot_16: 4118893922814761171
+      active_slow_field_slot_17: -3787617148227436968
+      active_slow_field_slot_2: 9162560327492395159
+      active_slow_field_slot_3: 687875329329366714
+      active_slow_field_slot_4: -3981262227144039355
+      active_slow_field_slot_5: -7106462300726281127
+      active_slow_field_slot_6: -3899263554021421909
+      active_slow_field_slot_7: -6110518429287263249
+      active_slow_field_slot_8: 8228324297568893533
+      active_slow_field_slot_9: 7592257039399604296
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -10,7 +10,7 @@ public class SkillData : ScriptableObject
 
     [Header("??????")]
     public Sprite icon;
-
+    public Sprite sloticon;
     [Header("????")]
     public int maxLevel = 3;
 
