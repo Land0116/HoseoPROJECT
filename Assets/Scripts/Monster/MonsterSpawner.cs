@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class MonsterSpawner : MonoBehaviour
 {
-    [Header("½ºÆù Æ®¸®°Å")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private bool isSpawnSure = false;
 
-    [Header("½ºÅ×ÀÌÁöº° ¸ó½ºÅÍ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private GameObject[] stage1Monster;
     [SerializeField] private GameObject[] stage2Monster;
     [SerializeField] private GameObject[] stage3Monster;
@@ -26,17 +26,22 @@ public class MonsterSpawner : MonoBehaviour
     {
         isSpawnSure = value;
 
-        if (value)
-        {
-            hasSpawned = false;
-        }
+        if (!value)
+            return;
+
+        hasSpawned = false;
+
+        SpawnMonster();
+
+        hasSpawned = true;
+        isSpawnSure = false;
     }
 
     private void SpawnMonster()
     {
         if (StageClear.Instance == null)
         {
-            Debug.LogWarning("StageClear ¾øÀ½");
+            Debug.LogWarning("StageClear ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -46,7 +51,7 @@ public class MonsterSpawner : MonoBehaviour
 
         if (selectedPool == null || selectedPool.Length == 0)
         {
-            Debug.LogWarning($"½ºÅ×ÀÌÁö {stage} ¸ó½ºÅÍ ¾øÀ½");
+            Debug.LogWarning($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {stage} ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 

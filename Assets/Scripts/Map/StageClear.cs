@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class StageClear : MonoBehaviour
 {
     public static StageClear Instance;
-    
+
     [System.Serializable]
     private class RouteMarkerData
     {
@@ -46,51 +46,52 @@ public class StageClear : MonoBehaviour
     [System.Serializable]
     private class StageSceneData
     {
-        [Header("스테이지 번호")]
-        public int stageNumber = 1;
+        [Header("스테이지 번호")] public int stageNumber = 1;
 
-        [Header("전투 씬 이름 배열 1~7")]
-        public string[] combatSceneNames = new string[7];
+        [Header("전투 씬 이름 배열 1~7")] public string[] combatSceneNames = new string[7];
 
-        [Header("상점 씬 이름")]
-        public string shopSceneName;
+        [Header("상점 씬 이름")] public string shopSceneName;
     }
-    
-    [Header("스테이지별 씬 데이터")]
-    [SerializeField] private StageSceneData[] stageSceneDatas;
-    
-    [Header("메인 씬 이름")]
-    [SerializeField] private string mainSceneName = "Main";
-    
-    [Header("플레이어 태그")]
-    [SerializeField] private string playerTag = "Player";
 
-    [Header("몬스터 태그")]
-    [SerializeField] private string monsterTag = "Monster";
+    [Header("스테이지별 씬 데이터")] [SerializeField]
+    private StageSceneData[] stageSceneDatas;
 
-    [Header("몬스터 전멸 시 자동 클리어")]
-    [SerializeField] private bool autoClearWhenNoMonster = true;
+    [Header("메인 씬 이름")] [SerializeField] private string mainSceneName = "Main";
 
-    [Header("씬 이동 딜레이")]
-    [SerializeField] private float clearDelay = 1.0f;
+    [Header("플레이어 태그")] [SerializeField] private string playerTag = "Player";
 
-    [Header("현재 스테이지 번호")]
-    [SerializeField] private int currentStageNumber = 1;
+    [Header("몬스터 태그")] [SerializeField] private string monsterTag = "Monster";
 
-    [Header("현재 맵 번호")]
-    [SerializeField] private int currentMapNumber = 1;
-    [Header("최종 스테이지 번호")]
-    [SerializeField] private int finalStageNumber = 3;
-    
+    [Header("몬스터 전멸 시 자동 클리어")] [SerializeField]
+    private bool autoClearWhenNoMonster = true;
 
-    [Header("디버그")]
-    [SerializeField] private bool isStageCleared;
+    [Header("씬 이동 딜레이")] [SerializeField] private float clearDelay = 1.0f;
+
+    [Header("현재 스테이지 번호")] [SerializeField]
+    private int currentStageNumber = 1;
+
+    [Header("현재 맵 번호")] [SerializeField] private int currentMapNumber = 1;
+
+    [Header("최종 스테이지 번호")] [SerializeField]
+    private int finalStageNumber = 3;
+
+    [Header("몬스터 웨이브")] [SerializeField] private int combatWaveCount = 2;
+
+    [SerializeField] private float nextWaveDelay = 0.5f;
+
+    private MonsterSpawner[] monsterSpawners;
+    private int currentWaveIndex = 0;
+    private bool hasStartedWaveInRoom = false;
+    private bool isWaveChanging = false;
+    private Coroutine waveCoroutine;
+
+
+    [Header("디버그")] [SerializeField] private bool isStageCleared;
     [SerializeField] private bool isLoadingNextScene;
 
     private RoomType currentRoomType = RoomType.Combat;
     private RewardType pendingRewardType = RewardType.None;
-    [Header("출구 보상 마커 ")]
-    [SerializeField] private GameObject routeMarkerSpritePrefab;
+    [Header("출구 보상 마커 ")] [SerializeField] private GameObject routeMarkerSpritePrefab;
 
     [SerializeField] private RouteMarkerData[] routeMarkerDatas;
 
@@ -127,8 +128,16 @@ public class StageClear : MonoBehaviour
             ResetRunStateOnly();
             return;
         }
+
+        SyncCurrentRoomByLoadedScene(SceneManager.GetActiveScene().name);
+
         BindRouteSlots();
         ResetRoomState();
+
+        if (currentRoomType != RoomType.Shop)
+        {
+            StartRoomWavesIfNeeded();
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -158,6 +167,15 @@ public class StageClear : MonoBehaviour
         {
             OnEnterShopScene();
         }
+
+        if (currentRoomType == RoomType.Shop)
+        {
+            OnEnterShopScene();
+        }
+        else
+        {
+            StartRoomWavesIfNeeded();
+        }
     }
 
     private void SyncCurrentRoomByLoadedScene(string sceneName)
@@ -180,7 +198,7 @@ public class StageClear : MonoBehaviour
             currentRoomType = RoomType.Shop;
         }
     }
-    
+
     private void Update()
     {
         if (IsMainScene()) return;
@@ -193,8 +211,126 @@ public class StageClear : MonoBehaviour
 
         if (monsters.Length == 0)
         {
-            ClearStage();
+            HandleAllMonstersDefeated();
         }
+    }
+
+    private void StartRoomWavesIfNeeded()
+    {
+        if (IsMainScene()) return;
+        if (currentRoomType == RoomType.Shop) return;
+        if (isStageCleared) return;
+
+        if (waveCoroutine != null)
+        {
+            StopCoroutine(waveCoroutine);
+            waveCoroutine = null;
+        }
+
+        waveCoroutine = StartCoroutine(StartRoomWavesRoutine());
+    }
+
+    private IEnumerator StartRoomWavesRoutine()
+    {
+        // 씬 로드 직후 MonsterSpawner들이 준비될 시간 확보
+        yield return null;
+
+        BindMonsterSpawners();
+
+        currentWaveIndex = 0;
+        hasStartedWaveInRoom = true;
+
+        yield return SpawnNextWaveRoutine();
+
+        waveCoroutine = null;
+    }
+
+    private void BindMonsterSpawners()
+    {
+        monsterSpawners = FindObjectsByType<MonsterSpawner>(FindObjectsSortMode.None);
+
+        if (monsterSpawners == null || monsterSpawners.Length == 0)
+        {
+            Debug.LogWarning("현재 방에 MonsterSpawner가 없음");
+        }
+    }
+
+    private int GetCurrentRoomWaveCount()
+    {
+        // 보스방은 2웨이브 필요 없음.
+        if (currentRoomType == RoomType.Boss || currentMapNumber == 7)
+            return 1;
+
+        return Mathf.Max(1, combatWaveCount);
+    }
+
+    private void HandleAllMonstersDefeated()
+    {
+        if (!hasStartedWaveInRoom) return;
+        if (isWaveChanging) return;
+        if (isStageCleared) return;
+
+        int maxWaveCount = GetCurrentRoomWaveCount();
+
+        // 아직 남은 웨이브가 있으면 다음 웨이브 생성
+        if (currentWaveIndex < maxWaveCount)
+        {
+            if (waveCoroutine == null)
+            {
+                waveCoroutine = StartCoroutine(SpawnNextWaveAfterDelay());
+            }
+
+            return;
+        }
+
+        // 모든 웨이브 처치 후에만 클리어 처리
+        ClearStage();
+    }
+
+    private IEnumerator SpawnNextWaveAfterDelay()
+    {
+        isWaveChanging = true;
+
+        if (nextWaveDelay > 0f)
+            yield return new WaitForSeconds(nextWaveDelay);
+
+        yield return SpawnNextWaveRoutine();
+
+        waveCoroutine = null;
+    }
+
+    private IEnumerator SpawnNextWaveRoutine()
+    {
+        isWaveChanging = true;
+
+        if (monsterSpawners == null || monsterSpawners.Length == 0)
+        {
+            BindMonsterSpawners();
+        }
+
+        if (monsterSpawners == null || monsterSpawners.Length == 0)
+        {
+            Debug.LogWarning("MonsterSpawner가 없어서 웨이브 생성 불가");
+            isWaveChanging = false;
+            yield break;
+        }
+
+        currentWaveIndex++;
+
+        Debug.Log($"웨이브 생성 : {currentWaveIndex} / {GetCurrentRoomWaveCount()}");
+
+        for (int i = 0; i < monsterSpawners.Length; i++)
+        {
+            if (monsterSpawners[i] == null) continue;
+
+            monsterSpawners[i].SetSpawn(true);
+        }
+
+        // 생성 직후 바로 몬스터 0마리 체크되는 것 방지
+        yield return null;
+        yield return null;
+
+        isWaveChanging = false;
     }
 
     private void BindRouteSlots()
@@ -215,6 +351,18 @@ public class StageClear : MonoBehaviour
         isLoadingNextScene = false;
 
         currentOpenedRoutes.Clear();
+
+        currentWaveIndex = 0;
+        hasStartedWaveInRoom = false;
+        isWaveChanging = false;
+
+        if (waveCoroutine != null)
+        {
+            StopCoroutine(waveCoroutine);
+            waveCoroutine = null;
+        }
+
+        monsterSpawners = null;
 
         LockAllRouteSlots();
     }
@@ -298,12 +446,12 @@ public class StageClear : MonoBehaviour
     {
         return currentRoomType == RoomType.Boss || currentMapNumber == 7;
     }
-    
+
     private bool IsFinalStageBossCleared()
     {
         return currentStageNumber >= finalStageNumber && currentMapNumber == 7;
     }
-    
+
     public void ClearStage()
     {
         if (IsMainScene()) return;
@@ -316,7 +464,7 @@ public class StageClear : MonoBehaviour
         if (currentMapNumber == 7)
         {
             pendingRewardType = RewardType.None;
-            
+
             if (IsFinalStageBossCleared())
             {
                 Debug.Log("최종 보스 클리어 - 탈출 출구 생성");
@@ -338,14 +486,12 @@ public class StageClear : MonoBehaviour
 
     private void HandleClearFlow()
     {
-        // 1스테이지 1맵은 증강 고정
-        if (currentStageNumber == 1 && currentMapNumber == 1)
+        if (currentMapNumber == 1)
         {
-            Debug.Log("1스테이지 1맵 클리어 - 증강 고정 지급");
+            Debug.Log($"{currentStageNumber}스테이지 1맵 클리어 - 증강 고정 지급");
 
             GiveRewardImmediately(RewardType.Augment);
 
-            // 증강 선택 후 출구 3개 생성
             OpenCombatClearRouteChoices();
             return;
         }
@@ -436,11 +582,11 @@ public class StageClear : MonoBehaviour
         // 상점이 6번째 위치라면 보상 선택 없이 보스룸으로 가야 함
         if (currentMapNumber >= 6)
         {
-            Debug.Log("6번째 위치 상점 종료 - 보스 출구만 생성");
+            Debug.Log("6번째 위치 상점 종료 - 보스 출구 전체 생성");
 
             pendingRewardType = RewardType.None;
 
-            OpenOnlyRoute(RouteType.Boss);
+            OpenSameRouteOnAllSlots(RouteType.Boss);
             return;
         }
 
@@ -460,6 +606,41 @@ public class StageClear : MonoBehaviour
         ApplyRoutesToSlots(selectedRoutes);
 
         Debug.Log($"상점맵 출구 생성 : {selectedRoutes[0]} / {selectedRoutes[1]} / {selectedRoutes[2]}");
+    }
+    
+    private void OpenSameRouteOnAllSlots(RouteType routeType)
+    {
+        if (IsMainScene()) return;
+
+        if (routeSlots == null || routeSlots.Length == 0)
+        {
+            Debug.LogError("출구 슬롯이 없음");
+            return;
+        }
+
+        currentOpenedRoutes.Clear();
+        currentOpenedRoutes.Add(routeType);
+
+        LockAllRouteSlots();
+
+        string displayName = GetRouteDisplayName(routeType);
+        Sprite icon = GetRouteIcon(routeType);
+
+        for (int i = 0; i < routeSlots.Length; i++)
+        {
+            if (routeSlots[i] == null) continue;
+
+            routeSlots[i].SetRouteType(routeType);
+            routeSlots[i].SetRouteEnabled(true);
+
+            routeSlots[i].ShowSpriteRouteMarker(
+                routeMarkerSpritePrefab,
+                displayName,
+                icon
+            );
+        }
+
+        Debug.Log($"동일 경로 출구 전체 생성 : {routeType}");
     }
 
     /// <summary>
@@ -638,7 +819,7 @@ public class StageClear : MonoBehaviour
                 break;
         }
     }
-    
+
     private void CompleteGame()
     {
         if (isLoadingNextScene) return;
@@ -849,6 +1030,7 @@ public class StageClear : MonoBehaviour
             Debug.Log("보스룸이므로 이전 선택 보상 지급 차단");
             return;
         }
+
         if (pendingRewardType == RewardType.None)
             return;
 
@@ -858,7 +1040,7 @@ public class StageClear : MonoBehaviour
 
         pendingRewardType = RewardType.None;
     }
-    
+
     private void GiveRewardImmediately(RewardType rewardType)
     {
         switch (rewardType)
@@ -868,6 +1050,7 @@ public class StageClear : MonoBehaviour
                 {
                     AugUIManager.instance.ShowAugmentation();
                 }
+
                 break;
 
             case RewardType.Skill:
@@ -875,14 +1058,16 @@ public class StageClear : MonoBehaviour
                 {
                     SkillSelectUIManager.Instance.IsSkillOpened = true;
                 }
+
                 break;
 
             case RewardType.Item:
-                
+
                 if (NewItemUIManager.Instance != null)
                 {
                     NewItemUIManager.Instance.IsOpenedItem = true;
                 }
+
                 break;
         }
     }
@@ -906,10 +1091,10 @@ public class StageClear : MonoBehaviour
     private void OnEnterShopScene()
     {
         Debug.Log("상점 씬 입장");
-        
+
         StartCoroutine(OpenShopRoutesAfterSceneReady());
     }
-    
+
     private IEnumerator OpenShopRoutesAfterSceneReady()
     {
         // 씬 로드 직후 모든 ExitSlot, markerSpawnPoint, 프리팹 위치가
@@ -932,7 +1117,7 @@ public class StageClear : MonoBehaviour
 
         OpenShopClearRouteChoices();
     }
-    
+
     private RouteMarkerData GetRouteMarkerData(RouteType routeType)
     {
         if (routeMarkerDatas == null)
@@ -968,13 +1153,13 @@ public class StageClear : MonoBehaviour
 
         return null;
     }
-    
+
     private bool IsMainScene()
     {
         return SceneManager.GetActiveScene().name == mainSceneName;
     }
-    
-    
+
+
     public void StartNewRun()
     {
         ResetRunStateOnly();
@@ -989,7 +1174,7 @@ public class StageClear : MonoBehaviour
 
         SceneManager.LoadScene(firstSceneName);
     }
-    
+
     public void ResetRunStateOnly()
     {
         currentStageNumber = 1;
@@ -1019,5 +1204,4 @@ public class StageClear : MonoBehaviour
     {
         return currentStageNumber;
     }
-
 }
