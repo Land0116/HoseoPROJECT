@@ -316,9 +316,7 @@ public class StageClear : MonoBehaviour
         if (currentMapNumber == 7)
         {
             pendingRewardType = RewardType.None;
-
-            GiveBossReward();
-
+            
             if (IsFinalStageBossCleared())
             {
                 Debug.Log("최종 보스 클리어 - 탈출 출구 생성");
@@ -364,8 +362,6 @@ public class StageClear : MonoBehaviour
 
         if (currentMapNumber == 7)
         {
-            GiveBossReward();
-
             if (IsFinalStageBossCleared())
             {
                 Debug.Log("최종 보스 클리어 - 탈출 출구 생성");
@@ -977,11 +973,7 @@ public class StageClear : MonoBehaviour
     {
         return SceneManager.GetActiveScene().name == mainSceneName;
     }
-
-    //private bool IsRouteScene()
-    //{
-      //  return !IsMainScene();
-    //}
+    
     
     public void StartNewRun()
     {
@@ -1021,6 +1013,7 @@ public class StageClear : MonoBehaviour
 
         Debug.Log("StageClear 런 상태 초기화 완료");
     }
+    
     
 
     

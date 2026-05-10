@@ -769,8 +769,8 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(dieToMain, OnClickToMain);
         
         
-        BindButton(clearRestartBtn, OnClickClearRestart);
-        BindButton(clearToMainBtn, OnClickClearToMain);
+        BindButton(clearRestartBtn, OnClickRestart);
+        BindButton(clearToMainBtn, OnClickToMain);
     }
     
     /// <summary>
@@ -825,56 +825,22 @@ public class PlayerUIManager : MonoBehaviour
             PlayerController.Instance.SetPause(true);
     }
     
-    /// <summary>
-    /// 게임 클리어 UI - Restart 버튼.
-    /// 현재 씬 재시작이 아니라, 런을 처음부터 다시 시작한다.
-    /// 즉 무조건 1-1로 간다.
-    /// </summary>
-    private void OnClickClearRestart()
+    
+    
+    public void ResetUIForNewRun()
     {
+        ResetPanels();
+        ResetMonsterCountUI();
+        ResetDashUI();
+
         Time.timeScale = 1f;
 
-        if (gameClearPanel != null)
-            gameClearPanel.SetActive(false);
-
-        currentPanel = null;
-
         if (PlayerController.Instance != null)
+        {
             PlayerController.Instance.SetPause(false);
-
-        if (StageClear.Instance != null)
-        {
-            StageClear.Instance.StartNewRun();
         }
-        else if (UIManager.Instance != null)
-        {
-            UIManager.Instance.RestartCurrentScene();
-        }
-    }
 
-    /// <summary>
-    /// 게임 클리어 UI - ToMain 버튼.
-    /// 메인 화면으로 돌아간다.
-    /// </summary>
-    private void OnClickClearToMain()
-    {
-        Time.timeScale = 1f;
-
-        if (gameClearPanel != null)
-            gameClearPanel.SetActive(false);
-
-        currentPanel = null;
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(false);
-
-        if (StageClear.Instance != null)
-            StageClear.Instance.ResetRunStateOnly();
-
-        if (UIManager.Instance != null)
-        {
-            UIManager.Instance.GoToMainScene();
-        }
+        ShowPlayerHUD();
     }
     
 
