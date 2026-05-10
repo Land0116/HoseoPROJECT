@@ -1818,6 +1818,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     private void RecalculateItemStats()
     {
+        if (SkillManager.Instance != null)
+        {
+            SkillManager.Instance.ResetCooldownReduction();//*0510
+        }
+
         // 초기화 (아이템 영향 제거)
         itemDamage = 0f;
         moveSpeed = baseMoveSpeed;

@@ -3,7 +3,7 @@ using UnityEngine;
 public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance;
-
+    private float cooldownReduction = 0f; //스킬 조건부 아이템
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -59,8 +59,8 @@ public class SkillManager : MonoBehaviour
         if (qSkill == null) return;
 
         int level = GetQLevel();
-        float cooldown = qSkill.GetCooldown(level);
-
+        //float cooldown = qSkill.GetCooldown(level);
+        float cooldown = Mathf.Max(0f, qSkill.GetCooldown(level) - cooldownReduction);
         // 쿨타임 체크
         if (Time.time < qLastUseTime + cooldown)
         {
@@ -80,8 +80,8 @@ public class SkillManager : MonoBehaviour
         if (eSkill == null) return;
 
         int level = GetELevel();
-        float cooldown = eSkill.GetCooldown(level);
-
+        // float cooldown = eSkill.GetCooldown(level);
+        float cooldown = Mathf.Max(0f, eSkill.GetCooldown(level) - cooldownReduction);
         if (Time.time < eLastUseTime + cooldown)
         {
             Debug.Log("E 쿨타임 중");
@@ -136,7 +136,7 @@ public class SkillManager : MonoBehaviour
         float remain = GetECooldownRemain();
         return remain / eCooldown;
     }*/
-    public bool IsQOnCooldown()
+    /*public bool IsQOnCooldown()
     {
         if (qSkill == null) return false;
 
@@ -187,6 +187,65 @@ public class SkillManager : MonoBehaviour
         float remain = GetECooldownRemain();
 
         return remain / cooldown;
+    }*/
+    public bool IsQOnCooldown()
+    {
+        if (qSkill == null) return false;
+
+        float cooldown = GetQFinalCooldown();
+        return Time.time < qLastUseTime + cooldown;
+    }
+
+    public float GetQCooldownRemain()
+    {
+        if (qSkill == null) return 0f;
+
+        float cooldown = GetQFinalCooldown();
+        float remain = (qLastUseTime + cooldown) - Time.time;
+
+        return Mathf.Max(0f, remain);
+    }
+
+    public float GetQCooldownRatio()
+    {
+        if (qSkill == null) return 0f;
+
+        float cooldown = GetQFinalCooldown();
+        float remain = GetQCooldownRemain();
+
+        if (cooldown <= 0f) return 0f;
+
+        return remain / cooldown;
+    }
+
+    public bool IsEOnCooldown()
+    {
+        if (eSkill == null) return false;
+
+        float cooldown = GetEFinalCooldown();
+        return Time.time < eLastUseTime + cooldown;
+    }
+
+    public float GetECooldownRemain()
+    {
+        if (eSkill == null) return 0f;
+
+        float cooldown = GetEFinalCooldown();
+        float remain = (eLastUseTime + cooldown) - Time.time;
+
+        return Mathf.Max(0f, remain);
+    }
+
+    public float GetECooldownRatio()
+    {
+        if (eSkill == null) return 0f;
+
+        float cooldown = GetEFinalCooldown();
+        float remain = GetECooldownRemain();
+
+        if (cooldown <= 0f) return 0f;
+
+        return remain / cooldown;
     }
     public int GetSkillLevel(SkillData skill)
     {
@@ -216,6 +275,34 @@ public class SkillManager : MonoBehaviour
         eLastUseTime = -999f;
 
         RefreshSlotUI();
+    }
+
+    public void AddCooldownReduction(float value) //*
+    {
+        cooldownReduction += value;
+    }
+    public float GetCooldownReduction()
+    {
+        return cooldownReduction;
+    }
+    public void ResetCooldownReduction()
+    {
+        cooldownReduction = 0f;
+    }
+    public float GetQFinalCooldown()
+    {
+        if (qSkill == null) return 0f;
+
+        float baseCooldown = qSkill.GetCooldown(qLevel);
+        return Mathf.Max(0f, baseCooldown - cooldownReduction);
+    }
+
+    public float GetEFinalCooldown()
+    {
+        if (eSkill == null) return 0f;
+
+        float baseCooldown = eSkill.GetCooldown(eLevel);
+        return Mathf.Max(0f, baseCooldown - cooldownReduction);
     }
 }
 

@@ -13,6 +13,8 @@ public class SkillSelectButton : MonoBehaviour
     private SkillData skill;
     private SkillSelectUIManager manager;
 
+
+
     public void Setup(SkillData data, SkillSelectUIManager uiManager)
     {
         skill = data;
@@ -41,6 +43,7 @@ public class SkillSelectButton : MonoBehaviour
         {
             float damage = data.GetFinalDamage(player, 1);
             float cooldown = data.GetCooldown(1);
+            //float cooldown = Mathf.Max(0f, data.GetCooldown(1) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
                 $"{data.description}\n\n" +
@@ -51,6 +54,7 @@ public class SkillSelectButton : MonoBehaviour
         {
             float damage = data.GetFinalDamage(player, currentLevel);
             float cooldown = data.GetCooldown(currentLevel);
+            //float cooldown = Mathf.Max(0f, data.GetCooldown(currentLevel) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
                 $"{data.description}\n\n" +
@@ -65,6 +69,9 @@ public class SkillSelectButton : MonoBehaviour
 
             float currentCooldown = data.GetCooldown(currentLevel);
             float nextCooldown = data.GetCooldown(nextLevel);
+            //float currentCooldown = Mathf.Max(0f, data.GetCooldown(currentLevel) - SkillManager.Instance.GetCooldownReduction()); //*
+
+            //float nextCooldown = Mathf.Max(0f, data.GetCooldown(nextLevel) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
                 $"{data.description}\n\n" +
@@ -78,6 +85,7 @@ public class SkillSelectButton : MonoBehaviour
 
     public void SetupReplaceMode(int index, SkillSelectUIManager manager)
     {
+        
         button.onClick.RemoveAllListeners();
 
         iconImage.enabled = false;
@@ -94,4 +102,5 @@ public class SkillSelectButton : MonoBehaviour
             button.onClick.AddListener(() => manager.ReplaceSkill(SkillSlotType.E));
         }
     }
+
 }
