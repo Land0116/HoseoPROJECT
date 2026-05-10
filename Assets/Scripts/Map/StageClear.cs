@@ -1013,8 +1013,11 @@ public class StageClear : MonoBehaviour
 
         Debug.Log("StageClear 런 상태 초기화 완료");
     }
-    
-    
 
-    
+
+    public int GetCurrentStageNumber()
+    {
+        return currentStageNumber;
+    }
+
 }

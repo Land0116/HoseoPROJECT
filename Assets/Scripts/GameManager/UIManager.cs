@@ -54,8 +54,8 @@ public class UIManager : MonoBehaviour
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
 
-
-
+    [Header("CurStageText")]
+    [SerializeField] private TMPro.TextMeshProUGUI curStage;
     private OptionUI optionUI;
 
 
@@ -188,6 +188,7 @@ public class UIManager : MonoBehaviour
         {
             BindCameraToPlayer(PlayerController.Instance);
         }
+        UpdateStageUI();//*
     }
     private IEnumerator RebindLate()
     {
@@ -206,6 +207,7 @@ public class UIManager : MonoBehaviour
 
         BindSceneUI();
         ApplySceneDefaultState(sceneName);
+        UpdateStageUI();//*
     }
     /// <summary>
     /// 현재 씬의 RootUI / System_UI / 하위 UIManager들을 찾고 바인딩
@@ -665,6 +667,14 @@ public class UIManager : MonoBehaviour
     {
         return itemUIManager;
     }
-    
 
+    private void UpdateStageUI()//*
+    {
+        if (curStage == null) return;
+        if (StageClear.Instance == null) return;
+
+        int stage = StageClear.Instance.GetCurrentStageNumber();
+
+        curStage.text = stage.ToString();
+    }
 }

@@ -13,6 +13,16 @@ public class NewItemUIManager : MonoBehaviour
     [Header("특수 아이템 데이터")]
     public ItemData[] specialitemDatabase;
 
+    [Header("basic Item")]
+    [SerializeField] private ItemData[] firstItemDatabase;
+    [SerializeField] private ItemData[] secondItemDatabase;
+    [SerializeField] private ItemData[] thirdItemDatabase;
+
+    [Header("special Item")]
+    [SerializeField] private ItemData[] firstSpecialItemDatabase;
+    [SerializeField] private ItemData[] secondSpecialItemDatabase;
+    [SerializeField] private ItemData[] thirdSpecialItemDatabase;
+
     [Header("UI")]
     public GameObject uiPanel;
     public ShopButton[] uiButtons;
@@ -194,7 +204,7 @@ public class NewItemUIManager : MonoBehaviour
         }
     }
 
-    private void SpawnRandomItems()
+    /*private void SpawnRandomItems()
     {
         if (itemDatabase == null || itemDatabase.Length == 0) return;
         if (itemPickupPrefab == null) return;
@@ -208,16 +218,12 @@ public class NewItemUIManager : MonoBehaviour
             ? new float[] { -1.0f, 1.0f }
             : new float[] { -2.0f, 0.0f, 2.0f };
 
-        // 랜덤 아이템 선택
-        /*List<ItemData> randomItems = itemDatabase
-            .OrderBy(x => Random.value)
-            .Take(itemCount)
-            .ToList();*/
+        Vector3 basePos = PlayerController.Instance.transform.position;
 
-        //Vector3 basePos = PlayerController.Instance.transform.position;
-
-        /*for (int i = 0; i < itemCount; i++)
+        for (int i = 0; i < itemCount; i++)
         {
+            ItemData item = RollItem();
+
             Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
 
             GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
@@ -225,9 +231,27 @@ public class NewItemUIManager : MonoBehaviour
             ItemPickup pickup = obj.GetComponent<ItemPickup>();
             if (pickup != null)
             {
-                pickup.SetItemData(randomItems[i]);
+                pickup.SetItemData(item);
             }
-        }*/
+        }
+    }*/
+    private void SpawnRandomItems()
+    {
+        if (itemPickupPrefab == null) return;
+        if (PlayerController.Instance == null) return;
+
+        GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB);
+
+        if ((normalDB == null || normalDB.Length == 0) &&
+            (specialDB == null || specialDB.Length == 0))
+            return;
+
+        int itemCount = Random.value < 0.75f ? 2 : 3;
+
+        float[] xPositions = itemCount == 2
+            ? new float[] { -1.0f, 1.0f }
+            : new float[] { -2.0f, 0.0f, 2.0f };
+
         Vector3 basePos = PlayerController.Instance.transform.position;
 
         for (int i = 0; i < itemCount; i++)
@@ -245,7 +269,7 @@ public class NewItemUIManager : MonoBehaviour
             }
         }
     }
-    private ItemData RollItem()
+    /*private ItemData RollItem()
     {
         PlayerController player = PlayerController.Instance;
 
@@ -270,5 +294,69 @@ public class NewItemUIManager : MonoBehaviour
         }
 
         return itemDatabase[Random.Range(0, itemDatabase.Length)];
+    }*/
+    private ItemData RollItem()
+    {
+        PlayerController player = PlayerController.Instance;
+
+        float baseChance = 0.1f; // 10%
+        float bonus = 0f;
+
+        if (player != null)
+        {
+            bonus = player.GetSpecialChanceAdd();
+        }
+
+        float finalChance = baseChance + (bonus / 100f);
+        finalChance = Mathf.Clamp01(finalChance);
+
+        bool isSpecial = Random.value < finalChance;
+
+        
+        GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB);//*
+
+        if (isSpecial && specialDB != null && specialDB.Length > 0)
+        {
+            return specialDB[Random.Range(0, specialDB.Length)];
+        }
+
+        return normalDB[Random.Range(0, normalDB.Length)];
+    }
+
+    private void GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB)
+    {
+        normalDB = itemDatabase;
+        specialDB = specialitemDatabase;
+
+        if (StageClear.Instance == null) return;
+
+        int stage = StageClear.Instance.GetCurrentStageNumber();
+
+        switch (stage)
+        {
+            case 1:
+                if (firstItemDatabase != null && firstItemDatabase.Length > 0)
+                    normalDB = firstItemDatabase;
+
+                if (firstSpecialItemDatabase != null && firstSpecialItemDatabase.Length > 0)
+                    specialDB = firstSpecialItemDatabase;
+                break;
+
+            case 2:
+                if (secondItemDatabase != null && secondItemDatabase.Length > 0)
+                    normalDB = secondItemDatabase;
+
+                if (secondSpecialItemDatabase != null && secondSpecialItemDatabase.Length > 0)
+                    specialDB = secondSpecialItemDatabase;
+                break;
+
+            case 3:
+                if (thirdItemDatabase != null && thirdItemDatabase.Length > 0)
+                    normalDB = thirdItemDatabase;
+
+                if (thirdSpecialItemDatabase != null && thirdSpecialItemDatabase.Length > 0)
+                    specialDB = thirdSpecialItemDatabase;
+                break;
+        }
     }
 }

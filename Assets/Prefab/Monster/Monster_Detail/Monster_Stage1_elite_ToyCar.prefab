@@ -101,7 +101,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -19.428041, y: 19.416876, z: 0}
-  m_LocalScale: {x: 1.7, y: 1.7, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2503452380712276941}
@@ -182,9 +182,9 @@ MonoBehaviour:
   attackPattern: {fileID: 7253476791119164318}
   movePattern: {fileID: 2485219631216982965}
   moveSpeed: 4
-  maxHP: 13
+  maxHP: 15
   minGold: 45
-  maxGold: 55
+  maxGold: 65
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   weaponPrefabDropChance: 0
   itemDropChance: 0

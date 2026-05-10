@@ -13685,7 +13685,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.71902466, y: -92.07001}
+  m_AnchoredPosition: {x: 0.71899414, y: -92.07007}
   m_SizeDelta: {x: -499.37, y: -419.35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &603624337
@@ -14039,6 +14039,7 @@ MonoBehaviour:
   optionSettings: {fileID: 0}
   skillUIManager: {fileID: 0}
   selectSkillPanelOverlay: {fileID: 0}
+  curStage: {fileID: 65906350}
 --- !u!114 &622896074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17789,18 +17790,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d8aa67f230326d42a9cc9520a324a1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUIManager
-  itemDatabase:
+  itemDatabase: []
+  specialitemDatabase: []
+  firstItemDatabase:
   - {fileID: 11400000, guid: fb5db2eb80737054ca8851968a6f966c, type: 2}
   - {fileID: 11400000, guid: 689ae59cded5fcd4bb9ccb669e2ae24a, type: 2}
   - {fileID: 11400000, guid: 491c7140e7db62348adbb041a6e23742, type: 2}
   - {fileID: 11400000, guid: dda1a80235168c9489681fc314d04413, type: 2}
   - {fileID: 11400000, guid: baeca8dbd660f544ea7ddf7a40c9caf4, type: 2}
+  - {fileID: 11400000, guid: eaebc6dca95ee0e4aa5f2d82d4e40458, type: 2}
+  - {fileID: 11400000, guid: 6e16a9eeab94c4841ba976635580c268, type: 2}
   - {fileID: 11400000, guid: 3bae6d27216814c4986a0042cc3e2d47, type: 2}
+  - {fileID: 11400000, guid: 148bccd710d15e7449379cbb7057d1d9, type: 2}
   - {fileID: 11400000, guid: 55e1179d174ef634a8812987e45f2097, type: 2}
-  specialitemDatabase:
-  - {fileID: 11400000, guid: 23e641741798068439c5c2c9f422509b, type: 2}
+  secondItemDatabase:
+  - {fileID: 11400000, guid: ce8c8f4251c8f5d408248a06b221327c, type: 2}
+  - {fileID: 11400000, guid: 8f43f16de8788e4428f8ce93160fb836, type: 2}
+  - {fileID: 11400000, guid: d4019a80bd870ea4f9424dde39a1a63c, type: 2}
+  - {fileID: 11400000, guid: 97219c3bd216c2643b68add9815c85bf, type: 2}
+  - {fileID: 11400000, guid: 842474c881b28d04eb80f82cb7d9a0a7, type: 2}
+  - {fileID: 11400000, guid: 9f075bcb0b728ad4da47779c3c3588e3, type: 2}
+  - {fileID: 11400000, guid: 18b29c7d01509754eb4b62517f60ce55, type: 2}
+  - {fileID: 11400000, guid: f5f381d694177b64e84b53e9ff88ceca, type: 2}
+  thirdItemDatabase:
+  - {fileID: 11400000, guid: 208e9e2e9a620fb44bbdc9dbd4852656, type: 2}
+  - {fileID: 11400000, guid: 8be8bda45ad096b4fa5fea18f42c6988, type: 2}
+  - {fileID: 11400000, guid: d68edf8d370eefc48af94c7b9e3f123f, type: 2}
+  - {fileID: 11400000, guid: b96233a66f7e51a41a6bfd7ef34b9040, type: 2}
+  - {fileID: 11400000, guid: 58c5198592522b64a9d270191ad1ef9b, type: 2}
+  - {fileID: 11400000, guid: 2c772bfa69fae2647a92f49e0f2449d2, type: 2}
+  - {fileID: 11400000, guid: 368ea02559b1f9040a3123ea4d2446c5, type: 2}
+  firstSpecialItemDatabase:
   - {fileID: 11400000, guid: 57fa8fcb8566169429ea76e1ea76855c, type: 2}
+  - {fileID: 11400000, guid: c172144f0919ddb43a8cce0ded5f692f, type: 2}
+  - {fileID: 11400000, guid: 173164d4b09c73f40b9428780fa3924c, type: 2}
+  - {fileID: 11400000, guid: 7660b0505eb97d843aeaf7ed5f88c78c, type: 2}
+  secondSpecialItemDatabase:
   - {fileID: 11400000, guid: 76a86ba91a60ca84ca3e56ac55268122, type: 2}
+  - {fileID: 11400000, guid: 3bb89ba60eb122f4e908b58c661c705c, type: 2}
+  - {fileID: 11400000, guid: bc7cfd05b0d3f8d4fb4f933e544a0db2, type: 2}
+  thirdSpecialItemDatabase:
+  - {fileID: 11400000, guid: 76a86ba91a60ca84ca3e56ac55268122, type: 2}
+  - {fileID: 11400000, guid: 3bb89ba60eb122f4e908b58c661c705c, type: 2}
+  - {fileID: 11400000, guid: bc7cfd05b0d3f8d4fb4f933e544a0db2, type: 2}
   uiPanel: {fileID: 1717098004}
   uiButtons:
   - {fileID: 764195461}
@@ -20834,7 +20866,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.7190552, y: -20.5}
+  m_AnchoredPosition: {x: 0.71899414, y: -20.5}
   m_SizeDelta: {x: -499.37, y: -421.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1163127265
