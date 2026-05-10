@@ -70,10 +70,10 @@ public class LaserSkillData : SkillData
     {
         float baseDamage = level switch
         {
-            1 => 25f,
-            2 => 30f,
-            3 => 35f,
-            _ => 25f
+            1 => 7.5f,
+            2 => 9f,
+            3 => 10.5f,
+            _ => 7.5f
         };
 
         return baseDamage + player.GetFinalDamage() * GetDamageMultiplier(level);

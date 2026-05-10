@@ -57,10 +57,10 @@ public class ExplosionDroneSkillData : SkillData
     {
         float baseDamage = level switch
         {
-            1 => 22f,
-            2 => 26f,
-            3 => 30f,
-            _ => 22f
+            1 => 11f,
+            2 => 13f,
+            3 => 15f,
+            _ => 11f
         };
 
         float multiplier = level switch

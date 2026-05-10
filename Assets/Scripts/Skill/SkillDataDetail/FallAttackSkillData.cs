@@ -51,9 +51,9 @@ public class FallAttackSkillData : SkillData
     {
         switch (level)
         {
-            case 1: return 4f;
-            case 2: return 4.5f;
-            case 3: return 5f;
+            case 1: return 6f;
+            case 2: return 8f;
+            case 3: return 10f;
         }
         return 4f;
     }
@@ -62,10 +62,10 @@ public class FallAttackSkillData : SkillData
     {
         float baseDmg = level switch
         {
-            1 => 18f,
-            2 => 22f,
-            3 => 26f,
-            _ => 18f
+            1 => 9f,
+            2 => 11f,
+            3 => 13f,
+            _ => 9f
         };
 
         float multiplier = level switch

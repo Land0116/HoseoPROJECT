@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlasticSword
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   stage: 1
-  damage: 1
+  damage: 0.5
   moveSpeed: 0
   bulletRate: 1
   hp: 0
@@ -21,3 +21,4 @@ MonoBehaviour:
   icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
   itemName: "\uD50C\uB77C\uC2A4\uD2F1 \uAC80"
   zoneType: 0
+  description: 

@@ -115,37 +115,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: active_speed_boost_slot_0
-      rect:
-        serializedVersion: 2
-        x: 75
-        y: 185
-        width: 98
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a3c375b9cb9e005c0800000000000000
-      internalID: -4251141051968439238
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: active_speed_boost_slot_1
       rect:
         serializedVersion: 2
-        x: 81
+        x: 16
         y: 29
-        width: 185
-        height: 181
+        width: 250
+        height: 185
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -158,99 +136,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: active_speed_boost_slot_2
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 154
-        width: 70
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0b290f4bea46e2fc0800000000000000
-      internalID: -3517763557407026512
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_speed_boost_slot_3
-      rect:
-        serializedVersion: 2
-        x: 19
-        y: 125
-        width: 82
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 546cc4333b0ed1730800000000000000
-      internalID: 3971577506675082821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_speed_boost_slot_4
-      rect:
-        serializedVersion: 2
-        x: 43
-        y: 92
-        width: 70
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b74504e80583bb320800000000000000
-      internalID: 2574713530607490171
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_speed_boost_slot_5
-      rect:
-        serializedVersion: 2
-        x: 19
-        y: 64
-        width: 63
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5416af0634f3215b0800000000000000
-      internalID: -5399183444641423035
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 49f2ee257d700f64d9b305a3a44bd19d
     internalID: 0
     vertices: []
     indices: 

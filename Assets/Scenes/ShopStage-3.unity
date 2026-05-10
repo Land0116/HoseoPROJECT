@@ -24322,6 +24322,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3960292654042022685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
+      propertyPath: currentStage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3960292654042022685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
       propertyPath: stage1PremiumItems.Array.size
       value: 3
       objectReference: {fileID: 0}

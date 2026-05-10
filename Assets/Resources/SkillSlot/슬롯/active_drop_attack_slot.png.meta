@@ -109,10 +109,10 @@ TextureImporter:
         x: 27
         y: 14
         width: 242
-        height: 90
+        height: 252
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 1}
       customData: 
       outline: []
       physicsShape: []
@@ -124,33 +124,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: active_drop_attack_slot_1
-      rect:
-        serializedVersion: 2
-        x: 94
-        y: 54
-        width: 106
-        height: 209
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 385c953712ba72ce0800000000000000
-      internalID: -1429986196509309565
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 20e1a095c3bb9224a972df1130a28b22
     internalID: 0
     vertices: []
     indices: 

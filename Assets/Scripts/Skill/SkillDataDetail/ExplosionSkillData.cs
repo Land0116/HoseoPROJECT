@@ -44,9 +44,9 @@ public class ExplosionSkillData : SkillData
 
         switch (level)
         {
-            case 1: return 20f + playerDamage * 2f;
-            case 2: return 25f + playerDamage * 2.2f;
-            case 3: return 30f + playerDamage * 2.5f;
+            case 1: return 10f + playerDamage * 2f;
+            case 2: return 12.5f + playerDamage * 2.2f;
+            case 3: return 15f + playerDamage * 2.5f;
         }
 
         return 20f;

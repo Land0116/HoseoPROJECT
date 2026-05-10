@@ -118,81 +118,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: active_knockback_wave_slot_0
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 52
-        width: 52
-        height: 179
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 693661042fb1ca350800000000000000
-      internalID: 6029224728413496214
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_knockback_wave_slot_1
-      rect:
-        serializedVersion: 2
-        x: 65
-        y: 73
-        width: 38
-        height: 134
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5aeab9d46ce894710800000000000000
-      internalID: 1678029318528937637
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_knockback_wave_slot_2
-      rect:
-        serializedVersion: 2
-        x: 94
-        y: 96
-        width: 27
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4cc0d47f6b7df9710800000000000000
-      internalID: 1702316365002378436
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: active_knockback_wave_slot_3
       rect:
         serializedVersion: 2
-        x: 129
-        y: 111
-        width: 57
-        height: 55
+        x: 34
+        y: 49
+        width: 246
+        height: 186
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -205,77 +139,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: active_knockback_wave_slot_4
-      rect:
-        serializedVersion: 2
-        x: 191
-        y: 97
-        width: 29
-        height: 86
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 58cdaa3aa11536cc0800000000000000
-      internalID: -3719039692421014395
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_knockback_wave_slot_5
-      rect:
-        serializedVersion: 2
-        x: 210
-        y: 73
-        width: 39
-        height: 133
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b99cac106b1cddea0800000000000000
-      internalID: -5846303753798760037
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_knockback_wave_slot_6
-      rect:
-        serializedVersion: 2
-        x: 230
-        y: 52
-        width: 50
-        height: 179
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4c69fc4904749bfb0800000000000000
-      internalID: -4631592399073732924
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 091731bdc5f38f248afdb7634b58d432
     internalID: 0
     vertices: []
     indices: 

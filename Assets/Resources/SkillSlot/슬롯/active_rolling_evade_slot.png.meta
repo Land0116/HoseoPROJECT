@@ -112,81 +112,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: active_rolling_evade_slot_0
-      rect:
-        serializedVersion: 2
-        x: 44
-        y: 127
-        width: 117
-        height: 92
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f4cfc3f73677a8de0800000000000000
-      internalID: -1330119470714389425
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_rolling_evade_slot_1
-      rect:
-        serializedVersion: 2
-        x: 82
-        y: 36
-        width: 196
-        height: 177
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: f187fe0d938732470800000000000000
-      internalID: 8368664722298337311
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: active_rolling_evade_slot_2
-      rect:
-        serializedVersion: 2
-        x: 18
-        y: 114
-        width: 65
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: cee7f27cedc0d7360800000000000000
-      internalID: 7168900332807749356
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: active_rolling_evade_slot_3
       rect:
         serializedVersion: 2
-        x: 185
+        x: 13
         y: 11
-        width: 91
-        height: 109
+        width: 263
+        height: 211
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -199,33 +133,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: active_rolling_evade_slot_4
-      rect:
-        serializedVersion: 2
-        x: 13
-        y: 69
-        width: 69
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 07775a23f6ca66930800000000000000
-      internalID: 4136182901377431408
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 91c5a3b501f037242aeb2de45d92fb47
     internalID: 0
     vertices: []
     indices: 

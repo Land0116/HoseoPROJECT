@@ -408,6 +408,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 173164d4b09c73f40b9428780fa3924c, type: 2}
   - {fileID: 11400000, guid: 57fa8fcb8566169429ea76e1ea76855c, type: 2}
   - {fileID: 11400000, guid: 7660b0505eb97d843aeaf7ed5f88c78c, type: 2}
+  - {fileID: 11400000, guid: c172144f0919ddb43a8cce0ded5f692f, type: 2}
   stage2NormalItems:
   - {fileID: 11400000, guid: ce8c8f4251c8f5d408248a06b221327c, type: 2}
   - {fileID: 11400000, guid: 8f43f16de8788e4428f8ce93160fb836, type: 2}
@@ -419,7 +420,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f5f381d694177b64e84b53e9ff88ceca, type: 2}
   - {fileID: 11400000, guid: 608ba5d87f20af64aa7cd3807fdd9d28, type: 2}
   stage2PremiumItems:
-  - {fileID: 11400000, guid: 608ba5d87f20af64aa7cd3807fdd9d28, type: 2}
+  - {fileID: 11400000, guid: 23e641741798068439c5c2c9f422509b, type: 2}
+  - {fileID: 11400000, guid: c961287cf83946241a7c9059fbb16d71, type: 2}
+  - {fileID: 11400000, guid: a0210e4601c62194495a4387c1c196e8, type: 2}
   stage3NormalItems:
   - {fileID: 11400000, guid: 208e9e2e9a620fb44bbdc9dbd4852656, type: 2}
   - {fileID: 11400000, guid: 8be8bda45ad096b4fa5fea18f42c6988, type: 2}
@@ -429,7 +432,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2c772bfa69fae2647a92f49e0f2449d2, type: 2}
   - {fileID: 11400000, guid: 368ea02559b1f9040a3123ea4d2446c5, type: 2}
   stage3PremiumItems:
-  - {fileID: 11400000, guid: 368ea02559b1f9040a3123ea4d2446c5, type: 2}
+  - {fileID: 11400000, guid: 76a86ba91a60ca84ca3e56ac55268122, type: 2}
+  - {fileID: 11400000, guid: 3bb89ba60eb122f4e908b58c661c705c, type: 2}
+  - {fileID: 11400000, guid: bc7cfd05b0d3f8d4fb4f933e544a0db2, type: 2}
   currentStage: 1
   potion25Icon: {fileID: -636311195424189090, guid: cc773e79ac5f27945b3e3119ad2f165f, type: 3}
   potion50Icon: {fileID: -299542021565287003, guid: a37075b0a1cae534fb6ba39982760cd1, type: 3}

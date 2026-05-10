@@ -62,10 +62,10 @@ public class KnockbackWaveSkillData : SkillData
     {
         float baseDamage = level switch
         {
-            1 => 10f,
-            2 => 13f,
-            3 => 16f,
-            _ => 10f
+            1 => 4f,
+            2 => 6f,
+            3 => 8f,
+            _ => 4f
         };
 
         float multiplier = level switch

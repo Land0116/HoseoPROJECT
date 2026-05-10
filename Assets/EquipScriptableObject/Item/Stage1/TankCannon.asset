@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TankCannon
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   stage: 0
-  damage: 1.5
+  damage: 1
   moveSpeed: 0
   bulletRate: -1
   hp: 15
@@ -21,3 +21,4 @@ MonoBehaviour:
   icon: {fileID: -5143262495927797754, guid: 556b23aa4ec39f243a2767d5394e7f8a, type: 3}
   itemName: "\uD0F1\uD06C\uB300\uD3EC"
   zoneType: 0
+  description: 
