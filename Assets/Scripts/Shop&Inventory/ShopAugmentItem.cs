@@ -126,11 +126,19 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
             return;
         }
 
-        if (currentAugment == null) return;
+        /*if (currentAugment == null) return;
 
         ItemUIManager.Instance.ShowShopInteract(
             this,
             $"[{currentAugment.augmentationName}]\n{currentAugment.augmentationDesc}"
+        );*/
+        if (currentAugment == null) return;
+
+        string desc = GetAugmentDescription(currentAugment);
+
+        ItemUIManager.Instance.ShowShopInteract(
+            this,
+            $"[{currentAugment.augmentationName}]\n{desc}"
         );
     }
     public Transform GetTransform()
@@ -153,5 +161,32 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         if (currentAugment == null) return;
 
         priceText.text = "Aug\n" + GetFinalPrice().ToString() + "G";
+    }
+    private string GetAugmentDescription(AugmentationSystem augment)
+    {
+        if (augment == null) return "";
+
+        switch (augment.category)
+        {
+            case AugmentationSystem.AugmentCategory.Special:
+                var special = augment.GetSpecialLevelData(1);
+                if (special != null && !string.IsNullOrEmpty(special.ruleDescription))
+                    return special.ruleDescription;
+                break;
+
+            case AugmentationSystem.AugmentCategory.Passive:
+                var passive = augment.GetPassiveLevelData(1);
+                if (passive != null && !string.IsNullOrEmpty(passive.levelDescription))
+                    return passive.levelDescription;
+                break;
+
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                var sub = augment.GetSubSkillLevelData(1);
+                if (sub != null && !string.IsNullOrEmpty(sub.levelDescription))
+                    return sub.levelDescription;
+                break;
+        }
+
+        return augment.augmentationDesc;
     }
 }
