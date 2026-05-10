@@ -24,7 +24,8 @@ public class StageClear : MonoBehaviour
         Skill,
         Item,
         Boss,
-        NextStage
+        NextStage,
+        Exit
     }
 
     public enum RewardType
@@ -42,15 +43,25 @@ public class StageClear : MonoBehaviour
         Boss
     }
 
-    [Header("전투 씬 이름 배열")]
-    [SerializeField] private string[] combatSceneNames;
+    [System.Serializable]
+    private class StageSceneData
+    {
+        [Header("스테이지 번호")]
+        public int stageNumber = 1;
+
+        [Header("전투 씬 이름 배열 1~7")]
+        public string[] combatSceneNames = new string[7];
+
+        [Header("상점 씬 이름")]
+        public string shopSceneName;
+    }
+    
+    [Header("스테이지별 씬 데이터")]
+    [SerializeField] private StageSceneData[] stageSceneDatas;
     
     [Header("메인 씬 이름")]
     [SerializeField] private string mainSceneName = "Main";
-
-    [Header("상점 씬 이름")]
-    [SerializeField] private string shopSceneName = "ShopStage";
-
+    
     [Header("플레이어 태그")]
     [SerializeField] private string playerTag = "Player";
 
@@ -68,6 +79,9 @@ public class StageClear : MonoBehaviour
 
     [Header("현재 맵 번호")]
     [SerializeField] private int currentMapNumber = 1;
+    [Header("최종 스테이지 번호")]
+    [SerializeField] private int finalStageNumber = 3;
+    
 
     [Header("디버그")]
     [SerializeField] private bool isStageCleared;
@@ -127,11 +141,11 @@ public class StageClear : MonoBehaviour
             return;
         }
 
+        SyncCurrentRoomByLoadedScene(scene.name);
+
         // 보스룸에 들어온 순간 이전 보상 예약은 무조건 제거
-        if (IsBossSceneName(scene.name))
+        if (currentRoomType == RoomType.Boss)
         {
-            currentMapNumber = 7;
-            currentRoomType = RoomType.Boss;
             pendingRewardType = RewardType.None;
 
             Debug.Log("보스룸 입장 - 이전 선택 보상 예약 제거");
@@ -145,6 +159,28 @@ public class StageClear : MonoBehaviour
             OnEnterShopScene();
         }
     }
+
+    private void SyncCurrentRoomByLoadedScene(string sceneName)
+    {
+        if (TryGetCombatSceneInfo(sceneName, out int stageNumber, out int mapNumber))
+        {
+            currentStageNumber = stageNumber;
+            currentMapNumber = mapNumber;
+
+            currentRoomType = mapNumber == 7
+                ? RoomType.Boss
+                : RoomType.Combat;
+
+            return;
+        }
+
+        if (TryGetShopStageNumber(sceneName, out int shopStageNumber))
+        {
+            currentStageNumber = shopStageNumber;
+            currentRoomType = RoomType.Shop;
+        }
+    }
+    
     private void Update()
     {
         if (IsMainScene()) return;
@@ -201,15 +237,71 @@ public class StageClear : MonoBehaviour
 
     private bool IsBossSceneName(string sceneName)
     {
-        if (combatSceneNames == null || combatSceneNames.Length < 7)
+        return TryGetCombatSceneInfo(sceneName, out int stageNumber, out int mapNumber)
+               && mapNumber == 7;
+    }
+
+    private bool TryGetCombatSceneInfo(string sceneName, out int stageNumber, out int mapNumber)
+    {
+        stageNumber = 1;
+        mapNumber = 1;
+
+        if (stageSceneDatas == null)
             return false;
 
-        return sceneName == combatSceneNames[6];
+        for (int i = 0; i < stageSceneDatas.Length; i++)
+        {
+            StageSceneData data = stageSceneDatas[i];
+            if (data == null) continue;
+            if (data.combatSceneNames == null) continue;
+
+            int realStageNumber = data.stageNumber > 0 ? data.stageNumber : i + 1;
+
+            for (int j = 0; j < data.combatSceneNames.Length; j++)
+            {
+                if (sceneName == data.combatSceneNames[j])
+                {
+                    stageNumber = realStageNumber;
+                    mapNumber = j + 1;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryGetShopStageNumber(string sceneName, out int stageNumber)
+    {
+        stageNumber = 1;
+
+        if (stageSceneDatas == null)
+            return false;
+
+        for (int i = 0; i < stageSceneDatas.Length; i++)
+        {
+            StageSceneData data = stageSceneDatas[i];
+            if (data == null) continue;
+
+            if (!string.IsNullOrEmpty(data.shopSceneName) &&
+                sceneName == data.shopSceneName)
+            {
+                stageNumber = data.stageNumber > 0 ? data.stageNumber : i + 1;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool IsBossRoom()
     {
         return currentRoomType == RoomType.Boss || currentMapNumber == 7;
+    }
+    
+    private bool IsFinalStageBossCleared()
+    {
+        return currentStageNumber >= finalStageNumber && currentMapNumber == 7;
     }
     
     public void ClearStage()
@@ -221,14 +313,22 @@ public class StageClear : MonoBehaviour
 
         Debug.Log($"맵 클리어 / 스테이지 : {currentStageNumber} / 맵 : {currentMapNumber}");
 
-        // 보스맵은 이전 선택 보상을 지급하면 안 됨
         if (currentMapNumber == 7)
         {
             pendingRewardType = RewardType.None;
 
-            Debug.Log("보스 클리어 - 보스 보상 지급 후 다음 스테이지 출구 생성");
-
             GiveBossReward();
+
+            if (IsFinalStageBossCleared())
+            {
+                Debug.Log("최종 보스 클리어 - 탈출 출구 생성");
+
+                OpenOnlyRoute(RouteType.Exit);
+                return;
+            }
+
+            Debug.Log("보스 클리어 - 다음 스테이지 출구 생성");
+
             OpenOnlyRoute(RouteType.NextStage);
             return;
         }
@@ -262,12 +362,20 @@ public class StageClear : MonoBehaviour
             return;
         }
 
-        // 7맵은 보스
         if (currentMapNumber == 7)
         {
+            GiveBossReward();
+
+            if (IsFinalStageBossCleared())
+            {
+                Debug.Log("최종 보스 클리어 - 탈출 출구 생성");
+
+                OpenOnlyRoute(RouteType.Exit);
+                return;
+            }
+
             Debug.Log("보스 클리어 - 다음 스테이지 출구 생성");
 
-            GiveBossReward();
             OpenOnlyRoute(RouteType.NextStage);
             return;
         }
@@ -320,8 +428,9 @@ public class StageClear : MonoBehaviour
     /// 핵심 규칙:
     /// 1. 상점 안에서는 상점 출구가 다시 나오면 안 된다.
     /// 2. 상점 안에서는 보스 / 다음 스테이지 출구도 직접 표시하지 않는다.
-    /// 3. 증강 / 스킬 / 아이템 3개만 출구에 표시한다.
-    /// 4. 상점도 하나의 맵 위치를 차지하므로,
+    /// 3. 단, 상점이 6번째 위치라면 보스 출구만 표시한다.
+    /// 4. 증강 / 스킬 / 아이템 3개만 출구에 표시한다.
+    /// 5. 상점도 하나의 맵 위치를 차지하므로,
     ///    이 출구를 선택하면 MoveToNextCombatMap()에서 다음 위치로 이동한다.
     /// </summary>
     private void OpenShopClearRouteChoices()
@@ -477,14 +586,22 @@ public class StageClear : MonoBehaviour
             return;
         }
 
-        // 상점맵 내부에서는 상점 / 보스 / 다음 스테이지 출구를 직접 사용할 수 없다.
+        // 상점맵 내부 출구 제한
+        // 기본적으로 상점 안에서는 Shop / NextStage 출구를 막는다.
+        // 단, currentMapNumber가 6 이상이면 보스 출구는 허용한다.
+        // 이유: 1-6 위치가 상점맵일 경우, 다음은 보스방으로 가야 하기 때문.
         if (currentRoomType == RoomType.Shop)
         {
             if (routeType == RouteType.Shop ||
-                routeType == RouteType.Boss ||
                 routeType == RouteType.NextStage)
             {
                 Debug.LogWarning($"상점맵에서는 사용할 수 없는 출구 타입 : {routeType}");
+                return;
+            }
+
+            if (routeType == RouteType.Boss && currentMapNumber < 6)
+            {
+                Debug.LogWarning($"아직 보스방으로 갈 수 없는 상점 위치임 / currentMapNumber : {currentMapNumber}");
                 return;
             }
         }
@@ -520,14 +637,40 @@ public class StageClear : MonoBehaviour
             case RouteType.NextStage:
                 MoveToNextStage();
                 break;
+            case RouteType.Exit:
+                CompleteGame();
+                break;
+        }
+    }
+    
+    private void CompleteGame()
+    {
+        if (isLoadingNextScene) return;
+
+        Debug.Log("게임 최종 클리어");
+
+        // OnTriggerStay로 반복 호출되는 것 방지
+        isLoadingNextScene = true;
+
+        // StageClear는 UI를 직접 켜지 않는다.
+        // 클리어 UI 출력은 PlayerUIManager에게 요청만 한다.
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ShowGameClearUI();
+        }
+        else
+        {
+            Debug.LogWarning("PlayerUIManager.Instance가 없어서 게임 클리어 UI를 열 수 없음");
         }
     }
 
     private void MoveToShopScene()
     {
-        if (string.IsNullOrEmpty(shopSceneName))
+        string currentShopSceneName = GetCurrentShopSceneName();
+
+        if (string.IsNullOrEmpty(currentShopSceneName))
         {
-            Debug.LogError("shopSceneName이 비어있음");
+            Debug.LogError($"상점 씬 이름이 비어있음 / currentStageNumber : {currentStageNumber}");
             return;
         }
 
@@ -540,7 +683,7 @@ public class StageClear : MonoBehaviour
 
         currentRoomType = RoomType.Shop;
 
-        StartCoroutine(LoadSceneRoutine(shopSceneName));
+        StartCoroutine(LoadSceneRoutine(currentShopSceneName));
     }
 
     private void MoveToNextCombatMap()
@@ -592,7 +735,16 @@ public class StageClear : MonoBehaviour
     {
         Debug.Log("다음 스테이지 이동");
 
-        currentStageNumber++;
+        int nextStageNumber = currentStageNumber + 1;
+
+        if (!HasStageSceneData(nextStageNumber))
+        {
+            Debug.Log("다음 스테이지 데이터가 없음 - 마지막 스테이지 클리어 처리 필요");
+            isLoadingNextScene = false;
+            return;
+        }
+
+        currentStageNumber = nextStageNumber;
         currentMapNumber = 1;
         pendingRewardType = RewardType.None;
         currentRoomType = RoomType.Combat;
@@ -602,6 +754,7 @@ public class StageClear : MonoBehaviour
         if (string.IsNullOrEmpty(firstSceneName))
         {
             Debug.LogError("다음 스테이지 첫 씬 이름이 없음");
+            isLoadingNextScene = false;
             return;
         }
 
@@ -610,20 +763,77 @@ public class StageClear : MonoBehaviour
         StartCoroutine(LoadSceneRoutine(firstSceneName));
     }
 
+    private StageSceneData GetStageSceneData(int stageNumber)
+    {
+        if (stageSceneDatas == null)
+            return null;
+
+        for (int i = 0; i < stageSceneDatas.Length; i++)
+        {
+            StageSceneData data = stageSceneDatas[i];
+            if (data == null) continue;
+
+            if (data.stageNumber == stageNumber)
+                return data;
+        }
+
+        // stageNumber를 비워뒀거나 잘못 넣었을 때를 위한 보조 처리
+        int index = stageNumber - 1;
+
+        if (index >= 0 && index < stageSceneDatas.Length)
+            return stageSceneDatas[index];
+
+        return null;
+    }
+
+    private bool HasStageSceneData(int stageNumber)
+    {
+        StageSceneData data = GetStageSceneData(stageNumber);
+
+        if (data == null)
+            return false;
+
+        if (data.combatSceneNames == null || data.combatSceneNames.Length == 0)
+            return false;
+
+        return true;
+    }
+
     private string GetCombatSceneNameByMapNumber(int mapNumber)
     {
-        if (combatSceneNames == null || combatSceneNames.Length == 0)
-            return null;
+        StageSceneData data = GetStageSceneData(currentStageNumber);
 
-        // currentMapNumber는 1부터 시작.
-        // 배열 index는 0부터 시작.
-        // 그래서 mapNumber - 1 사용.
+        if (data == null)
+        {
+            Debug.LogError($"스테이지 데이터가 없음 / currentStageNumber : {currentStageNumber}");
+            return null;
+        }
+
+        if (data.combatSceneNames == null || data.combatSceneNames.Length == 0)
+        {
+            Debug.LogError($"전투 씬 배열이 비어있음 / currentStageNumber : {currentStageNumber}");
+            return null;
+        }
+
         int index = mapNumber - 1;
 
-        if (index < 0 || index >= combatSceneNames.Length)
+        if (index < 0 || index >= data.combatSceneNames.Length)
+        {
+            Debug.LogError($"전투 씬 인덱스 초과 / Stage : {currentStageNumber} / Map : {mapNumber}");
+            return null;
+        }
+
+        return data.combatSceneNames[index];
+    }
+
+    private string GetCurrentShopSceneName()
+    {
+        StageSceneData data = GetStageSceneData(currentStageNumber);
+
+        if (data == null)
             return null;
 
-        return combatSceneNames[index];
+        return data.shopSceneName;
     }
 
     private IEnumerator LoadSceneRoutine(string sceneName)

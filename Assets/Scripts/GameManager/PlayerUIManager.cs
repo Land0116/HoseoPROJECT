@@ -79,6 +79,11 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private GameObject dashPanel_UI;
     [SerializeField] private Slider dashCooldownSlider;
+    
+    [Header("Game Clear")]
+    [SerializeField] private GameObject gameClearPanel;
+    [SerializeField] private Button clearRestartBtn;
+    [SerializeField] private Button clearToMainBtn;
 
     /// <summary>
     /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
@@ -681,6 +686,7 @@ public class PlayerUIManager : MonoBehaviour
         exitSurePanel = UIManager.FindChildRecursive(playerPanel, "ExitSurePanel")?.gameObject;
         toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
         playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
+        gameClearPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "GameClearUIPanel")?.gameObject;
         
         Transform dashPanelTr = UIManager.FindChildRecursive(playerPanel, "DashPanel");
         if (dashPanelTr != null)
@@ -722,6 +728,13 @@ public class PlayerUIManager : MonoBehaviour
             reStart = UIManager.FindChildRecursive(playerDyingPanel.transform, "ReStartBtn")?.GetComponent<Button>();
             dieToMain = UIManager.FindChildRecursive(playerDyingPanel.transform, "DieToMainBtn")?.GetComponent<Button>();
         }
+        
+        // 게임 클리어 UI 버튼
+        if (gameClearPanel != null)
+        {
+            clearRestartBtn = UIManager.FindChildRecursive(gameClearPanel.transform, "RestartBtn")?.GetComponent<Button>();
+            clearToMainBtn = UIManager.FindChildRecursive(gameClearPanel.transform, "ToMainBtn")?.GetComponent<Button>();
+        }
 
         // 버튼 이벤트 연결
         BindButtons();
@@ -754,6 +767,10 @@ public class PlayerUIManager : MonoBehaviour
 
         BindButton(reStart, OnClickRestart);
         BindButton(dieToMain, OnClickToMain);
+        
+        
+        BindButton(clearRestartBtn, OnClickClearRestart);
+        BindButton(clearToMainBtn, OnClickClearToMain);
     }
     
     /// <summary>
@@ -766,6 +783,7 @@ public class PlayerUIManager : MonoBehaviour
         if (exitSurePanel != null) exitSurePanel.SetActive(false);
         if (toMainSurePanel != null) toMainSurePanel.SetActive(false);
         if (playerDyingPanel != null) playerDyingPanel.SetActive(false);
+        if (gameClearPanel != null) gameClearPanel.SetActive(false);
 
         currentPanel = null;
         escReturnTarget = EscReturnTarget.None;
@@ -791,6 +809,74 @@ public class PlayerUIManager : MonoBehaviour
             dashCooldownText.gameObject.SetActive(false);
         }
     }
+    
+    /// <summary>
+    /// 게임 최종 클리어 UI 보여주기.
+    /// StageClear는 클리어 여부만 판단하고,
+    /// 실제 UI 출력은 PlayerUIManager가 담당한다.
+    /// </summary>
+    public void ShowGameClearUI()
+    {
+        OpenPanel(gameClearPanel);
+
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+    }
+    
+    /// <summary>
+    /// 게임 클리어 UI - Restart 버튼.
+    /// 현재 씬 재시작이 아니라, 런을 처음부터 다시 시작한다.
+    /// 즉 무조건 1-1로 간다.
+    /// </summary>
+    private void OnClickClearRestart()
+    {
+        Time.timeScale = 1f;
+
+        if (gameClearPanel != null)
+            gameClearPanel.SetActive(false);
+
+        currentPanel = null;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(false);
+
+        if (StageClear.Instance != null)
+        {
+            StageClear.Instance.StartNewRun();
+        }
+        else if (UIManager.Instance != null)
+        {
+            UIManager.Instance.RestartCurrentScene();
+        }
+    }
+
+    /// <summary>
+    /// 게임 클리어 UI - ToMain 버튼.
+    /// 메인 화면으로 돌아간다.
+    /// </summary>
+    private void OnClickClearToMain()
+    {
+        Time.timeScale = 1f;
+
+        if (gameClearPanel != null)
+            gameClearPanel.SetActive(false);
+
+        currentPanel = null;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(false);
+
+        if (StageClear.Instance != null)
+            StageClear.Instance.ResetRunStateOnly();
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.GoToMainScene();
+        }
+    }
+    
 
     /// <summary>
     /// 버튼 바인딩 공통 함수
