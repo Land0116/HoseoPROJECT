@@ -29,7 +29,12 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uBC18\uC0AC\uB429\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uCD5C\uB300 2\uD68C \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uBC18\uC0AC \uD69F\uC218\uAC00
+      4\uD68C\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uBCBD\uC5D0 \uD295\uAE30\uB294 \uD0C4\uD658"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uB2FF\uC73C\uBA74 \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uC881\uC740 \uACF5\uAC04\uC5D0\uC11C \uC804\uD22C \uD6A8\uC728\uC774 \uB192\uC544\uC9D1\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -56,7 +61,12 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
-    levelDescription: "\uD0C4\uD658\uC774 \uB354 \uB9CE\uC774 \uD295\uAE41\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uCD5C\uB300 3\uD68C \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uBC18\uC0AC \uD69F\uC218\uAC00
+      4\uD68C\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uBC18\uC0AC \uD69F\uC218 \uC99D\uAC00"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uB2FF\uC73C\uBA74 \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uC881\uC740 \uACF5\uAC04\uC5D0\uC11C \uC804\uD22C \uD6A8\uC728\uC774 \uB192\uC544\uC9D1\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -83,7 +93,11 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
-    levelDescription: "\uD0C4\uD658\uC774 \uC5EC\uB7EC \uBC88 \uBC18\uC0AC\uB429\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uCD5C\uB300 4\uD68C \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
+    tooltipEffectText: "\uB2E4\uC911 \uBCBD \uBC18\uC0AC"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uBCBD\uC5D0 \uB2FF\uC73C\uBA74 \uBC18\uC0AC\uB429\uB2C8\uB2E4.
+      \n\uC881\uC740 \uACF5\uAC04\uC5D0\uC11C \uC804\uD22C \uD6A8\uC728\uC774 \uB192\uC544\uC9D1\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0

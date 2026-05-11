@@ -29,20 +29,33 @@ MonoBehaviour:
   subSkillLevels: []
   passiveLevels:
   - level: 1
-    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 20% \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uACF5\uACA9 \uC18D\uB3C4\uAC00
+      60%\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uACF5\uACA9 \uC18D\uB3C4 +20%"
+    tooltipDescription: "\uAE30\uBCF8 \uACF5\uACA9 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uB354 \uBE60\uB974\uAC8C \uD0C4\uD658\uC744 \uBC1C\uC0AC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0.2
     maxHpAdd: 0
     lifeStealPercent: 0
   - level: 2
-    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 \n\uB354 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 40% \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uACF5\uACA9 \uC18D\uB3C4\uAC00
+      60%\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uACF5\uACA9 \uC18D\uB3C4 +40%"
+    tooltipDescription: "\uAE30\uBCF8 \uACF5\uACA9 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uB354 \uBE60\uB974\uAC8C \uD0C4\uD658\uC744 \uBC1C\uC0AC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0.4
     maxHpAdd: 0
     lifeStealPercent: 0
   - level: 3
-    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 \uB9E4\uC6B0 \uBE60\uB974\uAC8C
-      \uC99D\uAC00\uD569\uB2C8\uB2E4. "
+    levelDescription: "\uACF5\uACA9 \uC18D\uB3C4\uAC00 60% \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
+    tooltipEffectText: "\uACF5\uACA9 \uC18D\uB3C4 +60%"
+    tooltipDescription: "\uAE30\uBCF8 \uACF5\uACA9 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4.
+      \n\uB354 \uBE60\uB974\uAC8C \uD0C4\uD658\uC744 \uBC1C\uC0AC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0.6
     maxHpAdd: 0

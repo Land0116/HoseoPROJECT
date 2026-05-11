@@ -171,7 +171,6 @@ public class AugmentRunManager : MonoBehaviour
     }
 
     #endregion
-
     #region Add Logic
 
     private bool TryAddSubSkill(AugmentationSystem aug)

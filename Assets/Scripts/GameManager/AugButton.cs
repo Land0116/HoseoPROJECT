@@ -37,7 +37,7 @@ public class AugButton : MonoBehaviour
         if (descText != null)
             descText.text = GetFormattedDescription(data, displayLevel);
 
-        if (levelText != null)
+        /*if (levelText != null)
         {
             if (data != null)
             {
@@ -50,7 +50,7 @@ public class AugButton : MonoBehaviour
                 levelText.text = "";
                 levelText.gameObject.SetActive(false);
             }
-        }
+        }*/
         if (iconImage != null)
         {
             iconImage.sprite = data != null ? data.icon : null;

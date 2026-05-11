@@ -28,7 +28,13 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uAD00\uD1B5\uD569\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uCD5C\uB300 2\uBA85\uAE4C\uC9C0
+      \uAD00\uD1B5\uD569\uB2C8\uB2E4. \uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC
+      \uAD00\uD1B5 \uC218\uAC00 4\uBA85\n\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uC801\uC744 \uAD00\uD1B5\uD558\uB294 \uD0C4\uD658"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uAD00\uD1B5\uD569\uB2C8\uB2E4.
+      \n\uC77C\uB82C\uB85C \uBAA8\uC778 \uC801\uC744 \uD6A8\uC728\uC801\uC73C\uB85C
+      \n\uACF5\uACA9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -55,7 +61,13 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
-    levelDescription: "\uB354 \uB9CE\uC740 \uC801\uC744 \uAD00\uD1B5\uD569\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uCD5C\uB300 3\uBA85\uAE4C\uC9C0
+      \uAD00\uD1B5\uD569\uB2C8\uB2E4. \uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC
+      \uAD00\uD1B5 \uC218\uAC00 4\uBA85\n\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uAD00\uD1B5 \uC218 \uC99D\uAC00"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uAD00\uD1B5\uD569\uB2C8\uB2E4.
+      \n\uC77C\uB82C\uB85C \uBAA8\uC778 \uC801\uC744 \uD6A8\uC728\uC801\uC73C\uB85C
+      \n\uACF5\uACA9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -82,7 +94,12 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
-    levelDescription: "\uC5EC\uB7EC \uC801\uC744 \uC5F0\uC18D\uC73C\uB85C \uAD00\uD1B5\uD569\uB2C8\uB2E4."
+    levelDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uCD5C\uB300 4\uBA85\uAE4C\uC9C0
+      \uAD00\uD1B5\uD569\uB2C8\uB2E4. \uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
+    tooltipEffectText: "\uAC15\uB825\uD55C \uB2E4\uC911 \uAD00\uD1B5"
+    tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC744 \uAD00\uD1B5\uD569\uB2C8\uB2E4.
+      \n\uC77C\uB82C\uB85C \uBAA8\uC778 \uC801\uC744 \uD6A8\uC728\uC801\uC73C\uB85C
+      \n\uACF5\uACA9\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0

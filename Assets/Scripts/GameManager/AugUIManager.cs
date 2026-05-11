@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using UnityEngine.EventSystems;
+using TMPro;
 
 public class AugUIManager : MonoBehaviour
 {
@@ -35,6 +37,27 @@ public class AugUIManager : MonoBehaviour
 
     private readonly List<AugmentationSystem> candidateBuffer = new List<AugmentationSystem>(64);
 
+    [Header("보유 증강 슬롯 Rect")] [SerializeField]
+    private RectTransform[] slotRects;
+
+    [Header("보유 증강 설명창 UI")] [SerializeField]
+    private GameObject ownedAugTooltipPanel;
+
+    [SerializeField] private RectTransform ownedAugTooltipRect;
+    [SerializeField] private TMP_Text tooltipNameText;
+    [SerializeField] private TMP_Text tooltipCategoryText;
+    [SerializeField] private TMP_Text tooltipEffectText;
+    [SerializeField] private TMP_Text tooltipDescriptionText;
+
+    [Header("보유 증강 설명창 위치")] 
+    [SerializeField] private Vector2 tooltipOffset = new Vector2(24f, 0f);
+
+    [Header("마우스 / 조준점")] 
+    [SerializeField] private GameObject crosshairObject;
+
+    private int hoveredOwnedSlotIndex = -1;
+    private readonly List<RaycastResult> hoverRaycastResults = new List<RaycastResult>(16);
+
     #endregion
 
     #region Unity
@@ -53,7 +76,7 @@ public class AugUIManager : MonoBehaviour
     private void Start()
     {
         ClearOwnedAugmentUI();
-        //RefreshRerollUI();
+        HideOwnedAugTooltip();
     }
 
     #endregion
@@ -156,6 +179,8 @@ public class AugUIManager : MonoBehaviour
             // 카테고리별 색상 적용 없음
             slotImages[i].color = Color.white;
         }
+        
+        RefreshOwnedHoverAfterUpdate();
     }
 
     public void ResetUIStateForRestart()
@@ -164,6 +189,9 @@ public class AugUIManager : MonoBehaviour
 
         if (uiPanel != null)
             uiPanel.SetActive(false);
+
+        HideOwnedAugTooltip();
+        SetCursorAndCrosshairForSlotHover(false);
 
         ClearOwnedAugmentUI();
 
@@ -207,6 +235,7 @@ public class AugUIManager : MonoBehaviour
         }
 
         BindOwnedSlotImages(systemUIRoot);
+        BindOwnedAugTooltipUI(systemUIRoot);
 
         RefreshOwnedAugmentUI();
         RefreshRerollUI();
@@ -218,51 +247,438 @@ public class AugUIManager : MonoBehaviour
         if (slotRoot == null)
         {
             slotImages = null;
+            slotRects = null;
             Debug.LogWarning("[AugUIManager] AugUIPanel 을 찾지 못함");
             return;
         }
 
-        List<Image> iconList = new List<Image>();
+        const int ownedSlotCount = 6;
 
-        // 네 슬롯 수가 6개니까 6으로 고정
-        for (int i = 1; i <= 6; i++)
+        Image[] boundImages = new Image[ownedSlotCount];
+        RectTransform[] boundRects = new RectTransform[ownedSlotCount];
+
+        for (int i = 0; i < ownedSlotCount; i++)
         {
-            Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{i}");
+            int slotNumber = i + 1;
+
+            Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{slotNumber}");
             if (slotTr == null)
             {
-                Debug.LogWarning($"[AugUIManager] AugUISlot_{i} 을 찾지 못함");
+                Debug.LogWarning($"[AugUIManager] AugUISlot_{slotNumber} 을 찾지 못함");
                 continue;
             }
 
-            Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{i}");
+            boundRects[i] = slotTr as RectTransform;
+
+            SetupOwnedSlotPointerEvent(slotTr.gameObject, i);
+
+            Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{slotNumber}");
             if (bgPanelTr == null)
             {
-                Debug.LogWarning($"[AugUIManager] AugImagePanel_{i} 을 찾지 못함");
+                Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 을 찾지 못함");
                 continue;
             }
 
-            // 실제 아이콘 이름: AugIamge (현재 네 Hierarchy 기준)
             Transform iconTr = UIManager.FindChildRecursive(bgPanelTr, "AugImage");
             if (iconTr == null)
             {
-                Debug.LogWarning($"[AugUIManager] 슬롯 {i} 의 실제 아이콘 오브젝트를 찾지 못함");
+                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 실제 아이콘 오브젝트를 찾지 못함");
                 continue;
             }
 
             Image iconImg = iconTr.GetComponent<Image>();
             if (iconImg == null)
             {
-                Debug.LogWarning($"[AugUIManager] 슬롯 {i} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
+                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
                 continue;
             }
 
-            iconList.Add(iconImg);
+            boundImages[i] = iconImg;
         }
 
-        slotImages = iconList.ToArray();
-
-        //Debug.Log($"[AugUIManager] 보유 증강 아이콘 바인딩 완료: {slotImages.Length}개");
+        slotImages = boundImages;
+        slotRects = boundRects;
     }
+
+    #region Owned Augment Tooltip
+
+    private void SetupOwnedSlotPointerEvent(GameObject slotObject, int index)
+    {
+        if (slotObject == null) return;
+
+        /*
+         * 새 스크립트 없이 EventTrigger로 처리한다.
+         * 슬롯 데이터는 AugmentRunManager가 관리하고,
+         * 마우스 이벤트만 AugUIManager가 받는 구조다.
+         */
+
+        Image raycastImage = slotObject.GetComponent<Image>();
+
+        if (raycastImage == null)
+        {
+            raycastImage = slotObject.AddComponent<Image>();
+            raycastImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
+        raycastImage.raycastTarget = true;
+
+        EventTrigger trigger = slotObject.GetComponent<EventTrigger>();
+
+        if (trigger == null)
+            trigger = slotObject.AddComponent<EventTrigger>();
+
+        /*
+         * BindAugUI가 씬 로드 때 다시 호출될 수 있으므로
+         * 이벤트가 중복 등록되지 않게 초기화한다.
+         */
+        trigger.triggers.Clear();
+
+        EventTrigger.Entry enterEntry = new EventTrigger.Entry();
+        enterEntry.eventID = EventTriggerType.PointerEnter;
+        enterEntry.callback.AddListener((eventData) =>
+        {
+            OnHoverOwnedAugmentSlot(index);
+        });
+
+        EventTrigger.Entry exitEntry = new EventTrigger.Entry();
+        exitEntry.eventID = EventTriggerType.PointerExit;
+        exitEntry.callback.AddListener((eventData) =>
+        {
+            OnExitOwnedAugmentSlot(index);
+        });
+
+        trigger.triggers.Add(enterEntry);
+        trigger.triggers.Add(exitEntry);
+    }
+
+    private void BindOwnedAugTooltipUI(GameObject systemUIRoot)
+    {
+        if (systemUIRoot == null) return;
+
+        /*
+         * 추천 UI 구조
+         *
+         * System_UI
+         * └─ OwnedAugTooltipPanel
+         *    ├─ TooltipName
+         *    ├─ TooltipCategory
+         *    ├─ TooltipEffectText
+         *    └─ TooltipDescription
+         */
+
+        Transform panelTr = UIManager.FindChildRecursive(systemUIRoot.transform, "AugTooltipDescriptionPanel");
+        if (panelTr == null)
+            panelTr = UIManager.FindChildRecursive(systemUIRoot.transform, "AugTooltipDescriptionPanel");
+
+        if (panelTr == null)
+        {
+            Debug.LogWarning("[AugUIManager] AugTooltipDescriptionPanel 을 찾지 못함");
+            return;
+        }
+
+        ownedAugTooltipPanel = panelTr.gameObject;
+        ownedAugTooltipRect = panelTr as RectTransform;
+
+        Transform nameTr = UIManager.FindChildRecursive(panelTr, "TooltipTitle");
+        Transform categoryTr = UIManager.FindChildRecursive(panelTr, "TooltipCategory");
+        Transform effectTr = UIManager.FindChildRecursive(panelTr, "TooltipEffectText");
+        Transform descriptionTr = UIManager.FindChildRecursive(panelTr, "TooltipDescription");
+
+        if (nameTr != null)
+            tooltipNameText = nameTr.GetComponent<TMP_Text>();
+
+        if (categoryTr != null)
+            tooltipCategoryText = categoryTr.GetComponent<TMP_Text>();
+
+        if (effectTr != null)
+            tooltipEffectText = effectTr.GetComponent<TMP_Text>();
+
+        if (descriptionTr != null)
+            tooltipDescriptionText = descriptionTr.GetComponent<TMP_Text>();
+
+        DisableTooltipRaycast(ownedAugTooltipPanel.transform);
+
+        ownedAugTooltipPanel.SetActive(false);
+    }
+
+    private void DisableTooltipRaycast(Transform root)
+    {
+        if (root == null) return;
+
+        Graphic[] graphics = root.GetComponentsInChildren<Graphic>(true);
+
+        for (int i = 0; i < graphics.Length; i++)
+        {
+            graphics[i].raycastTarget = false;
+        }
+    }
+
+    public void OnHoverOwnedAugmentSlot(int index)
+    {
+        hoveredOwnedSlotIndex = index;
+
+        SetCursorAndCrosshairForSlotHover(true);
+
+        AugmentationSystem data = GetOwnedAugmentBySlotIndex(index);
+        if (data == null)
+        {
+            HideOwnedAugTooltip();
+            return;
+        }
+
+        int level = GetOwnedAugmentLevelBySlotIndex(index);
+        RectTransform slotRect = GetOwnedSlotRect(index);
+
+        ShowOwnedAugTooltip(data, level, slotRect);
+    }
+
+    public void OnExitOwnedAugmentSlot(int index)
+    {
+        if (hoveredOwnedSlotIndex != index)
+            return;
+
+        hoveredOwnedSlotIndex = -1;
+
+        HideOwnedAugTooltip();
+        SetCursorAndCrosshairForSlotHover(false);
+    }
+
+    private AugmentationSystem GetOwnedAugmentBySlotIndex(int index)
+    {
+        if (AugmentRunManager.Instance == null) return null;
+
+        AugmentSlotData[] ownedSlots = AugmentRunManager.Instance.OwnedSlots;
+        if (ownedSlots == null) return null;
+
+        if (index < 0 || index >= ownedSlots.Length) return null;
+
+        AugmentSlotData slotData = ownedSlots[index];
+        if (slotData == null) return null;
+        if (!slotData.isOccupied) return null;
+
+        return slotData.augmentData;
+    }
+
+    private int GetOwnedAugmentLevelBySlotIndex(int index)
+    {
+        if (AugmentRunManager.Instance == null) return 1;
+
+        AugmentSlotData[] ownedSlots = AugmentRunManager.Instance.OwnedSlots;
+        if (ownedSlots == null) return 1;
+
+        if (index < 0 || index >= ownedSlots.Length) return 1;
+
+        AugmentSlotData slotData = ownedSlots[index];
+        if (slotData == null) return 1;
+        if (!slotData.isOccupied) return 1;
+        if (slotData.augmentData == null) return 1;
+
+        AugmentationSystem aug = slotData.augmentData;
+
+        switch (aug.category)
+        {
+            case AugmentationSystem.AugmentCategory.SubSkill:
+                return Mathf.Clamp(slotData.currentLevel, 1, aug.maxLevel);
+
+            case AugmentationSystem.AugmentCategory.Passive:
+                return Mathf.Clamp(slotData.stackCount, 1, aug.maxLevel);
+
+            case AugmentationSystem.AugmentCategory.Special:
+                return Mathf.Clamp(slotData.currentLevel, 1, aug.maxLevel);
+        }
+
+        return 1;
+    }
+
+    private RectTransform GetOwnedSlotRect(int index)
+    {
+        if (slotRects == null) return null;
+        if (index < 0 || index >= slotRects.Length) return null;
+
+        return slotRects[index];
+    }
+
+    private void ShowOwnedAugTooltip(AugmentationSystem data, int level, RectTransform slotRect)
+    {
+        if (data == null) return;
+        if (ownedAugTooltipPanel == null) return;
+
+        if (tooltipNameText != null)
+        {
+            tooltipNameText.text = string.IsNullOrWhiteSpace(data.augmentationName)
+                ? data.name
+                : data.augmentationName;
+        }
+
+        if (tooltipCategoryText != null)
+        {
+            tooltipCategoryText.text = data.GetTooltipCategoryText();
+        }
+
+        if (tooltipEffectText != null)
+        {
+            tooltipEffectText.text = data.GetTooltipEffectText(level);
+        }
+
+        if (tooltipDescriptionText != null)
+        {
+            tooltipDescriptionText.text = data.GetTooltipDescription(level);
+        }
+
+        ownedAugTooltipPanel.SetActive(true);
+
+        SetOwnedAugTooltipPosition(slotRect);
+    }
+
+    private void HideOwnedAugTooltip()
+    {
+        if (ownedAugTooltipPanel != null)
+            ownedAugTooltipPanel.SetActive(false);
+    }
+
+    private void SetOwnedAugTooltipPosition(RectTransform slotRect)
+    {
+        if (slotRect == null) return;
+        if (ownedAugTooltipRect == null) return;
+
+        RectTransform parentRect = ownedAugTooltipRect.parent as RectTransform;
+        if (parentRect == null) return;
+
+        Canvas canvas = parentRect.GetComponentInParent<Canvas>();
+
+        Camera uiCamera = null;
+        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            uiCamera = canvas.worldCamera;
+
+        Vector3[] corners = new Vector3[4];
+        slotRect.GetWorldCorners(corners);
+
+        // corners[2] = 오른쪽 위
+        // corners[3] = 오른쪽 아래
+        Vector3 rightCenterWorld = (corners[2] + corners[3]) * 0.5f;
+
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, rightCenterWorld);
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRect,
+                screenPoint,
+                uiCamera,
+                out Vector2 localPoint))
+        {
+            ownedAugTooltipRect.anchoredPosition = localPoint + tooltipOffset;
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ownedAugTooltipRect);
+            ClampTooltipInsideParent(ownedAugTooltipRect, parentRect);
+        }
+    }
+
+    private void ClampTooltipInsideParent(RectTransform target, RectTransform parent)
+    {
+        if (target == null) return;
+        if (parent == null) return;
+
+        Vector2 pos = target.anchoredPosition;
+
+        Vector2 targetSize = target.rect.size;
+        Vector2 parentSize = parent.rect.size;
+
+        Vector2 targetPivot = target.pivot;
+        Vector2 parentPivot = parent.pivot;
+
+        float minX = -parentSize.x * parentPivot.x + targetSize.x * targetPivot.x;
+        float maxX = parentSize.x * (1f - parentPivot.x) - targetSize.x * (1f - targetPivot.x);
+
+        float minY = -parentSize.y * parentPivot.y + targetSize.y * targetPivot.y;
+        float maxY = parentSize.y * (1f - parentPivot.y) - targetSize.y * (1f - targetPivot.y);
+
+        if (minX <= maxX)
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
+
+        if (minY <= maxY)
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
+
+        target.anchoredPosition = pos;
+    }
+
+    private void SetCursorAndCrosshairForSlotHover(bool isHover)
+    {
+        Cursor.visible = isHover;
+
+        GameObject crosshair = GetCrosshairObject();
+
+        if (crosshair != null)
+            crosshair.SetActive(!isHover);
+    }
+
+    private GameObject GetCrosshairObject()
+    {
+        if (crosshairObject != null)
+            return crosshairObject;
+
+        GameObject found = GameObject.Find("Crosshair");
+
+        if (found == null)
+            found = GameObject.Find("CrossHair");
+
+        if (found != null)
+            crosshairObject = found;
+
+        return crosshairObject;
+    }
+
+    private void RefreshOwnedHoverAfterUpdate()
+    {
+        if (EventSystem.current == null) return;
+        if (Mouse.current == null) return;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Mouse.current.position.ReadValue();
+
+        hoverRaycastResults.Clear();
+        EventSystem.current.RaycastAll(eventData, hoverRaycastResults);
+
+        for (int i = 0; i < hoverRaycastResults.Count; i++)
+        {
+            int slotIndex = FindOwnedSlotIndexFromRaycastObject(hoverRaycastResults[i].gameObject);
+
+            if (slotIndex >= 0)
+            {
+                OnHoverOwnedAugmentSlot(slotIndex);
+                return;
+            }
+        }
+
+        if (hoveredOwnedSlotIndex >= 0)
+        {
+            hoveredOwnedSlotIndex = -1;
+            HideOwnedAugTooltip();
+            SetCursorAndCrosshairForSlotHover(false);
+        }
+    }
+    private int FindOwnedSlotIndexFromRaycastObject(GameObject hitObject)
+    {
+        if (hitObject == null) return -1;
+        if (slotRects == null) return -1;
+
+        Transform current = hitObject.transform;
+
+        while (current != null)
+        {
+            for (int i = 0; i < slotRects.Length; i++)
+            {
+                if (slotRects[i] == null) continue;
+
+                if (current == slotRects[i])
+                    return i;
+            }
+
+            current = current.parent;
+        }
+
+        return -1;
+    }
+
+    #endregion
 
     #endregion
 

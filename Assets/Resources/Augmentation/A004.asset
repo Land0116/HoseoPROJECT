@@ -15,7 +15,7 @@ MonoBehaviour:
   shotModifierType: 4
   augmentID: A004
   augmentationName: "\uC8FC\uC704\uD0C4"
-  augmentationDesc: "\uD50C\uB808\uC774\uC5B4 \uC8FC\uC704\uB97C \uD68C\uC804\uD558\uB294
+  augmentationDesc: "\uD50C\uB808\uC774\uC5B4 \uC8FC\uBCC0\uC5D0 \uD68C\uC804\uD558\uB294
     \uD22C\uC0AC\uCCB4\uB97C \uC0DD\uC131\uD55C\uB2E4."
   icon: {fileID: -8601087291392272399, guid: 7587d0473b0144e44937d01f90232863, type: 3}
   slotSprite: {fileID: 21300000, guid: 01ee20ef49a670d4bb2395c450b575ff, type: 3}
@@ -29,8 +29,14 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "\uC8FC\uBCC0\uC744 \uD68C\uC804\uD558\uB294 \uD0C4\uD658\uC744
-      \n\uC0DD\uC131\uD569\uB2C8\uB2E4."
+    levelDescription: "\uC8FC\uBCC0\uC744 \uD68C\uC804\uD558\uB294 \uD0C4\uD658 4\uAC1C\uB97C
+      \n\uC0DD\uC131\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1.0\uBC30\uC774\uBA70,
+      \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uB370\uBBF8\uC9C0 \uBC30\uC728\uC774
+      1.5\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uC8FC\uBCC0 \uD68C\uC804 \uD0C4\uD658 \uC0DD\uC131"
+    tooltipDescription: "\uD50C\uB808\uC774\uC5B4 \uC8FC\uBCC0\uC744 \uD68C\uC804\uD558\uB294
+      \uD0C4\uD658\uC744 \uC0DD\uC131\uD569\uB2C8\uB2E4. \uAC00\uAE4C\uC774 \uC811\uADFC\uD558\uB294
+      \uC801\uC744 \uACAC\uC81C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -57,8 +63,14 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
-    levelDescription: "\uD68C\uC804 \uD0C4\uD658\uC758 \uC18D\uB3C4\uC640 \uD53C\uD574\uAC00
-      \n\uC99D\uAC00\uD569\uB2C8\uB2E4."
+    levelDescription: "\uD68C\uC804 \uD0C4\uD658\uC758 \uD68C\uC804 \uC18D\uB3C4\uAC00
+      \n20% \uC99D\uAC00\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740
+      1.3\uBC30\uC774\uBA70, \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uB370\uBBF8\uC9C0
+      \uBC30\uC728\uC774 1.5\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    tooltipEffectText: "\uD68C\uC804 \uC18D\uB3C4\uC640 \uD53C\uD574 \uC99D\uAC00"
+    tooltipDescription: "\uD50C\uB808\uC774\uC5B4 \uC8FC\uBCC0\uC744 \uD68C\uC804\uD558\uB294
+      \uD0C4\uD658\uC744 \uC0DD\uC131\uD569\uB2C8\uB2E4. \uAC00\uAE4C\uC774 \uC811\uADFC\uD558\uB294
+      \uC801\uC744 \uACAC\uC81C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
@@ -85,8 +97,13 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
-    levelDescription: "\uB354 \uAC15\uD55C \uD68C\uC804 \uD0C4\uD658\uC73C\uB85C
-      \n\uC8FC\uBCC0\uC744 \uC555\uBC15\uD569\uB2C8\uB2E4."
+    levelDescription: "\uD68C\uC804 \uD0C4\uD658\uC758 \uD68C\uC804 \uC8FC\uAE30\uAC00
+      \uC99D\uAC00\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1.5\uBC30\uC785\uB2C8\uB2E4.
+      \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
+    tooltipEffectText: "\uAC15\uB825\uD55C \uD68C\uC804 \uD0C4\uD658"
+    tooltipDescription: "\uD50C\uB808\uC774\uC5B4 \uC8FC\uBCC0\uC744 \uD68C\uC804\uD558\uB294
+      \uD0C4\uD658\uC744 \uC0DD\uC131\uD569\uB2C8\uB2E4. \uAC00\uAE4C\uC774 \uC811\uADFC\uD558\uB294
+      \uC801\uC744 \uACAC\uC81C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
