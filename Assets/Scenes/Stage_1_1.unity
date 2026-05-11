@@ -33889,6 +33889,8 @@ MonoBehaviour:
   currentStageNumber: 1
   currentMapNumber: 1
   finalStageNumber: 3
+  combatWaveCount: 2
+  nextWaveDelay: 0.5
   isStageCleared: 0
   isLoadingNextScene: 0
   routeMarkerSpritePrefab: {fileID: 1637010933415674416, guid: 018805573ae35144f9841b7990f0ac05, type: 3}

@@ -303,6 +303,13 @@ MonoBehaviour:
   weaponDamage: 0
   itemDamage: 0
   itemPickupPrefab: {fileID: 6685715579053595900, guid: 2e32b6037f78f274391199825898dab2, type: 3}
+  lowHp30Active: 0
+  lowHp20Active: 0
+  highGoldActive: 0
+  highAttackSpeedActive: 0
+  attackSpeed6Active: 0
+  gold100Active: 0
+  hasDisplayTicket: 0
   currentShotAugment: {fileID: 0}
   currentTrajectoryAugment: {fileID: 0}
   currentEffectAugment: {fileID: 0}
@@ -328,11 +335,6 @@ MonoBehaviour:
   orbitFormationSpacing: 0.35
   orbitStartAngleOffset: 90
   maxOrbitProjectileTotal: 40
-  orbitAutoAttackEnemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  orbitAutoAttackRangeAdd: 3
-  orbitAutoAttackMoveSpeed: 12
   trajectoryHomingStrength: 0
   trajectoryDuration: 0
   trajectoryBounceCount: 0
@@ -384,10 +386,6 @@ MonoBehaviour:
   playerBody: {fileID: 6444624563947541171}
   gunTip: {fileID: 6879044860308773687}
   deathUIShowDelay: 0.5
-  attackAnimationBaseDuration: 0.1
-  minAttackAnimationSpeed: 1
-  maxAttackAnimationSpeed: 4
-  attackAnimationSpeedHoldTime: 0.12
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5
@@ -626,7 +624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3720201054611237086
 Transform:
   m_ObjectHideFlags: 0
