@@ -235,7 +235,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         ItemUIManager.Instance?.UnregisterShop(this);
         ItemUIManager.Instance?.HideShopInteract();
     }
-    private void ShowUI()
+    /*private void ShowUI()
     {
         if (ItemUIManager.Instance == null)
         {
@@ -277,12 +277,69 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         ItemUIManager.Instance.ShowShopInteract(
             this,
-            $"[{currentItem.itemName}]\n{GetStatText()}"
+            $"[{currentItem.itemName}]\n{GetStatText()}" //*
+        );
+
+    }*/
+    private void ShowUI()
+    {
+        if (ItemUIManager.Instance == null)
+        {
+            Debug.LogError("ItemUIManager가 아직 생성되지 않음");
+            return;
+        }
+
+        if (isPotion)
+        {
+            string name = "";
+            string desc = "";
+
+            if (potionHealPercent == 0.25f)
+            {
+                name = "하급 체력 회복 포션";
+                desc = "현재 체력을 25% 회복한다.";
+            }
+            else if (potionHealPercent == 0.5f)
+            {
+                name = "중급 체력 회복 포션";
+                desc = "현재 체력을 50% 회복한다.";
+            }
+            else if (potionHealPercent == 0.75f)
+            {
+                name = "상급 체력 회복 포션";
+                desc = "현재 체력을 75% 회복한다.";
+            }
+
+            ItemUIManager.Instance.ShowShopInteract(
+                this,
+                $"[{name}]\n{desc}"
+            );
+
+            return;
+        }
+
+        if (currentItem == null) return;
+
+        string descText = $"[{currentItem.itemName}]\n";
+
+
+        if (!string.IsNullOrEmpty(currentItem.description))
+        {
+            descText += $"{currentItem.description}\n";
+        }
+
+        descText += GetStatText();
+
+        ItemUIManager.Instance.ShowShopInteract(
+            this,
+            descText
         );
     }
     private string GetStatText()
     {
         string desc = "";
+
+        
 
         if (currentItem.damage != 0)
             desc += FormatStat("데미지", currentItem.damage);
