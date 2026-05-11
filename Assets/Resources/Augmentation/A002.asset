@@ -28,9 +28,7 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "6\uAC1C\uC758 \uD22C\uC0AC\uCCB4\uAC00 \uBD80\uCC44\uAF34\uB85C
-      \uBC1C\uC0AC\uD569\uB2C8\uB2E4 (\uC0AC\uAC70\uB9AC \uAC10\uC18C)\n\uC8FC\uC704\uD0C4\uC77C\uB550,
-      \uC8FC\uC704\uD0C4\uC758 \uD22C\uC0AC\uCCB4\uC758 \uAC1C\uC218\uAC00 \uC99D\uAC00\uD55C\uB2E4."
+    levelDescription: "\uBD80\uCC44\uAF34\uB85C \uC5EC\uB7EC \uD0C4\uD658\uC744 \n\uBC1C\uC0AC\uD569\uB2C8\uB2E4."
     shotFireMode: 1
     burstInterval: 0
     projectileCountAdd: 5
@@ -57,9 +55,8 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
-    levelDescription: "7\uAC1C\uC758 \uD22C\uC0AC\uCCB4\uAC00 \uBD80\uCC44\uAF34\uB85C
-      \uBC1C\uC0AC\uD569\uB2C8\uB2E4 (\uC9D1\uD0C4\uB960 \uC99D\uAC00)\n\uC8FC\uC704\uD0C4\uC77C\uB550,
-      \uC8FC\uC704\uD0C4\uC758 \uD22C\uC0AC\uCCB4\uC758 \uAC1C\uC218\uAC00 \uC99D\uAC00\uD55C\uB2E4."
+    levelDescription: "\uD0C4\uD658 \uC218\uC640 \uBA85\uC911 \uC548\uC815\uC131\uC774
+      \n\uC99D\uAC00\uD569\uB2C8\uB2E4."
     shotFireMode: 1
     burstInterval: 0
     projectileCountAdd: 7
@@ -86,9 +83,8 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
-    levelDescription: "8\uAC1C\uC758 \uD22C\uC0AC\uCCB4\uAC00 \uBD80\uCC44\uAF34\uB85C
-      \uBC1C\uC0AC\uD569\uB2C8\uB2E4 (\uADFC\uAC70\uB9AC \uD53C\uD574 \uC99D\uAC00)\n\uC8FC\uC704\uD0C4\uC77C\uB550,
-      \uC8FC\uC704\uD0C4\uC758 \uD22C\uC0AC\uCCB4\uC758 \uAC1C\uC218\uAC00 \uC99D\uAC00\uD55C\uB2E4."
+    levelDescription: "\uAC00\uAE4C\uC6B4 \uC801\uC5D0\uAC8C \n\uB354 \uAC15\uD55C
+      \uD53C\uD574\uB97C \uC90D\uB2C8\uB2E4."
     shotFireMode: 1
     burstInterval: 0
     projectileCountAdd: 8

@@ -29,19 +29,20 @@ MonoBehaviour:
   subSkillLevels: []
   passiveLevels:
   - level: 1
-    levelDescription: "\uACF5\uACA9 \uC801\uC911 \uC2DC \uCCB4\uB825\uC744 5% \uD68C\uBCF5"
+    levelDescription: "\uACF5\uACA9 \uC2DC \uCCB4\uB825\uC744 \n\uD68C\uBCF5\uD569\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0
     maxHpAdd: 0
     lifeStealPercent: 0.05
   - level: 2
-    levelDescription: "\uACF5\uACA9 \uC801\uC911 \uC2DC \uCCB4\uB825\uC744 10% \uD68C\uBCF5"
+    levelDescription: "\uACF5\uACA9 \uC2DC \uD68C\uBCF5\uB7C9\uC774 \n\uC99D\uAC00\uD569\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0
     maxHpAdd: 0
     lifeStealPercent: 0.1
   - level: 3
-    levelDescription: "\uACF5\uACA9 \uC801\uC911 \uC2DC \uCCB4\uB825\uC744 15% \uD68C\uBCF5"
+    levelDescription: "\uACF5\uACA9\uD560\uC218\uB85D \uB354 \uB9CE\uC740 \uCCB4\uB825\uC744
+      \uD68C\uBCF5\uD569\uB2C8\uB2E4."
     damageMultiplier: 1
     attackSpeedPercent: 0
     maxHpAdd: 0
