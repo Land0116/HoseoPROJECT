@@ -1760,7 +1760,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         equippedItems.Add(item);
 
         // 전체 스탯 재계산
-        RecalculateItemStats();
+        //RecalculateItemStats();
+        RebuildPlayerStats();
     }
 
     public void UnequipItem(int index)
@@ -1812,8 +1813,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         equippedItems.Add(itemData);
 
-        RecalculateItemStats();
-
+        //RecalculateItemStats();
+        RebuildPlayerStats();
         return true;
     }
     private void RecalculateItemStats()
