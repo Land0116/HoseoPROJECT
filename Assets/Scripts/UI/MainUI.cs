@@ -63,12 +63,32 @@ public class MainUI : MonoBehaviour
         exitYesBtn.onClick.AddListener(OnClickExitGame);
         exitNoBtn.onClick.AddListener(CloseExit);
         exitCloseBtn.onClick.AddListener(CloseExit);
+        //ShowMainCursor();
         
         // 메인 UI가 켜질 때 증강 UI는 강제로 꺼둠
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.ResetUIStateForRestart();
         }
+    }
+    private void OnEnable()
+    {
+        ShowMainCursor();
+    }
+
+    private void OnDisable()
+    {
+        HideMainCursor();
+    }
+    
+    private void ShowMainCursor()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+    private void HideMainCursor()
+    {
+        Cursor.visible = false;
     }
 
     private void OnClickStart()

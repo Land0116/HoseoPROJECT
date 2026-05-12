@@ -400,6 +400,24 @@ public class AugUIManager : MonoBehaviour
 
         ownedAugTooltipPanel.SetActive(false);
     }
+    
+    private bool IsOwnedAugmentSlotUIVisible()
+    {
+        if (slotImages == null || slotImages.Length == 0)
+            return false;
+
+        for (int i = 0; i < slotImages.Length; i++)
+        {
+            if (slotImages[i] == null) continue;
+
+            if (slotImages[i].gameObject.activeInHierarchy && slotImages[i].enabled)
+                return true;
+        }
+
+        return false;
+    }
+    
+    
 
     private void DisableTooltipRaycast(Transform root)
     {
@@ -602,12 +620,56 @@ public class AugUIManager : MonoBehaviour
 
     private void SetCursorAndCrosshairForSlotHover(bool isHover)
     {
-        Cursor.visible = isHover;
-
         GameObject crosshair = GetCrosshairObject();
 
+        if (isHover)
+        {
+            // 보유 증강 슬롯 위에 마우스를 올렸을 때
+            // 설명창을 읽어야 하므로 기본 마우스 커서를 보여준다.
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            // 게임 조준점은 숨긴다.
+            if (crosshair != null)
+                crosshair.SetActive(false);
+
+            return;
+        }
+
+        // 여기부터는 슬롯에서 마우스가 빠졌을 때 처리다.
+
+        // 메인화면에서는 절대 커서를 숨기면 안 된다.
+        // 메인화면 커서 사라짐 버그 방지용.
+        if (SceneManager.GetActiveScene().name == "Main")
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            if (crosshair != null)
+                crosshair.SetActive(false);
+
+            return;
+        }
+
+        // 증강 선택 패널이 열려 있는 동안에는 기본 커서를 유지하는 게 맞다.
+        // 카드 선택 / 리롤 버튼 클릭을 해야 하기 때문.
+        if (uiPanel != null && uiPanel.activeInHierarchy)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+
+            if (crosshair != null)
+                crosshair.SetActive(false);
+
+            return;
+        }
+
+        // 실제 게임 플레이 화면에서는 슬롯에서 빠지면 다시 조준점 모드로 복귀한다.
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.None;
+
         if (crosshair != null)
-            crosshair.SetActive(!isHover);
+            crosshair.SetActive(true);
     }
 
     private GameObject GetCrosshairObject()
@@ -628,6 +690,16 @@ public class AugUIManager : MonoBehaviour
 
     private void RefreshOwnedHoverAfterUpdate()
     {
+        if (!IsOwnedAugmentSlotUIVisible())
+        {
+            if (hoveredOwnedSlotIndex >= 0)
+            {
+                hoveredOwnedSlotIndex = -1;
+                HideOwnedAugTooltip();
+            }
+
+            return;
+        }
         if (EventSystem.current == null) return;
         if (Mouse.current == null) return;
 
