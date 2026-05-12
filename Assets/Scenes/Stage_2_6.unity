@@ -17131,6 +17131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2782231821348933765, guid: 530b68929db432043bc6b83c3bbe3c3a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4683194157159116988, guid: 530b68929db432043bc6b83c3bbe3c3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 29.51078
@@ -32895,6 +32899,10 @@ PrefabInstance:
     - target: {fileID: 6187811264412128894, guid: 0bb74e34015262846b91f04a31711df6, type: 3}
       propertyPath: m_Name
       value: Obstacle_4 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7624915877103668789, guid: 0bb74e34015262846b91f04a31711df6, type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8979639784272769780, guid: 0bb74e34015262846b91f04a31711df6, type: 3}
       propertyPath: m_LocalScale.x

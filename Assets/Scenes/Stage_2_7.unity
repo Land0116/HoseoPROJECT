@@ -32931,6 +32931,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Obstacle_4 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7624915877103668789, guid: 0bb74e34015262846b91f04a31711df6, type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8979639784272769780, guid: 0bb74e34015262846b91f04a31711df6, type: 3}
       propertyPath: m_LocalScale.x
       value: 2.4
