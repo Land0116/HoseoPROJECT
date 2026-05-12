@@ -49,11 +49,27 @@ public class AugUIManager : MonoBehaviour
     [SerializeField] private TMP_Text tooltipEffectText;
     [SerializeField] private TMP_Text tooltipDescriptionText;
 
-    [Header("보유 증강 설명창 위치")] 
-    [SerializeField] private Vector2 tooltipOffset = new Vector2(24f, 0f);
+    private const float TooltipOffsetDefaultX = 12f;
+    private const float TooltipOffsetDefaultY = 230f;
 
-    [Header("마우스 / 조준점")] 
-    [SerializeField] private GameObject crosshairObject;
+    [Header("보유 증강 설명창 위치")]
+    [SerializeField] private bool useCodeTooltipOffsetDefault = true;
+
+    [SerializeField] private Vector2 tooltipOffset =
+        new Vector2(TooltipOffsetDefaultX, TooltipOffsetDefaultY);
+
+    private void OnValidate()
+    {
+        if (!useCodeTooltipOffsetDefault)
+            return;
+
+        tooltipOffset = new Vector2(
+            TooltipOffsetDefaultX,
+            TooltipOffsetDefaultY
+        );
+    }
+
+    [Header("마우스 / 조준점")] [SerializeField] private GameObject crosshairObject;
 
     private int hoveredOwnedSlotIndex = -1;
     private readonly List<RaycastResult> hoverRaycastResults = new List<RaycastResult>(16);
@@ -179,7 +195,7 @@ public class AugUIManager : MonoBehaviour
             // 카테고리별 색상 적용 없음
             slotImages[i].color = Color.white;
         }
-        
+
         RefreshOwnedHoverAfterUpdate();
     }
 
@@ -242,63 +258,73 @@ public class AugUIManager : MonoBehaviour
     }
 
     private void BindOwnedSlotImages(GameObject systemUIRoot)
+{
+    Transform slotRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugUIPanel");
+    if (slotRoot == null)
     {
-        Transform slotRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugUIPanel");
-        if (slotRoot == null)
-        {
-            slotImages = null;
-            slotRects = null;
-            Debug.LogWarning("[AugUIManager] AugUIPanel 을 찾지 못함");
-            return;
-        }
-
-        const int ownedSlotCount = 6;
-
-        Image[] boundImages = new Image[ownedSlotCount];
-        RectTransform[] boundRects = new RectTransform[ownedSlotCount];
-
-        for (int i = 0; i < ownedSlotCount; i++)
-        {
-            int slotNumber = i + 1;
-
-            Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{slotNumber}");
-            if (slotTr == null)
-            {
-                Debug.LogWarning($"[AugUIManager] AugUISlot_{slotNumber} 을 찾지 못함");
-                continue;
-            }
-
-            boundRects[i] = slotTr as RectTransform;
-
-            SetupOwnedSlotPointerEvent(slotTr.gameObject, i);
-
-            Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{slotNumber}");
-            if (bgPanelTr == null)
-            {
-                Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 을 찾지 못함");
-                continue;
-            }
-
-            Transform iconTr = UIManager.FindChildRecursive(bgPanelTr, "AugImage");
-            if (iconTr == null)
-            {
-                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 실제 아이콘 오브젝트를 찾지 못함");
-                continue;
-            }
-
-            Image iconImg = iconTr.GetComponent<Image>();
-            if (iconImg == null)
-            {
-                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
-                continue;
-            }
-
-            boundImages[i] = iconImg;
-        }
-
-        slotImages = boundImages;
-        slotRects = boundRects;
+        slotImages = null;
+        slotRects = null;
+        Debug.LogWarning("[AugUIManager] AugUIPanel 을 찾지 못함");
+        return;
     }
+
+    const int ownedSlotCount = 6;
+
+    Image[] boundImages = new Image[ownedSlotCount];
+    RectTransform[] boundRects = new RectTransform[ownedSlotCount];
+
+    for (int i = 0; i < ownedSlotCount; i++)
+    {
+        int slotNumber = i + 1;
+
+        Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{slotNumber}");
+        if (slotTr == null)
+        {
+            Debug.LogWarning($"[AugUIManager] AugUISlot_{slotNumber} 을 찾지 못함");
+            continue;
+        }
+
+        SetupOwnedSlotPointerEvent(slotTr.gameObject, i);
+
+        Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{slotNumber}");
+        if (bgPanelTr == null)
+        {
+            Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 을 찾지 못함");
+            continue;
+        }
+
+        RectTransform bgRect = bgPanelTr as RectTransform;
+        if (bgRect == null)
+        {
+            Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 에 RectTransform이 없음");
+            continue;
+        }
+
+        Transform iconTr = UIManager.FindChildRecursive(bgPanelTr, "AugImage");
+        if (iconTr == null)
+        {
+            Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 실제 아이콘 오브젝트를 찾지 못함");
+            continue;
+        }
+
+        Image iconImg = iconTr.GetComponent<Image>();
+        if (iconImg == null)
+        {
+            Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
+            continue;
+        }
+
+        boundImages[i] = iconImg;
+
+        // 핵심:
+        // 설명창 위치 기준은 AugUISlot 루트가 아니라
+        // 실제 화면에 보이는 슬롯 배경 패널 RectTransform으로 잡는다.
+        boundRects[i] = bgRect;
+    }
+
+    slotImages = boundImages;
+    slotRects = boundRects;
+}
 
     #region Owned Augment Tooltip
 
@@ -335,17 +361,11 @@ public class AugUIManager : MonoBehaviour
 
         EventTrigger.Entry enterEntry = new EventTrigger.Entry();
         enterEntry.eventID = EventTriggerType.PointerEnter;
-        enterEntry.callback.AddListener((eventData) =>
-        {
-            OnHoverOwnedAugmentSlot(index);
-        });
+        enterEntry.callback.AddListener((eventData) => { OnHoverOwnedAugmentSlot(index); });
 
         EventTrigger.Entry exitEntry = new EventTrigger.Entry();
         exitEntry.eventID = EventTriggerType.PointerExit;
-        exitEntry.callback.AddListener((eventData) =>
-        {
-            OnExitOwnedAugmentSlot(index);
-        });
+        exitEntry.callback.AddListener((eventData) => { OnExitOwnedAugmentSlot(index); });
 
         trigger.triggers.Add(enterEntry);
         trigger.triggers.Add(exitEntry);
@@ -400,7 +420,7 @@ public class AugUIManager : MonoBehaviour
 
         ownedAugTooltipPanel.SetActive(false);
     }
-    
+
     private bool IsOwnedAugmentSlotUIVisible()
     {
         if (slotImages == null || slotImages.Length == 0)
@@ -416,8 +436,7 @@ public class AugUIManager : MonoBehaviour
 
         return false;
     }
-    
-    
+
 
     private void DisableTooltipRaycast(Transform root)
     {
@@ -568,14 +587,47 @@ public class AugUIManager : MonoBehaviour
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
             uiCamera = canvas.worldCamera;
 
+        /*
+         * 핵심:
+         * 설명창의 기준점을 왼쪽 위로 잡는다.
+         *
+         * pivot (0, 1)
+         * X = 왼쪽 기준
+         * Y = 위쪽 기준
+         *
+         * 이렇게 해야 설명창이 위로 커지는 게 아니라 아래로 펼쳐진다.
+         */
+        ownedAugTooltipRect.pivot = new Vector2(0f, 1f);
+
+        /*
+         * 부모 좌표계 기준으로 직접 배치할 것이므로
+         * Anchor는 중앙 고정으로 통일한다.
+         */
+        ownedAugTooltipRect.anchorMin = new Vector2(0.5f, 0.5f);
+        ownedAugTooltipRect.anchorMax = new Vector2(0.5f, 0.5f);
+
+        /*
+         * 텍스트와 Layout 크기 먼저 갱신.
+         * pivot이 왼쪽 위라서 높이가 변해도 아래로 늘어난다.
+         */
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(ownedAugTooltipRect);
+
         Vector3[] corners = new Vector3[4];
         slotRect.GetWorldCorners(corners);
 
-        // corners[2] = 오른쪽 위
-        // corners[3] = 오른쪽 아래
-        Vector3 rightCenterWorld = (corners[2] + corners[3]) * 0.5f;
+        /*
+         * corners[2] = 슬롯 오른쪽 위
+         *
+         * 원하는 위치:
+         * 슬롯 오른쪽 위에 설명창 왼쪽 위를 맞춘다.
+         */
+        Vector3 slotRightTopWorld = corners[2];
 
-        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(uiCamera, rightCenterWorld);
+        Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(
+            uiCamera,
+            slotRightTopWorld
+        );
 
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 parentRect,
@@ -585,37 +637,9 @@ public class AugUIManager : MonoBehaviour
         {
             ownedAugTooltipRect.anchoredPosition = localPoint + tooltipOffset;
 
+            Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(ownedAugTooltipRect);
-            ClampTooltipInsideParent(ownedAugTooltipRect, parentRect);
         }
-    }
-
-    private void ClampTooltipInsideParent(RectTransform target, RectTransform parent)
-    {
-        if (target == null) return;
-        if (parent == null) return;
-
-        Vector2 pos = target.anchoredPosition;
-
-        Vector2 targetSize = target.rect.size;
-        Vector2 parentSize = parent.rect.size;
-
-        Vector2 targetPivot = target.pivot;
-        Vector2 parentPivot = parent.pivot;
-
-        float minX = -parentSize.x * parentPivot.x + targetSize.x * targetPivot.x;
-        float maxX = parentSize.x * (1f - parentPivot.x) - targetSize.x * (1f - targetPivot.x);
-
-        float minY = -parentSize.y * parentPivot.y + targetSize.y * targetPivot.y;
-        float maxY = parentSize.y * (1f - parentPivot.y) - targetSize.y * (1f - targetPivot.y);
-
-        if (minX <= maxX)
-            pos.x = Mathf.Clamp(pos.x, minX, maxX);
-
-        if (minY <= maxY)
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-
-        target.anchoredPosition = pos;
     }
 
     private void SetCursorAndCrosshairForSlotHover(bool isHover)
@@ -700,6 +724,7 @@ public class AugUIManager : MonoBehaviour
 
             return;
         }
+
         if (EventSystem.current == null) return;
         if (Mouse.current == null) return;
 
@@ -727,6 +752,7 @@ public class AugUIManager : MonoBehaviour
             SetCursorAndCrosshairForSlotHover(false);
         }
     }
+
     private int FindOwnedSlotIndexFromRaycastObject(GameObject hitObject)
     {
         if (hitObject == null) return -1;

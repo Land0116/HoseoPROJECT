@@ -34633,6 +34633,9 @@ MonoBehaviour:
   - routeType: 6
     displayName: "\uB2E4\uC74C \uC2A4\uD14C\uC774\uC9C0"
     icon: {fileID: -2912409409873806573, guid: 2d844508d0956694e829e3eb4b04f107, type: 3}
+  rewardInteractPrefab: {fileID: 6315097144494349038, guid: f84ad38b4647e6e4d83c9370e4601c68, type: 3}
+  rewardSpawnYOffset: 0.7
+  rewardIconDatas: []
 --- !u!4 &1881678463
 Transform:
   m_ObjectHideFlags: 0

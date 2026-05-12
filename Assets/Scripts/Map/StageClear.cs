@@ -15,6 +15,12 @@ public class StageClear : MonoBehaviour
         public string displayName;
         public Sprite icon;
     }
+    [System.Serializable]
+    private class RewardIconData
+    {
+        public RewardType rewardType;
+        public Sprite icon;
+    }
 
     public enum RouteType
     {
@@ -91,12 +97,17 @@ public class StageClear : MonoBehaviour
 
     private RoomType currentRoomType = RoomType.Combat;
     private RewardType pendingRewardType = RewardType.None;
-    [Header("출구 보상 마커 ")] [SerializeField] private GameObject routeMarkerSpritePrefab;
-
+    [Header("출구 보상 마커 ")] 
+    [SerializeField] private GameObject routeMarkerSpritePrefab;
     [SerializeField] private RouteMarkerData[] routeMarkerDatas;
 
+    [Header("플레이어 위치에 생성되는 보상 프리팹")]
+    [SerializeField] private GameObject rewardInteractPrefab;
+    [SerializeField] private float rewardSpawnYOffset = 0.7f;
+    [SerializeField] private RewardIconData[] rewardIconDatas;
+    private GameObject currentRewardObject;
+    
     private SceneMoveTriggerRelay[] routeSlots;
-
     private readonly List<RouteType> currentOpenedRoutes = new List<RouteType>();
 
     private void Awake()
@@ -162,11 +173,6 @@ public class StageClear : MonoBehaviour
 
         BindRouteSlots();
         ResetRoomState();
-
-        if (currentRoomType == RoomType.Shop)
-        {
-            OnEnterShopScene();
-        }
 
         if (currentRoomType == RoomType.Shop)
         {
@@ -361,6 +367,12 @@ public class StageClear : MonoBehaviour
             StopCoroutine(waveCoroutine);
             waveCoroutine = null;
         }
+        
+        if (currentRewardObject != null)
+        {
+            Destroy(currentRewardObject);
+            currentRewardObject = null;
+        }
 
         monsterSpawners = null;
 
@@ -488,9 +500,9 @@ public class StageClear : MonoBehaviour
     {
         if (currentMapNumber == 1)
         {
-            Debug.Log($"{currentStageNumber}스테이지 1맵 클리어 - 증강 고정 지급");
+            Debug.Log($"{currentStageNumber}스테이지 1맵 클리어 - 증강 고정 보상 오브젝트 생성");
 
-            GiveRewardImmediately(RewardType.Augment);
+            SpawnRewardObjectAtPlayer(RewardType.Augment);
 
             OpenCombatClearRouteChoices();
             return;
@@ -756,6 +768,12 @@ public class StageClear : MonoBehaviour
 
         if (!isStageCleared) return;
         if (isLoadingNextScene) return;
+        
+        if (currentRewardObject != null)
+        {
+            Debug.LogWarning("아직 획득하지 않은 보상이 있음. 보상을 먼저 획득해야 출구를 이용할 수 있음");
+            return;
+        }
 
         if (!currentOpenedRoutes.Contains(routeType))
         {
@@ -1027,16 +1045,16 @@ public class StageClear : MonoBehaviour
         if (IsBossRoom())
         {
             pendingRewardType = RewardType.None;
-            Debug.Log("보스룸이므로 이전 선택 보상 지급 차단");
+            Debug.Log("보스룸이므로 이전 선택 보상 생성 차단");
             return;
         }
 
         if (pendingRewardType == RewardType.None)
             return;
 
-        Debug.Log($"예약 보상 지급 : {pendingRewardType}");
+        Debug.Log($"예약 보상 오브젝트 생성 : {pendingRewardType}");
 
-        GiveRewardImmediately(pendingRewardType);
+        SpawnRewardObjectAtPlayer(pendingRewardType);
 
         pendingRewardType = RewardType.None;
     }
@@ -1070,6 +1088,50 @@ public class StageClear : MonoBehaviour
 
                 break;
         }
+    }
+    
+    public void OpenRewardUI(RewardType rewardType)
+    {
+        switch (rewardType)
+        {
+            case RewardType.Augment:
+                if (AugUIManager.instance != null)
+                {
+                    AugUIManager.instance.ShowAugmentation();
+                }
+                else
+                {
+                    Debug.LogWarning("AugUIManager.instance가 없어서 증강 UI를 열 수 없음");
+                }
+
+                break;
+
+            case RewardType.Skill:
+                if (SkillSelectUIManager.Instance != null)
+                {
+                    SkillSelectUIManager.Instance.IsSkillOpened = true;
+                }
+                else
+                {
+                    Debug.LogWarning("SkillSelectUIManager.Instance가 없어서 스킬 UI를 열 수 없음");
+                }
+
+                break;
+
+            case RewardType.Item:
+                if (NewItemUIManager.Instance != null)
+                {
+                    NewItemUIManager.Instance.IsOpenedItem = true;
+                }
+                else
+                {
+                    Debug.LogWarning("NewItemUIManager.Instance가 없어서 아이템 UI를 열 수 없음");
+                }
+
+                break;
+        }
+
+        currentRewardObject = null;
     }
 
     private void GiveBossReward()
@@ -1197,6 +1259,89 @@ public class StageClear : MonoBehaviour
         Time.timeScale = 1f;
 
         Debug.Log("StageClear 런 상태 초기화 완료");
+    }
+    
+    private Transform FindPlayerTransform()
+    {
+        if (PlayerController.Instance != null)
+            return PlayerController.Instance.transform;
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag(playerTag);
+
+        if (playerObject != null)
+            return playerObject.transform;
+
+        return null;
+    }
+    
+    private void SpawnRewardObjectAtPlayer(RewardType rewardType)
+    {
+        if (rewardType == RewardType.None)
+            return;
+
+        if (rewardInteractPrefab == null)
+        {
+            Debug.LogError("rewardInteractPrefab이 비어있음. StageClear 인스펙터에 보상 프리팹을 넣어야 함");
+            return;
+        }
+
+        if (currentRewardObject != null)
+        {
+            Destroy(currentRewardObject);
+            currentRewardObject = null;
+        }
+
+        Transform playerTransform = FindPlayerTransform();
+
+        if (playerTransform == null)
+        {
+            Debug.LogError("플레이어를 찾지 못해서 보상 오브젝트를 생성할 수 없음");
+            return;
+        }
+
+        Vector3 spawnPosition = playerTransform.position + new Vector3(0f, rewardSpawnYOffset, 0f);
+
+        currentRewardObject = Instantiate(
+            rewardInteractPrefab,
+            spawnPosition,
+            Quaternion.identity
+        );
+
+        RewardInteractObject rewardObject = currentRewardObject.GetComponent<RewardInteractObject>();
+
+        if (rewardObject == null)
+        {
+            Debug.LogError("보상 프리팹에 RewardInteractObject 스크립트가 없음");
+            return;
+        }
+
+        rewardObject.Setup(rewardType);
+    }
+    
+    private RewardIconData GetRewardIconData(RewardType rewardType)
+    {
+        if (rewardIconDatas == null)
+            return null;
+
+        for (int i = 0; i < rewardIconDatas.Length; i++)
+        {
+            if (rewardIconDatas[i] == null) continue;
+
+            if (rewardIconDatas[i].rewardType == rewardType)
+                return rewardIconDatas[i];
+        }
+
+        return null;
+    }
+
+    private Sprite GetRewardIcon(RewardType rewardType)
+    {
+        RewardIconData data = GetRewardIconData(rewardType);
+
+        if (data != null)
+            return data.icon;
+
+        return null;
     }
 
 

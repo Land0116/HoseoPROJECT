@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 8212276701384948711}
   - component: {fileID: 8464198775008888730}
   - component: {fileID: 250643313961463375}
+  - component: {fileID: -3516417887111285893}
   m_Layer: 0
-  m_Name: Reward_Active
+  m_Name: RewardInteractObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -138,3 +139,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
+--- !u!114 &-3516417887111285893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6315097144494349038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa94c09a4c6894448bf62b49b89700f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RewardInteractObject
+  iconDatas:
+  - rewardType: 2
+    iconRenderer: {fileID: 8464198775008888730}
+    iconSprite: {fileID: 3319096123497896272, guid: ed2ed7ffc4139904c9178376eb112274, type: 3}
+  - rewardType: 1
+    iconRenderer: {fileID: 8464198775008888730}
+    iconSprite: {fileID: 8579041055815407696, guid: 237c3d6e621ccbe42bfa79bac1ae102e, type: 3}
+  - rewardType: 3
+    iconRenderer: {fileID: 8464198775008888730}
+    iconSprite: {fileID: -3724301749286218736, guid: c28f8593d2b32db41b6c974b8bb119fe, type: 3}
