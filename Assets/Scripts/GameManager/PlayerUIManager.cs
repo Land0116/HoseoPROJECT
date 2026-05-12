@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -57,7 +58,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button toMainSureYesBtn;
     [SerializeField] private Button toMainSureNoBtn;
     [SerializeField] private Button toMainSureXBtn;
-    private GameObject currentPanel;
+
 
     [Header("PlayerDying")]
     [SerializeField] private GameObject playerDyingPanel;
@@ -85,19 +86,30 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button clearRestartBtn;
     [SerializeField] private Button clearToMainBtn;
 
-    /// <summary>
-    /// ESC 패널을 닫았을 때 어디로 되돌아가야 하는지 기억하는 값
-    /// None        : 그냥 게임으로 복귀
-    /// Augmentation: 증강창으로 복귀
-    /// Shop        : 상점창으로 복귀
-    /// </summary>
+    private bool isProcessingEscape = false;
     private enum EscReturnTarget
     {
         None,
         Augmentation,
         Shop
     }
+
+
     [SerializeField] private EscReturnTarget escReturnTarget = EscReturnTarget.None;
+
+    private enum UIState
+    {
+        Gameplay,
+        EscMenu,
+        Option,
+        ExitConfirm,
+        ToMainConfirm,
+        Augmentation,
+        Shop,
+        Dead,
+        GameClear
+    }
+    [SerializeField] private UIState currentState = UIState.Gameplay;
     private void Awake()
     {
         // 싱글톤 패턴
@@ -121,6 +133,8 @@ public class PlayerUIManager : MonoBehaviour
     private void Update()
     {
         if (playerController == null) return;
+
+        
         // HP / Gold UI 갱신
         UpdatePlayerStateUI();
         UpdateMonsterCountUI();
@@ -292,16 +306,7 @@ public class PlayerUIManager : MonoBehaviour
     /// <summary>
     /// 현재 패널을 닫고 새 패널 열기
     /// </summary>
-    private void OpenPanel(GameObject panel)
-    {
-        if (panel == null) return;
 
-        if (currentPanel != null)
-            currentPanel.SetActive(false);
-
-        panel.SetActive(true);
-        currentPanel = panel;
-    }
 
     /// <summary>
     /// ESC 입력 처리
@@ -317,66 +322,26 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleEscape()
     {
+        Debug.Log($"HandleEscape CALLED | state={currentState} | isProcessing={isProcessingEscape}");
 
-
-        if (currentPanel == null)
+        if (isProcessingEscape)
         {
-
-            OpenEscPanelNormal();
+            Debug.Log("HandleEscape IGNORED (isProcessingEscape)");
             return;
         }
 
-        if (currentPanel == optionPanel)
-        {
+        isProcessingEscape = true;
 
-            OpenPanel(escPanel);
+        Debug.Log("HandleEscape START Coroutine EscapeRoutine");
 
-            if (escToOptionCloseBtn != null)
-                escToOptionCloseBtn.gameObject.SetActive(false);
-
-            return;
-        }
-
-        if (currentPanel == exitSurePanel || currentPanel == toMainSurePanel)
-        {
-            Debug.Log("[PlayerUIManager] 확인창 ESC → ESC 패널로 이동");
-            OpenPanel(escPanel);
-            return;
-        }
-
-        if (currentPanel == escPanel)
-        {
-            Debug.Log($"[PlayerUIManager] ESC 패널 상태에서 ESC | returnTarget = {escReturnTarget}");
-
-            switch (escReturnTarget)
-            {
-                case EscReturnTarget.Augmentation:
-                    CloseEscAndReturnToAugmentation();
-                    break;
-
-                case EscReturnTarget.Shop:
-                    Debug.Log("[PlayerUIManager] 상점 복귀");
-                    CloseEscAndReturnToShop();
-                    break;
-
-                default:
-                    Debug.Log("[PlayerUIManager] 게임 복귀");
-                    CloseEscAndResumeGameplay();
-                    break;
-            }
-
-            return;
-        }
+        StartCoroutine(EscapeRoutine());
     }
 
-    /// <summary>
-    /// 일반 상황에서 ESC 패널 열기
-    /// </summary>
     private void OpenEscPanelNormal()
     {
         escReturnTarget = EscReturnTarget.None;
 
-        OpenPanel(escPanel);
+
 
         Time.timeScale = 0f;
 
@@ -391,7 +356,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         escReturnTarget = EscReturnTarget.Augmentation;
 
-        OpenPanel(escPanel);
+
 
         Time.timeScale = 0f;
 
@@ -406,7 +371,7 @@ public class PlayerUIManager : MonoBehaviour
     {
         escReturnTarget = EscReturnTarget.Shop;
 
-        OpenPanel(escPanel);
+
 
         Time.timeScale = 0f;
 
@@ -422,7 +387,7 @@ public class PlayerUIManager : MonoBehaviour
         if (escPanel != null)
             escPanel.SetActive(false);
 
-        currentPanel = null;
+
         escReturnTarget = EscReturnTarget.None;
 
         Time.timeScale = 1f;
@@ -439,7 +404,7 @@ public class PlayerUIManager : MonoBehaviour
         if (escPanel != null)
             escPanel.SetActive(false);
 
-        currentPanel = null;
+
 
         if (AugUIManager.instance != null)
         {
@@ -458,7 +423,7 @@ public class PlayerUIManager : MonoBehaviour
         if (escPanel != null)
             escPanel.SetActive(false);
 
-        currentPanel = null;
+
 
         if (UIManager.Instance != null && UIManager.Instance.ShopUIManager != null)
         {
@@ -544,9 +509,8 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void OpenOptionPanel()
     {
-        OpenPanel(optionPanel);
-        if (escToOptionCloseBtn != null)
-            escToOptionCloseBtn.gameObject.SetActive(true);
+        ChangeState(UIState.Option);
+        optionPanel.SetActive(true);
     }
 
     /// <summary>
@@ -554,7 +518,8 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void OpenToMainSurePanel()
     {
-        OpenPanel(toMainSurePanel);
+        ChangeState(UIState.ToMainConfirm);
+        toMainSurePanel.SetActive(true);
     }
 
     /// <summary>
@@ -562,7 +527,8 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void OpenExitSurePanel()
     {
-        OpenPanel(exitSurePanel);
+        ChangeState(UIState.ExitConfirm);
+        exitSurePanel.SetActive(true);
     }
 
     /// <summary>
@@ -571,7 +537,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void OpenEscPanel()
     {
-        OpenPanel(escPanel);
+        EnterEsc();
     }
 
     /// <summary>
@@ -615,7 +581,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void ShowPlayerDyingUI()
     {
-        OpenPanel(playerDyingPanel);
+
 
         Time.timeScale = 0f;
 
@@ -754,8 +720,10 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(optionBtn, OpenOptionPanel);
         BindButton(toMainBtn, OpenToMainSurePanel);
         BindButton(exitGameBtn, OpenExitSurePanel);
-        BindButton(xBtn, OpenEscPanel);
-        BindButton(escToOptionCloseBtn, HandleEscape);//*
+        //BindButton(xBtn, OpenEscPanel);
+        BindButton(xBtn, EnterEsc);
+        //BindButton(escToOptionCloseBtn, HandleEscape);//*
+        BindButton(escToOptionCloseBtn, CloseOptionAndReturnToEsc);
 
         BindButton(exitSureYesBtn, OnClickExitGame);
         BindButton(exitSureNoBtn, OpenEscPanel);
@@ -772,21 +740,14 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(clearRestartBtn, OnClickRestart);
         BindButton(clearToMainBtn, OnClickToMain);
     }
-    
+
     /// <summary>
     /// 모든 패널 초기 상태 정리
     /// </summary>
     private void ResetPanels()
     {
-        if (escPanel != null) escPanel.SetActive(false);
-        if (optionPanel != null) optionPanel.SetActive(false);
-        if (exitSurePanel != null) exitSurePanel.SetActive(false);
-        if (toMainSurePanel != null) toMainSurePanel.SetActive(false);
-        if (playerDyingPanel != null) playerDyingPanel.SetActive(false);
-        if (gameClearPanel != null) gameClearPanel.SetActive(false);
-
-        currentPanel = null;
-        escReturnTarget = EscReturnTarget.None;
+        CloseAllPanels();
+        currentState = UIState.Gameplay;
     }
 
     private void ResetDashUI()
@@ -817,7 +778,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void ShowGameClearUI()
     {
-        OpenPanel(gameClearPanel);
+
 
         Time.timeScale = 0f;
 
@@ -873,5 +834,161 @@ public class PlayerUIManager : MonoBehaviour
     {
         UpdatePlayerStateUI();
     }
+    private IEnumerator ResetEscapeLock()
+    {
+        yield return null; // 1프레임 뒤 해제
+        isProcessingEscape = false;
+    }
 
+    private IEnumerator SwitchToEscFromOption()
+    {
+        isProcessingEscape = true;
+
+        // 1. OptionPanel 확실히 끄기
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        // 2. 버튼 확실히 끄기
+        if (escToOptionCloseBtn != null)
+            escToOptionCloseBtn.gameObject.SetActive(false);
+
+
+
+        yield return null; // UI 반영 프레임
+
+
+
+        // 5. 게임 상태 유지
+        Time.timeScale = 0f;
+
+        if (PlayerController.Instance != null)
+            PlayerController.Instance.SetPause(true);
+
+        // 6. lock 해제
+        StartCoroutine(ResetEscapeLock());
+    }
+
+
+    private void ChangeState(UIState newState)
+    {
+        CloseAllPanels();
+        currentState = newState;
+    }
+    private void CloseAllPanels()
+    {
+        escPanel.SetActive(false);
+        optionPanel.SetActive(false);
+        exitSurePanel.SetActive(false);
+        toMainSurePanel.SetActive(false);
+        playerDyingPanel.SetActive(false);
+        gameClearPanel.SetActive(false);
+    }
+    private void ExitEsc()
+    {
+        escPanel.SetActive(false);
+
+        currentState = UIState.Gameplay;
+
+        Time.timeScale = 1f;
+
+        PlayerController.Instance?.SetPause(false);
+    }
+    private void EnterEsc()
+    {
+        CloseAllPanels();
+
+        escPanel.SetActive(true);
+        currentState = UIState.EscMenu;
+
+        Time.timeScale = 0f;
+        PlayerController.Instance?.SetPause(true);
+    }
+    private void CloseOptionAndReturnToEsc()
+    {
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        EnterEsc();
+    }
+    private void DoubleEscapeFromOption()
+    {
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        escPanel.SetActive(true);
+        currentState = UIState.EscMenu;
+
+        Time.timeScale = 0f;
+        PlayerController.Instance?.SetPause(true);
+    }
+    private IEnumerator DoubleEscapeFix()
+    {
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        yield return null; // 🔥 1프레임 기다림 (이게 핵심)
+
+        escPanel.SetActive(true);
+        currentState = UIState.EscMenu;
+
+        Time.timeScale = 0f;
+        PlayerController.Instance?.SetPause(true);
+
+        isProcessingEscape = false;
+    }
+    private IEnumerator EscapeRoutine()
+    {
+
+        yield return null;
+
+
+
+        switch (currentState)
+        {
+            case UIState.Gameplay:
+
+                SetEscState(UIState.EscMenu);
+                break;
+
+            case UIState.EscMenu:
+
+                SetEscState(UIState.Gameplay);
+                break;
+
+            case UIState.Option:
+
+                SetEscState(UIState.EscMenu);
+                break;
+        }
+
+        isProcessingEscape = false;
+
+        Debug.Log("EscapeRoutine END");
+    }
+    private void SetEscState(UIState target)
+    {
+        CloseAllPanels();
+
+        currentState = target;
+
+        switch (target)
+        {
+            case UIState.Gameplay:
+                Time.timeScale = 1f;
+                PlayerController.Instance?.SetPause(false);
+                break;
+
+            case UIState.EscMenu:
+                escPanel.SetActive(true);
+                Time.timeScale = 0f;
+                PlayerController.Instance?.SetPause(true);
+                break;
+
+            case UIState.Option:
+                optionPanel.SetActive(true);
+                Time.timeScale = 0f;
+                PlayerController.Instance?.SetPause(true);
+                break;
+        }
+    }
 }

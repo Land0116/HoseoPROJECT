@@ -2159,9 +2159,25 @@ public class PlayerController : MonoBehaviour, IDamageable
     //UI-Esc일시정지
     private void OnPause(InputValue value)
     {
-        if (!value.isPressed) return;
-        if (!IsGameplayScene()) return;
-        if (IsDie) return;
+        Debug.Log($"PlayerEsc [RAW INPUT] isPressed={value.isPressed}");
+
+        if (!value.isPressed)
+        {
+            Debug.Log("PlayerEsc [IGNORED: not pressed]");
+            return;
+        }
+        if (!IsGameplayScene())
+        {
+            Debug.Log("PlayerEsc [IGNORED: not gameplay]");
+            return;
+        }
+        if (IsDie)
+        {
+            Debug.Log("PlayerEsc [IGNORED: dead]");
+            return;
+        }
+        Debug.Log("PlayerEsc [CALL HandleEscape]");
+        PlayerUIManager.Instance?.HandleEscape();
     }
 
     public void SetPause(bool isPaused)

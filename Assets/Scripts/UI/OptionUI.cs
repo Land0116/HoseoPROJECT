@@ -24,7 +24,10 @@ public class OptionUI : MonoBehaviour
     [SerializeField] private GameObject controlViewPanel;
     [SerializeField] private Button controlViewButton;
     [SerializeField] private Button controlViewCloseButton;
-    [SerializeField] private GameObject closeButtonButton;
+
+    [Header("ESC Close")]
+    [SerializeField] private GameObject escToOptionCloseBtn;
+
     private Resolution[] resolutions =
     {
         new Resolution { width = 1600, height = 900 },
@@ -57,8 +60,7 @@ public class OptionUI : MonoBehaviour
             Debug.LogError("OptionSettings ScriptableObject를 연결해주세요!");
             return;
         }
-        if (closeButtonButton != null)
-            closeButtonButton.SetActive(true);
+
 
         controlViewButton.onClick.AddListener(OpenControlView);
         controlViewCloseButton.onClick.AddListener(CloseControlView);
@@ -182,18 +184,12 @@ public class OptionUI : MonoBehaviour
     {
         if (controlViewPanel != null)
             controlViewPanel.SetActive(true);
-
-        if (closeButtonButton != null)
-            closeButtonButton.SetActive(false);
     }
 
     public void CloseControlView()
     {
         if (controlViewPanel != null)
             controlViewPanel.SetActive(false);
-
-        if (closeButtonButton != null)
-            closeButtonButton.SetActive(true);
     }
     private bool HandleEscape()
     {
@@ -203,6 +199,10 @@ public class OptionUI : MonoBehaviour
         {
             Debug.Log("[OptionUI] controlViewPanel 닫음 (ESC 소비)");
             CloseControlView();
+
+            if (escToOptionCloseBtn != null)
+                escToOptionCloseBtn.SetActive(false);
+
             return true;
         }
 
@@ -212,9 +212,14 @@ public class OptionUI : MonoBehaviour
 
     public bool HandleEscapeConsumed()
     {
+        Debug.Log($"[OptionUI] HandleEscapeConsumed 호출됨 | controlViewPanel = {controlViewPanel?.activeSelf}");
         if (controlViewPanel != null && controlViewPanel.activeSelf)
         {
             CloseControlView();
+
+            if (escToOptionCloseBtn != null)
+                escToOptionCloseBtn.SetActive(false);
+
             return true;
         }
 
