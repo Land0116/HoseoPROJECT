@@ -109,6 +109,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool gold100Active; //100골드 이상 보유시
     public bool hasDisplayTicket;
 
+    //몬스터 스킬 넉백
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDuration = 0.2f;
+    [SerializeField] private float knockbackDrag = 8f;
+
+    private bool isKnockback;
+    private float knockbackEndTime;
+
     #region 증강 - 서브 스킬형
 
     [Header("증강 - 서브 스킬 / 현재 장착 증강")] [SerializeField]
@@ -511,6 +519,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        HandleKnockback(); //* 0513
+
         if (IsDie)
             return;
 
@@ -542,6 +552,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void FixedUpdate()
     {
+        HandleKnockback();
+        if (isKnockback)
+        {
+            return;//*
+
+        }
+
         if (IsDie)
         {
             rb.linearVelocity = Vector2.zero;
@@ -1602,7 +1619,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         UpdateAnimatorLocomotion();
     }
-
+    
     #region 최종 데미지 계산
 
     public float GetFinalDamage()
@@ -1643,6 +1660,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void StartDash()
     {
+        if (isKnockback) //* 넉백 몬스터 공격
+            return;
+
         Vector2 dir = Vector2.zero;
 
         // 1순위 : 현재 이동 입력 방향
@@ -3018,5 +3038,31 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         return add;
+    }
+
+    public void ApplyKnockback(Vector2 force)
+    {
+        if (IsDie) return;
+
+        isDashing = false;
+
+        isKnockback = true;
+        knockbackEndTime = Time.time + knockbackDuration;
+
+        rb.linearVelocity = Vector2.zero;
+
+        rb.linearDamping = knockbackDrag; 
+        rb.AddForce(force, ForceMode2D.Impulse);
+    }
+    private void HandleKnockback()
+    {
+        if (!isKnockback) return;
+
+        if (Time.time >= knockbackEndTime)
+        {
+            isKnockback = false;
+            rb.linearDamping = 0f; 
+            rb.linearVelocity *= 0.3f;
+        }
     }
 }
