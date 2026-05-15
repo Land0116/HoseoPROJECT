@@ -435,5 +435,10 @@ public class Monster : MonoBehaviour, IDamageable
     {
         return isKnockbacked || isHit;
     }
+
+    public Vector2 GetLookDirection()
+    {
+        return lastLookDir;
+    }
 }
 

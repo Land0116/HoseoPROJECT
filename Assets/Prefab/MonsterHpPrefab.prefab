@@ -640,5 +640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3574427e7ad20341829384effa7e577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterHPUI
+  offset: {x: 0, y: 0.8, z: 0}
   hpBar: {fileID: 5105410582259081797}
   hpText: {fileID: 1437220878935821624}
