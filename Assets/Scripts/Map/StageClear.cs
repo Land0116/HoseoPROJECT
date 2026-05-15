@@ -1315,7 +1315,7 @@ public class StageClear : MonoBehaviour
             return;
         }
 
-        rewardObject.Setup(rewardType);
+        //rewardObject.Setup(rewardType);
     }
     
     private RewardIconData GetRewardIconData(RewardType rewardType)

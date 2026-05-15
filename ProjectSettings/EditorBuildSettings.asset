@@ -86,6 +86,24 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stage_3_7.unity
     guid: 11f7d64a58689ea448ba984f726cd368
+  - enabled: 1
+    path: Assets/Scenes/NewScene/BossRoom.unity
+    guid: 6a73f825eadd9af4193ac6b904cd87aa
+  - enabled: 1
+    path: Assets/Scenes/NewScene/CombatRoom_1.unity
+    guid: 7e8324a126d33a34f95b498b15649cce
+  - enabled: 1
+    path: Assets/Scenes/NewScene/CombatRoom_2.unity
+    guid: 9582b986eaf28be4b8bb796f5b5cbe3d
+  - enabled: 1
+    path: Assets/Scenes/NewScene/CombatRoom_3.unity
+    guid: 37e435b16331cdd45b2488b56741cd70
+  - enabled: 1
+    path: Assets/Scenes/NewScene/CombatRoom_4.unity
+    guid: cfe821670de43a849be0c87e72a5c6f9
+  - enabled: 1
+    path: Assets/Scenes/NewScene/ShopRoom.unity
+    guid: 678b44f2432278c498cc065f11b206bf
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7bc64062afbc0584e9b515dfaac8fae1, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

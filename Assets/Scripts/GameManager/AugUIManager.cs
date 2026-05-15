@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 using Random = UnityEngine.Random;
 using UnityEngine.EventSystems;
 using TMPro;
@@ -11,6 +12,7 @@ using TMPro;
 public class AugUIManager : MonoBehaviour
 {
     public static AugUIManager instance;
+    private Action onRewardAugmentFinished;
 
     #region Constants
 
@@ -1118,6 +1120,7 @@ public class AugUIManager : MonoBehaviour
             PlayerController.Instance.SetPause(false);
             PlayerController.Instance.SetControl(true);
         }
+        NotifyRewardAugmentFinished();
     }
 
     #endregion
@@ -1131,6 +1134,31 @@ public class AugUIManager : MonoBehaviour
         if (sceneName == "Main") return false;
 
         return true;
+    }
+    
+    #endregion
+
+    #region Action
+
+    public void OpenAugmentPanelFromReward(Action onFinished)
+    {
+        onRewardAugmentFinished = onFinished;
+
+        ShowAugmentation();
+
+        // ShowAugmentation()이 실패해서 패널이 열리지 않았다면
+        // 전투방이 막히지 않도록 보상 완료 처리
+        if (!IsAugmentationVisible())
+        {
+            Debug.LogWarning("[AugUIManager] 증강 패널을 열 수 없어 보상 완료 처리");
+            NotifyRewardAugmentFinished();
+        }
+    }
+
+    private void NotifyRewardAugmentFinished()
+    {
+        onRewardAugmentFinished?.Invoke();
+        onRewardAugmentFinished = null;
     }
 
     #endregion

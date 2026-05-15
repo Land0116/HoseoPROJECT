@@ -14274,7 +14274,6 @@ GameObject:
   - component: {fileID: 622896073}
   - component: {fileID: 622896074}
   - component: {fileID: 622896076}
-  - component: {fileID: 622896075}
   - component: {fileID: 622896077}
   m_Layer: 0
   m_Name: GameManager
@@ -14295,7 +14294,8 @@ Transform:
   m_LocalPosition: {x: -5.09791, y: 4.01111, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1143332186}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &622896073
@@ -14394,20 +14394,6 @@ MonoBehaviour:
     augmentData: {fileID: 0}
     currentLevel: 1
     stackCount: 1
---- !u!114 &622896075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 622896071}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eafd0348bf14d84a81d95c2de905969, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CurWeaponUI
-  weaponImage: {fileID: 693012515}
-  defaultWeapon: {fileID: 11400000, guid: 9e064bbc690ddaf429d530587bb06e7c, type: 2}
 --- !u!114 &622896076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20986,6 +20972,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139664597}
   m_CullTransparentMesh: 1
+--- !u!1 &1143332184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1143332186}
+  - component: {fileID: 1143332185}
+  m_Layer: 0
+  m_Name: GameMapSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1143332185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143332184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ccd51d18481b94d8debc5a780eb38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapFlowManager
+  currentAct: 1
+  currentCombatRoomNumber: 1
+  bossEnterCombatRoomNumber: 6
+  requiredEntranceGroup: 0
+  pendingRewardType: 0
+  currentRoomKind: 0
+  combatScenes:
+  - sceneName: CombatRoom_1
+    entranceGroups: 0000000001000000
+  - sceneName: CombatRoom_2
+    entranceGroups: 000000000100000002000000
+  - sceneName: CombatRoom_3
+    entranceGroups: 0000000002000000
+  - sceneName: CombatRoom_4
+    entranceGroups: 0100000003000000
+  shopSceneName: ShopRoom
+  bossSceneName: BossRoom
+--- !u!4 &1143332186
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143332184}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -4.47348, y: 3.0588503, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 622896072}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1148504099
 GameObject:
   m_ObjectHideFlags: 0
@@ -23529,7 +23576,7 @@ MonoBehaviour:
   controlViewPanel: {fileID: 243784964}
   controlViewButton: {fileID: 1952389336}
   controlViewCloseButton: {fileID: 610557426}
-  closeButtonButton: {fileID: 0}
+  escToOptionCloseBtn: {fileID: 0}
 --- !u!1 &1376588967
 GameObject:
   m_ObjectHideFlags: 0
@@ -26975,6 +27022,7 @@ MonoBehaviour:
   clearRestartBtn: {fileID: 0}
   clearToMainBtn: {fileID: 0}
   escReturnTarget: 0
+  currentState: 0
 --- !u!1 &1615441919
 GameObject:
   m_ObjectHideFlags: 0

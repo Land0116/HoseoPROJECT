@@ -74,33 +74,6 @@ public class SceneMoveTriggerRelay : MonoBehaviour
         Destroy(currentMarker);
         currentMarker = null;
     }
-
-    private string GetRouteDisplayName(StageClear.RouteType type)
-    {
-        switch (type)
-        {
-            case StageClear.RouteType.Shop:
-                return "상점";
-
-            case StageClear.RouteType.Augment:
-                return "증강";
-
-            case StageClear.RouteType.Skill:
-                return "스킬";
-
-            case StageClear.RouteType.Item:
-                return "아이템";
-
-            case StageClear.RouteType.Boss:
-                return "보스";
-
-            case StageClear.RouteType.NextStage:
-                return "다음 스테이지";
-
-            default:
-                return "";
-        }
-    }
     
     public void ClearRouteMarker()
     {
@@ -135,7 +108,7 @@ public class SceneMoveTriggerRelay : MonoBehaviour
 
         if (spriteView != null)
         {
-            spriteView.Setup(rewardName, icon);
+            spriteView.Setup(icon);
             return;
         }
         

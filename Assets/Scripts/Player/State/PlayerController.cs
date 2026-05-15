@@ -145,6 +145,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("증강 - 산탄")] [SerializeField] private bool multiShotEnabled = false;
     [SerializeField] private int multiShotProjectileCount = 1;
     [SerializeField] private float multiShotSpreadAngle = 0f;
+    [Header("산탄 시각 간격")]
+    [SerializeField] private float multiShotSideSpacing = 0.25f;
 
     [Header("증강 - 차지샷")] [SerializeField] private bool chargeShotEnabled = false;
     [SerializeField] private float chargeShotTime = 0f;
@@ -154,7 +156,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private bool isAttackSequenceRunning = false;
 
     [Header("증강 - 주위탄 편대 배치")] [SerializeField]
-    private float orbitFormationSpacing = 0.35f;
+    private float orbitFormationSpacing = 1.0f;
 
     [SerializeField] private float orbitStartAngleOffset = 90f;
     [SerializeField] private int maxOrbitProjectileTotal = 40;
@@ -281,6 +283,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     //수정하면서 추가한 부분
     private float nextAttackTime = 0f;
 
+    #region 보조 함수
+    private Vector2 GetPerpendicular(Vector2 direction)
+    {
+        return new Vector2(-direction.y, direction.x).normalized;
+    }
+    #endregion
+    
     public float Hp
     {
         get => hp;
@@ -1093,7 +1102,15 @@ public class PlayerController : MonoBehaviour, IDamageable
                 Mathf.Sin(finalAngle * Mathf.Deg2Rad)
             ).normalized;
 
-            Vector3 spawnPos = gunTip.position + (Vector3)(finalDir * bulletSpawnOffset);
+            Vector2 sideDirection = GetPerpendicular(shotDirection);
+
+            float centerIndex = (bulletCount - 1) * 0.5f;
+            float sideIndex = i - centerIndex;
+
+            Vector3 spawnPos =
+                gunTip.position
+                + (Vector3)(shotDirection * bulletSpawnOffset)
+                + (Vector3)(sideDirection * sideIndex * multiShotSideSpacing);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();

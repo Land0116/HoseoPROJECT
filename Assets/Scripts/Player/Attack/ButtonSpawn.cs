@@ -75,7 +75,8 @@ public class ButtonSpawn : MonoBehaviour
     private Collider2D[] ownerColliders;
     private Collider2D[] myColliders;
 
-    [Header("타겟 필터")] [SerializeField] private LayerMask enemyLayerMask;
+    [Header("타겟 필터")] 
+    [SerializeField] private LayerMask enemyLayerMask;
     [SerializeField] private LayerMask wallLayerMask;
 
 // NonAlloc 버퍼
@@ -253,17 +254,53 @@ public class ButtonSpawn : MonoBehaviour
     {
         if (isDestroyed) return;
 
-        // -----------------------------
         // 발사자와의 충돌은 무조건 무시
-        // -----------------------------
         if (IsOwnerCollider(other))
             return;
 
+        // 벽 / 장애물 Trigger 충돌 처리
+        if (IsWallLayer(other.gameObject))
+        {
+            HandleWallTriggerHit(other);
+            return;
+        }
+
+        // 적 Trigger 충돌 처리
         IDamageable damageable = GetDamageable(other);
         if (damageable != null)
         {
             HandleEnemyHit(other, damageable);
+            return;
         }
+    }
+    private void HandleWallTriggerHit(Collider2D wallCollider)
+    {
+        if (wallCollider == null) return;
+
+        // Trigger 방식에서는 Collision Contact Normal이 없어서
+        // ClosestPoint 기준으로 대략적인 반사 방향을 계산한다.
+        if (remainingBounceCount > 0)
+        {
+            Vector2 closestPoint = wallCollider.ClosestPoint(transform.position);
+            Vector2 normal = ((Vector2)transform.position - closestPoint).normalized;
+
+            // 겹쳐 있는 상태라 normal을 못 구하면 현재 이동 방향의 반대로 처리
+            if (normal.sqrMagnitude <= 0.0001f)
+            {
+                normal = -moveDirection;
+            }
+
+            moveDirection = Vector2.Reflect(moveDirection, normal).normalized;
+            remainingBounceCount--;
+            return;
+        }
+
+        if (explosionRadius > 0f)
+        {
+            ExplodeAt(transform.position, null);
+        }
+
+        DestroyProjectile();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -341,8 +378,10 @@ public class ButtonSpawn : MonoBehaviour
         // 4. 연쇄탄 처리
         // 기존처럼 주변 적에게 즉시 데미지를 주는 게 아니라,
         // 총알의 이동 방향을 다음 적 방향으로 바꾼다.
-        if (TrySpawnChainProjectile(targetCollider))
+        if (remainingChainCount > 0)
         {
+            TrySpawnChainProjectile(targetCollider);
+
             DestroyProjectile();
             return;
         }
@@ -459,12 +498,16 @@ public class ButtonSpawn : MonoBehaviour
             enemyLayerMask
         );
 
+        IDamageable originDamageable = GetDamageable(originTarget);
+        Component originComponent = originDamageable as Component;
+
         Collider2D closestTarget = null;
         float closestSqr = float.MaxValue;
 
         for (int i = 0; i < count; i++)
         {
             Collider2D candidate = hitBuffer[i];
+
             if (candidate == null) continue;
             if (candidate == originTarget) continue;
             if (IsOwnerCollider(candidate)) continue;
@@ -472,6 +515,17 @@ public class ButtonSpawn : MonoBehaviour
 
             IDamageable candidateDamageable = GetDamageable(candidate);
             if (candidateDamageable == null) continue;
+
+            // 같은 IDamageable이면 제외
+            if (ReferenceEquals(candidateDamageable, originDamageable))
+                continue;
+
+            // 같은 몬스터 루트면 제외
+            if (originComponent != null && candidateDamageable is Component candidateComponent)
+            {
+                if (candidateComponent.transform.root == originComponent.transform.root)
+                    continue;
+            }
 
             float sqr = ((Vector2)candidate.transform.position - (Vector2)originTarget.transform.position).sqrMagnitude;
 
@@ -707,6 +761,10 @@ public class ButtonSpawn : MonoBehaviour
         {
             IDamageable originDamageable = GetDamageable(originTarget);
             IgnoreTargetCollision(originTarget, originDamageable);
+        }
+        if (rb != null)
+        {
+            rb.linearVelocity = moveDirection * speed;
         }
     }
     #endregion

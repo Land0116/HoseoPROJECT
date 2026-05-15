@@ -18,30 +18,30 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
 
-    [Header("UI캔버스")]
-    [SerializeField]private GameObject rootUI;
-    [SerializeField]private GameObject systemUI;
+    [Header("UI캔버스")] [SerializeField] private GameObject rootUI;
+    [SerializeField] private GameObject systemUI;
 
     // Main Scene UI
-    [Header("메인UI")]
-    [SerializeField]private GameObject mainImage;
-    [SerializeField]private GameObject mainPanel;
-    [SerializeField]private GameObject optionPanel;
-    [SerializeField]private GameObject exitPanel;
+    [Header("메인UI")] [SerializeField] private GameObject mainImage;
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private GameObject optionPanel;
+    [SerializeField] private GameObject exitPanel;
 
-    [SerializeField]private Button startBtn;
-    [SerializeField]private Button optionBtn;
+    [SerializeField] private Button startBtn;
+    [SerializeField] private Button optionBtn;
     [SerializeField] private Button exitBtn;
-    [SerializeField]private Button optionCloseBtn;
-    [SerializeField]private Button exitYesBtn;
-    [SerializeField]private Button exitNoBtn;
-    [SerializeField]private Button exitCloseBtn;
+    [SerializeField] private Button optionCloseBtn;
+    [SerializeField] private Button exitYesBtn;
+    [SerializeField] private Button exitNoBtn;
+    [SerializeField] private Button exitCloseBtn;
 
 
     [Header("상점 UI")]
     //[SerializeField] private 
     // 하위 매니저
-    [SerializeField] private PlayerUIManager playerUIManager;
+    [SerializeField]
+    private PlayerUIManager playerUIManager;
+
     [SerializeField] private AugUIManager augUIManager;
     [SerializeField] private NewItemUIManager shopUIManager;
     [SerializeField] private ItemUIManager itemUIManager;
@@ -54,8 +54,9 @@ public class UIManager : MonoBehaviour
     // 다음 게임 씬에 들어갔을 때 플레이어 상태를 초기화해야 하는지
     private bool needResetPlayerOnNextScene;
 
-    [Header("CurStageText")]
-    [SerializeField] private TMPro.TextMeshProUGUI curStage;
+    [Header("CurStageText")] [SerializeField]
+    private TMPro.TextMeshProUGUI curStage;
+
     private OptionUI optionUI;
 
 
@@ -125,14 +126,12 @@ public class UIManager : MonoBehaviour
         if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
 
 
-
         //  매번 최신 OptionUI 가져오기
         optionUI = FindFirstObjectByType<OptionUI>();
 
         // 1순위: ControlViewPanel 닫기
         if (optionUI != null && optionUI.IsControlViewOpen)
         {
-
             optionUI.CloseControlView();
             return;
         }
@@ -140,7 +139,6 @@ public class UIManager : MonoBehaviour
         // 2순위: OptionPanel 닫기
         if (optionPanel != null && optionPanel.activeSelf)
         {
-
             optionPanel.SetActive(false);
             return;
         }
@@ -163,7 +161,7 @@ public class UIManager : MonoBehaviour
         StartCoroutine(RebindLate());
         // UI 바인딩은 한 프레임 뒤에 (중요: 오브젝트 생성 타이밍 문제 방지)
         StartCoroutine(DelayedBind(scene.name));
-        optionUI = FindFirstObjectByType<OptionUI>(); 
+        optionUI = FindFirstObjectByType<OptionUI>();
 
         if (playerUIManager != null)
         {
@@ -183,13 +181,15 @@ public class UIManager : MonoBehaviour
 
             needResetPlayerOnNextScene = false;
         }
-        
+
         if (PlayerController.Instance != null)
         {
             BindCameraToPlayer(PlayerController.Instance);
         }
-        UpdateStageUI();//*
+
+        UpdateStageUI(); //*
     }
+
     private IEnumerator RebindLate()
     {
         yield return null;
@@ -200,6 +200,7 @@ public class UIManager : MonoBehaviour
         if (itemUIManager != null && systemUI != null)
             itemUIManager.BindItemUI(systemUI);
     }
+
     private IEnumerator DelayedBind(string sceneName)
     {
         yield return null;
@@ -207,8 +208,9 @@ public class UIManager : MonoBehaviour
 
         BindSceneUI();
         ApplySceneDefaultState(sceneName);
-        UpdateStageUI();//*
+        UpdateStageUI(); //*
     }
+
     /// <summary>
     /// 현재 씬의 RootUI / System_UI / 하위 UIManager들을 찾고 바인딩
     /// </summary>
@@ -235,10 +237,6 @@ public class UIManager : MonoBehaviour
         itemUIManager = rootUI.GetComponentInChildren<ItemUIManager>(true);
         skillUIManager = rootUI.GetComponentInChildren<SkillSelectUIManager>(true);
 
-        
-        
-        
-
 
         if (playerUIManager != null && systemUI != null)
             playerUIManager.BindPlayerUI(systemUI);
@@ -252,7 +250,7 @@ public class UIManager : MonoBehaviour
         if (itemUIManager != null && systemUI != null)
             itemUIManager.BindItemUI(systemUI);
 
-        
+
         /*if (inGameShopUIManager != null && systemUI != null)
             inGameShopUIManager.BindShopUI(systemUI);
 
@@ -265,7 +263,7 @@ public class UIManager : MonoBehaviour
 
             skillUIManager.BindSkillUI(systemUI, selectSkillPanelOverlay);
         }
-        
+
         SkillSlotButton[] slots = FindObjectsByType<SkillSlotButton>(FindObjectsSortMode.None);
 
         foreach (var slot in slots)
@@ -273,10 +271,10 @@ public class UIManager : MonoBehaviour
             slot.UpdateIcon();
         }
 
-        
+
         BindMainSceneUI();
     }
-    
+
     private IEnumerator BindPlayerAfterSceneLoad()
     {
         // PlayerController.Instance가 준비될 때까지 대기
@@ -293,7 +291,7 @@ public class UIManager : MonoBehaviour
         playerUIManager.BindPlayer(PlayerController.Instance);
         BindCameraToPlayer(PlayerController.Instance);
     }
-    
+
     /// <summary>
     /// Main 씬에서 사용하는 버튼 / 패널 찾기
     /// </summary>
@@ -435,7 +433,7 @@ public class UIManager : MonoBehaviour
 
         if (optionUI != null && optionUI.HandleEscapeConsumed())
         {
-            return; 
+            return;
         }
 
         if (playerUIManager == null) return;
@@ -449,7 +447,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        
+
         // 그 외는 PlayerUIManager에서 처리
         playerUIManager.HandleEscape();
     }
@@ -457,19 +455,18 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Main Scene Button Methods
-    
+
     public void StartGame()
     {
         ResetRunSystems();
 
-        if (StageClear.Instance != null)
+        if (MapFlowManager.Instance != null)
         {
-            StageClear.Instance.StartNewRun();
+            MapFlowManager.Instance.StartNewRun();
             return;
         }
 
-        SceneManager.LoadScene("Stage_1_1");
-
+        Debug.LogError("[UIManager] MapFlowManager가 없음. Main 씬의 GameManager에 MapFlowManager를 붙여야 함.");
     }
 
     /// <summary>
@@ -479,13 +476,13 @@ public class UIManager : MonoBehaviour
     {
         ResetRunSystems();
 
-        if (StageClear.Instance != null)
+        if (MapFlowManager.Instance != null)
         {
-            StageClear.Instance.StartNewRun();
+            MapFlowManager.Instance.StartNewRun();
             return;
         }
 
-        SceneManager.LoadScene("Stage_1_1");
+        Debug.LogError("[UIManager] MapFlowManager가 없음. 재시작 불가.");
     }
 
     /// <summary>
@@ -494,6 +491,11 @@ public class UIManager : MonoBehaviour
     public void GoToMainScene()
     {
         ResetRunSystems();
+
+        if (MapFlowManager.Instance != null)
+        {
+            MapFlowManager.Instance.ResetFlowStateOnly();
+        }
 
         if (PlayerController.Instance != null)
         {
@@ -509,13 +511,18 @@ public class UIManager : MonoBehaviour
 
         SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
 
-        typeof(SkillBagInteractable)
-            .GetField("currentTarget", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
-            .SetValue(null, null);
+        if (current != null)
+        {
+            typeof(SkillBagInteractable)
+                .GetField("currentTarget",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
+                ?.SetValue(null, null);
+        }
 
         SceneManager.LoadScene("Main");
 
         Cursor.visible = true;
+        //Cursor.lockState = CursorLockMode.None;
     }
 
     /// <summary>
@@ -579,7 +586,7 @@ public class UIManager : MonoBehaviour
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(action);
     }
-    
+
     /// <summary>
     /// 현재 씬의 Main Camera가 새 플레이어를 다시 따라가게 연결
     /// 직접 만든 CameraFollow 스크립트 기준
@@ -617,7 +624,7 @@ public class UIManager : MonoBehaviour
 
         return null;
     }
-    
+
     private void ResetRunSystems()
     {
         Time.timeScale = 1f;
@@ -654,21 +661,23 @@ public class UIManager : MonoBehaviour
 
         needResetPlayerOnNextScene = true;
     }
-    
+
     public NewItemUIManager GetShopUI()
     {
         return shopUIManager;
     }
+
     public ItemUIManager GetItemUI()
     {
         return itemUIManager;
     }
+
     public ItemUIManager GetWeaponUI()
     {
         return itemUIManager;
     }
 
-    private void UpdateStageUI()//*
+    private void UpdateStageUI() //*
     {
         if (curStage == null) return;
         if (StageClear.Instance == null) return;
