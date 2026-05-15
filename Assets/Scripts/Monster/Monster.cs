@@ -6,21 +6,21 @@ public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
 
-    [Header("æ÷¥œ∏ﬁ¿Ãº«")]
+    [Header("Animation")]
     [SerializeField] private Animator animator;
 
     private Vector2 lastMoveDir = Vector2.down;
     private Vector2 lastPosition;
 
-    [Header("∆–≈œ")]
+    [Header("Pattern")]
     [SerializeField] private AttackPattern attackPattern;
     [SerializeField] private MovePattern movePattern;
 
-    [Header("Ω∫≈»")]
+    [Header("MonsterStat")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float maxHP = 50f;
 
-    [Header("ªÁ∏¡Ω√ ∞ÒµÂ")]
+    [Header("Death Gold")]
     [SerializeField] private int minGold = 1;
     [SerializeField] private int maxGold = 3;
 
@@ -30,6 +30,11 @@ public class Monster : MonoBehaviour, IDamageable
     private HashSet<SlowFieldInstance> slowFields = new HashSet<SlowFieldInstance>(); //*
     private Dictionary<SlowFieldInstance, float> slowSources = new Dictionary<SlowFieldInstance, float>();
 
+    [Header("Attack View UI")]
+    [SerializeField] private GameObject alertUIPrefab;
+
+    private GameObject alertUIInstance;
+    private bool isAlertShowing = false;
     //≥ÀπÈ
     private bool isKnockbacked;
     public bool IsKnockbacked => isKnockbacked;
@@ -439,6 +444,30 @@ public class Monster : MonoBehaviour, IDamageable
     public Vector2 GetLookDirection()
     {
         return lastLookDir;
+    }
+    public void ShowAttackAlert(float duration = 0.8f)
+    {
+        if (alertUIPrefab == null) return;
+        if (isAlertShowing) return;
+
+        isAlertShowing = true;
+
+        alertUIInstance = Instantiate(alertUIPrefab, transform);
+        alertUIInstance.transform.localPosition = new Vector3(1f, 0.2f, 0);
+
+        StartCoroutine(AlertRoutine(duration));
+    }
+
+    private IEnumerator AlertRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        if (alertUIInstance != null)
+        {
+            Destroy(alertUIInstance);
+        }
+
+        isAlertShowing = false;
     }
 }
 

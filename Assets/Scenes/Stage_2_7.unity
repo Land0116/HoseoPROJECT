@@ -1336,71 +1336,6 @@ Transform:
   - {fileID: 1174029830}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &436159719
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 19
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -21
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2922428645784374037, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5700764306014107140, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_Name
-      value: BossMonster_Stage1_ SpringMonkey
-      objectReference: {fileID: 0}
-    - target: {fileID: 5700764306014107140, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8697051818906546540, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
-      propertyPath: maxHP
-      value: 101
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d610b912bd8a8924dac2b2c400c53f5e, type: 3}
 --- !u!1001 &437826305
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9101,6 +9036,67 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3367827252908942169, guid: 27daa12a1f366b4409697044d401d176, type: 3}
   m_PrefabInstance: {fileID: 1000510170}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1001486506
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 22.104584
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -20.618177
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 32196882857308565, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8432299258470313154, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: maxHP
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 8811275338972092146, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
+      propertyPath: m_Name
+      value: BossMonster_Robot
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 60a3edda4f3f3b747ac01ffd73b9e788, type: 3}
 --- !u!1 &1174029829
 GameObject:
   m_ObjectHideFlags: 0
@@ -39991,7 +39987,7 @@ SceneRoots:
   - {fileID: 355185271}
   - {fileID: 2093451896}
   - {fileID: 1505449011}
-  - {fileID: 436159719}
   - {fileID: 118008026}
   - {fileID: 974922849}
   - {fileID: 1668949269}
+  - {fileID: 1001486506}

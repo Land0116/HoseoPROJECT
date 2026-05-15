@@ -18778,7 +18778,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00012207031, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0.00024414062, y: 0}
   m_SizeDelta: {x: -1570, y: -1170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &991916920
@@ -20664,7 +20664,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00012207031, y: 0.000061035156}
+  m_AnchoredPosition: {x: 0.00024414062, y: 0}
   m_SizeDelta: {x: -1570, y: -1170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1117518611
@@ -23529,7 +23529,7 @@ MonoBehaviour:
   controlViewPanel: {fileID: 243784964}
   controlViewButton: {fileID: 1952389336}
   controlViewCloseButton: {fileID: 610557426}
-  closeButtonButton: {fileID: 0}
+  escToOptionCloseBtn: {fileID: 0}
 --- !u!1 &1376588967
 GameObject:
   m_ObjectHideFlags: 0
@@ -26975,6 +26975,7 @@ MonoBehaviour:
   clearRestartBtn: {fileID: 0}
   clearToMainBtn: {fileID: 0}
   escReturnTarget: 0
+  currentState: 0
 --- !u!1 &1615441919
 GameObject:
   m_ObjectHideFlags: 0
