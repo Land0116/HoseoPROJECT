@@ -6,6 +6,13 @@ public class MonsterSpawner : MonoBehaviour
     [Header("테스트 스폰")]
     [SerializeField] private bool isSpawnSure = false;
 
+    [Header("공용 몬스터")]
+    [SerializeField] private GameObject[] commonMonsters;
+
+    [Header("스폰 확률")]
+    [Range(0f, 1f)]
+    [SerializeField] private float commonMonsterChance = 0.3f; // 30%
+
     [Header("스테이지별 몬스터")]
     [SerializeField] private GameObject[] stage1Monster;
     [SerializeField] private GameObject[] stage2Monster;
@@ -116,7 +123,8 @@ public class MonsterSpawner : MonoBehaviour
         {
             Debug.LogWarning("몬스터 스폰 포인트가 없음. MonsterSpawner 위치에 1마리 생성");
 
-            GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
+            //GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
+            GameObject prefab = GetRandomMonster(selectedPool);
             GameObject monster = Instantiate(prefab, transform.position, Quaternion.identity);
 
             aliveMonsters.Add(monster);
@@ -126,8 +134,8 @@ public class MonsterSpawner : MonoBehaviour
 
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
-
+            //GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
+            GameObject prefab = GetRandomMonster(selectedPool); //* 0516
             if (prefab == null) continue;
 
             GameObject monster = Instantiate(prefab, spawnPoints[i].position, Quaternion.identity);
@@ -169,5 +177,24 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         return stage1Monster;
+    }
+    private GameObject GetRandomMonster(GameObject[] stagePool)
+    {
+        float roll = Random.value;
+
+        // 공용 몬스터 선택
+        if (roll < commonMonsterChance && commonMonsters != null && commonMonsters.Length > 0)
+        {
+            return commonMonsters[Random.Range(0, commonMonsters.Length)];
+        }
+
+        // 스테이지 몬스터 선택
+        if (stagePool != null && stagePool.Length > 0)
+        {
+            return stagePool[Random.Range(0, stagePool.Length)];
+        }
+
+        // fallback
+        return null;
     }
 }

@@ -141,14 +141,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterSpawner
   isSpawnSure: 0
+  commonMonsters:
+  - {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+  commonMonsterChance: 0.4
   stage1Monster:
   - {fileID: 2449111736576007643, guid: e2d671ae66a77524190896215d4f6d1f, type: 3}
-  - {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
   stage2Monster:
-  - {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+  - {fileID: 925977744875747198, guid: b1f80c1df10097a43a243de8cda2d3b3, type: 3}
   - {fileID: 5733596665570298416, guid: 16088478db7ec8f40a18dafd07492bd2, type: 3}
   stage3Monster:
-  - {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}
+  - {fileID: 5072550965480936731, guid: acd485472b105314882a92989ac0dada, type: 3}
   - {fileID: 3117710496602542777, guid: 071b89adc17a3134aa55b5e04be55eba, type: 3}
   spawnPoints:
   - {fileID: 5984958677268576668}

@@ -222,6 +222,16 @@ public class Monster : MonoBehaviour, IDamageable
         isHit = false;
 
         rb.linearVelocity = Vector2.zero;
+        // 추가: 죽자마자 물리 비활성화
+        if (rb != null)
+        {
+            rb.simulated = false; // 수정
+        }
+        if (col != null)
+        {
+            col.enabled = false;
+        }
+
         if (PlayerController.Instance != null)
         {
             PlayerController.Instance.OnKillEnemy();
