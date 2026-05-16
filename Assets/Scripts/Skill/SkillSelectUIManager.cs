@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
+
 
 public class SkillSelectUIManager : MonoBehaviour
 {
     public static SkillSelectUIManager Instance;
 
-    [Header("������")]
+    [Header("������")]
     public SkillData[] skillDatabase;
 
     [Header("UI")]
@@ -17,6 +20,8 @@ public class SkillSelectUIManager : MonoBehaviour
 
     private SkillData selectedSkill;
     private bool isSkillOpened = false;
+    private Action onRewardSkillFinished;
+    private bool isRewardMode = false;
 
     private GameObject overlayUI;
 
@@ -44,6 +49,38 @@ public class SkillSelectUIManager : MonoBehaviour
         }
     }
 
+    public void OpenSkillPanelFromReward(Action rewardFinishedCallback)
+    {
+        onRewardSkillFinished = rewardFinishedCallback;
+        isRewardMode = true;
+        isShopMode = false;
+
+        if (panel == null)
+        {
+            Debug.LogWarning("[SkillSelectUIManager] SkillSelectPanel이 바인딩되지 않음. UIManager.BindSkillUI 확인 필요.");
+
+            isRewardMode = false;
+
+            Action callback = onRewardSkillFinished;
+            onRewardSkillFinished = null;
+            callback?.Invoke();
+            return;
+        }
+
+        if (skillDatabase == null || skillDatabase.Length == 0)
+        {
+            Debug.LogWarning("[SkillSelectUIManager] skillDatabase가 비어 있음. 스킬 보상 완료 처리.");
+
+            isRewardMode = false;
+
+            Action callback = onRewardSkillFinished;
+            onRewardSkillFinished = null;
+            callback?.Invoke();
+            return;
+        }
+        
+        IsSkillOpened = true;
+    }
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -84,14 +121,14 @@ public class SkillSelectUIManager : MonoBehaviour
             panel.SetActive(false);
             isSkillOpened = false;
 
-            Transform closeBtn = UIManager.FindChildRecursive(root, "CloseSkillPanelButton");
+            //Transform closeBtn = UIManager.FindChildRecursive(root, "CloseSkillPanelButton");
 
-            if (closeBtn != null)
-            {
-                closeSkillButton = closeBtn.GetComponent<Button>();
-                closeSkillButton.onClick.RemoveAllListeners();
-                closeSkillButton.onClick.AddListener(CancelSelection);
-            }
+            //if (closeBtn != null)
+            //{
+            //    closeSkillButton = closeBtn.GetComponent<Button>();
+            //    closeSkillButton.onClick.RemoveAllListeners();
+            //    closeSkillButton.onClick.AddListener(CancelSelection);
+            //}
         }
 
         
@@ -104,15 +141,21 @@ public class SkillSelectUIManager : MonoBehaviour
 
         if (panel == null)
         {
-
+            Debug.LogWarning("[SkillSelectUIManager] panel == null. SkillSelectPanel 바인딩 실패.");
             return;
         }
 
         panel.SetActive(true);
         Time.timeScale = 0f;
 
-        if (closeSkillButton != null)
-            closeSkillButton.gameObject.SetActive(true);
+       // if (closeSkillButton != null)
+         //   closeSkillButton.gameObject.SetActive(true);
+         if (closeSkillButton != null)
+         {
+             // 보상으로 열린 스킬 선택은 취소하면 문이 안 열리는 문제가 생긴다.
+             // 따라서 보상 모드에서는 닫기 버튼을 숨긴다.
+             closeSkillButton.gameObject.SetActive(!isRewardMode);
+         }
 
         List<SkillData> randomSkills = skillDatabase
             .OrderBy(x => Random.value)
@@ -190,15 +233,16 @@ public class SkillSelectUIManager : MonoBehaviour
 
         isShopMode = true;
 
-        // panel�ȿ���
+        // panel�ȿ���
         if (panel != null)
             panel.SetActive(false);
 
-        // overlay�� �Ѽ� Q/E Ŭ�� ����
+        // overlay�� �Ѽ� Q/E Ŭ�� ����
         if (overlayUI != null)
             overlayUI.SetActive(true);
 
         Time.timeScale = 0f;
+        
     }
 
 
@@ -239,7 +283,7 @@ public class SkillSelectUIManager : MonoBehaviour
         {
             panel.SetActive(false);
 
-            // �ٽ� ���� ���� ����
+            // �ٽ� ���� ���� ����
             Image panelImage = panel.GetComponent<Image>();
             if (panelImage != null)
                 panelImage.enabled = true;
@@ -249,6 +293,16 @@ public class SkillSelectUIManager : MonoBehaviour
             closeSkillButton.gameObject.SetActive(true);
 
         isSkillOpened = false;
+        
+        if (isRewardMode)
+        {
+            isRewardMode = false;
+
+            Action callback = onRewardSkillFinished;
+            onRewardSkillFinished = null;
+
+            callback?.Invoke();
+        }
     }
     private void OnDestroy()
     {

@@ -30,12 +30,11 @@ public class AugmentRunManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         currentSlotCount = Mathf.Clamp(baseSlotCount, 1, MaxSlotCapacity);
 

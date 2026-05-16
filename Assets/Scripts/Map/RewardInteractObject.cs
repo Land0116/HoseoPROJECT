@@ -181,6 +181,7 @@ public class RewardInteractObject : AutoBindableBehaviour
     {
         if (isUsed) return;
 
+        Debug.Log($"[RewardInteractObject] 상호작용 보상 타입: {rewardType}");
         isUsed = true;
 
         // 상호작용 후에는 다시 누르지 못하게 콜라이더를 끈다.
@@ -245,12 +246,17 @@ public class RewardInteractObject : AutoBindableBehaviour
     /// </summary>
     private void OpenSkillReward()
     {
-        // 예시:
-        // SkillUIManager.Instance.OpenSkillPanelFromReward(FinishReward);
-
-        FinishReward();
+        if (SkillSelectUIManager.Instance != null)
+        {
+            SkillSelectUIManager.Instance.OpenSkillPanelFromReward(FinishReward);
+        }
+        else
+        {
+            Debug.LogWarning("[RewardInteractObject] SkillSelectUIManager가 없음. 스킬 보상 완료 처리.");
+            FinishReward();
+        }
     }
-
+    
     /// <summary>
     /// 아이템 보상 처리.
     /// 
@@ -259,14 +265,15 @@ public class RewardInteractObject : AutoBindableBehaviour
     /// </summary>
     private void SpawnItemReward()
     {
-        // 예시 1:
-        // ItemRewardSpawner.Instance.SpawnItemReward();
-        // FinishReward();
-
-        // 예시 2:
-        // ItemRewardUIManager.Instance.OpenItemRewardPanel(FinishReward);
-
-        FinishReward();
+        if (NewItemUIManager.Instance != null)
+        {
+            NewItemUIManager.Instance.SpawnItemRewardFromReward(FinishReward);
+        }
+        else
+        {
+            Debug.LogWarning("[RewardInteractObject] NewItemUIManager가 없음. 아이템 보상 완료 처리.");
+            FinishReward();
+        }
     }
 
     /// <summary>

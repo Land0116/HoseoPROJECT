@@ -253,18 +253,18 @@ public class ButtonSpawn : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (isDestroyed) return;
-
+    
         // 발사자와의 충돌은 무조건 무시
         if (IsOwnerCollider(other))
             return;
-
+    
         // 벽 / 장애물 Trigger 충돌 처리
         if (IsWallLayer(other.gameObject))
         {
             HandleWallTriggerHit(other);
             return;
         }
-
+    
         // 적 Trigger 충돌 처리
         IDamageable damageable = GetDamageable(other);
         if (damageable != null)
@@ -276,69 +276,69 @@ public class ButtonSpawn : MonoBehaviour
     private void HandleWallTriggerHit(Collider2D wallCollider)
     {
         if (wallCollider == null) return;
-
+    
         // Trigger 방식에서는 Collision Contact Normal이 없어서
         // ClosestPoint 기준으로 대략적인 반사 방향을 계산한다.
         if (remainingBounceCount > 0)
         {
             Vector2 closestPoint = wallCollider.ClosestPoint(transform.position);
             Vector2 normal = ((Vector2)transform.position - closestPoint).normalized;
-
+    
             // 겹쳐 있는 상태라 normal을 못 구하면 현재 이동 방향의 반대로 처리
             if (normal.sqrMagnitude <= 0.0001f)
             {
                 normal = -moveDirection;
             }
-
+    
             moveDirection = Vector2.Reflect(moveDirection, normal).normalized;
             remainingBounceCount--;
             return;
         }
-
+    
         if (explosionRadius > 0f)
         {
             ExplodeAt(transform.position, null);
         }
-
+    
         DestroyProjectile();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (isDestroyed) return;
-        if (collision.contactCount <= 0) return;
-
-        if (IsOwnerCollider(collision.collider))
-            return;
-
-        // 적이면 적 처리
-        IDamageable damageable = GetDamageable(collision.collider);
-        if (damageable != null)
-        {
-            HandleEnemyHit(collision.collider, damageable);
-            return;
-        }
-
-        // 벽/장애물만 반사 또는 소멸 처리
-        if (!IsWallLayer(collision.collider.gameObject))
-            return;
-
-        if (remainingBounceCount > 0)
-        {
-            Vector2 normal = collision.GetContact(0).normal;
-            moveDirection = Vector2.Reflect(moveDirection, normal).normalized;
-            remainingBounceCount--;
-            return;
-        }
-
-        if (explosionRadius > 0f)
-        {
-            ExplodeAt(collision.GetContact(0).point, null);
-            //PlayExplosionVfx(collision.GetContact(0).point, explosionRadius);
-        }
-
-        DestroyProjectile();
-    }
+    // private void OnCollisionEnter2D(Collision2D collision)
+    // {
+    //     if (isDestroyed) return;
+    //     if (collision.contactCount <= 0) return;
+    //
+    //     if (IsOwnerCollider(collision.collider))
+    //         return;
+    //
+    //     // 적이면 적 처리
+    //     IDamageable damageable = GetDamageable(collision.collider);
+    //     if (damageable != null)
+    //     {
+    //         HandleEnemyHit(collision.collider, damageable);
+    //         return;
+    //     }
+    //
+    //     // 벽/장애물만 반사 또는 소멸 처리
+    //     if (!IsWallLayer(collision.collider.gameObject))
+    //         return;
+    //
+    //     if (remainingBounceCount > 0)
+    //     {
+    //         Vector2 normal = collision.GetContact(0).normal;
+    //         moveDirection = Vector2.Reflect(moveDirection, normal).normalized;
+    //         remainingBounceCount--;
+    //         return;
+    //     }
+    //
+    //     if (explosionRadius > 0f)
+    //     {
+    //         ExplodeAt(collision.GetContact(0).point, null);
+    //         //PlayExplosionVfx(collision.GetContact(0).point, explosionRadius);
+    //     }
+    //
+    //     DestroyProjectile();
+    // }
 
     private void HandleEnemyHit(Collider2D targetCollider, IDamageable damageable)
     {

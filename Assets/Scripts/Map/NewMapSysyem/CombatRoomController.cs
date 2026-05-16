@@ -158,9 +158,47 @@ public class CombatRoomController : MapRoomControllerBase
 
         isRewardFinished = true;
 
+        if (MapFlowManager.Instance != null &&
+            MapFlowManager.Instance.IsLastCombatRoomBeforeBoss())
+        {
+            OpenOnlyOneBossGate();
+            return;
+        }
+
         AssignNextRoutes();
 
         OpenAllGates();
+    }
+    
+    private void OpenOnlyOneBossGate()
+    {
+        if (gates == null || gates.Length <= 0)
+        {
+            Debug.LogWarning("[CombatRoomController] 열 수 있는 Gate가 없음");
+            return;
+        }
+
+        int bossGateIndex = Random.Range(0, gates.Length);
+
+        for (int i = 0; i < gates.Length; i++)
+        {
+            GateController gate = gates[i];
+
+            if (gate == null) continue;
+
+            if (i == bossGateIndex)
+            {
+                gate.SetRoute(RoomKind.Boss, RewardType.None);
+                gate.SetOpen(true);
+            }
+            else
+            {
+                gate.SetRoute(RoomKind.Combat, RewardType.None);
+                gate.SetOpen(false);
+            }
+        }
+
+        Debug.Log("[CombatRoomController] 보스 직전 전투방 클리어. 보스룸 출구 1개만 개방.");
     }
 
     /// <summary>

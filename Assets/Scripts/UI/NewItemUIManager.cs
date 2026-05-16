@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class NewItemUIManager : MonoBehaviour
 {
@@ -47,6 +49,14 @@ public class NewItemUIManager : MonoBehaviour
                 isOpenedItem = false;
             }
         }
+    }
+    
+    public void SpawnItemRewardFromReward(Action rewardFinishedCallback)
+    {
+        Debug.Log("[NewItemUIManager] 아이템 보상 드랍 시작");
+        SpawnRandomItems();
+
+        rewardFinishedCallback?.Invoke();
     }
 
     private void Awake()
@@ -204,47 +214,29 @@ public class NewItemUIManager : MonoBehaviour
         }
     }
 
-    /*private void SpawnRandomItems()
-    {
-        if (itemDatabase == null || itemDatabase.Length == 0) return;
-        if (itemPickupPrefab == null) return;
-        if (PlayerController.Instance == null) return;
-
-        // 75%: 2개 / 25%: 3개
-        int itemCount = Random.value < 0.75f ? 2 : 3;
-
-        // 위치 배열
-        float[] xPositions = itemCount == 2
-            ? new float[] { -1.0f, 1.0f }
-            : new float[] { -2.0f, 0.0f, 2.0f };
-
-        Vector3 basePos = PlayerController.Instance.transform.position;
-
-        for (int i = 0; i < itemCount; i++)
-        {
-            ItemData item = RollItem();
-
-            Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
-
-            GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
-
-            ItemPickup pickup = obj.GetComponent<ItemPickup>();
-            if (pickup != null)
-            {
-                pickup.SetItemData(item);
-            }
-        }
-    }*/
+    
     private void SpawnRandomItems()
     {
-        if (itemPickupPrefab == null) return;
-        if (PlayerController.Instance == null) return;
+        if (itemPickupPrefab == null)
+        {
+            Debug.LogWarning("[NewItemUIManager] itemPickupPrefab이 없음. 아이템 드랍 불가.");
+            return;
+        }
+
+        if (PlayerController.Instance == null)
+        {
+            Debug.LogWarning("[NewItemUIManager] PlayerController.Instance가 없음. 아이템 드랍 불가.");
+            return;
+        }
 
         GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB);
 
         if ((normalDB == null || normalDB.Length == 0) &&
             (specialDB == null || specialDB.Length == 0))
+        {
+            Debug.LogWarning("[NewItemUIManager] 아이템 DB가 비어 있음. 아이템 드랍 불가.");
             return;
+        }
 
         int itemCount = Random.value < 0.75f ? 2 : 3;
 
@@ -258,6 +250,12 @@ public class NewItemUIManager : MonoBehaviour
         {
             ItemData item = RollItem();
 
+            if (item == null)
+            {
+                Debug.LogWarning("[NewItemUIManager] RollItem 결과가 null임.");
+                continue;
+            }
+
             Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
 
             GameObject obj = Instantiate(itemPickupPrefab, spawnPos, Quaternion.identity);
@@ -267,34 +265,14 @@ public class NewItemUIManager : MonoBehaviour
             {
                 pickup.SetItemData(item);
             }
+            else
+            {
+                Debug.LogWarning("[NewItemUIManager] itemPickupPrefab에 ItemPickup 컴포넌트가 없음.");
+            }
         }
     }
-    /*private ItemData RollItem()
-    {
-        PlayerController player = PlayerController.Instance;
-
-        float baseChance = 0.1f; // 10%
-
-        float bonus = 0f;
-
-        if (player != null)
-        {
-            bonus = player.GetSpecialChanceAdd();
-            // 예: 90f
-        }
-
-        float finalChance = baseChance + (bonus / 100f);
-        finalChance = Mathf.Clamp01(finalChance);
-
-        bool isSpecial = Random.value < finalChance;
-
-        if (isSpecial && specialitemDatabase != null && specialitemDatabase.Length > 0)
-        {
-            return specialitemDatabase[Random.Range(0, specialitemDatabase.Length)];
-        }
-
-        return itemDatabase[Random.Range(0, itemDatabase.Length)];
-    }*/
+   
+    
     private ItemData RollItem()
     {
         PlayerController player = PlayerController.Instance;
@@ -328,9 +306,16 @@ public class NewItemUIManager : MonoBehaviour
         normalDB = itemDatabase;
         specialDB = specialitemDatabase;
 
-        if (StageClear.Instance == null) return;
+        int stage = 1;
 
-        int stage = StageClear.Instance.GetCurrentStageNumber();
+        if (MapFlowManager.Instance != null)
+        {
+            stage = MapFlowManager.Instance.CurrentAct;
+        }
+        //else if (StageClear.Instance != null)
+        //{
+        //    stage = StageClear.Instance.GetCurrentStageNumber();
+        //}
 
         switch (stage)
         {

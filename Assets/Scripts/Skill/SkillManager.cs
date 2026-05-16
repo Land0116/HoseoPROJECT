@@ -3,17 +3,16 @@ using UnityEngine;
 public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance;
-    private float cooldownReduction = 0f; //½ºÅ³ Á¶°ÇºÎ ¾ÆÀÌÅÛ
+    private float cooldownReduction = 0f; //ï¿½ï¿½Å³ ï¿½ï¿½ï¿½Çºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public SkillData qSkill;
@@ -61,14 +60,14 @@ public class SkillManager : MonoBehaviour
         int level = GetQLevel();
         //float cooldown = qSkill.GetCooldown(level);
         float cooldown = Mathf.Max(0f, qSkill.GetCooldown(level) - cooldownReduction);
-        // ÄðÅ¸ÀÓ Ã¼Å©
+        // ï¿½ï¿½Å¸ï¿½ï¿½ Ã¼Å©
         if (Time.time < qLastUseTime + cooldown)
         {
-            Debug.Log("Q ÄðÅ¸ÀÓ Áß");
+            Debug.Log("Q ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½");
             return;
         }
 
-        Debug.Log("Q ½ºÅ³ ½ÇÇà");
+        Debug.Log("Q ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½");
 
         qLastUseTime = Time.time;
 
@@ -84,11 +83,11 @@ public class SkillManager : MonoBehaviour
         float cooldown = Mathf.Max(0f, eSkill.GetCooldown(level) - cooldownReduction);
         if (Time.time < eLastUseTime + cooldown)
         {
-            Debug.Log("E ÄðÅ¸ÀÓ Áß");
+            Debug.Log("E ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½");
             return;
         }
 
-        Debug.Log("E ½ºÅ³ ½ÇÇà");
+        Debug.Log("E ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½");
 
         eLastUseTime = Time.time;
 

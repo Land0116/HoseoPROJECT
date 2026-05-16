@@ -62,17 +62,12 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        // 싱글톤 패턴
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
-
         Instance = this;
-
-        // 씬이 바뀌어도 유지
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()

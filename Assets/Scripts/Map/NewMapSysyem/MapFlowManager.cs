@@ -66,12 +66,10 @@ public class MapFlowManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
-    
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     public bool IsFirstCombatRoomOfAct()
@@ -168,11 +166,25 @@ public class MapFlowManager : MonoBehaviour
 
     public void EnterNextRoomFromGate(GateGroup usedGateGroup, RoomKind nextRoomKind, RewardType selectedRewardType)
     {
+        // 다음 방에서 플레이어가 나와야 하는 입구 그룹 계산
         requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
+
+        // 핵심 수정:
+        // 전투방, 상점방, 보스방으로 이동할 때 모두 현재 액트 진행 번호를 증가시킨다.
+        //
+        // 예:
+        // 전투방 -> 상점 -> 전투방
+        // 1      -> 2    -> 3
+        //
+        // 전투방 -> 상점 -> 보스방
+        // 5      -> 6    -> 7
+        currentCombatRoomNumber++;
 
         if (nextRoomKind == RoomKind.Shop)
         {
             currentRoomKind = RoomKind.Shop;
+
+            // 상점방 자체는 전투 클리어 보상이 아니므로 None
             pendingRewardType = RewardType.None;
 
             SceneManager.LoadScene(shopSceneName);
@@ -192,8 +204,8 @@ public class MapFlowManager : MonoBehaviour
         {
             currentRoomKind = RoomKind.Combat;
 
-            currentCombatRoomNumber++;
-
+            // 상점방 또는 전투방 출구에서 선택한 보상.
+            // 다음 전투방 클리어 후 이 보상이 생성된다.
             pendingRewardType = selectedRewardType;
 
             LoadRandomCombatScene();

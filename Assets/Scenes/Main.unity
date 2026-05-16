@@ -332,7 +332,7 @@ MonoBehaviour:
   m_text: CLOSE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -398,7 +398,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &16387753
@@ -14275,6 +14275,8 @@ GameObject:
   - component: {fileID: 622896074}
   - component: {fileID: 622896076}
   - component: {fileID: 622896077}
+  - component: {fileID: 622896079}
+  - component: {fileID: 622896078}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -14294,8 +14296,7 @@ Transform:
   m_LocalPosition: {x: -5.09791, y: 4.01111, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1143332186}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &622896073
@@ -14428,6 +14429,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillManager
   qSkill: {fileID: 0}
   eSkill: {fileID: 0}
+--- !u!114 &622896078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622896071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4209c3ed4fe4d2d4bbe2097aaa4caece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!114 &622896079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622896071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ccd51d18481b94d8debc5a780eb38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapFlowManager
+  currentAct: 1
+  currentCombatRoomNumber: 1
+  bossEnterCombatRoomNumber: 6
+  requiredEntranceGroup: 0
+  pendingRewardType: 0
+  currentRoomKind: 0
+  combatScenes:
+  - sceneName: CombatRoom_1
+    entranceGroups: 0000000001000000
+  - sceneName: CombatRoom_2
+    entranceGroups: 000000000100000002000000
+  - sceneName: CombatRoom_3
+    entranceGroups: 0000000002000000
+  - sceneName: CombatRoom_4
+    entranceGroups: 0100000003000000
+  shopSceneName: ShopRoom
+  bossSceneName: BossRoom
 --- !u!1 &632086747
 GameObject:
   m_ObjectHideFlags: 0
@@ -19650,7 +19692,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -19716,7 +19758,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1042743206
@@ -20972,67 +21014,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1139664597}
   m_CullTransparentMesh: 1
---- !u!1 &1143332184
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1143332186}
-  - component: {fileID: 1143332185}
-  m_Layer: 0
-  m_Name: GameMapSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1143332185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1143332184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4ccd51d18481b94d8debc5a780eb38b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapFlowManager
-  currentAct: 1
-  currentCombatRoomNumber: 1
-  bossEnterCombatRoomNumber: 6
-  requiredEntranceGroup: 0
-  pendingRewardType: 0
-  currentRoomKind: 0
-  combatScenes:
-  - sceneName: CombatRoom_1
-    entranceGroups: 0000000001000000
-  - sceneName: CombatRoom_2
-    entranceGroups: 000000000100000002000000
-  - sceneName: CombatRoom_3
-    entranceGroups: 0000000002000000
-  - sceneName: CombatRoom_4
-    entranceGroups: 0100000003000000
-  shopSceneName: ShopRoom
-  bossSceneName: BossRoom
---- !u!4 &1143332186
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1143332184}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.47348, y: 3.0588503, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 622896072}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1148504099
 GameObject:
   m_ObjectHideFlags: 0
@@ -24283,7 +24264,7 @@ MonoBehaviour:
   m_text: "\uC2A4\uD0AC\uC774\uB984"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -24349,7 +24330,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1421221019
@@ -24852,7 +24833,7 @@ MonoBehaviour:
   m_text: "\uC2A4\uD0AC\uC774\uB984"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -24918,7 +24899,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1470982925
@@ -26273,7 +26254,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -26339,7 +26320,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1575238221
@@ -30657,7 +30638,7 @@ MonoBehaviour:
   m_text: "\uC2A4\uD0AC\uC124\uBA85 ~"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -30723,7 +30704,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1853446658
@@ -33152,7 +33133,7 @@ MonoBehaviour:
   m_text: "\uC2A4\uD0AC\uC124\uBA85 ~"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: -1023003305901146988, guid: 448175f62dfa47d4b8e4a80ec744d615, type: 2}
+  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -33218,7 +33199,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &2046174891

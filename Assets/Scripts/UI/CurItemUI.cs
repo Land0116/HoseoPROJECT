@@ -9,20 +9,19 @@ public class CurItemUI : MonoBehaviour
     public static CurItemUI Instance;
 
     [SerializeField] private Image itemImage;
-    [Header("°ÔÀÓ ½ÃÀÛ ½Ã ÀåÂøµÈ ±âº» ¾ÆÀÌÅÛ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private ItemData defaultItem;
     [SerializeField] private Image[] itemSlots;
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         for (int i = 0; i < itemSlots.Length; i++)
         {
@@ -57,7 +56,7 @@ public class CurItemUI : MonoBehaviour
     {
         if (ItemUIManager.Instance == null) return;
 
-        // ÇöÀç ¸¶¿ì½º À§Ä¡ UI Raycast·Î ´Ù½Ã Ã£±â
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ì½º ï¿½ï¿½Ä¡ UI Raycastï¿½ï¿½ ï¿½Ù½ï¿½ Ã£ï¿½ï¿½
         PointerEventData eventData = new PointerEventData(EventSystem.current);
         eventData.position = Mouse.current.position.ReadValue();
 
@@ -86,7 +85,7 @@ public class CurItemUI : MonoBehaviour
             }
         }
 
-        // ½½·Ô À§ ¾Æ´Ï¸é ÅøÆÁ ²û
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Æ´Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         ItemUIManager.Instance.HideUIItemInfo();
     }
     private void OnDestroy()
