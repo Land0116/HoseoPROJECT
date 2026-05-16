@@ -114,6 +114,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float knockbackDuration = 0.2f;
     [SerializeField] private float knockbackDrag = 8f;
 
+    //몬스터 스킬 스턴
+    private bool isStunned;
+    private float stunEndTime;
+
+    // 피해 배율 (기본 1배)
+    private float damageMultiplier = 2f;
+    private float damageMultiplierEndTime;
+
     private bool isKnockback;
     private float knockbackEndTime;
 
@@ -529,6 +537,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Update()
     {
         HandleKnockback(); //* 0513
+        UpdateStun();
 
         if (IsDie)
             return;
@@ -561,6 +570,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void FixedUpdate()
     {
+        if (isStunned) return;
+
         HandleKnockback();
         if (isKnockback)
         {
@@ -1558,11 +1569,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         return Time.time >= chargeStartTime + FinalChargeShotTime;
     }
     #endregion
-    
-    
+
+
     #region 피격 처리
 
-    public void OnDamage(float damage)
+    /*public void OnDamage(float damage)
     {
         if (IsDie) return;
 
@@ -1582,6 +1593,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         float incomingDamage = Mathf.Max(0f, damage);
 
+
         if (shieldActive)
         {
             incomingDamage = Mathf.CeilToInt(incomingDamage * 0.5f);
@@ -1596,7 +1608,59 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         Hp -= incomingDamage;
+
         
+
+        if (Hp <= 0)
+        {
+            Death();
+            return;
+        }
+
+        EnterHitState();
+    }*/
+    public void OnDamage(float damage)
+    {
+        if (IsDie) return;
+
+        if (Time.time < invincibleUntilTime)
+            return;
+
+        // 보호막 먼저 소모
+        if (currentShieldCount > 0)
+        {
+            currentShieldCount--;
+            invincibleUntilTime = Time.time + 0.1f;
+
+            // 보호막 시각 효과 갱신
+            RefreshShieldVisual();
+            return;
+        }
+
+        float incomingDamage = Mathf.Max(0f, damage);
+
+        // 스턴일 때만 2배 데미지
+        if (isStunned)
+        {
+            incomingDamage *= 2f;
+        }
+
+        // 보호막 감소 효과 (최종 데미지에 적용)
+        if (shieldActive)
+        {
+            incomingDamage = Mathf.CeilToInt(incomingDamage * 0.5f);
+        }
+
+        // 치명적 피해 극복
+        if (Hp - incomingDamage <= 0f && specialCheatDeath && !specialCheatDeathUsed)
+        {
+            specialCheatDeathUsed = true;
+            Hp = Mathf.Max(1f, specialCheatDeathHp);
+            invincibleUntilTime = Time.time + specialCheatDeathInvincibleDuration;
+            return;
+        }
+
+        Hp -= incomingDamage;
 
         if (Hp <= 0)
         {
@@ -1667,6 +1731,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!value.isPressed) return;
         if (!IsGameplayScene()) return;
         if (IsDie) return;
+        if (isStunned) return;//* 몬스터 스턴 패턴 추가
         if (!canControl) return;
         if (Time.timeScale <= 0f) return;
         if (isDashing) return;
@@ -3082,5 +3147,21 @@ public class PlayerController : MonoBehaviour, IDamageable
             rb.linearDamping = 0f; 
             rb.linearVelocity *= 0.3f;
         }
+    }
+
+    private void UpdateStun()
+    {
+        if (!isStunned) return;
+
+        if (Time.time >= stunEndTime)
+        {
+            isStunned = false;
+        }
+    }
+
+    public void ApplyExplosionStun(float duration)
+    {
+        isStunned = true;
+        stunEndTime = Time.time + duration;
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class MonsterHPUI : MonoBehaviour
 {
+    [SerializeField] private Vector3 offset = new Vector3(0, 0.8f, 0);
+
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
 
@@ -25,5 +27,14 @@ public class MonsterHPUI : MonoBehaviour
         hpBar.value = current / max;
 
         hpText.text = $"{(int)current} / {(int)max}";
+    }
+
+    void LateUpdate()
+    {
+        if (monster == null) return;
+
+        transform.position = monster.transform.position + offset;
+
+        transform.rotation = Quaternion.identity;
     }
 }
