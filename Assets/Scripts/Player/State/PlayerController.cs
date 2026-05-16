@@ -2052,6 +2052,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (PlayerUIManager.Instance != null)
         {
+            Debug.Log("죽음");
             PlayerUIManager.Instance.ShowPlayerDyingUI();
         }
 

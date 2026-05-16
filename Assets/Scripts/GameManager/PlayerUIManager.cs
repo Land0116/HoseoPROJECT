@@ -581,8 +581,7 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void ShowPlayerDyingUI()
     {
-
-
+        playerDyingPanel.SetActive(true);
         Time.timeScale = 0f;
 
         if (PlayerController.Instance != null)
