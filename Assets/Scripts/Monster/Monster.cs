@@ -11,6 +11,15 @@ public class Monster : MonoBehaviour, IDamageable
 
     private Vector2 lastMoveDir = Vector2.down;
     private Vector2 lastPosition;
+    
+    [Header("보스 여부")]
+    [SerializeField] private bool isBossMonster = false;
+
+    [Header("사망 보상 드랍 여부")]
+    [SerializeField] private bool dropRewardOnDeath = true;
+
+    private BossSpawner bossSpawner;
+    private bool deathFinished = false;
 
     [Header("Pattern")]
     [SerializeField] private AttackPattern attackPattern;
@@ -98,8 +107,12 @@ public class Monster : MonoBehaviour, IDamageable
             bindPlayerRoutine = null;
         }
     }
-
-
+    
+    public void SetBossSpawner(BossSpawner spawner)
+    {
+        bossSpawner = spawner;
+        isBossMonster = true;
+    }
     void Start()
     {
 
@@ -249,9 +262,33 @@ public class Monster : MonoBehaviour, IDamageable
         }
         else
         {
-            DropReward();
-            Destroy(gameObject);
+            FinishDeath();
         }
+    }
+    private void FinishDeath()
+    {
+        if (deathFinished) return;
+
+        deathFinished = true;
+
+        if (dropRewardOnDeath)
+        {
+            DropReward();
+        }
+
+        if (isBossMonster)
+        {
+            if (bossSpawner != null)
+            {
+                bossSpawner.NotifyBossDead();
+            }
+            else
+            {
+                FindAnyObjectByType<BossSpawner>()?.NotifyBossDead();
+            }
+        }
+
+        Destroy(gameObject);
     }
     
     private void DropReward()
@@ -376,15 +413,13 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (this != null)
         {
-            DropReward();
-            Destroy(gameObject);
+            FinishDeath();
         }
     }
 
     public void DeathAnimationEvent()
     {
-        DropReward();
-        Destroy(gameObject);
+        FinishDeath();
     }
 
     public void DeathAnimationStartEvent()

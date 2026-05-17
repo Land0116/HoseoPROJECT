@@ -200,6 +200,11 @@ public class MapFlowManager : MonoBehaviour
 
             LoadRandomCombatScene();
         }
+        Debug.Log(
+            $"[MapFlow] UsedGate={usedGateGroup}, " +
+            $"RequiredEntrance={requiredEntranceGroup}, " +
+            $"NextRoom={nextRoomKind}, Reward={selectedRewardType}"
+        );
     }
 
     public void CompleteBossAndGoNextAct()

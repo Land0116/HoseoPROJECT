@@ -189,6 +189,7 @@ MonoBehaviour:
   - {fileID: 797638393}
   player: {fileID: 0}
   bossSpawner: {fileID: 986584010}
+  cutscenePlayer: {fileID: 0}
 --- !u!1 &109004953
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,10 +509,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.46193978, y: -0.19134171, z: 0.33141357, w: 0.8001032}
   m_LocalPosition: {x: -14.616, y: 6.079, z: 9.087}
-  m_LocalScale: {x: 0.55, y: 0.45, z: 0.4970964}
+  m_LocalScale: {x: 0.55, y: 0.45000002, z: 0.49709633}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1456981002}
+  m_Father: {fileID: 1497529552}
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 45}
 --- !u!61 &730727055
 BoxCollider2D:
@@ -895,60 +896,6 @@ CompositeCollider2D:
         Y: 128059896
       - X: -37109376
         Y: 128059896
-    - - X: -385481760
-        Y: 81835936
-      - X: -383463552
-        Y: 82942704
-      - X: -379427072
-        Y: 85091144
-      - X: -376041664
-        Y: 86718752
-      - X: -375000000
-        Y: 87239584
-      - X: -375000000
-        Y: 87369792
-      - X: -374674496
-        Y: 87369792
-      - X: -372981760
-        Y: 88085936
-      - X: -370963552
-        Y: 89192704
-      - X: -366927072
-        Y: 91341144
-      - X: -363541664
-        Y: 92968752
-      - X: -362500000
-        Y: 93489584
-      - X: -362500000
-        Y: 93815104
-      - X: -362565120
-        Y: 93945312
-      - X: -374674496
-        Y: 100130208
-      - X: -375390624
-        Y: 100130208
-      - X: -379296864
-        Y: 98111984
-      - X: -387500000
-        Y: 93945312
-      - X: -387500000
-        Y: 93880208
-      - X: -387890624
-        Y: 93880208
-      - X: -391796864
-        Y: 91861984
-      - X: -400000000
-        Y: 87695312
-      - X: -400000000
-        Y: 87434896
-      - X: -399934880
-        Y: 87239584
-      - X: -395898432
-        Y: 85156248
-      - X: -387825504
-        Y: 81119792
-      - X: -387174496
-        Y: 81119792
   m_CompositePaths:
     m_Paths:
     - - {x: -3.7109425, y: 13.00599}
@@ -1030,33 +977,6 @@ CompositeCollider2D:
       - {x: -4.8958335, y: 13.565886}
       - {x: -4.5898433, y: 13.409636}
       - {x: -3.8085876, y: 13.00599}
-    - - {x: -38.717457, y: 8.311979}
-      - {x: -38.548176, y: 8.383594}
-      - {x: -38.346355, y: 8.494271}
-      - {x: -37.942707, y: 8.709113}
-      - {x: -37.604168, y: 8.871875}
-      - {x: -37.5, y: 8.923975}
-      - {x: -37.499973, y: 8.936979}
-      - {x: -37.467445, y: 8.93698}
-      - {x: -37.298176, y: 9.008594}
-      - {x: -37.096355, y: 9.119271}
-      - {x: -36.692707, y: 9.334113}
-      - {x: -36.354168, y: 9.496875}
-      - {x: -36.25, y: 9.548975}
-      - {x: -36.250004, y: 9.581516}
-      - {x: -36.25652, y: 9.594535}
-      - {x: -37.467457, y: 10.21302}
-      - {x: -37.53907, y: 10.213017}
-      - {x: -37.92969, y: 10.011197}
-      - {x: -38.75, y: 9.594514}
-      - {x: -38.75003, y: 9.58802}
-      - {x: -38.78907, y: 9.588017}
-      - {x: -39.17969, y: 9.386197}
-      - {x: -40, y: 8.969514}
-      - {x: -40, y: 8.943485}
-      - {x: -39.99348, y: 8.923953}
-      - {x: -39.589844, y: 8.715625}
-      - {x: -38.782543, y: 8.311979}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -1353,43 +1273,23 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
-  - first: {x: -9, y: 22, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: -8, y: 22, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 1
-      m_TileSpriteIndex: 1
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 2
-    m_Data: {fileID: 11400000, guid: c4557432593eb0d49b81eacf3221cec7, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 20
     m_Data: {fileID: 11400000, guid: e07230b286cda78419cd17bdc520ac32, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 2
-    m_Data: {fileID: 5213863040043922189, guid: 2516c80494385464bb8ef476b2a79dff, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 20
     m_Data: {fileID: 3615424224196937562, guid: e1a4888c0d5945245bee56c28f4c917a, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 22
+  - m_RefCount: 20
     m_Data:
       e00: 1
       e01: 0
@@ -1408,7 +1308,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 22
+  - m_RefCount: 20
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -1449,7 +1349,7 @@ MonoBehaviour:
   gateGroup: 0
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 1610505261}
   markerSpawnPoint: {fileID: 1202853525}
   playerSpawnPoint: {fileID: 158517261}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -1636,7 +1536,7 @@ Transform:
   m_Children:
   - {fileID: 384659866}
   - {fileID: 345496061}
-  - {fileID: 730727054}
+  - {fileID: 1784615212}
   m_Father: {fileID: 17565440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!19719996 &1456981004
@@ -2329,7 +2229,7 @@ MonoBehaviour:
   gateGroup: 1
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 730727053}
   markerSpawnPoint: {fileID: 384659866}
   playerSpawnPoint: {fileID: 345496061}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -2376,7 +2276,7 @@ Transform:
   m_Children:
   - {fileID: 558326625}
   - {fileID: 1586354624}
-  - {fileID: 1784615212}
+  - {fileID: 730727054}
   m_Father: {fileID: 17565440}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!19719996 &1497529554
@@ -10089,10 +9989,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.46193978, y: 0.19134171, z: -0.33141357, w: 0.8001032}
   m_LocalPosition: {x: -14.81, y: -0.17, z: 9.087}
-  m_LocalScale: {x: 0.55, y: 0.45, z: 0.4970964}
+  m_LocalScale: {x: 0.55, y: 0.45000002, z: 0.49709633}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1497529552}
+  m_Father: {fileID: 1456981002}
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: -45}
 --- !u!61 &1784615213
 BoxCollider2D:
@@ -10929,7 +10829,7 @@ MonoBehaviour:
   gateGroup: 2
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 1610595067}
   markerSpawnPoint: {fileID: 1322268169}
   playerSpawnPoint: {fileID: 713915106}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}

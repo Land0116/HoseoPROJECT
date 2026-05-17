@@ -63,13 +63,37 @@ public class BossSpawner : MonoBehaviour
 
         GameObject boss = Instantiate(bossPrefab, pos, Quaternion.identity);
 
-        /*
-         * 보스가 죽었을 때 BossRoomController.OnBossDead()를 호출해야 함.
-         *
-         * 예:
-         * FindObjectOfType<BossRoomController>().OnBossDead();
-         *
-         * 더 좋은 방식은 보스 HP 스크립트에서 이벤트로 연결하는 것.
-         */
+        Monster bossMonster = boss.GetComponent<Monster>();
+
+        if (bossMonster == null)
+        {
+            bossMonster = boss.GetComponentInChildren<Monster>();
+        }
+
+        if (bossMonster != null)
+        {
+            bossMonster.SetBossSpawner(this);
+        }
+        else
+        {
+            Debug.LogWarning("[BossSpawner] 생성된 보스 프리팹에 Monster 컴포넌트가 없음");
+        }
+    }
+
+    public void NotifyBossDead()
+    {
+        if (bossRoomController != null)
+        {
+            bossRoomController.OnBossDead();
+        }
+        else
+        {
+            BossRoomController found = FindAnyObjectByType<BossRoomController>();
+
+            if (found != null)
+            {
+                found.OnBossDead();
+            }
+        }
     }
 }

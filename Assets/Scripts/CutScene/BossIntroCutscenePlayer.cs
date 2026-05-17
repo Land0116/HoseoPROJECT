@@ -13,12 +13,38 @@ public class BossIntroCutscenePlayer : MonoBehaviour
     [Header("순차 재생할 영상")]
     [SerializeField] private VideoClip[] videoClips = new VideoClip[4];
 
-    public IEnumerator PlayCutsceneSequence()
+    public void ShowCutscenePanel()
     {
         if (cutsceneRoot != null)
         {
             cutsceneRoot.SetActive(true);
         }
+    }
+
+    public void HideCutscenePanel()
+    {
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+        }
+
+        if (cutsceneRoot != null)
+        {
+            cutsceneRoot.SetActive(false);
+        }
+    }
+
+    public void BringCutsceneToFront()
+    {
+        if (cutsceneRoot != null)
+        {
+            cutsceneRoot.transform.SetAsLastSibling();
+        }
+    }
+
+    public IEnumerator PlayCutsceneSequence()
+    {
+        ShowCutscenePanel();
 
         if (videoPlayer == null || videoClips == null || videoClips.Length == 0)
         {
@@ -32,6 +58,7 @@ public class BossIntroCutscenePlayer : MonoBehaviour
 
             if (clip == null) continue;
 
+            videoPlayer.Stop();
             videoPlayer.clip = clip;
             videoPlayer.isLooping = false;
             videoPlayer.playOnAwake = false;
@@ -60,11 +87,6 @@ public class BossIntroCutscenePlayer : MonoBehaviour
 
             videoPlayer.loopPointReached -= OnVideoFinished;
             videoPlayer.Stop();
-        }
-
-        if (cutsceneRoot != null)
-        {
-            cutsceneRoot.SetActive(false);
         }
     }
 }

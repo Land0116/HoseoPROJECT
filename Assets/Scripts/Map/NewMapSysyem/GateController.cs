@@ -64,13 +64,13 @@ public class GateController : AutoBindableBehaviour
 
         if (gateCollider != null)
         {
-            // Gate는 물리 벽이 아니라 이동 트리거여야 하므로 항상 Trigger
             gateCollider.isTrigger = true;
         }
 
         AutoGuessGateGroupByName();
 
-        if (blockObject == null)
+        // 기존 참조가 비어있거나, 자기 Gate의 자식이 아니면 다시 찾는다.
+        if (blockObject == null || blockObject.transform.parent == null || !blockObject.transform.IsChildOf(transform))
         {
             Transform block = AutoBindUtility.FindChildRecursive(transform, "BlockObject");
 
@@ -80,12 +80,12 @@ public class GateController : AutoBindableBehaviour
             }
         }
 
-        if (markerSpawnPoint == null)
+        if (markerSpawnPoint == null || !markerSpawnPoint.IsChildOf(transform))
         {
             markerSpawnPoint = AutoBindUtility.FindChildStartsWith(transform, "markerSpawnPoint");
         }
 
-        if (playerSpawnPoint == null)
+        if (playerSpawnPoint == null || !playerSpawnPoint.IsChildOf(transform))
         {
             playerSpawnPoint = AutoBindUtility.FindChildStartsWith(transform, "playerSpawnPoint");
         }
@@ -134,9 +134,17 @@ public class GateController : AutoBindableBehaviour
     {
         if (playerSpawnPoint != null)
         {
+            Debug.Log(
+                $"[Gate SpawnPoint] Gate={name}, GateGroup={gateGroup}, " +
+                $"SpawnPoint={playerSpawnPoint.name}, " +
+                $"SpawnPointParent={playerSpawnPoint.parent.name}, " +
+                $"Position={playerSpawnPoint.position}"
+            );
+
             return playerSpawnPoint.position;
         }
 
+        Debug.LogWarning($"[Gate SpawnPoint] {name}에 playerSpawnPoint가 없음. Gate 위치 사용.");
         return transform.position;
     }
 
@@ -301,6 +309,10 @@ public class GateController : AutoBindableBehaviour
         }
 
         MapFlowManager.Instance.EnterNextRoomFromGate(gateGroup, nextRoomKind, rewardType);
+        Debug.Log(
+            $"[Gate 이동] GateObject={name}, GateGroup={gateGroup}, " +
+            $"NextRoom={nextRoomKind}, Reward={rewardType}"
+        );
     }
 
     /// <summary>

@@ -3194,6 +3194,47 @@ public class PlayerController : MonoBehaviour, IDamageable
         isStunned = true;
         stunEndTime = Time.time + duration;
     }
+    public void TeleportToMapSpawnPosition(Vector3 spawnPosition)
+    {
+        transform.position = spawnPosition;
+
+        if (rb == null)
+        {
+            rb = GetComponent<Rigidbody2D>();
+        }
+
+        if (rb != null)
+        {
+            bool wasSimulated = rb.simulated;
+
+            rb.simulated = false;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            rb.position = spawnPosition;
+
+            rb.simulated = wasSimulated;
+        }
+
+        inputDirection = Vector2.zero;
+        isFireInput = false;
+        requestSingleShot = false;
+        firedThisPress = false;
+
+        isDashing = false;
+        dashEndTime = -999f;
+
+        if (!IsDie)
+        {
+            playerState = PlayerState.Idle;
+        }
+
+        SyncLocomotionState();
+
+        Physics2D.SyncTransforms();
+
+        Debug.Log($"[Player Teleport] Player={name}, Position={transform.position}");
+    }
 
     #region 입력 잠금
     

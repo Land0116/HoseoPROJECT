@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -15,11 +16,9 @@ using UnityEngine;
 /// </summary>
 public abstract class MapRoomControllerBase : AutoBindableBehaviour
 {
-    [Header("출입구")]
-    [SerializeField] protected GateController[] gates;
+    [Header("출입구")] [SerializeField] protected GateController[] gates;
 
-    [Header("플레이어")]
-    [SerializeField] protected Transform player;
+    [Header("플레이어")] [SerializeField] protected Transform player;
 
     /// <summary>
     /// AutoBindableBehaviour의 실제 바인딩 함수.
@@ -123,10 +122,37 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
     protected void SpawnPlayerAtRequiredGate()
     {
         if (MapFlowManager.Instance == null) return;
-        if (player == null) return;
         if (gates == null || gates.Length == 0) return;
 
+        // 중요:
+        // 기존 player 필드를 믿지 말고 매번 현재 PlayerController.Instance를 기준으로 잡는다.
+        if (PlayerController.Instance != null)
+        {
+            player = PlayerController.Instance.transform;
+        }
+        else
+        {
+            player = AutoBindUtility.FindPlayerTransform();
+        }
+
+        if (player == null)
+        {
+            Debug.LogWarning("[Room Spawn] Player를 찾지 못함");
+            return;
+        }
+
         GateGroup requiredGroup = MapFlowManager.Instance.RequiredEntranceGroup;
+
+        Debug.Log($"[Room Spawn] RequiredEntranceGroup={requiredGroup}");
+
+        for (int i = 0; i < gates.Length; i++)
+        {
+            if (gates[i] == null) continue;
+
+            Debug.Log(
+                $"[Room Spawn] Gate[{i}] Name={gates[i].name}, Group={gates[i].GateGroup}"
+            );
+        }
 
         GateController[] targetGates = System.Array.FindAll(
             gates,
@@ -135,12 +161,65 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
 
         if (targetGates.Length <= 0)
         {
-            Debug.LogWarning($"현재 {RoomDebugName}에 {requiredGroup} 입구가 없음");
+            Debug.LogWarning($"[Room Spawn] 현재 방에 {requiredGroup} 입구가 없음");
             return;
         }
 
         GateController selectedGate = targetGates[Random.Range(0, targetGates.Length)];
+        Vector3 spawnPosition = selectedGate.GetPlayerSpawnPosition();
 
-        player.position = selectedGate.GetPlayerSpawnPosition();
+        PlayerController playerController = PlayerController.Instance;
+
+        if (playerController != null)
+        {
+            playerController.TeleportToMapSpawnPosition(spawnPosition);
+        }
+        else
+        {
+            player.position = spawnPosition;
+
+            Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
+            if (playerRb != null)
+            {
+                playerRb.linearVelocity = Vector2.zero;
+                playerRb.position = spawnPosition;
+            }
+
+            Physics2D.SyncTransforms();
+        }
+
+        Debug.Log(
+            $"[Room Spawn] SelectedGate={selectedGate.name}, " +
+            $"SelectedGroup={selectedGate.GateGroup}, " +
+            $"SpawnPosition={spawnPosition}, " +
+            $"ActualPlayerPosition={player.position}"
+        );
+
+        StartCoroutine(VerifyPlayerSpawnPositionNextFrame(spawnPosition, selectedGate));
+    }
+    private IEnumerator VerifyPlayerSpawnPositionNextFrame(Vector3 expectedPosition, GateController selectedGate)
+    {
+        yield return null;
+        yield return new WaitForFixedUpdate();
+
+        if (PlayerController.Instance == null) yield break;
+
+        Vector3 currentPosition = PlayerController.Instance.transform.position;
+        float distance = Vector3.Distance(currentPosition, expectedPosition);
+
+        Debug.Log(
+            $"[Room Spawn Verify] Expected={expectedPosition}, " +
+            $"Actual={currentPosition}, Distance={distance}, " +
+            $"SelectedGate={selectedGate.name}"
+        );
+
+        if (distance > 0.1f)
+        {
+            Debug.Log(
+                "[Room Spawn Verify] 플레이어 위치가 스폰 직후 다른 곳으로 덮어써짐. 다시 보정함."
+            );
+
+            PlayerController.Instance.TeleportToMapSpawnPosition(expectedPosition);
+        }
     }
 }
