@@ -7,6 +7,7 @@ public enum GateGroup
     }
 public enum RoomKind
     {
+        None,
         Combat,
         Shop,
         Boss

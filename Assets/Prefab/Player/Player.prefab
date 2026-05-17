@@ -310,6 +310,8 @@ MonoBehaviour:
   attackSpeed6Active: 0
   gold100Active: 0
   hasDisplayTicket: 0
+  knockbackDuration: 0.2
+  knockbackDrag: 8
   currentShotAugment: {fileID: 0}
   currentTrajectoryAugment: {fileID: 0}
   currentEffectAugment: {fileID: 0}
@@ -328,6 +330,7 @@ MonoBehaviour:
   multiShotEnabled: 0
   multiShotProjectileCount: 1
   multiShotSpreadAngle: 0
+  multiShotSideSpacing: 0.25
   chargeShotEnabled: 0
   chargeShotTime: 0
   chargeShotDamageMultiplier: 1
@@ -385,7 +388,7 @@ MonoBehaviour:
   hideSystemCursor: 1
   playerBody: {fileID: 6444624563947541171}
   gunTip: {fileID: 6879044860308773687}
-  deathUIShowDelay: 0.5
+  deathUIShowDelay: 0.75
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5

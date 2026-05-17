@@ -1,25 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class MonsterSpawner : MonoBehaviour
 {
-    [Header("테스트 스폰")]
-    [SerializeField] private bool isSpawnSure = false;
+    [Header("스폰 경고")] [SerializeField] private GameObject spawnWarningPrefab;
+    [SerializeField] private float warningDuration = 1.0f;
 
-    [Header("공용 몬스터")]
-    [SerializeField] private GameObject[] commonMonsters;
+    [Header("테스트 스폰")] [SerializeField] private bool isSpawnSure = false;
 
-    [Header("스폰 확률")]
-    [Range(0f, 1f)]
+    [Header("공용 몬스터")] [SerializeField] private GameObject[] commonMonsters;
+
+    [Header("스폰 확률")] [Range(0f, 1f)] 
     [SerializeField] private float commonMonsterChance = 0.3f; // 30%
 
-    [Header("스테이지별 몬스터")]
-    [SerializeField] private GameObject[] stage1Monster;
+    [Header("스테이지별 몬스터")] [SerializeField] private GameObject[] stage1Monster;
     [SerializeField] private GameObject[] stage2Monster;
     [SerializeField] private GameObject[] stage3Monster;
 
-    [Header("몬스터 생성 위치")]
-    [SerializeField] private Transform[] spawnPoints;
+    [Header("몬스터 생성 위치")] [SerializeField] private Transform[] spawnPoints;
 
     private CombatRoomController combatRoomController;
 
@@ -104,7 +103,13 @@ public class MonsterSpawner : MonoBehaviour
 
     public void SpawnWave(int waveIndex)
     {
+        StartCoroutine(SpawnWaveRoutine(waveIndex));
+    }
+
+    private IEnumerator SpawnWaveRoutine(int waveIndex)
+    {
         aliveMonsters.Clear();
+        isWaveActive = false;
 
         int stage = GetCurrentStageNumber();
         GameObject[] selectedPool = GetStageMonsterPool(stage);
@@ -116,26 +121,64 @@ public class MonsterSpawner : MonoBehaviour
             if (combatRoomController != null)
                 combatRoomController.OnAllMonstersDead();
 
-            return;
+            yield break;
         }
 
         if (spawnPoints == null || spawnPoints.Length == 0)
         {
             Debug.LogWarning("몬스터 스폰 포인트가 없음. MonsterSpawner 위치에 1마리 생성");
 
-            //GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
-            GameObject prefab = GetRandomMonster(selectedPool);
-            GameObject monster = Instantiate(prefab, transform.position, Quaternion.identity);
+            yield return ShowSpawnWarningAt(transform.position);
 
-            aliveMonsters.Add(monster);
+            GameObject prefab = GetRandomMonster(selectedPool);
+
+            if (prefab != null)
+            {
+                GameObject monster = Instantiate(prefab, transform.position, Quaternion.identity);
+                aliveMonsters.Add(monster);
+            }
+
             isWaveActive = true;
-            return;
+            yield break;
         }
 
+        // 1. 모든 스폰 위치에 경고 표시
+        List<GameObject> warningObjects = new List<GameObject>();
+
+        if (spawnWarningPrefab != null)
+        {
+            for (int i = 0; i < spawnPoints.Length; i++)
+            {
+                if (spawnPoints[i] == null) continue;
+
+                GameObject warning = Instantiate(
+                    spawnWarningPrefab,
+                    spawnPoints[i].position,
+                    Quaternion.identity
+                );
+
+                warningObjects.Add(warning);
+            }
+        }
+
+        // 2. 경고 시간 대기
+        yield return new WaitForSeconds(warningDuration);
+
+        // 3. 경고 오브젝트 제거
+        for (int i = 0; i < warningObjects.Count; i++)
+        {
+            if (warningObjects[i] != null)
+            {
+                Destroy(warningObjects[i]);
+            }
+        }
+
+        // 4. 실제 몬스터 스폰
         for (int i = 0; i < spawnPoints.Length; i++)
         {
-            //GameObject prefab = selectedPool[Random.Range(0, selectedPool.Length)];
-            GameObject prefab = GetRandomMonster(selectedPool); //* 0516
+            if (spawnPoints[i] == null) continue;
+
+            GameObject prefab = GetRandomMonster(selectedPool);
             if (prefab == null) continue;
 
             GameObject monster = Instantiate(prefab, spawnPoints[i].position, Quaternion.identity);
@@ -143,6 +186,23 @@ public class MonsterSpawner : MonoBehaviour
         }
 
         isWaveActive = true;
+    }
+
+    private IEnumerator ShowSpawnWarningAt(Vector3 position)
+    {
+        GameObject warning = null;
+
+        if (spawnWarningPrefab != null)
+        {
+            warning = Instantiate(spawnWarningPrefab, position, Quaternion.identity);
+        }
+
+        yield return new WaitForSeconds(warningDuration);
+
+        if (warning != null)
+        {
+            Destroy(warning);
+        }
     }
 
     private int GetCurrentStageNumber()
@@ -178,6 +238,7 @@ public class MonsterSpawner : MonoBehaviour
 
         return stage1Monster;
     }
+
     private GameObject GetRandomMonster(GameObject[] stagePool)
     {
         float roll = Random.value;

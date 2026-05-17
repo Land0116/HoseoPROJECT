@@ -283,13 +283,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("총알 소환 위치 관련")] public Transform gunTip;
 
-    [SerializeField] private float deathUIShowDelay = 0.5f; // 죽음 애니메이션 종료 후 UI 표시 지연 시간
+    [SerializeField] private float deathUIShowDelay; // 죽음 애니메이션 종료 후 UI 표시 지연 시간
+    
+    
     private Coroutine burstShootCoroutine;
     private Coroutine deathUICoroutine;
     private bool isPointerOverUIThisFrame = false;
-
-    //수정하면서 추가한 부분
+    
     private float nextAttackTime = 0f;
+    private bool isSystemInputLocked;
 
     #region 보조 함수
     private Vector2 GetPerpendicular(Vector2 direction)
@@ -663,6 +665,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void PlayerMouseMovement()
     {
+        if (isSystemInputLocked) return;
         if (IsDie) return;
         if (crosshairTransform == null || playerBody == null) return;
         if (_mainCamera == null) return;
@@ -836,6 +839,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// </summary>
     private void HandleAttack()
     {
+        if (isSystemInputLocked)
+        {
+            CancelAttackInputForSystemLock();
+            return;
+        }
         // 주위탄은 일반 공격 대체형이다.
         // 따라서 마우스 입력으로 일반 총알이 나가면 안 된다.
         if (shotUseOrbitProjectile)
@@ -1345,6 +1353,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnMove(InputValue movementValue)
     {
+        if (isSystemInputLocked)
+        {
+            inputDirection = Vector2.zero;
+            SyncLocomotionState();
+            return;
+        }
         if (!IsGameplayScene())
         {
             inputDirection = Vector2.zero;
@@ -1379,6 +1393,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnAttack(InputValue value)
     {
+        if (isSystemInputLocked)
+        {
+            isFireInput = false;
+            requestSingleShot = false;
+            firedThisPress = false;
+            EndChargeShot();
+            return;
+        }
+        
         if (shotUseOrbitProjectile)
         {
             CancelNormalAttackBecauseOrbit();
@@ -1448,6 +1471,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private bool CanStartAttackNow()
     {
+        if (isSystemInputLocked) return false;
         if (!IsGameplayScene()) return false;
         if (IsDie) return false;
         if (!canControl) return false;
@@ -1728,6 +1752,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnDash(InputValue value)
     {
+        if (isSystemInputLocked) return;
         if (!value.isPressed) return;
         if (!IsGameplayScene()) return;
         if (IsDie) return;
@@ -3063,13 +3088,18 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void OnUseQ()
     {
+        if (isSystemInputLocked) return;
+        
         SkillManager.Instance.UseQ();
     }
 
     public void OnUseE()
     {
+        if (isSystemInputLocked) return;
+        
         SkillManager.Instance.UseE();
     }
+    
     public float GetGoldMultiplierFromItems()//* 0509
     {
         float multiplier = 1f;
@@ -3164,4 +3194,78 @@ public class PlayerController : MonoBehaviour, IDamageable
         isStunned = true;
         stunEndTime = Time.time + duration;
     }
+
+    #region 입력 잠금
+    
+    public void SetSystemInputLocked(bool locked)
+    {
+        isSystemInputLocked = locked;
+
+        if (locked)
+        {
+            CancelAttackInputForSystemLock();
+
+            canControl = false;
+
+            inputDirection = Vector2.zero;
+
+            isDashing = false;
+            dashEndTime = -999f;
+
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+
+            if (!IsDie)
+            {
+                playerState = PlayerState.Idle;
+            }
+
+            if (bodyAnimator != null)
+            {
+                bodyAnimator.speed = 1f;
+                bodyAnimator.SetBool(IsMoveHash, false);
+                bodyAnimator.ResetTrigger(AttackHash);
+            }
+
+            return;
+        }
+
+        canControl = true;
+
+        SyncLocomotionState();
+    }
+
+    private void CancelAttackInputForSystemLock()
+    {
+        EndChargeShot();
+
+        isFireInput = false;
+        requestSingleShot = false;
+        firedThisPress = false;
+        chargeStartTime = -1f;
+
+        if (burstShootCoroutine != null)
+        {
+            StopCoroutine(burstShootCoroutine);
+            burstShootCoroutine = null;
+        }
+
+        isAttackSequenceRunning = false;
+
+        if (bodyAnimator != null)
+        {
+            bodyAnimator.speed = 1f;
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.SetBool(IsMoveHash, false);
+        }
+    }
+
+    public bool IsSystemInputLocked()
+    {
+        return isSystemInputLocked;
+    }
+    
+    #endregion
 }

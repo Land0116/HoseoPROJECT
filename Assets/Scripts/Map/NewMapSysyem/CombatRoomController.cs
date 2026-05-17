@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// 전투방 전체 흐름을 관리하는 컨트롤러.
@@ -55,18 +56,22 @@ public class CombatRoomController : MapRoomControllerBase
         }
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
-        // Awake에서도 AutoBind가 실행되지만,
-        // Start에서 한 번 더 호출한다.
-        //
-        // 이유:
-        // 플레이어는 씬 로드 타이밍에 따라 Awake 시점에 아직 못 찾을 수 있다.
         AutoBind();
 
         LockAllGates();
 
         SpawnPlayerAtRequiredGate();
+
+        // Fade 연출이 끝날 때까지 몬스터 스폰 금지
+        if (MapTransitionManager.Instance != null)
+        {
+            while (MapTransitionManager.Instance.IsTransitioning)
+            {
+                yield return null;
+            }
+        }
 
         StartNextWave();
     }

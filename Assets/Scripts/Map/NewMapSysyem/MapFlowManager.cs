@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 [Serializable]
 public class CombatSceneData
@@ -28,9 +29,11 @@ public class CombatSceneData
 public class MapFlowManager : MonoBehaviour
 {
     public static MapFlowManager Instance { get; private set; }
+    [Header("게임 클리어 씬")]
+    [SerializeField] private string gameClearSceneName = "GameClear";
 
-    [Header("현재 액트")]
-    [SerializeField] private int currentAct = 1;
+    [Header("현재 액트")] [SerializeField] private int currentAct = 1;
+    [Header("액트 진행")] [SerializeField] private int maxAct = 3;
 
     [Header("현재 액트의 전투방 번호")]
     [SerializeField] private int currentCombatRoomNumber = 1;
@@ -94,7 +97,7 @@ public class MapFlowManager : MonoBehaviour
         }
 
         lastCombatSceneName = sceneName;
-        SceneManager.LoadScene(sceneName);
+        LoadSceneByTransition(sceneName, true);
     }
     private string PickRandomCombatSceneName(GateGroup requiredGroup)
     {
@@ -166,28 +169,16 @@ public class MapFlowManager : MonoBehaviour
 
     public void EnterNextRoomFromGate(GateGroup usedGateGroup, RoomKind nextRoomKind, RewardType selectedRewardType)
     {
-        // 다음 방에서 플레이어가 나와야 하는 입구 그룹 계산
         requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
 
-        // 핵심 수정:
-        // 전투방, 상점방, 보스방으로 이동할 때 모두 현재 액트 진행 번호를 증가시킨다.
-        //
-        // 예:
-        // 전투방 -> 상점 -> 전투방
-        // 1      -> 2    -> 3
-        //
-        // 전투방 -> 상점 -> 보스방
-        // 5      -> 6    -> 7
         currentCombatRoomNumber++;
 
         if (nextRoomKind == RoomKind.Shop)
         {
             currentRoomKind = RoomKind.Shop;
-
-            // 상점방 자체는 전투 클리어 보상이 아니므로 None
             pendingRewardType = RewardType.None;
 
-            SceneManager.LoadScene(shopSceneName);
+            LoadSceneByTransition(shopSceneName, true);
             return;
         }
 
@@ -196,32 +187,38 @@ public class MapFlowManager : MonoBehaviour
             currentRoomKind = RoomKind.Boss;
             pendingRewardType = RewardType.None;
 
-            SceneManager.LoadScene(bossSceneName);
+            // 보스룸은 로드 후에도 화면을 검게 덮어둔다.
+            // BossRoomController가 컷씬을 재생한 뒤 직접 FadeFromBlack을 호출한다.
+            LoadSceneByTransition(bossSceneName, false);
             return;
         }
 
         if (nextRoomKind == RoomKind.Combat)
         {
             currentRoomKind = RoomKind.Combat;
-
-            // 상점방 또는 전투방 출구에서 선택한 보상.
-            // 다음 전투방 클리어 후 이 보상이 생성된다.
             pendingRewardType = selectedRewardType;
 
             LoadRandomCombatScene();
         }
     }
 
+    public void CompleteBossAndGoNextAct()
+    {
+        currentAct++;
+
+        currentCombatRoomNumber = 1;
+        currentRoomKind = RoomKind.Combat;
+        pendingRewardType = RewardType.None;
+        lastCombatSceneName = null;
+
+        LoadRandomCombatScene();
+    }
+
     public void CompleteBossAndGoNextAct(GateGroup usedGateGroup)
     {
         requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
 
-        currentAct++;
-        currentCombatRoomNumber = 1;
-        currentRoomKind = RoomKind.Combat;
-        pendingRewardType = RewardType.None;
-
-        LoadRandomCombatScene();
+        CompleteBossAndGoNextAct();
     }
 
     public bool ShouldShopConnectToBoss()
@@ -285,7 +282,7 @@ public class MapFlowManager : MonoBehaviour
         if (pickedScene.entranceGroups != null && pickedScene.entranceGroups.Length > 0)
         {
             requiredEntranceGroup = pickedScene.entranceGroups[
-                UnityEngine.Random.Range(0, pickedScene.entranceGroups.Length)
+                Random.Range(0, pickedScene.entranceGroups.Length)
             ];
         }
         else
@@ -299,7 +296,7 @@ public class MapFlowManager : MonoBehaviour
         currentCombatRoomNumber = 1;
         lastCombatSceneName = pickedScene.sceneName;
 
-        SceneManager.LoadScene(pickedScene.sceneName);
+        LoadSceneByTransition(pickedScene.sceneName, true);
     }
 
     private CombatSceneData PickRandomAnyCombatScene()
@@ -332,4 +329,21 @@ public class MapFlowManager : MonoBehaviour
         return candidates[UnityEngine.Random.Range(0, candidates.Count)];
     }
     
+    private void LoadSceneByTransition(string sceneName, bool fadeFromBlackAfterLoad = true)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            Debug.LogError("[MapFlowManager] 로드할 씬 이름이 비어 있음");
+            return;
+        }
+
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.LoadSceneWithFade(sceneName, fadeFromBlackAfterLoad);
+            return;
+        }
+        
+        SceneManager.LoadScene(sceneName);
+        
+    }
 }
