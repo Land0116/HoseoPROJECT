@@ -13,10 +13,15 @@ public class MonsterAttack_DashKnockback : AttackPattern
     [SerializeField] private float dashDamage = 20f;
     [SerializeField] private float knockbackForce = 8f;
 
+    private bool wasInRange = false;
+
     private float timer;
     private Vector2 dashDirection;
     private Vector2 dashTargetPosition;
     private Vector2 targetPosition;
+
+    [SerializeField] private GameObject dashTelegraphPrefab;
+    private DashTelegraph telegraphInstance;
 
     private enum State
     {
@@ -37,17 +42,32 @@ public class MonsterAttack_DashKnockback : AttackPattern
         if (monster == null) return;
 
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
+        bool isInRange = distance <= detectRange;
+        if (isInRange && !wasInRange)
+        {
+            monster.ShowAttackAlert(0.3f);
+        }
+        wasInRange = isInRange;
 
         switch (state)
         {
             case State.Idle:
                 blockMovement = false;
                 timer += Time.deltaTime;
-
                 if (timer >= dashCooldown && distance <= detectRange)
                 {
                     timer = 0f;
                     targetPosition = monster.Player.position;
+
+                    Vector2 dir = (targetPosition - (Vector2)monster.transform.position).normalized;
+
+                    float dashDistance = Vector2.Distance(monster.transform.position, targetPosition) + dashExtraDistance;
+
+                    GameObject obj = Instantiate(dashTelegraphPrefab, monster.transform.position, Quaternion.identity);
+                    telegraphInstance = obj.GetComponent<DashTelegraph>();
+
+                    telegraphInstance.Init(dir, dashDistance, chargeTime);
+
                     blockMovement = true;
                     state = State.Charge;
                 }
@@ -59,13 +79,22 @@ public class MonsterAttack_DashKnockback : AttackPattern
 
                 if (distance > detectRange)
                 {
+                    if (telegraphInstance != null)
+                    {
+                        Destroy(telegraphInstance.gameObject); //*
+                    }
+
                     state = State.Idle;
                     timer = 0f;
                     return;
                 }
-
                 if (timer >= chargeTime)
                 {
+                    if (telegraphInstance != null)
+                    {
+                        Destroy(telegraphInstance.gameObject);
+                    }
+
                     dashDirection =
                         (targetPosition - (Vector2)monster.transform.position).normalized;
 
@@ -82,7 +111,6 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 Vector2 nextPos = monster.RB.position + dashDirection * dashSpeed * Time.fixedDeltaTime;
                 monster.RB.MovePosition(nextPos);
 
-                // 도착 or 지나침 체크
                 if (Vector2.Distance(nextPos, dashTargetPosition) <= 0.1f)
                 {
                     state = State.Idle;

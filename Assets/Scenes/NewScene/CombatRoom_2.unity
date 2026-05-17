@@ -17939,6 +17939,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MonsterSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 1287573417997032879, guid: fba3e71c97bbe3f489a1326c203a3ee3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1290983087562776986, guid: fba3e71c97bbe3f489a1326c203a3ee3, type: 3}
       propertyPath: spawnWarningPrefab
       value: 
@@ -20293,7 +20297,7 @@ MonoBehaviour:
   gateGroup: 0
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 1965571683}
+  blockObject: {fileID: 70429423}
   markerSpawnPoint: {fileID: 598818650}
   playerSpawnPoint: {fileID: 856656822}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -24362,7 +24366,7 @@ MonoBehaviour:
   gateGroup: 1
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 70429423}
+  blockObject: {fileID: 1965571683}
   markerSpawnPoint: {fileID: 1501343054}
   playerSpawnPoint: {fileID: 172173621}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}

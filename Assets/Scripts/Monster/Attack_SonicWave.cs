@@ -15,17 +15,31 @@ public class Attack_SonicWave : AttackPattern
     [Header("Attack delay")]
     [SerializeField] private float fireDelay = 0.5f;
 
+    [Header("Telegraph (Triangle)")]
+    [SerializeField] private GameObject triangleTelegraphPrefab;
+    [SerializeField] private float telegraphWidth = 3f;
+    private TriangleTelegraph telegraphInstance;
+
     private float timer;
     private float trackingTimer;
 
+    private bool wasInRange = false;
     private bool isTracking = false;
     private bool isLocked = false;
 
     private Vector2 lockedDir;
 
+    private Vector3 telegraphSpawnPos;
+
+    private bool isAttacking = false;
+
+    private Vector3 attackOrigin;
+    private Vector2 attackDir;
+
+
     private void Awake()
     {
-        blockMovement = false; 
+        blockMovement = false;
     }
 
     public override void Execute()
@@ -39,37 +53,65 @@ public class Attack_SonicWave : AttackPattern
         if (player == null) return;
 
         float dist = Vector2.Distance(monster.transform.position, player.position);
+        bool isInRange = dist <= attackRange;
 
-        // 1. 공격 시작
-        if (!isTracking && dist <= attackRange && timer >= cooldown)
+        if (isInRange && !wasInRange)
+            monster.ShowAttackAlert(0.3f);
+
+        wasInRange = isInRange;
+
+        if (!isInRange && !isTracking)
+            return;
+
+        if (telegraphInstance != null)
+        {
+            blockMovement = true;
+        }
+
+        if (!isTracking && isInRange && timer >= cooldown)
         {
             timer = 0f;
             isTracking = true;
             trackingTimer = trackingTime;
 
-            blockMovement = true; 
+            blockMovement = true;
+
+            attackOrigin = monster.transform.position;
+            attackDir = (player.position - attackOrigin).normalized;
+
+            Vector3 startPos = attackOrigin + (Vector3)(attackDir * 3f);
+
+            float adjustedRange = attackRange - 3f;
+
+            GameObject obj = Object.Instantiate(
+                triangleTelegraphPrefab,
+                startPos,
+                Quaternion.identity
+            );
+
+            telegraphInstance = obj.GetComponent<TriangleTelegraph>();
+            telegraphInstance.Init(attackDir, adjustedRange, telegraphWidth, fireDelay);
         }
 
-        // 2. Tracking
         if (isTracking && !isLocked)
         {
-            Vector2 dir = (player.position - monster.transform.position).normalized;
-
-            RotateTowards(dir);
+            RotateTowards(attackDir);
 
             trackingTimer -= Time.deltaTime;
 
             if (trackingTimer <= 0f)
             {
-                lockedDir = dir;
+                lockedDir = attackDir;
                 isLocked = true;
+
+                if (telegraphInstance != null)
+                    telegraphInstance.StartFill(fireDelay);
 
                 StartCoroutine(FireDelayRoutine());
             }
         }
     }
 
-    // 회전 함수
     private void RotateTowards(Vector2 dir)
     {
         float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -87,37 +129,40 @@ public class Attack_SonicWave : AttackPattern
     private IEnumerator FireDelayRoutine()
     {
         yield return new WaitForSeconds(fireDelay);
-
         Fire();
     }
+
     private void Fire()
     {
+        if (telegraphInstance != null)
+            Object.Destroy(telegraphInstance.gameObject);
+
         monster.PlayAttackAnimation(lockedDir);
 
-        Vector3 forward = monster.transform.right;
-        Vector3 spawnPos = monster.transform.position + forward * 3f;
+        Vector3 spawnPos = attackOrigin + (Vector3)(lockedDir * 3f);
 
-        GameObject obj = Instantiate(
+        GameObject obj = Object.Instantiate(
             sonicPrefab,
             spawnPos,
             monster.transform.rotation * Quaternion.Euler(0, 0, 90f)
         );
 
-
         SonicWave wave = obj.GetComponent<SonicWave>();
         if (wave != null)
         {
             wave.onDestroy += OnWaveEnd;
-        }
 
+            blockMovement = true;
+        }
 
         isTracking = false;
         isLocked = false;
     }
 
-
     private void OnWaveEnd()
     {
-        blockMovement = false; 
+        blockMovement = false;
+        isAttacking = false;
     }
+
 }

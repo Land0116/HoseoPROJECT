@@ -160,7 +160,14 @@ public class Monster : MonoBehaviour, IDamageable
             player = PlayerController.Instance.transform;
         }
     }
-    
+    private void LateUpdate()
+    {
+        if (alertUIInstance != null)
+        {
+            alertUIInstance.transform.position = transform.position + new Vector3(1f, 0.2f, 0);
+            alertUIInstance.transform.rotation = Quaternion.identity;
+        }
+    }
     private void FixedUpdate()
     {
         if (isDead) return;

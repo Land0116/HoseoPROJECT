@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 767769241712529471}
   - component: {fileID: 7765766562761034559}
   - component: {fileID: -3164010655067040997}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Monster_Diono
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -146,6 +146,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   animator: {fileID: 0}
+  isBossMonster: 0
+  dropRewardOnDeath: 1
   attackPattern: {fileID: 767769241712529471}
   movePattern: {fileID: 7765766562761034559}
   moveSpeed: 3
@@ -153,6 +155,7 @@ MonoBehaviour:
   minGold: 1
   maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
+  alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
   weaponPrefabDropChance: 0
   itemDropChance: 0
   weaponPrefab: {fileID: 0}
@@ -181,6 +184,8 @@ MonoBehaviour:
   rotateSpeed: 360
   trackingTime: 0.7
   fireDelay: 0.5
+  triangleTelegraphPrefab: {fileID: 9093591108808434859, guid: 3eb0ec62b0d354f48b82d6cca6a92e38, type: 3}
+  telegraphWidth: 3
 --- !u!114 &7765766562761034559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,7 +235,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6699390021239447173}
   - component: {fileID: 2282204692469434382}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 4263896983294297948}
   - component: {fileID: 2029946389438896784}
   - component: {fileID: 1049455016007415334}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: MonsterBoss_PrincessDoll
-  m_TagString: Untagged
+  m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -185,6 +185,7 @@ MonoBehaviour:
   eightDamage: 1
   eightPatternCooldown: 2
   eightDirScale: {x: 10, y: 1.5, z: 1}
+  eightHitRadiusMultiplier: 0.5
   eightOrigin: {fileID: 1814477315201471174}
   eightDistance: 6
   explosionPrefab: {fileID: 3830614522430265470, guid: d0f37cd5518b2e04eb4673dee16602fd, type: 3}
@@ -208,6 +209,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   animator: {fileID: 0}
+  isBossMonster: 0
+  dropRewardOnDeath: 1
   attackPattern: {fileID: 4263896983294297948}
   movePattern: {fileID: 1049455016007415334}
   moveSpeed: 3

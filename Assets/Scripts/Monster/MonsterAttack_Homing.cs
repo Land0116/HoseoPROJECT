@@ -17,7 +17,7 @@ public class MonsterAttack_Homing : AttackPattern
     private float damageTimer = 0.5f;
 
     private bool isHoming = false;
-
+    private bool hasAlerted = false;
     public override void Execute()
     {
         if (monster == null || monster.Player == null) return;
@@ -27,17 +27,25 @@ public class MonsterAttack_Homing : AttackPattern
 
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
 
-        if(distance <= detectRange)
+        if (distance <= detectRange)
         {
             isHoming = true;
             blockMovement = true;
-            monster.isAttacking = true;//*
+            monster.isAttacking = true;
+
+            if (!hasAlerted)
+            {
+                monster.ShowAttackAlert(0.3f);
+                hasAlerted = true;
+            }
         }
         else
         {
             isHoming = false;
             blockMovement = false;
-            monster.isAttacking = false;//*
+            monster.isAttacking = false;
+
+            hasAlerted = false;
         }
         if (!isHoming) return;
 

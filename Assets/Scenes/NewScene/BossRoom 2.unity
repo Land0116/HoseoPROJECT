@@ -1388,7 +1388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749e3c9abb204804c8c96801a85cd7bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossSpawner
-  bossPrefab: {fileID: 3119900707650530989, guid: d31e3917cd7b01a43bb3549d52835d5f, type: 3}
+  bossPrefab: {fileID: 8555629504678823905, guid: 039be9d926e1f1d499e5c15712f116ae, type: 3}
   spawnPoint: {fileID: 1321247037}
 --- !u!4 &986584011
 Transform:
@@ -2229,7 +2229,7 @@ MonoBehaviour:
   gateGroup: 1
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 730727053}
+  blockObject: {fileID: 1784615211}
   markerSpawnPoint: {fileID: 384659866}
   playerSpawnPoint: {fileID: 345496061}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -2969,7 +2969,7 @@ MonoBehaviour:
   gateGroup: 3
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 1784615211}
+  blockObject: {fileID: 730727053}
   markerSpawnPoint: {fileID: 558326625}
   playerSpawnPoint: {fileID: 1586354624}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
