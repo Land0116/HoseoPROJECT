@@ -25,10 +25,27 @@ public class CombatSceneData
         return false;
     }
 }
+[Serializable]
+public class ActSceneSet
+{
+    [Header("액트 번호")]
+    public int actNumber = 1;
+
+    [Header("해당 액트의 전투 씬 목록")]
+    public CombatSceneData[] combatScenes = new CombatSceneData[4];
+
+    [Header("해당 액트의 상점 씬")]
+    public string shopSceneName;
+
+    [Header("해당 액트의 보스 씬")]
+    public string bossSceneName;
+}
 
 public class MapFlowManager : MonoBehaviour
 {
     public static MapFlowManager Instance { get; private set; }
+    [Header("액트별 씬 세트")]
+    [SerializeField] private ActSceneSet[] actSceneSets = new ActSceneSet[3];
     [Header("게임 클리어 씬")]
     [SerializeField] private string gameClearSceneName = "GameClear";
 
@@ -49,13 +66,6 @@ public class MapFlowManager : MonoBehaviour
 
     [Header("현재 방 종류")]
     [SerializeField] private RoomKind currentRoomKind = RoomKind.Combat;
-
-    [Header("전투 씬 목록")]
-    [SerializeField] private CombatSceneData[] combatScenes = new CombatSceneData[4];
-
-    [Header("씬 이름")]
-    [SerializeField] private string shopSceneName = "ShopRoom";
-    [SerializeField] private string bossSceneName = "BossRoom";
 
     private string lastCombatSceneName;
 
@@ -88,37 +98,41 @@ public class MapFlowManager : MonoBehaviour
     
     private void LoadRandomCombatScene()
     {
-        string sceneName = PickRandomCombatSceneName(requiredEntranceGroup);
+        ActSceneSet actSet = GetCurrentActSceneSet();
+
+        if (actSet == null) return;
+
+        string sceneName = PickRandomCombatSceneName(
+            actSet.combatScenes,
+            requiredEntranceGroup
+        );
 
         if (string.IsNullOrEmpty(sceneName))
         {
-            Debug.LogError($"[MapFlowManager] {requiredEntranceGroup} 입구를 가진 전투 씬이 없음");
+            Debug.LogError($"[MapFlowManager] Act {currentAct}에서 {requiredEntranceGroup} 입구를 가진 전투 씬이 없음");
             return;
         }
 
         lastCombatSceneName = sceneName;
         LoadSceneByTransition(sceneName, true);
     }
-    private string PickRandomCombatSceneName(GateGroup requiredGroup)
+    private string PickRandomCombatSceneName(CombatSceneData[] sceneList, GateGroup requiredGroup)
     {
-        if (combatScenes == null || combatScenes.Length == 0)
+        if (sceneList == null || sceneList.Length == 0)
         {
-            Debug.LogError("[MapFlowManager] combatScenes 배열이 비어 있음");
+            Debug.LogError($"[MapFlowManager] Act {currentAct} combatScenes 배열이 비어 있음");
             return null;
         }
 
-        // 후보를 임시 배열처럼 쓰기 위한 리스트
         System.Collections.Generic.List<CombatSceneData> candidates =
             new System.Collections.Generic.List<CombatSceneData>();
 
-        for (int i = 0; i < combatScenes.Length; i++)
+        for (int i = 0; i < sceneList.Length; i++)
         {
-            CombatSceneData data = combatScenes[i];
+            CombatSceneData data = sceneList[i];
 
             if (data == null) continue;
             if (string.IsNullOrWhiteSpace(data.sceneName)) continue;
-
-            // 필요한 입구 그룹이 있는 씬만 후보에 넣음
             if (!data.HasEntranceGroup(requiredGroup)) continue;
 
             candidates.Add(data);
@@ -129,17 +143,15 @@ public class MapFlowManager : MonoBehaviour
             return null;
         }
 
-        // 후보가 2개 이상이면 직전 전투 씬은 최대한 피함
         if (candidates.Count > 1 && !string.IsNullOrEmpty(lastCombatSceneName))
         {
             candidates.RemoveAll(data => data.sceneName == lastCombatSceneName);
 
-            // 전부 제거되어버렸으면 다시 전체 후보 사용
             if (candidates.Count <= 0)
             {
-                for (int i = 0; i < combatScenes.Length; i++)
+                for (int i = 0; i < sceneList.Length; i++)
                 {
-                    CombatSceneData data = combatScenes[i];
+                    CombatSceneData data = sceneList[i];
 
                     if (data == null) continue;
                     if (string.IsNullOrWhiteSpace(data.sceneName)) continue;
@@ -171,14 +183,24 @@ public class MapFlowManager : MonoBehaviour
     {
         requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
 
+        Debug.Log(
+            $"[MapFlow] Act={currentAct}, RoomNumber={currentCombatRoomNumber}, " +
+            $"UsedGate={usedGateGroup}, RequiredEntrance={requiredEntranceGroup}, " +
+            $"NextRoom={nextRoomKind}, Reward={selectedRewardType}"
+        );
+
         currentCombatRoomNumber++;
+
+        ActSceneSet actSet = GetCurrentActSceneSet();
+
+        if (actSet == null) return;
 
         if (nextRoomKind == RoomKind.Shop)
         {
             currentRoomKind = RoomKind.Shop;
             pendingRewardType = RewardType.None;
 
-            LoadSceneByTransition(shopSceneName, true);
+            LoadSceneByTransition(actSet.shopSceneName, true);
             return;
         }
 
@@ -187,9 +209,7 @@ public class MapFlowManager : MonoBehaviour
             currentRoomKind = RoomKind.Boss;
             pendingRewardType = RewardType.None;
 
-            // 보스룸은 로드 후에도 화면을 검게 덮어둔다.
-            // BossRoomController가 컷씬을 재생한 뒤 직접 FadeFromBlack을 호출한다.
-            LoadSceneByTransition(bossSceneName, false);
+            LoadSceneByTransition(actSet.bossSceneName, false);
             return;
         }
 
@@ -200,16 +220,22 @@ public class MapFlowManager : MonoBehaviour
 
             LoadRandomCombatScene();
         }
-        Debug.Log(
-            $"[MapFlow] UsedGate={usedGateGroup}, " +
-            $"RequiredEntrance={requiredEntranceGroup}, " +
-            $"NextRoom={nextRoomKind}, Reward={selectedRewardType}"
-        );
     }
 
     public void CompleteBossAndGoNextAct()
     {
         currentAct++;
+
+        if (currentAct > maxAct)
+        {
+            currentRoomKind = RoomKind.Combat;
+            pendingRewardType = RewardType.None;
+            currentCombatRoomNumber = 1;
+            lastCombatSceneName = null;
+
+            LoadSceneByTransition(gameClearSceneName, true);
+            return;
+        }
 
         currentCombatRoomNumber = 1;
         currentRoomKind = RoomKind.Combat;
@@ -306,18 +332,24 @@ public class MapFlowManager : MonoBehaviour
 
     private CombatSceneData PickRandomAnyCombatScene()
     {
-        if (combatScenes == null || combatScenes.Length == 0)
+        ActSceneSet actSet = GetCurrentActSceneSet();
+
+        if (actSet == null) return null;
+
+        CombatSceneData[] sceneList = actSet.combatScenes;
+
+        if (sceneList == null || sceneList.Length == 0)
         {
-            Debug.LogError("[MapFlowManager] combatScenes 배열이 비어 있음");
+            Debug.LogError($"[MapFlowManager] Act {currentAct} combatScenes 배열이 비어 있음");
             return null;
         }
 
         System.Collections.Generic.List<CombatSceneData> candidates =
             new System.Collections.Generic.List<CombatSceneData>();
 
-        for (int i = 0; i < combatScenes.Length; i++)
+        for (int i = 0; i < sceneList.Length; i++)
         {
-            CombatSceneData data = combatScenes[i];
+            CombatSceneData data = sceneList[i];
 
             if (data == null) continue;
             if (string.IsNullOrWhiteSpace(data.sceneName)) continue;
@@ -327,13 +359,12 @@ public class MapFlowManager : MonoBehaviour
 
         if (candidates.Count <= 0)
         {
-            Debug.LogError("[MapFlowManager] 유효한 전투 씬 데이터가 없음");
+            Debug.LogError($"[MapFlowManager] Act {currentAct}에 유효한 전투 씬 데이터가 없음");
             return null;
         }
 
         return candidates[UnityEngine.Random.Range(0, candidates.Count)];
     }
-    
     private void LoadSceneByTransition(string sceneName, bool fadeFromBlackAfterLoad = true)
     {
         if (string.IsNullOrWhiteSpace(sceneName))
@@ -350,5 +381,28 @@ public class MapFlowManager : MonoBehaviour
         
         SceneManager.LoadScene(sceneName);
         
+    }
+    private ActSceneSet GetCurrentActSceneSet()
+    {
+        if (actSceneSets == null || actSceneSets.Length == 0)
+        {
+            Debug.LogError("[MapFlowManager] actSceneSets가 비어 있음");
+            return null;
+        }
+
+        for (int i = 0; i < actSceneSets.Length; i++)
+        {
+            ActSceneSet set = actSceneSets[i];
+
+            if (set == null) continue;
+
+            if (set.actNumber == currentAct)
+            {
+                return set;
+            }
+        }
+
+        Debug.LogError($"[MapFlowManager] currentAct {currentAct}에 해당하는 ActSceneSet이 없음");
+        return null;
     }
 }

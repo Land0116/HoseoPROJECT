@@ -129,7 +129,7 @@ public class BossRoomController : MapRoomControllerBase
         Debug.Log("[BossRoomController] 보스 클리어. 다음 액트 출구 1개 개방.");
     }
     
-    private IEnumerator BossClearRoutine()
+    /*private IEnumerator BossClearRoutine()
     {
         if (MapTransitionManager.Instance != null)
         {
@@ -141,5 +141,5 @@ public class BossRoomController : MapRoomControllerBase
         {
             MapFlowManager.Instance.CompleteBossAndGoNextAct();
         }
-    }
+    }*/
 }

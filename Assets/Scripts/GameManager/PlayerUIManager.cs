@@ -26,8 +26,13 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Slider hpBar;
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private TextMeshProUGUI goldText;
-    [SerializeField] private TextMeshProUGUI currentMonsterCountText;
-    [SerializeField] private TextMeshProUGUI maxMonsterCountText;
+    
+    [Header("Stage UI")]
+    [SerializeField] private TextMeshProUGUI stageText;
+    private int lastDisplayedAct = -1;
+    
+    [Header("Monster Count UI")]
+    [SerializeField] private TextMeshProUGUI monsterCountText;
     
     [Header("Monster Count UI")]
     private int currentMonsterCountValue = 0;
@@ -132,13 +137,14 @@ public class PlayerUIManager : MonoBehaviour
 
     private void Update()
     {
+        
+        UpdateStageUI();
+        UpdateMonsterCountUI();
+        
         if (playerController == null) return;
-
         
         // HP / Gold UI 갱신
         UpdatePlayerStateUI();
-        UpdateMonsterCountUI();
-
         UpdateCooldownUI();
     }
     private void UpdateCooldownUI()
@@ -232,11 +238,9 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void UpdateMonsterCountUI()
     {
-        if (currentMonsterCountText == null && maxMonsterCountText == null)
+        if (monsterCountText == null)
             return;
 
-        // 매 프레임 FindGameObjectsWithTag를 호출하면 부담이 있으므로
-        // 일정 시간마다만 갱신한다.
         if (Time.unscaledTime < nextMonsterCountRefreshTime)
             return;
 
@@ -246,21 +250,12 @@ public class PlayerUIManager : MonoBehaviour
 
         currentMonsterCountValue = monsters != null ? monsters.Length : 0;
 
-        // 현재 스테이지에서 관측된 가장 많은 몬스터 수를 최대 몬스터 수로 사용
         if (currentMonsterCountValue > maxMonsterCountValue)
         {
             maxMonsterCountValue = currentMonsterCountValue;
         }
 
-        if (currentMonsterCountText != null)
-        {
-            currentMonsterCountText.text = currentMonsterCountValue.ToString();
-        }
-
-        if (maxMonsterCountText != null)
-        {
-            maxMonsterCountText.text = maxMonsterCountValue.ToString();
-        }
+        monsterCountText.text = $"남은몬스터   {currentMonsterCountValue}  /  {maxMonsterCountValue}";
     }
     
     /// <summary>
@@ -272,11 +267,10 @@ public class PlayerUIManager : MonoBehaviour
         maxMonsterCountValue = 0;
         nextMonsterCountRefreshTime = 0f;
 
-        if (currentMonsterCountText != null)
-            currentMonsterCountText.text = "0";
-
-        if (maxMonsterCountText != null)
-            maxMonsterCountText.text = "0";
+        if (monsterCountText != null)
+        {
+            monsterCountText.text = "남은몬스터   0  /  0";
+        }
     }
     /// <summary>
     /// 플레이어 상태 UI 갱신
@@ -639,9 +633,10 @@ public class PlayerUIManager : MonoBehaviour
         hpText = UIManager.FindChildRecursive(playerPanel, "HpTxt")?.GetComponent<TextMeshProUGUI>();
         goldText = UIManager.FindChildRecursive(playerPanel, "GoldTxt")?.GetComponent<TextMeshProUGUI>();
         
-        currentMonsterCountText = UIManager.FindChildRecursive(playerPanel, "CurrentMonsterCount")?.GetComponent<TextMeshProUGUI>();
-        maxMonsterCountText = UIManager.FindChildRecursive(playerPanel, "MaxMonsterCount")?.GetComponent<TextMeshProUGUI>();
+        stageText = UIManager.FindChildRecursive(playerPanel, "CurSt")?.GetComponent<TextMeshProUGUI>();
+        monsterCountText = UIManager.FindChildRecursive(playerPanel, "Mon")?.GetComponent<TextMeshProUGUI>();
         ResetMonsterCountUI();
+        RefreshStageUI(true);
         // 패널들
         escPanel = UIManager.FindChildRecursive(playerPanel, "EscPanel")?.gameObject;
 
@@ -792,6 +787,9 @@ public class PlayerUIManager : MonoBehaviour
         ResetPanels();
         ResetMonsterCountUI();
         ResetDashUI();
+        
+        lastDisplayedAct = -1;
+        RefreshStageUI(true);
 
         Time.timeScale = 1f;
 
@@ -937,11 +935,8 @@ public class PlayerUIManager : MonoBehaviour
     }
     private IEnumerator EscapeRoutine()
     {
-
         yield return null;
-
-
-
+        
         switch (currentState)
         {
             case UIState.Gameplay:
@@ -964,6 +959,31 @@ public class PlayerUIManager : MonoBehaviour
 
         Debug.Log("EscapeRoutine END");
     }
+    
+    private void UpdateStageUI()
+    {
+        RefreshStageUI(false);
+    }
+
+    public void RefreshStageUI(bool force)
+    {
+        if (stageText == null) return;
+        if (MapFlowManager.Instance == null)
+        {
+            stageText.text = "스테이지 1";
+            return;
+        }
+
+        int act = MapFlowManager.Instance.CurrentAct;
+
+        if (!force && lastDisplayedAct == act)
+            return;
+
+        lastDisplayedAct = act;
+
+        stageText.text = $"스테이지 {act}";
+    }
+    
     private void SetEscState(UIState target)
     {
         CloseAllPanels();

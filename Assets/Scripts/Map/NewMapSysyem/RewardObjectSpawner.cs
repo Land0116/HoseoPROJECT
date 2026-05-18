@@ -34,8 +34,14 @@ public class RewardObjectSpawner : MonoBehaviour
         Sprite icon = GetIcon(rewardType);
 
         rewardObject.Setup(rewardType, icon, onRewardFinished);
-    }
 
+        FieldRewardDropMotion dropMotion = rewardObject.GetComponent<FieldRewardDropMotion>();
+
+        if (dropMotion != null)
+        {
+            dropMotion.Play();
+        }
+    }
     private Vector3 GetRewardSpawnPosition()
     {
         if (PlayerController.Instance != null)
