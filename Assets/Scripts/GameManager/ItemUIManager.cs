@@ -26,6 +26,7 @@ public class ItemUIManager : MonoBehaviour
     [SerializeField] private GameObject alertMaxItemPanel;
 
     [SerializeField] private GameObject uiItemPanel;
+    [SerializeField] private float uiItemTrans = 200f;
     [SerializeField] private TextMeshProUGUI uiItemText;
 
     private RectTransform uiItemRect;
@@ -332,7 +333,7 @@ public class ItemUIManager : MonoBehaviour
             out Vector2 localPoint
         );
 
-        uiItemRect.anchoredPosition = localPoint + new Vector2(200f, 0f);
+        uiItemRect.anchoredPosition = localPoint + new Vector2(uiItemTrans, 0f); //*
     }
 
     public void HideUIItemInfo()
