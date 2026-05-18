@@ -1117,7 +1117,7 @@ MonoBehaviour:
   gateGroup: 1
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 448842492}
   markerSpawnPoint: {fileID: 124334983}
   playerSpawnPoint: {fileID: 784807955}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -2171,7 +2171,7 @@ MonoBehaviour:
   gateGroup: 0
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 1038927079}
   markerSpawnPoint: {fileID: 1514196351}
   playerSpawnPoint: {fileID: 40313809}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -3210,7 +3210,7 @@ MonoBehaviour:
   gateGroup: 2
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 895800942}
   markerSpawnPoint: {fileID: 2029312203}
   playerSpawnPoint: {fileID: 226359480}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -3704,6 +3704,10 @@ PrefabInstance:
     - target: {fileID: 146136690133952919, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3960292654042022685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
+      propertyPath: currentStage
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5962146024546627685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
       propertyPath: m_Name
