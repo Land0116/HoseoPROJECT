@@ -206,7 +206,7 @@ MonoBehaviour:
   blockMovement: 0
   attackRange: 8
   cooldown: 3
-  dashSpeed: 12
+  dashSpeed: 30
   dashExtraDistance: 1
   dash1Damage: 1
   dash2Damage: 1
@@ -216,6 +216,8 @@ MonoBehaviour:
   finalAttackDelay: 0.2
   BeforefinalAttackDelay: 0.5
   finalAttackPrefab: {fileID: 1792145551814660235, guid: 26e26e4dbdea1c64a829d9e4cfb0b09d, type: 3}
+  dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
+  telegraphTime: 0.6
 --- !u!114 &5734487032805444401
 MonoBehaviour:
   m_ObjectHideFlags: 0

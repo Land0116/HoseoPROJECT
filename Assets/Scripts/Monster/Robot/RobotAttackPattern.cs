@@ -30,7 +30,8 @@ public class RobotAttackPattern : AttackPattern
     private float timer;
     private bool isAttacking = false;
     private bool hasShownAlert = false;
-
+    [SerializeField] private GameObject dashTelegraphPrefab;
+    [SerializeField] private float telegraphTime = 0.5f;
     public override void Execute()
     {
         if (monster == null) return;
@@ -71,9 +72,6 @@ public class RobotAttackPattern : AttackPattern
         }
     }
 
-    // ------------------------
-    // 근거리 공격
-    // ------------------------
     private IEnumerator MeleeAttack(Transform player)
     {
         isAttacking = true;
@@ -84,9 +82,29 @@ public class RobotAttackPattern : AttackPattern
 
         Vector3 fixedPos = monster.transform.position + (Vector3)dir * attackDistance;
 
-        monster.PlayAttackAnimation(dir);
+        GameObject telegraphObj = null;
 
-        yield return new WaitForSeconds(attack1Delay);
+        if (dashTelegraphPrefab != null)
+        {
+            telegraphObj = Instantiate(
+                dashTelegraphPrefab,
+                monster.transform.position,
+                Quaternion.identity
+            );
+
+            DashTelegraph telegraph = telegraphObj.GetComponent<DashTelegraph>();
+            if (telegraph != null)
+            {
+                telegraph.Init(dir, attackDistance, telegraphTime);
+            }
+        }
+
+        yield return new WaitForSeconds(telegraphTime);
+
+        if (telegraphObj != null)
+            Destroy(telegraphObj);
+
+        monster.PlayAttackAnimation(dir);
 
         Quaternion rot = Quaternion.FromToRotation(Vector3.right, dir);
 

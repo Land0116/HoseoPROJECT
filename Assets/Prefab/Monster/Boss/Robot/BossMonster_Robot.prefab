@@ -220,6 +220,8 @@ MonoBehaviour:
   minFireDelay: 0.2
   maxFireDelay: 0.5
   bulletSpeed: 12
+  dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
+  telegraphTime: 0.5
 --- !u!114 &4898502589507485991
 MonoBehaviour:
   m_ObjectHideFlags: 0

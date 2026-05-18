@@ -183,7 +183,7 @@ MonoBehaviour:
   eightDirPrefab: {fileID: 5945707791796830103, guid: 183755cfac280f84fb379682f71505a2, type: 3}
   eightFadeTime: 1.2
   eightDamage: 1
-  eightPatternCooldown: 2
+  eightPatternCooldown: 0.5
   eightDirScale: {x: 10, y: 1.5, z: 1}
   eightHitRadiusMultiplier: 0.5
   eightOrigin: {fileID: 1814477315201471174}
@@ -196,6 +196,7 @@ MonoBehaviour:
   explosionPatternCooldown: 2
   stuntime: 3
   explosionUnitRadius: 3
+  dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
 --- !u!114 &2029946389438896784
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -70,13 +70,13 @@ public class MonsterAttack_Dash : AttackPattern
                 blockMovement = true;
                 timer += Time.deltaTime;
 
-                if (distance > detectRange)
+                /*if (distance > detectRange)
                 {
                     state = State.Idle;
                     timer = 0f;
                     DestroyTelegraph();
                     break;
-                }
+                }*/
 
                 float baseDistance = Vector2.Distance(monster.transform.position, targetPosition);
                 float dashLength = baseDistance + dashExtraDistance;
@@ -152,5 +152,13 @@ public class MonsterAttack_Dash : AttackPattern
             GameObject.Destroy(telegraphInstance.gameObject);
             telegraphInstance = null;
         }
+    }
+    private void OnDestroy()
+    {
+        DestroyTelegraph();
+    }
+    private void OnDisable()
+    {
+        DestroyTelegraph();
     }
 }

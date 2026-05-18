@@ -134,8 +134,9 @@ public class Attack_SonicWave : AttackPattern
 
     private void Fire()
     {
-        if (telegraphInstance != null)
-            Object.Destroy(telegraphInstance.gameObject);
+        DestroyTelegraph(); 
+
+        if (monster == null) return; 
 
         monster.PlayAttackAnimation(lockedDir);
 
@@ -151,7 +152,6 @@ public class Attack_SonicWave : AttackPattern
         if (wave != null)
         {
             wave.onDestroy += OnWaveEnd;
-
             blockMovement = true;
         }
 
@@ -164,5 +164,24 @@ public class Attack_SonicWave : AttackPattern
         blockMovement = false;
         isAttacking = false;
     }
+    private void OnDestroy()
+    {
+        DestroyTelegraph();
+        StopAllCoroutines();
+    }
+    private void DestroyTelegraph()
+    {
+        if (telegraphInstance != null)
+        {
+            Destroy(telegraphInstance.gameObject);
+            telegraphInstance = null;
+        }
 
+    }
+
+    private void OnDisable()
+    {
+        DestroyTelegraph();
+        StopAllCoroutines();
+    }
 }

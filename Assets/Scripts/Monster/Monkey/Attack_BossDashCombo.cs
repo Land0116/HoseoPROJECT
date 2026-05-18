@@ -25,6 +25,9 @@ public class Attack_BossDashCombo : AttackPattern
     [Header("프리팹")]
     [SerializeField] private GameObject finalAttackPrefab;
 
+    [SerializeField] private GameObject dashTelegraphPrefab; //*
+    [SerializeField] private float telegraphTime = 0.3f;//*
+
     private bool hasShownAlert = false;
 
     private float timer;
@@ -113,11 +116,33 @@ public class Attack_BossDashCombo : AttackPattern
         Vector2 targetPos = player.position;
 
         Vector2 dir = (targetPos - startPos).normalized;
+        float dashDistance = Vector2.Distance(startPos, targetPos) + dashExtraDistance;
         Vector2 dashTarget = targetPos + dir * dashExtraDistance;
+
+        GameObject telegraphObj = null;
+
+        if (dashTelegraphPrefab != null)
+        {
+            telegraphObj = Instantiate(
+                dashTelegraphPrefab,
+                monster.transform.position,
+                Quaternion.identity
+            );
+
+            DashTelegraph telegraph = telegraphObj.GetComponent<DashTelegraph>();
+            if (telegraph != null)
+            {
+                telegraph.Init(dir, dashDistance, telegraphTime);
+            }
+        }
+
+        yield return new WaitForSeconds(telegraphTime);
+
+        if (telegraphObj != null)
+            Destroy(telegraphObj);
 
         monster.PlayAttackAnimation(dir);
 
-        // 히트박스 생성
         GameObject hitboxObj = new GameObject("DashHitbox");
         CircleCollider2D col = hitboxObj.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
@@ -129,7 +154,6 @@ public class Attack_BossDashCombo : AttackPattern
         hitboxObj.transform.SetParent(monster.transform);
         hitboxObj.transform.localPosition = Vector3.zero;
 
-        // 0.5초 후 자동 삭제
         Destroy(hitboxObj, 0.5f);
 
         while (true)
@@ -137,18 +161,14 @@ public class Attack_BossDashCombo : AttackPattern
             Vector2 nextPos = monster.RB.position + dir * dashSpeed * Time.fixedDeltaTime;
             monster.RB.MovePosition(nextPos);
 
-            // 도착 체크
             if (Vector2.Distance(nextPos, dashTarget) <= 0.1f)
                 break;
 
-            // 지나침 체크
             Vector2 toTarget = dashTarget - monster.RB.position;
             if (Vector2.Dot(toTarget, dir) <= 0f)
                 break;
 
             yield return new WaitForFixedUpdate();
         }
-
-        yield return null;
     }
 }

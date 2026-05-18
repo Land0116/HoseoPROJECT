@@ -77,7 +77,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 blockMovement = true;
                 timer += Time.deltaTime;
 
-                if (distance > detectRange)
+                /*if (distance > detectRange)
                 {
                     if (telegraphInstance != null)
                     {
@@ -87,7 +87,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
                     state = State.Idle;
                     timer = 0f;
                     return;
-                }
+                }*/
                 if (timer >= chargeTime)
                 {
                     if (telegraphInstance != null)
@@ -155,5 +155,21 @@ public class MonsterAttack_DashKnockback : AttackPattern
 
         state = State.Idle;
         timer = 0f;
+    }
+    private void OnDestroy()
+    {
+        if (telegraphInstance != null)
+        {
+            Destroy(telegraphInstance.gameObject);
+            telegraphInstance = null;
+        }
+    }
+    private void OnDisable()
+    {
+        if (telegraphInstance != null)
+        {
+            Destroy(telegraphInstance.gameObject);
+            telegraphInstance = null;
+        }
     }
 }

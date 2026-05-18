@@ -1146,14 +1146,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc57265978591af409c4459a83793175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageClear
-  stageSceneNames: []
-  autoClearWhenNoMonster: 0
+  stageSceneDatas: []
+  mainSceneName: Main
   playerTag: Player
   monsterTag: Monster
+  autoClearWhenNoMonster: 0
   clearDelay: 1
+  currentStageNumber: 1
+  currentMapNumber: 1
+  finalStageNumber: 3
+  combatWaveCount: 2
+  nextWaveDelay: 0.5
+  isStageCleared: 0
   isLoadingNextScene: 0
-  exitCompositeCollider: {fileID: 0}
-  exitRigidbody: {fileID: 0}
+  routeMarkerSpritePrefab: {fileID: 0}
+  routeMarkerDatas: []
+  rewardInteractPrefab: {fileID: 0}
+  rewardSpawnYOffset: 0.7
+  rewardIconDatas: []
 --- !u!4 &511293384
 Transform:
   m_ObjectHideFlags: 0
@@ -2154,67 +2164,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!1001 &908766741
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2652660679520700081, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_Name
-      value: Monster_Stage2_ToyCar
-      objectReference: {fileID: 0}
-    - target: {fileID: 2652660679520700081, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.7601786
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.7885208
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3902299363893381103, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 75d0eca5ee80dd04e9b3d194611d3974, type: 3}
 --- !u!1 &922146170
 GameObject:
   m_ObjectHideFlags: 0
@@ -7650,7 +7599,6 @@ SceneRoots:
   - {fileID: 1932687312}
   - {fileID: 511293384}
   - {fileID: 530197384}
-  - {fileID: 908766741}
   - {fileID: 963254220}
   - {fileID: 957244648}
   - {fileID: 5973831026340411428}
