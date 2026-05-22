@@ -26,7 +26,7 @@ public class OptionUI : MonoBehaviour
     [SerializeField] private Button controlViewCloseButton;
 
     [Header("ESC Close")]
-    [SerializeField] private GameObject escToOptionCloseBtn;
+    [SerializeField] private Button escToOptionCloseBtn;
 
     private Resolution[] resolutions =
     {
@@ -61,16 +61,29 @@ public class OptionUI : MonoBehaviour
             return;
         }
 
-
         controlViewButton.onClick.AddListener(OpenControlView);
         controlViewCloseButton.onClick.AddListener(CloseControlView);
+
+        // Ãß°¡
+        if (escToOptionCloseBtn != null)
+            escToOptionCloseBtn.onClick.AddListener(OnClickEscToOptionClose);
+
         InitResolutionDropdown();
         InitScreenModeDropdown();
         InitBrightness();
 
         ApplySettings();
     }
+    private void OnClickEscToOptionClose()
+    {
+        Debug.Log("[OptionUI] escToOptionCloseBtn Å¬¸¯µÊ");
 
+        // Option ´Ý±â
+        gameObject.SetActive(false);
+
+        // ESC ÆÐ³Î ¿­±â
+        PlayerUIManager.Instance.EnterEsc();
+    }
     private void InitResolutionDropdown()
     {
         resolutionDropdown.ClearOptions();
@@ -200,8 +213,8 @@ public class OptionUI : MonoBehaviour
             Debug.Log("[OptionUI] controlViewPanel ´ÝÀ½ (ESC ¼Òºñ)");
             CloseControlView();
 
-            if (escToOptionCloseBtn != null)
-                escToOptionCloseBtn.SetActive(false);
+           // if (escToOptionCloseBtn != null)
+          //      escToOptionCloseBtn.SetActive(false);
 
             return true;
         }
@@ -217,9 +230,9 @@ public class OptionUI : MonoBehaviour
         {
             CloseControlView();
 
-            if (escToOptionCloseBtn != null)
-                escToOptionCloseBtn.SetActive(false);
-
+           // if (escToOptionCloseBtn != null)
+            //    escToOptionCloseBtn.SetActive(false);
+            
             return true;
         }
 

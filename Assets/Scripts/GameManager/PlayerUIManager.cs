@@ -51,6 +51,7 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Button exitGameBtn;
     [SerializeField] private Button xBtn;
     [SerializeField] private Button escToOptionCloseBtn;
+    [SerializeField] private Button newBtnBtn;
 
     [Header("ExitSure")]
     [SerializeField] private GameObject exitSurePanel;
@@ -316,17 +317,13 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void HandleEscape()
     {
-        Debug.Log($"HandleEscape CALLED | state={currentState} | isProcessing={isProcessingEscape}");
-
         if (isProcessingEscape)
         {
-            Debug.Log("HandleEscape IGNORED (isProcessingEscape)");
             return;
         }
 
         isProcessingEscape = true;
 
-        Debug.Log("HandleEscape START Coroutine EscapeRoutine");
 
         StartCoroutine(EscapeRoutine());
     }
@@ -503,8 +500,27 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     private void OpenOptionPanel()
     {
+        Debug.Log("[PlayerUIManager] OpenOptionPanel 호출됨");
+
         ChangeState(UIState.Option);
         optionPanel.SetActive(true);
+
+        Debug.Log($"newBtnBtn null? {newBtnBtn == null}");
+        Debug.Log("현재 씬: " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+        if (newBtnBtn != null)
+        {
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Main")
+            {
+                Debug.Log("newBtnBtn 활성화 시도");
+                newBtnBtn.gameObject.SetActive(true);
+            }
+            else
+            {
+                Debug.Log("Main씬이라 비활성화");
+                newBtnBtn.gameObject.SetActive(false);
+            }
+        }
     }
 
     /// <summary>
@@ -647,7 +663,8 @@ public class PlayerUIManager : MonoBehaviour
         toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
         playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
         gameClearPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "GameClearUIPanel")?.gameObject;
-        
+        newBtnBtn = UIManager.FindChildRecursive(systemUIRoot.transform, "NewBtnBtn")?.GetComponent<Button>(); //*
+
         Transform dashPanelTr = UIManager.FindChildRecursive(playerPanel, "DashPanel");
         if (dashPanelTr != null)
         {
@@ -714,11 +731,10 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(optionBtn, OpenOptionPanel);
         BindButton(toMainBtn, OpenToMainSurePanel);
         BindButton(exitGameBtn, OpenExitSurePanel);
-        //BindButton(xBtn, OpenEscPanel);
         BindButton(xBtn, EnterEsc);
-        //BindButton(escToOptionCloseBtn, HandleEscape);//*
-        BindButton(escToOptionCloseBtn, CloseOptionAndReturnToEsc);
-
+        //BindButton(escToOptionCloseBtn, CloseOptionAndReturnToEsc);
+        BindButton(escToOptionCloseBtn, OnClickEscToOptionCloseBtn);
+        BindButton(newBtnBtn, OnClickNewBtnBtn); //*
         BindButton(exitSureYesBtn, OnClickExitGame);
         BindButton(exitSureNoBtn, OpenEscPanel);
         BindButton(exitSureXBtn, OpenEscPanel);
@@ -734,7 +750,19 @@ public class PlayerUIManager : MonoBehaviour
         BindButton(clearRestartBtn, OnClickRestart);
         BindButton(clearToMainBtn, OnClickToMain);
     }
+    private void OnClickNewBtnBtn()
+    {
+        Debug.Log("[PlayerUIManager] newBtnBtn 클릭됨 → EscMenu 강제 전환");
 
+        SetEscState(UIState.EscMenu);
+    }
+
+    private void OnClickEscToOptionCloseBtn()
+    {
+        Debug.Log("[PlayerUIManager] escToOptionCloseBtn 클릭됨");
+
+        CloseOptionAndReturnToEsc();
+    }
     /// <summary>
     /// 모든 패널 초기 상태 정리
     /// </summary>
@@ -879,6 +907,8 @@ public class PlayerUIManager : MonoBehaviour
         toMainSurePanel.SetActive(false);
         playerDyingPanel.SetActive(false);
         gameClearPanel.SetActive(false);
+        if (newBtnBtn != null)
+            newBtnBtn.gameObject.SetActive(false);
     }
     private void ExitEsc()
     {
@@ -890,7 +920,7 @@ public class PlayerUIManager : MonoBehaviour
 
         PlayerController.Instance?.SetPause(false);
     }
-    private void EnterEsc()
+    public void EnterEsc()
     {
         CloseAllPanels();
 
@@ -899,14 +929,33 @@ public class PlayerUIManager : MonoBehaviour
 
         Time.timeScale = 0f;
         PlayerController.Instance?.SetPause(true);
+
+        
     }
-    private void CloseOptionAndReturnToEsc()
+    /*private void CloseOptionAndReturnToEsc()
     {
         if (optionPanel != null)
             optionPanel.SetActive(false);
 
+        
+
         EnterEsc();
+    }*/
+    private void CloseOptionAndReturnToEsc()
+    {
+        SetEscState(UIState.EscMenu);
     }
+    private IEnumerator CloseOptionAndReturnToEscRoutine()
+    {
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        yield return null;
+
+        SetEscState(UIState.EscMenu);
+    }
+
+
     private void DoubleEscapeFromOption()
     {
         if (optionPanel != null)
@@ -957,7 +1006,6 @@ public class PlayerUIManager : MonoBehaviour
 
         isProcessingEscape = false;
 
-        Debug.Log("EscapeRoutine END");
     }
     
     private void UpdateStageUI()
@@ -1009,5 +1057,8 @@ public class PlayerUIManager : MonoBehaviour
                 PlayerController.Instance?.SetPause(true);
                 break;
         }
+        Debug.Log("SetEscState 호출됨: " + target);
     }
+
+
 }
