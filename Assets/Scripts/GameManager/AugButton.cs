@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class AugButton : MonoBehaviour
@@ -37,20 +39,7 @@ public class AugButton : MonoBehaviour
         if (descText != null)
             descText.text = GetFormattedDescription(data, displayLevel);
 
-        /*if (levelText != null)
-        {
-            if (data != null)
-            {
-                bool isMaxLevel = currentDisplayLevel >= data.maxLevel;
-                levelText.text = isMaxLevel ? "MAX" : $"Lv.{currentDisplayLevel}";
-                levelText.gameObject.SetActive(true);
-            }
-            else
-            {
-                levelText.text = "";
-                levelText.gameObject.SetActive(false);
-            }
-        }*/
+
         if (iconImage != null)
         {
             iconImage.sprite = data != null ? data.icon : null;
@@ -60,7 +49,10 @@ public class AugButton : MonoBehaviour
         if (selectBtn != null)
         {
             selectBtn.onClick.RemoveAllListeners();
-            selectBtn.onClick.AddListener(OnClickSelect);
+            selectBtn.onClick.AddListener(() =>
+            {
+                OnClickSelect();
+            });
             selectBtn.interactable = data != null && manager != null;
         }
         
@@ -248,4 +240,5 @@ public class AugButton : MonoBehaviour
     }
 
     #endregion
+
 }

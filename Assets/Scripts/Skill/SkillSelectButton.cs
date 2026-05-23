@@ -57,9 +57,9 @@ public class SkillSelectButton : MonoBehaviour
             //float cooldown = Mathf.Max(0f, data.GetCooldown(currentLevel) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
-                $"{data.description}\n\n" +
-                $"대미지: {damage}\n" +
-                $"쿨타임: {cooldown}초\n" +
+                $"{data.description}\n" +
+                $"대미지: {damage}  /  " +
+                $"쿨타임: {cooldown}초  " +
                 $"(MAX)";
         }
         else
