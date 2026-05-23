@@ -140,6 +140,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bae821c6bad1314dacd61d980af9763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterSpawner
+  spawnWarningPrefab: {fileID: 0}
+  warningDuration: 1
   isSpawnSure: 0
   commonMonsters:
   - {fileID: 1520619776978038105, guid: 902b73cc06c355e4aac384105bfe778f, type: 3}

@@ -28,6 +28,15 @@ public class OptionUI : MonoBehaviour
     [Header("ESC Close")]
     [SerializeField] private Button escToOptionCloseBtn;
 
+    [SerializeField] private Slider bgmSlider; 
+    [SerializeField] private Slider sfxSlider; 
+    [SerializeField] private UnityEngine.Audio.AudioMixer audioMixer;
+
+    //사운드
+    [SerializeField] private AudioSource uiAudioSource;
+    [SerializeField] private AudioClip hoverSound;
+    
+
     private Resolution[] resolutions =
     {
         new Resolution { width = 1600, height = 900 },
@@ -53,7 +62,7 @@ public class OptionUI : MonoBehaviour
         ApplySettings();
         UpdateUIElements();
     }
-    private void Start()
+    /*private void Start()
     {
         if (settings == null)
         {
@@ -68,11 +77,47 @@ public class OptionUI : MonoBehaviour
         if (escToOptionCloseBtn != null)
             escToOptionCloseBtn.onClick.AddListener(OnClickEscToOptionClose);
 
+        bgmSlider.onValueChanged.AddListener(SetBGMVolume);
+        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+
+        // 슬라이더 기본값 적용
+        bgmSlider.value = settings.bgmVolume;
+        sfxSlider.value = settings.sfxVolume;
+
+        // AudioMixer에도 즉시 반영
+        SetBGMVolume(settings.bgmVolume);
+        SetSFXVolume(settings.sfxVolume);
+
         InitResolutionDropdown();
         InitScreenModeDropdown();
         InitBrightness();
 
         ApplySettings();
+    }*/
+    private void Start()
+    {
+        controlViewButton.onClick.AddListener(OpenControlView);
+        controlViewCloseButton.onClick.AddListener(CloseControlView);
+
+        if (escToOptionCloseBtn != null)
+            escToOptionCloseBtn.onClick.AddListener(OnClickEscToOptionClose);
+    }
+    private void SetBGMVolume(float value)
+    {
+        value = Mathf.Clamp(value, 0.0001f, 1f);
+        settings.bgmVolume = value;
+
+        float db = Mathf.Log10(value) * 20;
+        audioMixer.SetFloat("BGMVolume", db);
+    }
+
+    private void SetSFXVolume(float value)
+    {
+        value = Mathf.Clamp(value, 0.0001f, 1f);
+        settings.sfxVolume = value;
+
+        float db = Mathf.Log10(value) * 20;
+        audioMixer.SetFloat("SFXVolume", db);
     }
     private void OnClickEscToOptionClose()
     {
@@ -237,5 +282,33 @@ public class OptionUI : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void InitOptionUIFromManager()
+    {
+        if (settings == null)
+        {
+            Debug.LogError("OptionSettings ScriptableObject를 연결해주세요!");
+            return;
+        }
+
+        // 슬라이더 이벤트 연결
+        bgmSlider.onValueChanged.AddListener(SetBGMVolume);
+        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+
+        // 기본값 적용
+        bgmSlider.value = settings.bgmVolume;
+        sfxSlider.value = settings.sfxVolume;
+
+        // AudioMixer 즉시 반영
+        SetBGMVolume(settings.bgmVolume);
+        SetSFXVolume(settings.sfxVolume);
+
+        // 나머지 UI 초기화
+        InitResolutionDropdown();
+        InitScreenModeDropdown();
+        InitBrightness();
+
+        ApplySettings();
     }
 }

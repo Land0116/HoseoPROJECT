@@ -134,6 +134,19 @@ public class PlayerUIManager : MonoBehaviour
     {
         // 패널 초기 상태 정리
         ResetPanels();
+        if (optionPanel != null)
+        {
+            OptionUI optionUI = optionPanel.GetComponent<OptionUI>();
+
+            if (optionUI != null)
+            {
+                optionUI.InitOptionUIFromManager();
+            }
+            else
+            {
+                Debug.LogError("OptionPanel에 OptionUI 없음");
+            }
+        }
     }
 
     private void Update()
