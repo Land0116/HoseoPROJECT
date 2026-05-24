@@ -11,8 +11,6 @@ public class AttackBoostSkillData : SkillData
         PlayerController player = caster.GetComponent<PlayerController>();
         if (player == null) return;
 
-        
-
         int level = GetSkillLevel();
 
         float multiplier = GetMultiplier(level);

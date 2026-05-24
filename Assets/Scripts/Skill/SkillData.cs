@@ -24,14 +24,9 @@ public class SkillData : ScriptableObject
     [Header("???")]
     public int price;
 
-    [Header("sound")]
-    public AudioClip skillSound;
-    [Header("Sound Delay")]
-    public float soundDelay = 0f;
-
     public virtual void Execute(GameObject caster)
     {
-        Debug.Log($"{skillName}");
+        Debug.Log($"{skillName} ????");
     }
     public virtual float GetCooldown(int level)
     {
@@ -54,28 +49,6 @@ public class SkillData : ScriptableObject
         Vector3 world = Camera.main.ScreenToWorldPoint(mouseScreen);
         world.z = 0f;
         return world;
-    }
-
-    public virtual void PlaySound(MonoBehaviour runner, AudioSource source)
-    {
-        if (skillSound == null || source == null || runner == null) return;
-
-        if (soundDelay <= 0f)
-        {
-            source.PlayOneShot(skillSound);
-        }
-        else
-        {
-            runner.StartCoroutine(PlaySoundDelayed(source));
-        }
-    }
-
-    private System.Collections.IEnumerator PlaySoundDelayed(AudioSource source)
-    {
-        yield return new WaitForSeconds(soundDelay);
-
-        if (source != null)
-            source.PlayOneShot(skillSound);
     }
 
 }

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3119900707650530989
+--- !u!1 &4865459882403079585
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,43 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5343832956159226269}
-  - component: {fileID: 651783610589480119}
-  - component: {fileID: 1292086751337027636}
-  - component: {fileID: 3277829934274099153}
-  - component: {fileID: 22526311254954121}
-  - component: {fileID: 5210070389676894093}
-  - component: {fileID: 5734487032805444401}
-  m_Layer: 12
-  m_Name: BossMonster_Monkey
-  m_TagString: Monster
+  - component: {fileID: 6327129654324921185}
+  - component: {fileID: 731201983556799772}
+  - component: {fileID: 6686589485428372166}
+  - component: {fileID: 1860728027646919235}
+  - component: {fileID: 6270329164947071171}
+  m_Layer: 0
+  m_Name: ProjectilePre_PrincessDollMirror
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5343832956159226269
+--- !u!4 &6327129654324921185
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
+  m_GameObject: {fileID: 4865459882403079585}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.027815, y: -2.5487518, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.94514, y: 1.24975, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &651783610589480119
+--- !u!212 &731201983556799772
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
+  m_GameObject: {fileID: 4865459882403079585}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -87,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.2971698, b: 0.2971698, a: 1}
+  m_Color: {r: 0, g: 0.11642933, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -96,14 +94,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!50 &1292086751337027636
+--- !u!114 &6686589485428372166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4865459882403079585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f3bc5686ed6242821ad85bf590cb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonSpawn
+  lifeTime: 0.5
+  speed: 25
+--- !u!50 &1860728027646919235
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
+  m_GameObject: {fileID: 4865459882403079585}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -111,7 +123,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -119,17 +131,17 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
---- !u!58 &3277829934274099153
-CircleCollider2D:
+--- !u!61 &6270329164947071171
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
+  m_GameObject: {fileID: 4865459882403079585}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -153,80 +165,19 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
---- !u!114 &22526311254954121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Monster
-  animator: {fileID: 0}
-  isBossMonster: 1
-  dropRewardOnDeath: 0
-  attackPattern: {fileID: 5210070389676894093}
-  movePattern: {fileID: 5734487032805444401}
-  moveSpeed: 3
-  maxHP: 100
-  minGold: 1
-  maxGold: 3
-  hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
-  alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
-  weaponPrefabDropChance: 0
-  itemDropChance: 0
-  weaponPrefab: {fileID: 0}
-  itemPrefab: {fileID: 0}
-  weaponSpawner: {x: -0.5, y: 0, z: 0}
-  itemSpawner: {x: 0.5, y: 0, z: 0}
-  isAttacking: 0
-  hitAnimationTime: 0.5
-  deathAnimationTime: 0.7
---- !u!114 &5210070389676894093
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66887101b16cc8541bdfb3cde0182495, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Attack_BossDashCombo
-  blockMovement: 0
-  attackRange: 8
-  cooldown: 0.3
-  dashSpeed: 30
-  dashExtraDistance: 1
-  dash1Damage: 15
-  dash2Damage: 5
-  finalAttackDamage: 7
-  firstDashDelay: 0.5
-  secondDashDelay: 0.7
-  finalAttackDelay: 0.1
-  BeforefinalAttackDelay: 0.3
-  finalAttackPrefab: {fileID: 1792145551814660235, guid: 26e26e4dbdea1c64a829d9e4cfb0b09d, type: 3}
-  dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
-  telegraphTime: 0.6
---- !u!114 &5734487032805444401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3119900707650530989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5, y: 0.5}
+  m_EdgeRadius: 0
