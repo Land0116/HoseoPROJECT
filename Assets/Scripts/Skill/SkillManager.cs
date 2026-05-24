@@ -3,7 +3,9 @@ using UnityEngine;
 public class SkillManager : MonoBehaviour
 {
     public static SkillManager Instance;
-    private float cooldownReduction = 0f; //��ų ���Ǻ� ������
+    private float cooldownReduction = 0f;
+    [SerializeField] private AudioSource skillAudioSource;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -58,18 +60,18 @@ public class SkillManager : MonoBehaviour
         if (qSkill == null) return;
 
         int level = GetQLevel();
-        //float cooldown = qSkill.GetCooldown(level);
+
         float cooldown = Mathf.Max(0f, qSkill.GetCooldown(level) - cooldownReduction);
-        // ��Ÿ�� üũ
+
         if (Time.time < qLastUseTime + cooldown)
         {
-            Debug.Log("Q ��Ÿ�� ��");
+
             return;
         }
 
-        Debug.Log("Q ��ų ����");
-
         qLastUseTime = Time.time;
+
+        qSkill.PlaySound(this, skillAudioSource);
 
         qSkill.Execute(PlayerController.Instance.gameObject);
     }
@@ -90,7 +92,7 @@ public class SkillManager : MonoBehaviour
         Debug.Log("E ��ų ����");
 
         eLastUseTime = Time.time;
-
+        eSkill.PlaySound(this, skillAudioSource);
         eSkill.Execute(PlayerController.Instance.gameObject);
     }
 

@@ -16,6 +16,10 @@ using UnityEngine;
 /// </summary>
 public class OrbitProjectile : MonoBehaviour
 {
+    [Header("SFX")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip bulletDestroySound;
+
     [Header("기본 런타임 값")]
     [SerializeField] private Transform owner;
     [SerializeField] private float radius = 1.5f;
@@ -87,13 +91,15 @@ public class OrbitProjectile : MonoBehaviour
     {
         if (owner == null)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            SafeDestroy();
             return;
         }
 
         if (destroyTime > 0f && Time.time >= destroyTime)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            SafeDestroy();
             return;
         }
 
@@ -295,6 +301,29 @@ public class OrbitProjectile : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, explosionRadius);
         }
+    }
+    private void SafeDestroy()
+    {
+        PlayDestroySound();
+        Destroy(gameObject);
+    }
+    private void PlayDestroySound()
+    {
+        if (bulletDestroySound == null || sfxSource == null)
+            return;
+
+        GameObject obj = new GameObject("Bullet_Destroy_SFX");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+        newSource.volume = sfxSource.volume;
+        newSource.pitch = sfxSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = bulletDestroySound;
+        newSource.Play();
+
+        Destroy(obj, bulletDestroySound.length);
     }
 #endif
 }

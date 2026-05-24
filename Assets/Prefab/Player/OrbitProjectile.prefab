@@ -169,6 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a378918c61f01494597ba57c5a126bc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OrbitProjectile
+  sfxSource: {fileID: 0}
+  bulletDestroySound: {fileID: 0}
   owner: {fileID: 621105006712859011, guid: eae62301816a1df4f94147d10540344c, type: 3}
   radius: 3
   angularSpeed: 180
