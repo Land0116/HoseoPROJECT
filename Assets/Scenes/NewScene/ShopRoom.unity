@@ -1117,7 +1117,7 @@ MonoBehaviour:
   gateGroup: 1
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 448842492}
   markerSpawnPoint: {fileID: 124334983}
   playerSpawnPoint: {fileID: 784807955}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -1171,7 +1171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b418f38a5d1744f808f24f7f6c9389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
+  playerPrefab: {fileID: 3662731217199946732, guid: 67f0dc30835b70a4fac43a7b51f6f69a, type: 3}
   crosshairPrefab: {fileID: 570149521430119343, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
 --- !u!1 &72450378
 GameObject:
@@ -2171,7 +2171,7 @@ MonoBehaviour:
   gateGroup: 0
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 1038927079}
   markerSpawnPoint: {fileID: 1514196351}
   playerSpawnPoint: {fileID: 40313809}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -3210,7 +3210,7 @@ MonoBehaviour:
   gateGroup: 2
   nextRoomKind: 0
   rewardType: 0
-  blockObject: {fileID: 0}
+  blockObject: {fileID: 895800942}
   markerSpawnPoint: {fileID: 2029312203}
   playerSpawnPoint: {fileID: 226359480}
   routeMarkerPrefab: {fileID: 4571232186904068606, guid: 018805573ae35144f9841b7990f0ac05, type: 3}
@@ -3264,7 +3264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b418f38a5d1744f808f24f7f6c9389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
+  playerPrefab: {fileID: 3662731217199946732, guid: 67f0dc30835b70a4fac43a7b51f6f69a, type: 3}
   crosshairPrefab: {fileID: 570149521430119343, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
 --- !u!1 &308138122
 GameObject:
@@ -3517,7 +3517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b418f38a5d1744f808f24f7f6c9389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
+  playerPrefab: {fileID: 3662731217199946732, guid: 67f0dc30835b70a4fac43a7b51f6f69a, type: 3}
   crosshairPrefab: {fileID: 570149521430119343, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
 --- !u!1 &895800942
 GameObject:
@@ -15338,7 +15338,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b418f38a5d1744f808f24f7f6c9389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: -7146785409727942274, guid: eae62301816a1df4f94147d10540344c, type: 3}
+  playerPrefab: {fileID: 3662731217199946732, guid: 67f0dc30835b70a4fac43a7b51f6f69a, type: 3}
   crosshairPrefab: {fileID: 570149521430119343, guid: a9ea082bcb2b77b449a9bb6550b3e252, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
