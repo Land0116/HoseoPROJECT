@@ -23,6 +23,10 @@ using UnityEngine;
 /// </summary>
 public class ButtonSpawn : MonoBehaviour
 {
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip bulletDestroySound;
+
     [Header("기본 이동")] [SerializeField] private float speed = 25f;
     [SerializeField] private float baseLifeTime = 1f;
 
@@ -632,10 +636,19 @@ public class ButtonSpawn : MonoBehaviour
         return col.GetComponentInParent<IDamageable>();
     }
 
+    /*private void DestroyProjectile()
+    {
+        if (isDestroyed) return;
+        isDestroyed = true;
+        Destroy(gameObject);
+    }*/
     private void DestroyProjectile()
     {
         if (isDestroyed) return;
         isDestroyed = true;
+
+        PlayIndependent(bulletDestroySound);
+
         Destroy(gameObject);
     }
 
@@ -665,7 +678,23 @@ public class ButtonSpawn : MonoBehaviour
             player.OnHitEnemy(dealtDamage);
         }
     }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
 
+        GameObject obj = new GameObject("Bullet_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+        newSource.volume = audioSource.volume;
+        newSource.pitch = audioSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
+    }
     #region 연쇄탄 초기화함수
     private void InitializeChainProjectile(
         ButtonSpawn source,
@@ -830,4 +859,6 @@ public class ButtonSpawn : MonoBehaviour
     }
 
     #endregion
+
+
 }
