@@ -134,17 +134,17 @@ public class GateController : AutoBindableBehaviour
     {
         if (playerSpawnPoint != null)
         {
-            Debug.Log(
+            /*Debug.Log(
                 $"[Gate SpawnPoint] Gate={name}, GateGroup={gateGroup}, " +
                 $"SpawnPoint={playerSpawnPoint.name}, " +
                 $"SpawnPointParent={playerSpawnPoint.parent.name}, " +
                 $"Position={playerSpawnPoint.position}"
-            );
+            );*/
 
             return playerSpawnPoint.position;
         }
 
-        Debug.LogWarning($"[Gate SpawnPoint] {name}에 playerSpawnPoint가 없음. Gate 위치 사용.");
+        //Debug.LogWarning($"[Gate SpawnPoint] {name}에 playerSpawnPoint가 없음. Gate 위치 사용.");
         return transform.position;
     }
 
@@ -217,7 +217,7 @@ public class GateController : AutoBindableBehaviour
 
         if (routeMarkerPrefab == null)
         {
-            Debug.LogWarning($"[{name}] RouteMarkerPrefab이 없음");
+            //Debug.LogWarning($"[{name}] RouteMarkerPrefab이 없음");
             return;
         }
 
@@ -309,10 +309,10 @@ public class GateController : AutoBindableBehaviour
         }
 
         MapFlowManager.Instance.EnterNextRoomFromGate(gateGroup, nextRoomKind, rewardType);
-        Debug.Log(
+        /*Debug.Log(
             $"[Gate 이동] GateObject={name}, GateGroup={gateGroup}, " +
             $"NextRoom={nextRoomKind}, Reward={rewardType}"
-        );
+        );*/
     }
 
     /// <summary>

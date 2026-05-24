@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class StageClear : MonoBehaviour
 {
     public static StageClear Instance;
-
+    public static System.Action<int, bool> OnStageChanged; //* 0524
     [System.Serializable]
     private class RouteMarkerData
     {
@@ -112,6 +112,7 @@ public class StageClear : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("StageClear Awake 실행됨");
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -182,6 +183,11 @@ public class StageClear : MonoBehaviour
         {
             StartRoomWavesIfNeeded();
         }
+
+        if (OnStageChanged != null)
+        {
+            OnStageChanged.Invoke(currentStageNumber, IsBossRoom());
+        }//* 0524
     }
 
     private void SyncCurrentRoomByLoadedScene(string sceneName)
@@ -1349,4 +1355,15 @@ public class StageClear : MonoBehaviour
     {
         return currentStageNumber;
     }
+
+    public bool IsBossRoomPublic()
+    {
+        return currentRoomType == RoomType.Boss || currentMapNumber == 7;
+    }
+
+    public int GetCurrentStageNumberPublic()
+    {
+        return currentStageNumber;
+    }
+
 }

@@ -37,11 +37,11 @@ public class UIHoverSound : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
         GameObject obj = new GameObject("UI_SFX_TEMP");
         AudioSource newSource = obj.AddComponent<AudioSource>();
 
-        // 기존 설정 그대로 복사 (핵심: SFX 볼륨 유지됨)
+        // 기존 설정 그대로 복사 ( SFX 볼륨 유지됨)
         newSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
         newSource.volume = audioSource.volume;
         newSource.pitch = audioSource.pitch;
-        newSource.spatialBlend = 0f; // UI니까 2D
+        newSource.spatialBlend = 0f;
 
         newSource.clip = clip;
         newSource.Play();

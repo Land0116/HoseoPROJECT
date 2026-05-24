@@ -207,11 +207,11 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
         Vector3 currentPosition = PlayerController.Instance.transform.position;
         float distance = Vector3.Distance(currentPosition, expectedPosition);
 
-        Debug.Log(
+        /*Debug.Log(
             $"[Room Spawn Verify] Expected={expectedPosition}, " +
             $"Actual={currentPosition}, Distance={distance}, " +
             $"SelectedGate={selectedGate.name}"
-        );
+        );*/
 
         if (distance > 0.1f)
         {

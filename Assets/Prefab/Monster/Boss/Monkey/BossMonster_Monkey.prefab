@@ -205,16 +205,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Attack_BossDashCombo
   blockMovement: 0
   attackRange: 8
-  cooldown: 3
+  cooldown: 0.3
   dashSpeed: 30
   dashExtraDistance: 1
-  dash1Damage: 1
-  dash2Damage: 1
-  finalAttackDamage: 1
+  dash1Damage: 15
+  dash2Damage: 5
+  finalAttackDamage: 7
   firstDashDelay: 0.5
   secondDashDelay: 0.7
-  finalAttackDelay: 0.2
-  BeforefinalAttackDelay: 0.5
+  finalAttackDelay: 0.1
+  BeforefinalAttackDelay: 0.3
   finalAttackPrefab: {fileID: 1792145551814660235, guid: 26e26e4dbdea1c64a829d9e4cfb0b09d, type: 3}
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
   telegraphTime: 0.6

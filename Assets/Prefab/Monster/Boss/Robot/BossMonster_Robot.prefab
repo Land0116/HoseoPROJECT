@@ -207,19 +207,19 @@ MonoBehaviour:
   meleeRange: 4
   rangedMinRange: 4
   rangedMaxRange: 12
-  cooldown: 2
+  cooldown: 0.5
   meleePrefab: {fileID: 1367490270637848893, guid: ab01e955b9f1e5c49a74dda3048580ab, type: 3}
-  meleeDamage: 1
+  meleeDamage: 10
   meleeKnockback: 80
   attack1Delay: 0.3
   attackDistance: 2
   bulletPrefab: {fileID: 8305481097669472954, guid: 9edf894b29688bc41b4dec847af66b11, type: 3}
   bulletCount: 6
-  bulletDamage: 1
+  bulletDamage: 4
   rangedKnockback: 6
   minFireDelay: 0.2
   maxFireDelay: 0.5
-  bulletSpeed: 12
+  bulletSpeed: 18
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
   telegraphTime: 0.5
 --- !u!114 &4898502589507485991

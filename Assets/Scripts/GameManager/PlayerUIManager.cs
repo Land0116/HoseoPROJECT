@@ -132,6 +132,7 @@ public class PlayerUIManager : MonoBehaviour
 
     private void Start()
     {
+
         // 패널 초기 상태 정리
         ResetPanels();
         if (optionPanel != null)
