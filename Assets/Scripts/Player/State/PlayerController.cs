@@ -28,7 +28,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         Hit, //피격
         Death //죽음
     }
-
+    [Header("SFX")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource bulletSource;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip dashSound;
+    [SerializeField] private AudioClip bulletSound;
 
     [Header("플레이어 기본 정보")] [SerializeField]
     private float baseMaxHp = 35; // 게임 시작 시 기준 최대 체력
@@ -1071,6 +1076,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+        PlayBulletSound();//* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -1132,6 +1138,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 + (Vector3)(sideDirection * sideIndex * multiShotSideSpacing);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+            PlayBulletSound();//* 0525
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
             if (bulletScript != null)
@@ -1205,6 +1212,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+        PlayBulletSound();//* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -1252,6 +1260,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             Vector3 spawnPos = gunTip.position + (Vector3)(finalDir * bulletSpawnOffset);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+            PlayBulletSound();//* 0525
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
             if (bulletScript != null)
@@ -1797,6 +1806,10 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         // 필요 시 공격 상태 끊기
         playerState = PlayerState.Idle;
+        if (sfxSource != null && dashSound != null) //* 0525
+        {
+            sfxSource.PlayOneShot(dashSound);
+        }
     }
 
     private void EndDash()
@@ -1815,6 +1828,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsDie) return;
 
         IsDie = true;
+        if (sfxSource != null && deathSound != null) //^ 0525
+        {
+            sfxSource.PlayOneShot(deathSound);
+        }
+
         playerState = PlayerState.Death;
         Cursor.visible = true;
 
@@ -2245,6 +2263,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+        PlayBulletSound();//* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -3234,9 +3253,24 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Debug.Log($"[Player Teleport] Player={name}, Position={transform.position}");
     }
+    private void PlayBulletSound()
+    {
+        if (sfxSource == null || bulletSound == null)
+            return;
+
+        bulletSource.PlayOneShot(bulletSound);
+    }
+
+    private IEnumerator PlayDeathSequence()
+    {
+        if (deathSound != null)
+        {
+            yield return new WaitForSeconds(deathSound.length);
+        }
+    }
 
     #region 입력 잠금
-    
+
     public void SetSystemInputLocked(bool locked)
     {
         isSystemInputLocked = locked;

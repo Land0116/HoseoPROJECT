@@ -239,6 +239,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   animator: {fileID: -7134544189471993517}
+  deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
+  deathSoundDelay: 0
+  audioSource: {fileID: 0}
+  isBossMonster: 0
+  dropRewardOnDeath: 1
   attackPattern: {fileID: 4103541142441359991}
   movePattern: {fileID: 5060372229435714203}
   moveSpeed: 7
@@ -246,6 +251,7 @@ MonoBehaviour:
   minGold: 15
   maxGold: 25
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
+  alertUIPrefab: {fileID: 0}
   weaponPrefabDropChance: 0
   itemDropChance: 0
   weaponPrefab: {fileID: 6657840687825691299, guid: ae06bac313dd982458e260fe2c23f8d3, type: 3}

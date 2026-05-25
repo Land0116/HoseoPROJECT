@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 {
+    [Header("SFX")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip purchaseSuccessClip;
+    [SerializeField] private AudioClip purchaseFailClip;
+
     [Header("데이터")]
     [SerializeField] private SkillData[] skillPool;
 
@@ -89,11 +94,12 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         if (p.Gold < finalPrice)
         {
             Debug.Log("골드 부족");
+            PlayIndependent(purchaseFailClip);
             return;
         }
 
         p.Gold -= finalPrice;
-
+        PlayIndependent(purchaseSuccessClip);
         HandleSkillAcquire(currentSkill);
 
         gameObject.SetActive(false);
@@ -167,5 +173,22 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 
         float discount = p.GetShopDiscountFromItems();
         return Mathf.RoundToInt(price * (1f - discount));
+    }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
+
+        GameObject obj = new GameObject("ShopSkill_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+        newSource.volume = audioSource.volume;
+        newSource.pitch = audioSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
     }
 }

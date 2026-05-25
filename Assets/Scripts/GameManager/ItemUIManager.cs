@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 public class ItemUIManager : MonoBehaviour
 {
     public static ItemUIManager Instance;
+    [Header("SFX")]
+    [SerializeField] private AudioSource uiAudioSource;
+    [SerializeField] private AudioClip alertSound;
 
     [SerializeField] private GameObject itemPanel;
     [SerializeField] private TextMeshProUGUI itemText;
@@ -368,6 +371,7 @@ public class ItemUIManager : MonoBehaviour
         interactRect.anchoredPosition = localPoint;
 
         itemInteractPanel.SetActive(true);
+        PlayIndependent(alertSound);
     }
     public void HideInteractPanel()
     {
@@ -382,6 +386,7 @@ public class ItemUIManager : MonoBehaviour
     private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
     {
         alertItemPanel.SetActive(true);
+        PlayIndependent(alertSound);
         yield return new WaitForSeconds(duration);
         alertItemPanel.SetActive(false);
     }
@@ -398,6 +403,7 @@ public class ItemUIManager : MonoBehaviour
         if (alertMaxItemPanel == null) yield break;
 
         alertMaxItemPanel.SetActive(true);
+        PlayIndependent(alertSound);
         yield return new WaitForSeconds(duration);
         alertMaxItemPanel.SetActive(false);
     }
@@ -551,7 +557,10 @@ public class ItemUIManager : MonoBehaviour
         shopInteractText.text = text;
 
         if (!shopInteractPanel.activeSelf)
+        {
+            
             shopInteractPanel.SetActive(true);
+        }
     }
     private void UpdateShopInteractUI()
     {
@@ -610,5 +619,22 @@ public class ItemUIManager : MonoBehaviour
     {
         if (Instance == this)
             Instance = null;
+    }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || uiAudioSource == null) return;
+
+        GameObject obj = new GameObject("UI_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = uiAudioSource.outputAudioMixerGroup;
+        newSource.volume = uiAudioSource.volume;
+        newSource.pitch = uiAudioSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
     }
 }

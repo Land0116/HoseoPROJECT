@@ -12,6 +12,11 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text priceText;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip purchaseSuccessSound;
+    [SerializeField] private AudioClip purchaseFailSound;
+
     private AugmentationSystem currentAugment;
     private int price;
 
@@ -63,6 +68,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         if (player.Gold < finalPrice)
         {
             Debug.Log("°ñµå ºÎÁ·");
+            PlayIndependent(purchaseFailSound);
             return;
         }
 
@@ -72,12 +78,13 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         if (!added)
         {
             Debug.Log("Áõ°­ Ãß°¡ ½ÇÆÐ (½½·Ô °¡µæ or Á¶°Ç ºÒ°¡)");
+            
             return;
         }
 
         // °ñµå Â÷°¨
         player.Gold -= finalPrice;
-
+        PlayIndependent(purchaseSuccessSound);
         // UI °»½Å (ÇÙ½É)
         if (AugUIManager.instance != null)
         {
@@ -188,5 +195,22 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         return augment.augmentationDesc;
+    }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || sfxSource == null) return;
+
+        GameObject obj = new GameObject("Shop_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+        newSource.volume = sfxSource.volume;
+        newSource.pitch = sfxSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
     }
 }

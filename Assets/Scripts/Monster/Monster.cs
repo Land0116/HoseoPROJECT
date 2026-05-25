@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Audio;
 public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
 
     [Header("Animation")]
     [SerializeField] private Animator animator;
-
+    [Header("Death Sound")]
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private float deathSoundDelay = 0f;
+    [SerializeField] private AudioSource audioSource;
     private Vector2 lastMoveDir = Vector2.down;
     private Vector2 lastPosition;
     
@@ -121,7 +124,8 @@ public class Monster : MonoBehaviour, IDamageable
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
-
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
         currentHP = maxHP;
 
         if (hpUIPrefab != null)
@@ -237,7 +241,7 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-
+        PlayDeathSound();
         isAttacking = false;
         isHit = false;
 
@@ -520,6 +524,42 @@ public class Monster : MonoBehaviour, IDamageable
         }
 
         isAlertShowing = false;
+    }
+    private void PlayDeathSound()
+    {
+        if (deathSound == null || audioSource == null) return;
+
+        if (deathSoundDelay <= 0f)
+        {
+            PlayIndependent(deathSound);
+        }
+        else
+        {
+            StartCoroutine(PlayDeathSoundDelayRoutine());
+        }
+    }
+    private IEnumerator PlayDeathSoundDelayRoutine()
+    {
+        yield return new WaitForSeconds(deathSoundDelay);
+
+        PlayIndependent(deathSound);
+    }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
+
+        GameObject obj = new GameObject("Monster_Death_SFX");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+        newSource.volume = audioSource.volume;
+        newSource.pitch = audioSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length + 0.1f);
     }
 }
 

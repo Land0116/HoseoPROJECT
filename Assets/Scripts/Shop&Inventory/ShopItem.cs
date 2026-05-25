@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 {
+    [Header("SFX")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip purchaseSuccessSound;
+    [SerializeField] private AudioClip purchaseFailSound;
+
     [SerializeField] private GameObject worldItemPrefab;
 
     [Header("===== Stage 1 =====")]
@@ -63,7 +68,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         int finalPrice = GetFinalPrice();
         if (player.Gold < finalPrice)
         {
-
+            PlayIndependent(purchaseFailSound);
             return;
         }
 
@@ -83,7 +88,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         {
             ApplyItem(player);
         }
-
+        PlayIndependent(purchaseSuccessSound);
         gameObject.SetActive(false);
     }
 
@@ -99,7 +104,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         if (!success)
         {
             Debug.Log("[ShopItem] 인벤토리 가득참 → 아이템 월드 생성");
-
+            PlayIndependent(purchaseSuccessSound);
             SpawnWorldItem(itemToGive);
         }
         else
@@ -401,5 +406,23 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         float final = basePremiumChance + (bonus / 100f);
         return Random.value < Mathf.Clamp01(final);
+    }
+
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || sfxSource == null) return;
+
+        GameObject obj = new GameObject("ShopItem_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+        newSource.volume = sfxSource.volume;
+        newSource.pitch = sfxSource.pitch;
+        newSource.spatialBlend = 0f;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
     }
 }

@@ -311,4 +311,18 @@ public class OptionUI : MonoBehaviour
 
         ApplySettings();
     }
+    private void OnEnable()
+    {
+        SyncSliders();
+    }
+    private void SyncSliders()
+    {
+        if (settings == null) return;
+
+        bgmSlider.value = settings.bgmVolume;
+        sfxSlider.value = settings.sfxVolume;
+
+        SetBGMVolume(settings.bgmVolume);
+        SetSFXVolume(settings.sfxVolume);
+    }
 }

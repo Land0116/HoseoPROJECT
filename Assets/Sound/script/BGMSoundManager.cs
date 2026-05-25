@@ -75,6 +75,7 @@ public class BGMSoundManager : MonoBehaviour
 
     private void ApplyBGM(string sceneName)
     {
+
         SceneBGMData data = GetSceneData(sceneName);
 
         if (data == null)
