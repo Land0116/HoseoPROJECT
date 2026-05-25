@@ -18,19 +18,6 @@ public class TeleportSkillData : SkillData
         player.StartCoroutine(TeleportRoutine(player, dir, range));
     }
 
-   /* private IEnumerator TeleportRoutine(PlayerController player, Vector2 dir, float range)
-    {
-        Vector3 startPos = player.transform.position;
-
-        // 순간이동처럼 보이게 "짧은 시간 후 이동"
-        float blinkDelay = 0.03f;
-
-        yield return new WaitForSeconds(blinkDelay);
-
-        Vector3 endPos = startPos + (Vector3)(dir * range);
-
-        player.transform.position = endPos;
-    }*/
     private IEnumerator TeleportRoutine(PlayerController player, Vector2 dir, float range)
     {
         float duration = 0.03f; 

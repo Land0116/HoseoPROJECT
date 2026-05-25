@@ -46,8 +46,8 @@ public class SkillSelectButton : MonoBehaviour
             //float cooldown = Mathf.Max(0f, data.GetCooldown(1) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
-                $"{data.description}\n\n" +
-                $"대미지: {damage}\n" +
+                $"{data.description}\n" +
+                $"대미지: {damage} / " +
                 $"쿨타임: {cooldown}초";
         }
         else if (currentLevel >= data.maxLevel)
@@ -74,8 +74,8 @@ public class SkillSelectButton : MonoBehaviour
             //float nextCooldown = Mathf.Max(0f, data.GetCooldown(nextLevel) - SkillManager.Instance.GetCooldownReduction()); //*
 
             descText.text =
-                $"{data.description}\n\n" +
-                $"대미지: {currentDamage} → {nextDamage}\n" +
+                $"{data.description}\n" +
+                $"대미지: {currentDamage} → {nextDamage} / " +
                 $"쿨타임: {currentCooldown} → {nextCooldown}초";
         }
 

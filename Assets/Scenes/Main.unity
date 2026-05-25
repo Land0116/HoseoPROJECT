@@ -5131,7 +5131,7 @@ MonoBehaviour:
   cutsceneRawImage: {fileID: 1107431946}
   renderTexture: {fileID: 0}
   videoPlayer: {fileID: 1047828344}
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 339393616}
   cutsceneDatas:
   - {fileID: 11400000, guid: 9f9ec33e92eb6a04e9e926f44633b3b0, type: 2}
   - {fileID: 11400000, guid: 42f5f6fbe267c3a4d847d0cb0a40c917, type: 2}
@@ -24340,7 +24340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7339ab13d56362e40b7160e8a2393cc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUIManager
-  playerController: {fileID: 0}
+  playerController: {fileID: 3662731217199946732, guid: 67f0dc30835b70a4fac43a7b51f6f69a, type: 3}
   playerTextUIPanel: {fileID: 1595387839}
   hpBar: {fileID: 2116926494}
   hpText: {fileID: 651775360}
@@ -28775,8 +28775,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -31717,8 +31717,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
