@@ -30,6 +30,9 @@ public class VideoCutsceneData : ScriptableObject
     [Header("재생할 영상")]
     public VideoClip[] videoClips;
 
+    [Header("컷씬 사운드")]
+    public AudioClip audioClip;
+
     [Header("입력 제어")]
     public bool lockPlayerInput = true;
 

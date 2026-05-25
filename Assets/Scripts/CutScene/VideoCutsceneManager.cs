@@ -12,6 +12,7 @@ public class VideoCutsceneManager : MonoBehaviour
 
     private const string CutsceneInputLockKey = "VideoCutscene";
 
+    private string cutsceneStartScene;//*
     private class VideoCutsceneRequest
     {
         public VideoCutsceneType cutsceneType;
@@ -138,9 +139,10 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (audioSource != null)
         {
-            videoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
-            videoPlayer.EnableAudioTrack(0, true);
-            videoPlayer.SetTargetAudioSource(0, audioSource);
+            //videoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
+            videoPlayer.audioOutputMode = VideoAudioOutputMode.None;
+            //videoPlayer.EnableAudioTrack(0, true);
+            //videoPlayer.SetTargetAudioSource(0, audioSource);
         }
     }
 
@@ -224,6 +226,23 @@ public class VideoCutsceneManager : MonoBehaviour
         ShowCutscenePanel();
         BringCutsceneToFront();
 
+        cutsceneStartScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        // 컷씬 시작 시 BGM 정지
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.PauseBGM();
+        }
+        // 컷씬 사운드
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.clip = data.audioClip;
+
+            if (data.audioClip != null)
+            {
+                audioSource.Play();
+            }
+        }
         if (videoPlayer == null || data.videoClips == null || data.videoClips.Length == 0)
         {
             Debug.LogWarning("[VideoCutsceneManager] VideoPlayer 또는 VideoClip이 없음");
@@ -253,10 +272,10 @@ public class VideoCutsceneManager : MonoBehaviour
     {
         videoPlayer.Stop();
 
-        if (audioSource != null)
+        /*if (audioSource != null)//주석처리함
         {
             audioSource.Stop();
-        }
+        }*/
 
         videoPlayer.clip = clip;
         videoPlayer.isLooping = false;
@@ -293,10 +312,10 @@ public class VideoCutsceneManager : MonoBehaviour
         videoPlayer.loopPointReached -= OnVideoFinished;
         videoPlayer.Stop();
 
-        if (audioSource != null)
+        /*if (audioSource != null) //주석처리함
         {
             audioSource.Stop();
-        }
+        }*/
     }
 
     private bool IsSkipPressed(Key key)
@@ -320,6 +339,11 @@ public class VideoCutsceneManager : MonoBehaviour
         }
 
         HideCutscenePanel();
+
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+        }
 
         if (data != null && data.lockPlayerInput)
         {
@@ -433,6 +457,22 @@ public class VideoCutsceneManager : MonoBehaviour
         ShowCutscenePanel();
         BringCutsceneToFront();
 
+        cutsceneStartScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (BGMSoundManager.Instance != null) //* 사운드 매니저 일시 정지
+        {
+            BGMSoundManager.Instance.PauseBGM();
+        }
+        // 사운드 시작
+        if (audioSource != null) //*
+        {
+            audioSource.Stop();
+            audioSource.clip = data.audioClip;
+
+            if (data.audioClip != null)
+            {
+                audioSource.Play();
+            }
+        }
         if (videoPlayer == null || data.videoClips == null || data.videoClips.Length == 0)
         {
             Debug.LogWarning("[VideoCutsceneManager] VideoPlayer 또는 VideoClip이 없음");
@@ -458,10 +498,10 @@ public class VideoCutsceneManager : MonoBehaviour
     {
         videoPlayer.Stop();
 
-        if (audioSource != null)
+        /*if (audioSource != null) //주석처리함
         {
             audioSource.Stop();
-        }
+        }*/ 
 
         videoPlayer.clip = clip;
         videoPlayer.isLooping = false;
@@ -500,10 +540,10 @@ public class VideoCutsceneManager : MonoBehaviour
         // 페이드아웃이 끝날 때까지 마지막 화면을 유지하기 위함.
         videoPlayer.Pause();
 
-        if (audioSource != null)
+        /*if (audioSource != null) //주석처리함
         {
             audioSource.Stop();
-        }
+        }*/
     }
     
     public void EndExternalFadeCutscene()
@@ -516,6 +556,11 @@ public class VideoCutsceneManager : MonoBehaviour
         if (audioSource != null)
         {
             audioSource.Stop();
+        }
+
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
         }
 
         HideCutscenePanel();

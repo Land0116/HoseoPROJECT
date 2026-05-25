@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class BGMSoundManager : MonoBehaviour
 {
     public static BGMSoundManager Instance;
-
+    private string lastSceneName;
     private enum BGMType
     {
         Main,
@@ -75,7 +75,7 @@ public class BGMSoundManager : MonoBehaviour
 
     private void ApplyBGM(string sceneName)
     {
-
+        lastSceneName = sceneName;
         SceneBGMData data = GetSceneData(sceneName);
 
         if (data == null)
@@ -164,5 +164,29 @@ public class BGMSoundManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void PauseBGM()
+    {
+        if (bgmSource != null && bgmSource.isPlaying)
+        {
+            bgmSource.Pause();
+            Debug.Log("[BGM] 일시정지");
+        }
+    }
+
+    public void ResumeBGM(string expectedScene)
+    {
+        if (lastSceneName != expectedScene)
+        {
+            Debug.Log("[BGM] 씬 바뀜 → Resume 취소");
+            return;
+        }
+
+        if (bgmSource != null && bgmSource.clip != null)
+        {
+            bgmSource.UnPause();
+            Debug.Log("[BGM] 재개");
+        }
     }
 }
