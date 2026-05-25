@@ -172,8 +172,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   animator: {fileID: 0}
-  isBossMonster: 0
-  dropRewardOnDeath: 1
+  isBossMonster: 1
+  dropRewardOnDeath: 0
   attackPattern: {fileID: 2133988174014043253}
   movePattern: {fileID: 4898502589507485991}
   moveSpeed: 3

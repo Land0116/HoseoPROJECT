@@ -10,7 +10,8 @@ public enum RoomKind
         None,
         Combat,
         Shop,
-        Boss
+        Boss,
+        Clear
     }
 public enum RewardType
     {

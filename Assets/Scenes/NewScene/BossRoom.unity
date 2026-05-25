@@ -189,7 +189,8 @@ MonoBehaviour:
   - {fileID: 797638393}
   player: {fileID: 0}
   bossSpawner: {fileID: 986584010}
-  cutscenePlayer: {fileID: 0}
+  stageNumberForCutscene: 1
+  finalStageNumber: 3
 --- !u!1 &109004953
 GameObject:
   m_ObjectHideFlags: 0
@@ -1389,6 +1390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossSpawner
   bossPrefab: {fileID: 3119900707650530989, guid: d31e3917cd7b01a43bb3549d52835d5f, type: 3}
+  bossRoomController: {fileID: 17565441}
   spawnPoint: {fileID: 1321247037}
 --- !u!4 &986584011
 Transform:

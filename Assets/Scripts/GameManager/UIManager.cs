@@ -58,6 +58,10 @@ public class UIManager : MonoBehaviour
     private TMPro.TextMeshProUGUI curStage;
 
     private OptionUI optionUI;
+    [Header("게임 시작 컷씬")]
+    [SerializeField] private bool playGameStartCutscene = true;
+
+    private bool isStartingGame;
 
 
     private void Awake()
@@ -356,15 +360,15 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void ApplySceneDefaultState(string sceneName)
     {
-        // Main 씬
         if (sceneName == "Main")
         {
+            isStartingGame = false;
+
             if (mainImage != null) mainImage.SetActive(true);
             if (mainPanel != null) mainPanel.SetActive(true);
             if (optionPanel != null) optionPanel.SetActive(false);
             if (exitPanel != null) exitPanel.SetActive(false);
 
-            // 메인 씬에서는 증강 UI 열리지 않게 강제 차단
             if (augUIManager != null)
             {
                 augUIManager.ResetUIStateForRestart();
@@ -373,11 +377,9 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        // 게임 씬
         if (mainImage != null) mainImage.SetActive(false);
         if (mainPanel != null) mainPanel.SetActive(false);
 
-        // 게임 씬 시작 시 메인용 옵션/종료 패널은 꺼둠
         if (optionPanel != null && SceneManager.GetActiveScene().name != "Main")
         {
             optionPanel.SetActive(false);
@@ -453,7 +455,73 @@ public class UIManager : MonoBehaviour
 
     public void StartGame()
     {
+        if (isStartingGame)
+            return;
+
+        StartCoroutine(StartGameWithCutsceneRoutine());
+    }
+    private IEnumerator StartGameWithCutsceneRoutine()
+    {
+        isStartingGame = true;
+
         ResetRunSystems();
+
+        if (VideoCutsceneManager.Instance != null)
+        {
+            VideoCutsceneManager.Instance.ClearPlayedCutscenes();
+        }
+
+        // 컷씬 매니저가 없거나 컷씬을 끈 경우 바로 게임 시작
+        if (!playGameStartCutscene || VideoCutsceneManager.Instance == null)
+        {
+            StartNewRunAfterStartCutscene();
+            yield break;
+        }
+
+        // 1. 먼저 검은 화면으로 덮는다.
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.SetPlayerInputLocked(true);
+            MapTransitionManager.Instance.BringTransitionToFront();
+            yield return MapTransitionManager.Instance.FadeToBlack();
+        }
+
+        // 2. 컷씬 패널을 켜둔다.
+        VideoCutsceneManager.Instance.ShowCutscenePanel();
+        VideoCutsceneManager.Instance.BringCutsceneToFront();
+
+        // 3. TransitionPanel을 다시 최상단으로 올리고 검은 화면을 걷는다.
+        //    그러면 컷씬이 자연스럽게 나타남.
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.BringTransitionToFront();
+            yield return MapTransitionManager.Instance.FadeFromBlack();
+        }
+
+        // 4. 컷씬 재생.
+        //    여기서는 컷씬이 끝나도 바로 패널을 끄지 않고 마지막 프레임을 유지시킨다.
+        yield return VideoCutsceneManager.Instance.PlayCutsceneForExternalFade(
+            VideoCutsceneType.GameStart,
+            0,
+            true
+        );
+
+        // 5. 컷씬이 끝났으면 다시 검은 화면으로 덮는다.
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.BringTransitionToFront();
+            yield return MapTransitionManager.Instance.FadeToBlack();
+        }
+
+        // 6. 검은 화면 뒤에서 컷씬 패널 끄기.
+        VideoCutsceneManager.Instance.EndExternalFadeCutscene();
+
+        // 7. 바로 맵 이동.
+        StartNewRunAfterStartCutscene();
+    }
+    private void StartNewRunAfterStartCutscene()
+    {
+        Time.timeScale = 1f;
 
         if (MapFlowManager.Instance != null)
         {
@@ -461,6 +529,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
+        isStartingGame = false;
         Debug.LogError("[UIManager] MapFlowManager가 없음. Main 씬의 GameManager에 MapFlowManager를 붙여야 함.");
     }
 

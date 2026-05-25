@@ -422,7 +422,7 @@ MonoBehaviour:
   hideSystemCursor: 1
   playerBody: {fileID: 7119226814975586306}
   gunTip: {fileID: 8378447067143187542}
-  deathUIShowDelay: 0.5
+  deathUIShowDelay: 1.5
 --- !u!1 &6825141394828379521
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,6 +734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LowerPlayerVisual
   spriteRenderer: {fileID: 2652904405139689850}
   animator: {fileID: 8059560710185896249}
+  diagonalReleaseGraceTime: 0.12
 --- !u!1 &8463015215607841125
 GameObject:
   m_ObjectHideFlags: 0

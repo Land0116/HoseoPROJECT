@@ -5,10 +5,14 @@ public class BossSpawner : MonoBehaviour
     [Header("보스 프리팹")]
     [SerializeField] private GameObject bossPrefab;
 
-    [Header("보스 생성 위치")]
+    [Header("보스방 컨트롤러")]
+    [SerializeField] private BossRoomController bossRoomController;
+
+    [Header("스폰 위치")]
     [SerializeField] private Transform spawnPoint;
 
-    private BossRoomController bossRoomController;
+    private Monster currentBoss;
+    private bool bossDeadNotified;
 
     private void Awake()
     {
@@ -27,7 +31,6 @@ public class BossSpawner : MonoBehaviour
     }
 #endif
 
-    [ContextMenu("Auto Bind")]
     private void AutoBind()
     {
         if (bossRoomController == null)
@@ -37,12 +40,7 @@ public class BossSpawner : MonoBehaviour
 
         if (spawnPoint == null)
         {
-            Transform found = AutoBindUtility.FindChildRecursive(transform, "BossSpawnPoint");
-
-            if (found != null)
-            {
-                spawnPoint = found;
-            }
+            spawnPoint = transform;
         }
     }
 
@@ -50,50 +48,46 @@ public class BossSpawner : MonoBehaviour
     {
         if (bossPrefab == null)
         {
-            Debug.LogWarning("BossPrefab이 없음");
+            Debug.LogWarning("[BossSpawner] bossPrefab이 없음");
             return;
         }
 
-        Vector3 pos = transform.position;
+        bossDeadNotified = false;
 
-        if (spawnPoint != null)
+        Vector3 spawnPosition = spawnPoint != null
+            ? spawnPoint.position
+            : transform.position;
+
+        GameObject bossObject = Instantiate(bossPrefab, spawnPosition, Quaternion.identity);
+
+        currentBoss = bossObject.GetComponent<Monster>();
+
+        if (currentBoss != null)
         {
-            pos = spawnPoint.position;
-        }
-
-        GameObject boss = Instantiate(bossPrefab, pos, Quaternion.identity);
-
-        Monster bossMonster = boss.GetComponent<Monster>();
-
-        if (bossMonster == null)
-        {
-            bossMonster = boss.GetComponentInChildren<Monster>();
-        }
-
-        if (bossMonster != null)
-        {
-            bossMonster.SetBossSpawner(this);
+            currentBoss.SetBossSpawner(this);
         }
         else
         {
-            Debug.LogWarning("[BossSpawner] 생성된 보스 프리팹에 Monster 컴포넌트가 없음");
+            Debug.LogWarning("[BossSpawner] 보스 프리팹에 Monster 컴포넌트가 없음");
         }
     }
 
     public void NotifyBossDead()
     {
+        if (bossDeadNotified)
+            return;
+
+        bossDeadNotified = true;
+
+        Debug.Log("[BossSpawner] 보스 사망 알림 받음");
+
         if (bossRoomController != null)
         {
             bossRoomController.OnBossDead();
         }
         else
         {
-            BossRoomController found = FindAnyObjectByType<BossRoomController>();
-
-            if (found != null)
-            {
-                found.OnBossDead();
-            }
+            Debug.LogWarning("[BossSpawner] bossRoomController가 없음");
         }
     }
 }

@@ -307,6 +307,17 @@ public class GateController : AutoBindableBehaviour
             MapFlowManager.Instance.CompleteBossAndGoNextAct(gateGroup);
             return;
         }
+        if (MapFlowManager.Instance.CurrentRoomKind == RoomKind.Clear)
+        {
+            BossRoomController bossRoom = FindAnyObjectByType<BossRoomController>();
+
+            if (bossRoom != null)
+            {
+                bossRoom.TryEnterFinalClearGate();
+            }
+
+            return;
+        }
 
         MapFlowManager.Instance.EnterNextRoomFromGate(gateGroup, nextRoomKind, rewardType);
         Debug.Log(

@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 6457740}
   - component: {fileID: 6457739}
   m_Layer: 5
-  m_Name: BossCutscenePanel
+  m_Name: CutscenePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4905,7 +4905,7 @@ GameObject:
   - component: {fileID: 339393614}
   - component: {fileID: 339393615}
   m_Layer: 5
-  m_Name: BossCutscenePlayer
+  m_Name: VideoCutsceneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4944,12 +4944,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossIntroCutscenePlayer
   cutsceneRoot: {fileID: 6457737}
+  cutsceneRawImage: {fileID: 1107431946}
+  renderTexture: {fileID: 0}
   videoPlayer: {fileID: 1047828344}
-  videoClips:
-  - {fileID: 32900000, guid: fd89bdba795218b4281f8e20f74c10c1, type: 3}
-  - {fileID: 32900000, guid: e1b7d5a3ae876494aa33a37385737ee9, type: 3}
-  - {fileID: 32900000, guid: 6906582ed4d909e4dbae1604f51315ac, type: 3}
-  - {fileID: 32900000, guid: 74e0883c023c03a419d78f3d706659ec, type: 3}
+  audioSource: {fileID: 0}
+  cutsceneDatas:
+  - {fileID: 11400000, guid: 9f9ec33e92eb6a04e9e926f44633b3b0, type: 2}
+  - {fileID: 11400000, guid: 42f5f6fbe267c3a4d847d0cb0a40c917, type: 2}
+  - {fileID: 11400000, guid: 5d909186b8ac71b4787940efc6f6dc15, type: 2}
+  - {fileID: 11400000, guid: a6ff0dccb9b0977488b8706bda58405a, type: 2}
+  - {fileID: 11400000, guid: 5e7ac75b56988c648ba2fb9c898a5ec7, type: 2}
+  - {fileID: 11400000, guid: 466d44c3dc6c4c14b9e6169c5d9e1024, type: 2}
+  - {fileID: 11400000, guid: d7872288a00c8f745b522b297f70d827, type: 2}
 --- !u!1 &348964815
 GameObject:
   m_ObjectHideFlags: 0
@@ -9363,6 +9369,7 @@ MonoBehaviour:
   skillUIManager: {fileID: 0}
   selectSkillPanelOverlay: {fileID: 0}
   curStage: {fileID: 0}
+  playGameStartCutscene: 1
 --- !u!114 &622896074
 MonoBehaviour:
   m_ObjectHideFlags: 0
