@@ -214,8 +214,8 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 0c91317f1ee228747b492e19db8c6b45, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: 792431145989907244}
-  isBossMonster: 0
-  dropRewardOnDeath: 1
+  isBossMonster: 1
+  dropRewardOnDeath: 0
   attackPattern: {fileID: 4263896983294297948}
   movePattern: {fileID: 1049455016007415334}
   moveSpeed: 3
