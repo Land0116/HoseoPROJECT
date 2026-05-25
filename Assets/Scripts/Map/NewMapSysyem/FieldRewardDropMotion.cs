@@ -101,7 +101,7 @@ public class FieldRewardDropMotion : MonoBehaviour
 
             if (shadowRoot != null)
             {
-                float shadowScale = Mathf.Lerp(0.65f, 1f, t);
+                float shadowScale = Mathf.Lerp(1f, 1f, t);
                 shadowRoot.localScale = new Vector3(shadowScale, shadowScale, 1f);
             }
 

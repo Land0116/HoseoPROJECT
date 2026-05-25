@@ -10,7 +10,7 @@ public enum ItemZoneType
 [CreateAssetMenu(fileName = "ItemData", menuName = "Item/ItemData")]
 public class ItemData : ScriptableObject
 {
-    [Header("¾ÆÀÌÅÛ ½ºÅÈ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public int stage;
 
     public float damage = 0f;
@@ -22,11 +22,12 @@ public class ItemData : ScriptableObject
     public Sprite icon;
     public string itemName;
     public ItemZoneType zoneType;
-    [Header("¼³¸í")]
+    [Header("ï¿½ï¿½ï¿½ï¿½")]
     [TextArea]
     public string description;
 
     public virtual void OnUpdate(PlayerController player) { }
+    
 
     public virtual bool ShouldApply(PlayerController player)
     {

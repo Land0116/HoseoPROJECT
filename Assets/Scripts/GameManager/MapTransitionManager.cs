@@ -191,4 +191,11 @@ public class MapTransitionManager : MonoBehaviour
             PlayerController.Instance.SetSystemInputLocked(locked);
         }
     }
+    public void BringTransitionToFront()
+    {
+        if (transitionPanelGroup != null)
+        {
+            transitionPanelGroup.transform.SetAsLastSibling();
+        }
+    }
 }

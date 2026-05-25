@@ -814,14 +814,12 @@ public class PlayerUIManager : MonoBehaviour
     /// </summary>
     public void ShowGameClearUI()
     {
-
-
         Time.timeScale = 0f;
 
+        gameClearPanel.SetActive(true);
         if (PlayerController.Instance != null)
             PlayerController.Instance.SetPause(true);
     }
-    
     
     
     public void ResetUIForNewRun()
