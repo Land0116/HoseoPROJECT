@@ -37,6 +37,12 @@ public class AugUIManager : MonoBehaviour
     [Header("보유 증강 슬롯 UI")] [SerializeField]
     private Image[] slotImages;
 
+    [Header("보유 증강 슬롯 배경 이미지")] [SerializeField]
+    private Image[] slotFrameImages;
+
+    [Header("슬롯칸 스프라이트")] [SerializeField] private Sprite emptySlotSprite;
+    [SerializeField] private Sprite occupiedSlotSprite;
+
     private readonly List<AugmentationSystem> candidateBuffer = new List<AugmentationSystem>(64);
 
     [Header("보유 증강 슬롯 Rect")] [SerializeField]
@@ -54,8 +60,8 @@ public class AugUIManager : MonoBehaviour
     private const float TooltipOffsetDefaultX = 12f;
     private const float TooltipOffsetDefaultY = 230f;
 
-    [Header("보유 증강 설명창 위치")]
-    [SerializeField] private bool useCodeTooltipOffsetDefault = true;
+    [Header("보유 증강 설명창 위치")] [SerializeField]
+    private bool useCodeTooltipOffsetDefault = true;
 
     [SerializeField] private Vector2 tooltipOffset =
         new Vector2(TooltipOffsetDefaultX, TooltipOffsetDefaultY);
@@ -189,13 +195,21 @@ public class AugUIManager : MonoBehaviour
 
             AugmentationSystem aug = ownedSlots[i].augmentData;
 
-            // 핵심:
-            // 보유 슬롯에는 카드 아이콘(icon)이 아니라 슬롯 전용 이미지(slotSprite)를 넣는다.
+            // 아이콘 변경
             slotImages[i].sprite = aug.slotSprite;
             slotImages[i].enabled = aug.slotSprite != null;
-
-            // 카테고리별 색상 적용 없음
             slotImages[i].color = Color.white;
+
+            // 슬롯칸 스프라이트 변경
+            if (slotFrameImages != null &&
+                i < slotFrameImages.Length &&
+                slotFrameImages[i] != null &&
+                occupiedSlotSprite != null)
+            {
+                slotFrameImages[i].sprite = occupiedSlotSprite;
+                slotFrameImages[i].enabled = true;
+                slotFrameImages[i].color = Color.white;
+            }
         }
 
         RefreshOwnedHoverAfterUpdate();
@@ -260,73 +274,85 @@ public class AugUIManager : MonoBehaviour
     }
 
     private void BindOwnedSlotImages(GameObject systemUIRoot)
-{
-    Transform slotRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugUIPanel");
-    if (slotRoot == null)
     {
-        slotImages = null;
-        slotRects = null;
-        Debug.LogWarning("[AugUIManager] AugUIPanel 을 찾지 못함");
-        return;
+        Transform slotRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AugUIPanel");
+        if (slotRoot == null)
+        {
+            slotImages = null;
+            slotFrameImages = null;
+            slotRects = null;
+            Debug.LogWarning("[AugUIManager] AugUIPanel 을 찾지 못함");
+            return;
+        }
+
+        const int ownedSlotCount = 6;
+
+        Image[] boundImages = new Image[ownedSlotCount];
+        Image[] boundFrameImages = new Image[ownedSlotCount];
+        RectTransform[] boundRects = new RectTransform[ownedSlotCount];
+
+        for (int i = 0; i < ownedSlotCount; i++)
+        {
+            int slotNumber = i + 1;
+
+            Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{slotNumber}");
+            if (slotTr == null)
+            {
+                Debug.LogWarning($"[AugUIManager] AugUISlot_{slotNumber} 을 찾지 못함");
+                continue;
+            }
+
+            SetupOwnedSlotPointerEvent(slotTr.gameObject, i);
+
+            Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{slotNumber}");
+            if (bgPanelTr == null)
+            {
+                Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 을 찾지 못함");
+                continue;
+            }
+
+            RectTransform bgRect = bgPanelTr as RectTransform;
+            if (bgRect == null)
+            {
+                Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 에 RectTransform이 없음");
+                continue;
+            }
+
+            Image bgImage = bgPanelTr.GetComponent<Image>();
+            if (bgImage == null)
+            {
+                Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 에 Image 컴포넌트가 없음");
+                continue;
+            }
+
+            Transform iconTr = UIManager.FindChildRecursive(bgPanelTr, "AugImage");
+            if (iconTr == null)
+            {
+                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 실제 아이콘 오브젝트를 찾지 못함");
+                continue;
+            }
+
+            Image iconImg = iconTr.GetComponent<Image>();
+            if (iconImg == null)
+            {
+                Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
+                continue;
+            }
+
+            // 아이콘 이미지
+            boundImages[i] = iconImg;
+
+            // 슬롯칸 배경 이미지
+            boundFrameImages[i] = bgImage;
+
+            // 설명창 위치 기준
+            boundRects[i] = bgRect;
+        }
+
+        slotImages = boundImages;
+        slotFrameImages = boundFrameImages;
+        slotRects = boundRects;
     }
-
-    const int ownedSlotCount = 6;
-
-    Image[] boundImages = new Image[ownedSlotCount];
-    RectTransform[] boundRects = new RectTransform[ownedSlotCount];
-
-    for (int i = 0; i < ownedSlotCount; i++)
-    {
-        int slotNumber = i + 1;
-
-        Transform slotTr = UIManager.FindChildRecursive(slotRoot, $"AugUISlot_{slotNumber}");
-        if (slotTr == null)
-        {
-            Debug.LogWarning($"[AugUIManager] AugUISlot_{slotNumber} 을 찾지 못함");
-            continue;
-        }
-
-        SetupOwnedSlotPointerEvent(slotTr.gameObject, i);
-
-        Transform bgPanelTr = UIManager.FindChildRecursive(slotTr, $"AugImagePanel_{slotNumber}");
-        if (bgPanelTr == null)
-        {
-            Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 을 찾지 못함");
-            continue;
-        }
-
-        RectTransform bgRect = bgPanelTr as RectTransform;
-        if (bgRect == null)
-        {
-            Debug.LogWarning($"[AugUIManager] AugImagePanel_{slotNumber} 에 RectTransform이 없음");
-            continue;
-        }
-
-        Transform iconTr = UIManager.FindChildRecursive(bgPanelTr, "AugImage");
-        if (iconTr == null)
-        {
-            Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 실제 아이콘 오브젝트를 찾지 못함");
-            continue;
-        }
-
-        Image iconImg = iconTr.GetComponent<Image>();
-        if (iconImg == null)
-        {
-            Debug.LogWarning($"[AugUIManager] 슬롯 {slotNumber} 의 아이콘 오브젝트에 Image 컴포넌트가 없음");
-            continue;
-        }
-
-        boundImages[i] = iconImg;
-
-        // 핵심:
-        // 설명창 위치 기준은 AugUISlot 루트가 아니라
-        // 실제 화면에 보이는 슬롯 배경 패널 RectTransform으로 잡는다.
-        boundRects[i] = bgRect;
-    }
-
-    slotImages = boundImages;
-    slotRects = boundRects;
-}
 
     #region Owned Augment Tooltip
 
@@ -934,14 +960,31 @@ public class AugUIManager : MonoBehaviour
 
     private void ClearOwnedAugmentUI()
     {
-        if (slotImages == null) return;
-
-        for (int i = 0; i < slotImages.Length; i++)
+        if (slotImages != null)
         {
-            if (slotImages[i] == null) continue;
+            for (int i = 0; i < slotImages.Length; i++)
+            {
+                if (slotImages[i] == null) continue;
 
-            slotImages[i].sprite = null;
-            slotImages[i].enabled = false;
+                slotImages[i].sprite = null;
+                slotImages[i].enabled = false;
+            }
+        }
+
+        if (slotFrameImages != null)
+        {
+            for (int i = 0; i < slotFrameImages.Length; i++)
+            {
+                if (slotFrameImages[i] == null) continue;
+
+                if (emptySlotSprite != null)
+                {
+                    slotFrameImages[i].sprite = emptySlotSprite;
+                }
+
+                slotFrameImages[i].enabled = true;
+                slotFrameImages[i].color = Color.white;
+            }
         }
     }
 
@@ -1120,6 +1163,7 @@ public class AugUIManager : MonoBehaviour
             PlayerController.Instance.SetPause(false);
             PlayerController.Instance.SetControl(true);
         }
+
         NotifyRewardAugmentFinished();
     }
 
@@ -1135,7 +1179,7 @@ public class AugUIManager : MonoBehaviour
 
         return true;
     }
-    
+
     #endregion
 
     #region Action
