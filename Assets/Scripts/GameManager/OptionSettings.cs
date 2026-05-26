@@ -6,6 +6,6 @@ public class OptionSettings : ScriptableObject
     public int resolutionIndex = 1; // 기본 1920x1080
     public int screenModeIndex = 2; // 기본 전체창모드
     [Range(0.1f, 1f)] public float brightness = 1f;
-    [Range(0.0001f, 1f)] public float bgmVolume = 0.65f;
-    [Range(0.0001f, 1f)] public float sfxVolume = 0.35f;
+    [Range(0.0001f, 1f)] public float bgmVolume = 0.55f;
+    [Range(0.0001f, 1f)] public float sfxVolume = 0.45f;
 }

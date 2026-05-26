@@ -163,6 +163,8 @@ public class OptionUI : MonoBehaviour
     {
         settings.screenModeIndex = index; 
         ApplySettings();
+        SetBGMVolume(settings.bgmVolume);
+        SetSFXVolume(settings.sfxVolume);
     }
 
     private void InitBrightness()
