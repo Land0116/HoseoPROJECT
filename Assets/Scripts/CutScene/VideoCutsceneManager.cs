@@ -342,7 +342,18 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (BGMSoundManager.Instance != null)
         {
-            BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+            // 핵심 조건
+            if (currentScene == cutsceneStartScene)
+            {
+                BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+            }
+            else
+            {
+                Debug.Log("[컷씬] 씬 변경됨 → Resume 막기");
+                BGMSoundManager.Instance.BlockNextResume();
+            }
         }
 
         if (data != null && data.lockPlayerInput)
@@ -535,7 +546,7 @@ public class VideoCutsceneManager : MonoBehaviour
         }
 
         videoPlayer.loopPointReached -= OnVideoFinished;
-
+        
         // 바로 Stop 하지 않는다.
         // 페이드아웃이 끝날 때까지 마지막 화면을 유지하기 위함.
         videoPlayer.Pause();
@@ -560,7 +571,16 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (BGMSoundManager.Instance != null)
         {
-            BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+            if (currentScene == cutsceneStartScene)
+            {
+                BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+            }
+            else
+            {
+                Debug.Log("[컷씬] 씬 변경됨 → Resume 안함");
+            }
         }
 
         HideCutscenePanel();

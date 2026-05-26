@@ -5,6 +5,9 @@ public class BGMSoundManager : MonoBehaviour
 {
     public static BGMSoundManager Instance;
     private string lastSceneName;
+    private bool blockNextResume = false;
+    private BGMType lastBGMType;
+
     private enum BGMType
     {
         Main,
@@ -128,15 +131,36 @@ public class BGMSoundManager : MonoBehaviour
             return;
         }
 
+        lastBGMType = currentType;
+
         PlayClip(target);
 
         currentStage = data.stageNumber;
         currentType = data.bgmType;
+        
     }
 
-    private void PlayClip(AudioClip clip)
+    /*private void PlayClip(AudioClip clip)
     {
         if (bgmSource.clip == clip) return;
+
+        bgmSource.clip = clip;
+        bgmSource.Play();
+
+        Debug.Log($"[BGM] 재생 → {clip.name}");
+    }*/
+    private void PlayClip(AudioClip clip)
+    {
+        if (bgmSource.clip == clip)
+        {
+            // 같은 클립인데 멈춰있으면 다시 재생
+            if (!bgmSource.isPlaying)
+            {
+                bgmSource.Play();
+                Debug.Log($"[BGM] 같은 클립 재생 복구 → {clip.name}");
+            }
+            return;
+        }
 
         bgmSource.clip = clip;
         bgmSource.Play();
@@ -174,12 +198,25 @@ public class BGMSoundManager : MonoBehaviour
             Debug.Log("[BGM] 일시정지");
         }
     }
-
+    public void ForceApplyBGM(string sceneName)
+    {
+        Debug.Log("[BGM] 강제 재적용");
+        ApplyBGM(sceneName);
+    }
     public void ResumeBGM(string expectedScene)
     {
-        if (lastSceneName != expectedScene)
+        // 현재 씬 데이터 가져오기
+        SceneBGMData data = GetSceneData(expectedScene);
+
+        if (data == null)
+            return;
+
+        bool allowResume =
+            (lastBGMType == BGMType.Normal && data.bgmType == BGMType.Boss);
+
+        if (!allowResume)
         {
-            Debug.Log("[BGM] 씬 바뀜 → Resume 취소");
+            Debug.Log("[BGM] Resume 조건 불충족 → 차단");
             return;
         }
 
@@ -188,5 +225,9 @@ public class BGMSoundManager : MonoBehaviour
             bgmSource.UnPause();
             Debug.Log("[BGM] 재개");
         }
+    }
+    public void BlockNextResume()
+    {
+        blockNextResume = true;
     }
 }
