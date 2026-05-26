@@ -3449,4 +3449,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     #endregion
+    public void OnBugMaster(InputValue value)
+    {
+         weaponDamage += 100.0f;
+     }
+    
 }
