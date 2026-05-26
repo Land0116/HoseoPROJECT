@@ -465,6 +465,10 @@ public class UIManager : MonoBehaviour
         isStartingGame = true;
 
         ResetRunSystems();
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.ResetBGMState();
+        }
 
         if (VideoCutsceneManager.Instance != null)
         {
@@ -539,7 +543,10 @@ public class UIManager : MonoBehaviour
     public void RestartCurrentScene()
     {
         ResetRunSystems();
-
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.ResetBGMState();
+        }
         if (MapFlowManager.Instance != null)
         {
             MapFlowManager.Instance.StartNewRun();
@@ -555,6 +562,10 @@ public class UIManager : MonoBehaviour
     public void GoToMainScene()
     {
         ResetRunSystems();
+        if (BGMSoundManager.Instance != null)
+        {
+            BGMSoundManager.Instance.ResetBGMState();
+        }
 
         if (MapFlowManager.Instance != null)
         {

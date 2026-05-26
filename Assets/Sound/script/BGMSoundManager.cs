@@ -230,4 +230,20 @@ public class BGMSoundManager : MonoBehaviour
     {
         blockNextResume = true;
     }
+
+    public void ResetBGMState()
+    {
+        Debug.Log("[BGM] 상태 초기화");
+
+        currentStage = -1;
+        currentType = BGMType.Main;
+        lastBGMType = BGMType.Main;
+        lastSceneName = "";
+
+        if (bgmSource != null)
+        {
+            bgmSource.Stop();
+            bgmSource.clip = null;
+        }
+    }
 }
