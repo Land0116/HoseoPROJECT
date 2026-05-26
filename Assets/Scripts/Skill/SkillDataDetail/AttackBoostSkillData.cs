@@ -31,6 +31,7 @@ public class AttackBoostSkillData : SkillData
         {
             aura = Instantiate(auraPrefab, player.transform);
             aura.transform.localPosition = Vector3.zero;
+
         }
 
         yield return new WaitForSeconds(duration);
@@ -41,6 +42,7 @@ public class AttackBoostSkillData : SkillData
         if (aura != null)
             Destroy(aura);
     }
+
 
     private int GetSkillLevel()
     {

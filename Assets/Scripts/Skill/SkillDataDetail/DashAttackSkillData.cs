@@ -5,7 +5,13 @@ using System.Collections;
 public class DashAttackSkillData : SkillData
 {
     public GameObject hitboxPrefab;
+    [SerializeField] private float DashRange_1 = 4f;
+    [SerializeField] private float DashRange_2 = 7f;
+    [SerializeField] private float DashRange_3 = 10f;
 
+    [SerializeField] private float DashSpeed_1 = 40f;
+    [SerializeField] private float DashSpeed_2 = 60f;
+    [SerializeField] private float DashSpeed_3 = 80f;
     public override void Execute(GameObject caster)
     {
         PlayerController player = caster.GetComponent<PlayerController>();
@@ -15,7 +21,6 @@ public class DashAttackSkillData : SkillData
 
         float damage = GetDamage(level, player);
         float range = GetRange(level);
-        
 
         Vector3 mousePos = GetMouseWorldPosition();
         Vector2 dir = ((Vector2)mousePos - (Vector2)player.transform.position).normalized;
@@ -23,8 +28,8 @@ public class DashAttackSkillData : SkillData
         player.StartCoroutine(DashRoutine(player, dir, range, damage));
     }
 
-    
-    private IEnumerator DashRoutine(PlayerController player, Vector2 dir, float range, float damage)
+
+    /*private IEnumerator DashRoutine(PlayerController player, Vector2 dir, float range, float damage)
     {
         Vector3 startPos = player.transform.position;
 
@@ -39,7 +44,36 @@ public class DashAttackSkillData : SkillData
         }
 
         float moved = 0f;
-        float speed = 50f;
+        float speed = 80f;
+        while (moved < range)
+        {
+            float step = speed * Time.deltaTime;
+
+            if (moved + step > range)
+                step = range - moved;
+
+            player.transform.position += (Vector3)(dir * step);
+
+            moved += step;
+            yield return null;
+        }
+    }*/
+    private IEnumerator DashRoutine(PlayerController player, Vector2 dir, float range, float damage)
+    {
+        Vector3 startPos = player.transform.position;
+
+        Vector3 endPos = startPos + (Vector3)(dir * range);
+
+        GameObject obj = Instantiate(hitboxPrefab, endPos, Quaternion.identity);
+
+        DashHitbox hitbox = obj.GetComponent<DashHitbox>();
+        if (hitbox != null)
+        {
+            hitbox.Init(damage, range, dir);
+        }
+
+        float moved = 0f;
+        float speed = 80f;
 
         while (moved < range)
         {
@@ -70,9 +104,9 @@ public class DashAttackSkillData : SkillData
     {
         return level switch
         {
-            1 => 3f,
-            2 => 3.5f,
-            3 => 4f,
+            1 => DashRange_1,
+            2 => DashRange_2,
+            3 => DashRange_3,
             _ => 3f
         };
     }
@@ -87,7 +121,6 @@ public class DashAttackSkillData : SkillData
             _ => 4f
         };
     }
-
     public float GetDamage(int level, PlayerController player)
     {
         float baseDamage = level switch

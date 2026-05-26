@@ -14,18 +14,6 @@ public class DashHitbox : MonoBehaviour
         StartCoroutine(LifeTime());
     }
 
-
-    /*private void ApplyScale(float range, Vector2 dir)
-    {
-        float width = 0.6f;
-        float length = range;
-
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        // 핵심: X = 길이 / Y = 두께로 변경
-        transform.localScale = new Vector3(length, width, 1f);
-    }*/
     private void ApplyScale(float range, Vector2 dir)
     {
 
@@ -38,6 +26,8 @@ public class DashHitbox : MonoBehaviour
         float sideWidth = 1.5f; // ← 여기 조절 (기본 0.6 → 1.5)
 
         transform.localScale = new Vector3(length, sideWidth, 1f);
+
+        transform.position -= (Vector3)(dir * (length * 0.5f));//*
     }
 
     private IEnumerator LifeTime()

@@ -4,7 +4,7 @@ using UnityEngine;
 public class FallAttackSkillData : SkillData
 {
     public GameObject warningPrefab;
-
+    public GameObject attackPrefab;
     public override void Execute(GameObject caster)
     {
         int level = GetSkillLevel();
@@ -17,6 +17,8 @@ public class FallAttackSkillData : SkillData
 
         if (instance != null)
         {
+            instance.SetAttackPrefab(attackPrefab);
+
             instance.Init(
                 GetFinalDamage(PlayerController.Instance, level),
                 GetRange(level),

@@ -4,6 +4,7 @@ using System.Collections;
 [CreateAssetMenu(fileName = "TeleportSkill", menuName = "Game/Skill/Teleport")]
 public class TeleportSkillData : SkillData
 {
+    public GameObject tpPrefab;
     public override void Execute(GameObject caster)
     {
         PlayerController player = caster.GetComponent<PlayerController>();
@@ -27,6 +28,12 @@ public class TeleportSkillData : SkillData
         Vector3 endPos = startPos + (Vector3)(dir * range);
 
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+
+        if (tpPrefab != null)
+        {
+            GameObject startFx = Instantiate(tpPrefab, startPos, Quaternion.identity);
+            startFx.transform.SetParent(player.transform);
+        }
 
         if (rb == null)
         {
