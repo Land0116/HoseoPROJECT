@@ -303,7 +303,20 @@ public class PlayerUIManager : MonoBehaviour
         hpText.text = playerController.DisplayHp + " / " + playerController.DisplayMaxHp;
 
         // HP 바는 실제 float 체력 기준으로 표시
-        hpBar.value = Mathf.Lerp(hpBar.value, playerController.HpRatio, Time.unscaledDeltaTime * 10f);
+        float targetHpRatio = playerController.HpRatio;
+
+        if (Mathf.Abs(hpBar.value - targetHpRatio) < 0.001f)
+        {
+            hpBar.value = targetHpRatio;
+        }
+        else
+        {
+            hpBar.value = Mathf.Lerp(
+                hpBar.value,
+                targetHpRatio,
+                Time.unscaledDeltaTime * 10f
+            );
+        }
 
         // 죽은 상태면 Gold 업데이트는 안 해도 됨
         if (playerController.IsDie) return;
@@ -345,13 +358,11 @@ public class PlayerUIManager : MonoBehaviour
     private void OpenEscPanelNormal()
     {
         escReturnTarget = EscReturnTarget.None;
-
-
-
+        
         Time.timeScale = 0f;
 
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+
     }
     
     /// <summary>
@@ -360,13 +371,11 @@ public class PlayerUIManager : MonoBehaviour
     public void OpenEscPanelFromAugmentation()
     {
         escReturnTarget = EscReturnTarget.Augmentation;
-
-
-
+        
         Time.timeScale = 0f;
 
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+
     }
     
     /// <summary>
@@ -375,13 +384,11 @@ public class PlayerUIManager : MonoBehaviour
     public void OpenEscPanelFromShop()
     {
         escReturnTarget = EscReturnTarget.Shop;
-
-
-
+        
         Time.timeScale = 0f;
 
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+
     }
 
     /// <summary>
@@ -397,50 +404,50 @@ public class PlayerUIManager : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(false);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+
     }
 
-    /// <summary>
-    /// ESC 패널 닫고 증강창으로 복귀
-    /// </summary>
-    private void CloseEscAndReturnToAugmentation()
-    {
-        if (escPanel != null)
-            escPanel.SetActive(false);
-
-
-
-        if (AugUIManager.instance != null)
-        {
-            AugUIManager.instance.RestoreCurrentAugmentationUI();
-        }
-
-        // 증강창은 멈춘 상태 유지
-        Time.timeScale = 0f;
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
-    }
-    
-    private void CloseEscAndReturnToShop()
-    {
-        if (escPanel != null)
-            escPanel.SetActive(false);
-
-
-
-        if (UIManager.Instance != null && UIManager.Instance.ShopUIManager != null)
-        {
-            UIManager.Instance.ShopUIManager.RestoreCurrentShopUI();
-        }
-
-        // 상점창도 멈춘 상태 유지
-        Time.timeScale = 0f;
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
-    }
+    // /// <summary>
+    // /// ESC 패널 닫고 증강창으로 복귀
+    // /// </summary>
+    // private void CloseEscAndReturnToAugmentation()
+    // {
+    //     if (escPanel != null)
+    //         escPanel.SetActive(false);
+    //
+    //
+    //
+    //     if (AugUIManager.instance != null)
+    //     {
+    //         AugUIManager.instance.RestoreCurrentAugmentationUI();
+    //     }
+    //
+    //     // 증강창은 멈춘 상태 유지
+    //     Time.timeScale = 0f;
+    //
+    //     if (PlayerController.Instance != null)
+    //         PlayerController.Instance.SetPause(true);
+    // }
+    //
+    // private void CloseEscAndReturnToShop()
+    // {
+    //     if (escPanel != null)
+    //         escPanel.SetActive(false);
+    //
+    //
+    //
+    //     if (UIManager.Instance != null && UIManager.Instance.ShopUIManager != null)
+    //     {
+    //         UIManager.Instance.ShopUIManager.RestoreCurrentShopUI();
+    //     }
+    //
+    //     // 상점창도 멈춘 상태 유지
+    //     Time.timeScale = 0f;
+    //
+    //     if (PlayerController.Instance != null)
+    //         PlayerController.Instance.SetPause(true);
+    // }
 
 
     private void UpdateDashCooldownUI()
@@ -608,8 +615,7 @@ public class PlayerUIManager : MonoBehaviour
         playerDyingPanel.SetActive(true);
         Time.timeScale = 0f;
 
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.DeathPanel, true);
     }
     
     /// <summary>
@@ -817,17 +823,16 @@ public class PlayerUIManager : MonoBehaviour
         Time.timeScale = 0f;
 
         gameClearPanel.SetActive(true);
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.GameClearPanel, true);
     }
-    
     
     public void ResetUIForNewRun()
     {
         ResetPanels();
         ResetMonsterCountUI();
         ResetDashUI();
-        
+
         lastDisplayedAct = -1;
         RefreshStageUI(true);
 
@@ -835,12 +840,13 @@ public class PlayerUIManager : MonoBehaviour
 
         if (PlayerController.Instance != null)
         {
-            PlayerController.Instance.SetPause(false);
+            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.DeathPanel, false);
+            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.GameClearPanel, false);
         }
 
         ShowPlayerHUD();
     }
-    
 
     /// <summary>
     /// 버튼 바인딩 공통 함수
@@ -877,33 +883,33 @@ public class PlayerUIManager : MonoBehaviour
         isProcessingEscape = false;
     }
 
-    private IEnumerator SwitchToEscFromOption()
-    {
-        isProcessingEscape = true;
-
-        // 1. OptionPanel 확실히 끄기
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
-
-        // 2. 버튼 확실히 끄기
-        if (escToOptionCloseBtn != null)
-            escToOptionCloseBtn.gameObject.SetActive(false);
-
-
-
-        yield return null; // UI 반영 프레임
-
-
-
-        // 5. 게임 상태 유지
-        Time.timeScale = 0f;
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
-
-        // 6. lock 해제
-        StartCoroutine(ResetEscapeLock());
-    }
+    // private IEnumerator SwitchToEscFromOption()
+    // {
+    //     isProcessingEscape = true;
+    //
+    //     // 1. OptionPanel 확실히 끄기
+    //     if (optionPanel != null)
+    //         optionPanel.SetActive(false);
+    //
+    //     // 2. 버튼 확실히 끄기
+    //     if (escToOptionCloseBtn != null)
+    //         escToOptionCloseBtn.gameObject.SetActive(false);
+    //
+    //
+    //
+    //     yield return null; // UI 반영 프레임
+    //
+    //
+    //
+    //     // 5. 게임 상태 유지
+    //     Time.timeScale = 0f;
+    //
+    //     if (PlayerController.Instance != null)
+    //         PlayerController.Instance.SetPause(true);
+    //
+    //     // 6. lock 해제
+    //     StartCoroutine(ResetEscapeLock());
+    // }
 
 
     private void ChangeState(UIState newState)
@@ -930,7 +936,8 @@ public class PlayerUIManager : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        PlayerController.Instance?.SetPause(false);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+
     }
     public void EnterEsc()
     {
@@ -940,7 +947,8 @@ public class PlayerUIManager : MonoBehaviour
         currentState = UIState.EscMenu;
 
         Time.timeScale = 0f;
-        PlayerController.Instance?.SetPause(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+
 
         
     }
@@ -968,32 +976,32 @@ public class PlayerUIManager : MonoBehaviour
     }
 
 
-    private void DoubleEscapeFromOption()
-    {
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
-
-        escPanel.SetActive(true);
-        currentState = UIState.EscMenu;
-
-        Time.timeScale = 0f;
-        PlayerController.Instance?.SetPause(true);
-    }
-    private IEnumerator DoubleEscapeFix()
-    {
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
-
-        yield return null; // 🔥 1프레임 기다림 (이게 핵심)
-
-        escPanel.SetActive(true);
-        currentState = UIState.EscMenu;
-
-        Time.timeScale = 0f;
-        PlayerController.Instance?.SetPause(true);
-
-        isProcessingEscape = false;
-    }
+    // private void DoubleEscapeFromOption()
+    // {
+    //     if (optionPanel != null)
+    //         optionPanel.SetActive(false);
+    //
+    //     escPanel.SetActive(true);
+    //     currentState = UIState.EscMenu;
+    //
+    //     Time.timeScale = 0f;
+    //     PlayerController.Instance?.SetPause(true);
+    // }
+    // private IEnumerator DoubleEscapeFix()
+    // {
+    //     if (optionPanel != null)
+    //         optionPanel.SetActive(false);
+    //
+    //     yield return null; // 🔥 1프레임 기다림 (이게 핵심)
+    //
+    //     escPanel.SetActive(true);
+    //     currentState = UIState.EscMenu;
+    //
+    //     Time.timeScale = 0f;
+    //     PlayerController.Instance?.SetPause(true);
+    //
+    //     isProcessingEscape = false;
+    // }
     private IEnumerator EscapeRoutine()
     {
         yield return null;
@@ -1054,21 +1062,34 @@ public class PlayerUIManager : MonoBehaviour
         {
             case UIState.Gameplay:
                 Time.timeScale = 1f;
-                PlayerController.Instance?.SetPause(false);
+                PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
                 break;
 
             case UIState.EscMenu:
                 escPanel.SetActive(true);
                 Time.timeScale = 0f;
-                PlayerController.Instance?.SetPause(true);
+                PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
                 break;
 
             case UIState.Option:
                 optionPanel.SetActive(true);
                 Time.timeScale = 0f;
-                PlayerController.Instance?.SetPause(true);
+                PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+                break;
+
+            case UIState.ExitConfirm:
+                exitSurePanel.SetActive(true);
+                Time.timeScale = 0f;
+                PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
+                break;
+
+            case UIState.ToMainConfirm:
+                toMainSurePanel.SetActive(true);
+                Time.timeScale = 0f;
+                PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
                 break;
         }
+
         Debug.Log("SetEscState 호출됨: " + target);
     }
 

@@ -186,11 +186,9 @@ public class MapTransitionManager : MonoBehaviour
 
     public void SetPlayerInputLocked(bool locked)
     {
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.SetSystemInputLocked(locked);
-        }
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.MapTransition, locked);
     }
+    
     public void BringTransitionToFront()
     {
         if (transitionPanelGroup != null)

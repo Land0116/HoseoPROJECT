@@ -142,12 +142,7 @@ public class AugUIManager : MonoBehaviour
         }
 
         Time.timeScale = 0f;
-
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.SetPause(true);
-            PlayerController.Instance.SetControl(false);
-        }
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, true);
 
         if (uiPanel == null) return;
         uiPanel.SetActive(true);
@@ -226,10 +221,8 @@ public class AugUIManager : MonoBehaviour
         SetCursorAndCrosshairForSlotHover(false);
 
         ClearOwnedAugmentUI();
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(false);
-    }
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, false);
+    }        
 
     public bool IsAugmentationVisible()
     {
@@ -248,9 +241,8 @@ public class AugUIManager : MonoBehaviour
             uiPanel.SetActive(true);
 
         Time.timeScale = 0f;
-
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.SetPause(true);
+        
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, true);
     }
 
     public void BindAugUI(GameObject systemUIRoot)
@@ -1158,11 +1150,7 @@ public class AugUIManager : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.SetPause(false);
-            PlayerController.Instance.SetControl(true);
-        }
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, false);
 
         NotifyRewardAugmentFinished();
     }

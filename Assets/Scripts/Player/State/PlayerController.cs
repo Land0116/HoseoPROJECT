@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour, IDamageable
 {
     public static PlayerController Instance;
-    
+
     public enum PlayerState
     {
         Idle, //대기
@@ -22,8 +22,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         Hit, //피격
         Death //죽음
     }
-    [Header("SFX")]
-    [SerializeField] private AudioSource sfxSource;
+
+    [Header("SFX")] [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource bulletSource;
     [SerializeField] private AudioClip deathSound;
     [SerializeField] private AudioClip dashSound;
@@ -46,15 +46,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("플레이어 상태 제어")] [SerializeField]
     private PlayerState playerState = PlayerState.Idle; // 현재 상태머신 상태
-    
+
     [SerializeField] private bool isDie = false; // 사망 여부
     [SerializeField] private bool isFireInput = false; //발사입력
     [SerializeField] private bool canControl = true; // 조작 가능 여부
 
     [Header("비주얼 / 애니메이션")] [SerializeField]
     private Animator bodyAnimator;
-    [Header("차지샷 애니메이션")]
-    [SerializeField] private bool isChargingShot = false;
+
+    [Header("차지샷 애니메이션")] [SerializeField] private bool isChargingShot = false;
 
 // 현재 마우스를 향하는 방향 벡터
     [SerializeField] private Vector2 aimDirection = Vector2.down;
@@ -70,8 +70,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private static readonly int IsChargeHash = Animator.StringToHash("IsCharge");
 
     [Header("피격")] [SerializeField] private bool isHitAnimating = false;
-    [Header("피격 무적 시간")]
-    [SerializeField] private float hitInvincibleDuration = 0.6f;
+    [Header("피격 무적 시간")] [SerializeField] private float hitInvincibleDuration = 0.6f;
     [SerializeField] private bool ignoreDamageWhileHit = true;
 
     [Header("대쉬")] [SerializeField] private Vector2 lastMoveDirection = Vector2.down; // 마지막 이동 방향 저장
@@ -94,8 +93,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [Header("스킬 배수")] //스킬 관련
     private float attackMultiplier = 1f; //공격력 증가
+
     private bool shieldActive = false; // 보호막
+
     private bool speedBuffActive = false; //속도 버프
+
     //아이템 5개까지 장착
     private List<ItemData> equippedItems = new List<ItemData>();
     private const int MAX_ITEM_COUNT = 5;
@@ -107,13 +109,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     [HideInInspector] public bool highGoldActive;
     [HideInInspector] public bool highAttackSpeedActive;
     private bool statsDirty = false;
-    public bool attackSpeed6Active; 
+    public bool attackSpeed6Active;
     public bool gold100Active; //100골드 이상 보유시
     public bool hasDisplayTicket;
 
     //몬스터 스킬 넉백
-    [Header("Knockback")]
-    [SerializeField] private float knockbackDuration = 0.2f;
+    [Header("Knockback")] [SerializeField] private float knockbackDuration = 0.2f;
     [SerializeField] private float knockbackDrag = 8f;
 
     //몬스터 스킬 스턴
@@ -155,8 +156,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("증강 - 산탄")] [SerializeField] private bool multiShotEnabled = false;
     [SerializeField] private int multiShotProjectileCount = 1;
     [SerializeField] private float multiShotSpreadAngle = 0f;
-    [Header("산탄 시각 간격")]
-    [SerializeField] private float multiShotSideSpacing = 0.25f;
+    [Header("산탄 시각 간격")] [SerializeField] private float multiShotSideSpacing = 0.25f;
 
     [Header("증강 - 차지샷")] [SerializeField] private bool chargeShotEnabled = false;
     [SerializeField] private float chargeShotTime = 0f;
@@ -170,7 +170,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [SerializeField] private float orbitStartAngleOffset = 90f;
     [SerializeField] private int maxOrbitProjectileTotal = 40;
-    
+
 
     [Header("증강 - 서브 스킬 / 궤적")] [SerializeField]
     private float trajectoryHomingStrength = 0f;
@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float shotOrbitDamageMultiplier = 1f;
     [SerializeField] private float shotOrbitLifetime = 0f;
 
-    
+
     // 현재 유지 중인 주위탄들
     private readonly List<OrbitProjectile> activeOrbitProjectiles = new List<OrbitProjectile>();
 
@@ -222,8 +222,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float passiveAttackSpeedPercent = 0f;
     [SerializeField] private int passiveMaxHpAdd = 0;
     [SerializeField] private float passiveLifeStealPercent = 0f;
-    
+
     #region 기본 공격 입력 상태
+
     // 기본 공격 1회 발사용 입력 버퍼
     [SerializeField] private bool requestSingleShot = false;
 
@@ -231,7 +232,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private bool firedThisPress = false;
 
     #endregion
-    
+
     #endregion
 
     #region 증강 - 특수형
@@ -258,8 +259,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float specialShieldInterval = 0f;
     [SerializeField] private int specialShieldMaxCount = 0;
     [SerializeField] private int currentShieldCount = 0;
-    [Header("스페셜 - 보호막 시각 효과")]
-    [SerializeField] private GameObject shieldVisualObject;
+
+    [Header("스페셜 - 보호막 시각 효과")] [SerializeField]
+    private GameObject shieldVisualObject;
 
     [SerializeField] private string obstacleLayerName = "Obstacle";
 
@@ -287,22 +289,26 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     [SerializeField] private float deathUIShowDelay; // 죽음 애니메이션 종료 후 UI 표시 지연 시간
     [SerializeField] private ShadowVisualController shadowVisual;
-    
-    
+
+
     private Coroutine burstShootCoroutine;
     private Coroutine deathUICoroutine;
     private bool isPointerOverUIThisFrame = false;
-    
+
     private float nextAttackTime = 0f;
-    private bool isSystemInputLocked;
+    [Header("PanelOPen - CharacterLock")] private bool isSystemInputLocked;
+    private readonly HashSet<string> systemInputLockKeys = new HashSet<string>();
+    private const string GlobalInputLockKey = "Global";
 
     #region 보조 함수
+
     private Vector2 GetPerpendicular(Vector2 direction)
     {
         return new Vector2(-direction.y, direction.x).normalized;
     }
+
     #endregion
-    
+
     public float Hp
     {
         get => hp;
@@ -310,6 +316,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     public float MaxHp => maxHp;
+
     /// <summary>
     /// UI 표시용 현재 체력.
     /// 실제 체력은 float지만, UI에는 int처럼 보여준다.
@@ -329,10 +336,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// </summary>
     public int DisplayMaxHp
     {
-        get
-        {
-            return Mathf.CeilToInt(MaxHp);
-        }
+        get { return Mathf.CeilToInt(MaxHp); }
     }
 
     /// <summary>
@@ -375,18 +379,22 @@ public class PlayerController : MonoBehaviour, IDamageable
             return dashDistance / dashDuration;
         }
     }
+
     public void SetAttackMultiplier(float value)
     {
         attackMultiplier = Mathf.Max(0f, value);
     }
+
     public void SetShieldState(bool value)
     {
         shieldActive = value;
     }
+
     public void SetSpeedBuffState(bool value)
     {
         speedBuffActive = value;
     }
+
     public void ApplySpeedBuffMultiplier(float multiplier)
     {
         moveSpeed = baseMoveSpeed * multiplier;
@@ -489,6 +497,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             shadowVisual = GetComponentInChildren<ShadowVisualController>(true);
         }
     }
+
     private void Awake()
     {
         AutoBind();
@@ -581,6 +590,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             dashDirection
         );
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -596,6 +606,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             item?.OnUpdate(this); //*
         }
+
         if (statsDirty) //*
         {
             statsDirty = false;
@@ -606,6 +617,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         CheckAttackStateRelease();
 
         TickSpecialRuntime();
+
+        if (isPointerOverUIThisFrame && Mouse.current != null && Mouse.current.leftButton.isPressed)
+        {
+            ClearAttackInput();
+            return;
+        }
 
         HandleAttack();
         UpdateAnimatorPlaybackSpeed();
@@ -624,8 +641,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         HandleKnockback();
         if (isKnockback)
         {
-            return;//*
-
+            return; //*
         }
 
         if (IsDie)
@@ -888,9 +904,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (isSystemInputLocked)
         {
-            CancelAttackInputForSystemLock();
+            ClearAttackInput();
             return;
         }
+
         // 주위탄은 일반 공격 대체형이다.
         // 따라서 마우스 입력으로 일반 총알이 나가면 안 된다.
         if (shotUseOrbitProjectile)
@@ -899,7 +916,15 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
-        if (!CanStartAttackNow()) return;
+        if (!CanStartAttackNow())
+        {
+            if (isPointerOverUIThisFrame)
+            {
+                ClearAttackInput();
+            }
+
+            return;
+        }
 
         if (isFireInput)
         {
@@ -1118,7 +1143,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-        PlayBulletSound();//* 0525
+        PlayBulletSound(); //* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -1180,7 +1205,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 + (Vector3)(sideDirection * sideIndex * multiShotSideSpacing);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-            PlayBulletSound();//* 0525
+            PlayBulletSound(); //* 0525
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
             if (bulletScript != null)
@@ -1254,7 +1279,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-        PlayBulletSound();//* 0525
+        PlayBulletSound(); //* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -1302,7 +1327,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             Vector3 spawnPos = gunTip.position + (Vector3)(finalDir * bulletSpawnOffset);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-            PlayBulletSound();//* 0525
+            PlayBulletSound(); //* 0525
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
             if (bulletScript != null)
@@ -1375,32 +1400,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         bulletScript.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
     }
 
-    public void SetControl(bool value)
-    {
-        EndChargeShot();
-        canControl = value;
-
-        if (!canControl)
-        {
-            isDashing = false;
-            dashEndTime = -999f;
-
-            inputDirection = Vector2.zero;
-            isFireInput = false;
-            rb.linearVelocity = Vector2.zero;
-            playerState = PlayerState.Idle;
-
-            if (bodyAnimator != null)
-            {
-                bodyAnimator.SetBool(IsMoveHash, false);
-                bodyAnimator.ResetTrigger(AttackHash);
-            }
-        }
-        else
-        {
-            SyncLocomotionState();
-        }
-    }
 
     private void OnMove(InputValue movementValue)
     {
@@ -1410,6 +1409,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             SyncLocomotionState();
             return;
         }
+
         if (!IsGameplayScene())
         {
             inputDirection = Vector2.zero;
@@ -1446,13 +1446,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (isSystemInputLocked)
         {
-            isFireInput = false;
-            requestSingleShot = false;
-            firedThisPress = false;
-            EndChargeShot();
+            ClearAttackInput();
             return;
         }
-        
+
         if (shotUseOrbitProjectile)
         {
             CancelNormalAttackBecauseOrbit();
@@ -1461,34 +1458,32 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (!IsGameplayScene())
         {
-            isFireInput = false;
-            requestSingleShot = false;
-            firedThisPress = false;
-            EndChargeShot();
+            ClearAttackInput();
             return;
         }
 
         if (IsDie)
         {
-            isFireInput = false;
-            requestSingleShot = false;
-            firedThisPress = false;
-            EndChargeShot();
+            ClearAttackInput();
             return;
         }
 
         if (!canControl)
         {
-            isFireInput = false;
-            requestSingleShot = false;
-            firedThisPress = false;
-            EndChargeShot();
+            ClearAttackInput();
+            return;
+        }
+
+        // 핵심 추가:
+        // Update에서 잡아둔 UI 상태 기준으로 입력 저장 자체를 막음.
+        if (isPointerOverUIThisFrame)
+        {
+            ClearAttackInput();
             return;
         }
 
         bool pressed = value.isPressed;
 
-        // 마우스를 처음 눌렀을 때
         if (pressed && !isFireInput)
         {
             requestSingleShot = true;
@@ -1504,12 +1499,10 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
 
-        // 마우스를 뗐을 때
         if (!pressed)
         {
             firedThisPress = false;
 
-            // 차지 완료 전에 떼면 취소
             if (FinalChargeShotTime > 0f && !IsChargeReady())
             {
                 requestSingleShot = false;
@@ -1555,7 +1548,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 bodyAnimator.speed = AttackPerSecond;
             }
-            
+
             bodyAnimator.ResetTrigger(HitHash);
             bodyAnimator.ResetTrigger(AttackHash);
             bodyAnimator.SetTrigger(AttackHash);
@@ -1587,9 +1580,37 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 이동 상태 재동기화
         SyncLocomotionState();
     }
-    
-    
+
+    private void ClearAttackInput()
+    {
+        isFireInput = false;
+        requestSingleShot = false;
+        firedThisPress = false;
+        chargeStartTime = -1f;
+
+        EndChargeShot();
+
+        if (burstShootCoroutine != null)
+        {
+            StopCoroutine(burstShootCoroutine);
+            burstShootCoroutine = null;
+        }
+
+        isAttackSequenceRunning = false;
+
+        if (playerState == PlayerState.Attack)
+        {
+            playerState = inputDirection.sqrMagnitude > 0.01f
+                ? PlayerState.Walk
+                : PlayerState.Idle;
+
+            SyncLocomotionState();
+        }
+    }
+
+
     #region 차지 처리
+
     private void SetChargeAnimation(bool value)
     {
         if (bodyAnimator == null)
@@ -1606,7 +1627,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             playerState = PlayerState.Attack;
         }
     }
-    
+
     private void BeginChargeShot()
     {
         if (FinalChargeShotTime <= 0f)
@@ -1626,13 +1647,13 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         SetChargeAnimation(true);
     }
-    
+
     private void EndChargeShot()
     {
         chargeStartTime = -1f;
         SetChargeAnimation(false);
     }
-    
+
     private bool IsChargeReady()
     {
         if (FinalChargeShotTime <= 0f)
@@ -1643,11 +1664,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         return Time.time >= chargeStartTime + FinalChargeShotTime;
     }
+
     #endregion
 
 
     #region 피격 처리
-    
+
     public void OnDamage(float damage)
     {
         if (IsDie) return;
@@ -1740,7 +1762,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         UpdateAnimatorLocomotion();
     }
-    
+
     #region 최종 데미지 계산
 
     public float GetFinalDamage()
@@ -1772,7 +1794,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!value.isPressed) return;
         if (!IsGameplayScene()) return;
         if (IsDie) return;
-        if (isStunned) return;//* 몬스터 스턴 패턴 추가
+        if (isStunned) return; //* 몬스터 스턴 패턴 추가
         if (!canControl) return;
         if (Time.timeScale <= 0f) return;
         if (isDashing) return;
@@ -1895,7 +1917,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// 주위탄 4개 + 3연발 4발 + 산탄 6발 = 4 * 4 * 6 = 96개지만 maxOrbitProjectileTotal로 제한
     /// </summary>
 
-
     //무기 및 아이템
     public void ApplyItem(ItemData item)
     {
@@ -1929,7 +1950,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         //
         RebuildPlayerStats();
 
-        
+
         if (CurItemUI.Instance != null)
         {
             CurItemUI.Instance.SetItems(equippedItems);
@@ -1955,6 +1976,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Hp = Mathf.Min(Hp, MaxHp);
     }
+
     public bool EquipItem(ItemData itemData)
     {
         if (equippedItems.Count >= 5)
@@ -1969,11 +1991,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         RebuildPlayerStats();
         return true;
     }
+
     private void RecalculateItemStats()
     {
         if (SkillManager.Instance != null)
         {
-            SkillManager.Instance.ResetCooldownReduction();//*0510
+            SkillManager.Instance.ResetCooldownReduction(); //*0510
         }
 
         // 초기화 (아이템 영향 제거)
@@ -2027,11 +2050,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         ApplyWeapon(newWeapon);
     }
+
     public List<ItemData> GetEquippedItems()
     {
         return equippedItems;
     }
-    
+
     private void RefreshOrbitProjectiles()
     {
         ClearOrbitProjectiles();
@@ -2088,8 +2112,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
                 orbit.SetExplosion(FinalExplosionRadius, FinalExplosionDamageMultiplier);
                 orbit.SetDot(FinalDotDamagePerSecond, FinalDotDuration);
-                
-                
+
+
                 activeOrbitProjectiles.Add(orbit);
             }
         }
@@ -2212,7 +2236,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (specialHealOnKill <= 0f) return;
 
         Heal(specialHealOnKill, true);
-        
     }
 
     public void Heal(float value, bool triggerAutoAttack = true)
@@ -2270,7 +2293,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-        PlayBulletSound();//* 0525
+        PlayBulletSound(); //* 0525
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -2313,17 +2336,18 @@ public class PlayerController : MonoBehaviour, IDamageable
     //UI-Esc일시정지
     private void OnPause(InputValue value)
     {
-
         if (!value.isPressed)
         {
             Debug.Log("PlayerEsc [IGNORED: not pressed]");
             return;
         }
+
         if (!IsGameplayScene())
         {
             Debug.Log("PlayerEsc [IGNORED: not gameplay]");
             return;
         }
+
         if (IsDie)
         {
             Debug.Log("PlayerEsc [IGNORED: dead]");
@@ -2333,14 +2357,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         PlayerUIManager.Instance?.HandleEscape();
     }
 
-    public void SetPause(bool isPaused)
-    {
-        Cursor.visible = isPaused;
-
-        if (crosshairTransform != null)
-            crosshairTransform.gameObject.SetActive(!isPaused);
-    }
-
+    
     //증강변수 초기화
 
     #region 증강 재빌드
@@ -2370,9 +2387,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             ApplyWeapon(currentWeapon);
         }
+
         // 아이템 전체 재적용
         RecalculateItemStats();
-        
+
 
         // 3. 증강 런타임 초기화
         ResetAugmentRuntimeValues();
@@ -2418,9 +2436,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             currentShieldCount = 0;
             nextShieldChargeTime = -1f;
         }
-        
+
         RefreshShieldVisual();
-        
+
         float maxHpIncrease = maxHp - beforeMaxHp;
 
         if (maxHpIncrease > 0)
@@ -2437,9 +2455,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             CancelNormalAttackBecauseOrbit();
         }
-        
 
-        maxHp = Mathf.Max(1, maxHp);//*
+
+        maxHp = Mathf.Max(1, maxHp); //*
 
         // HP는 유지, 단 최대값 초과만 방지
         Hp = Mathf.Min(beforeHp, maxHp);
@@ -2508,7 +2526,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         passiveAttackSpeedPercent = 0f;
         passiveMaxHpAdd = 0;
         passiveLifeStealPercent = 0f;
-        
+
         // 특수형 초기값
         specialMoveSpeedMultiplier = 1f;
         specialMoveSpeedAdd = 0f;
@@ -2899,7 +2917,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Physics2D.IgnoreLayerCollision(gameObject.layer, obstacleLayer, ignore);
     }
-    
+
     /// <summary>
     /// 보호막 보유 여부에 따라 보호막 시각 효과를 켜고 끈다.
     /// 
@@ -3114,18 +3132,18 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void OnUseQ()
     {
         if (isSystemInputLocked) return;
-        
+
         SkillManager.Instance.UseQ();
     }
 
     public void OnUseE()
     {
         if (isSystemInputLocked) return;
-        
+
         SkillManager.Instance.UseE();
     }
-    
-    public float GetGoldMultiplierFromItems()//* 0509
+
+    public float GetGoldMultiplierFromItems() //* 0509
     {
         float multiplier = 1f;
 
@@ -3136,10 +3154,12 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         return multiplier;
     }
+
     public void MarkStatsDirty()
     {
         statsDirty = true;
     }
+
     public float GetShopDiscount()
     {
         float total = 0f;
@@ -3151,6 +3171,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         return total;
     }
+
     public float GetShopDiscountFromItems()
     {
         float total = 0f;
@@ -3163,6 +3184,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         return total;
     }
+
     public float GetSpecialChanceAdd() //* 진열대 티켓
     {
         float add = 0f;
@@ -3189,9 +3211,10 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         rb.linearVelocity = Vector2.zero;
 
-        rb.linearDamping = knockbackDrag; 
+        rb.linearDamping = knockbackDrag;
         rb.AddForce(force, ForceMode2D.Impulse);
     }
+
     private void HandleKnockback()
     {
         if (!isKnockback) return;
@@ -3199,7 +3222,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (Time.time >= knockbackEndTime)
         {
             isKnockback = false;
-            rb.linearDamping = 0f; 
+            rb.linearDamping = 0f;
             rb.linearVelocity *= 0.3f;
         }
     }
@@ -3219,6 +3242,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         isStunned = true;
         stunEndTime = Time.time + duration;
     }
+
     public void TeleportToMapSpawnPosition(Vector3 spawnPosition)
     {
         transform.position = spawnPosition;
@@ -3260,6 +3284,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         Debug.Log($"[Player Teleport] Player={name}, Position={transform.position}");
     }
+
     private void PlayBulletSound()
     {
         if (sfxSource == null || bulletSound == null)
@@ -3275,78 +3300,119 @@ public class PlayerController : MonoBehaviour, IDamageable
             yield return new WaitForSeconds(deathSound.length);
         }
     }
-
+    
     #region 입력 잠금
 
     public void SetSystemInputLocked(bool locked)
     {
+        SetSystemInputLockedByKey(GlobalInputLockKey, locked);
+    }
+
+    public void SetSystemInputLockedByKey(string key, bool locked)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            key = GlobalInputLockKey;
+
+        if (locked)
+        {
+            systemInputLockKeys.Add(key);
+        }
+        else
+        {
+            systemInputLockKeys.Remove(key);
+        }
+
+        bool shouldLock = systemInputLockKeys.Count > 0;
+        ApplySystemInputLockState(shouldLock);
+    }
+
+    private void ApplySystemInputLockState(bool locked)
+    {
+        if (isSystemInputLocked == locked)
+            return;
+
         isSystemInputLocked = locked;
 
         if (locked)
         {
-            CancelAttackInputForSystemLock();
-
-            canControl = false;
-
-            inputDirection = Vector2.zero;
-
-            isDashing = false;
-            dashEndTime = -999f;
-
-            if (rb != null)
-            {
-                rb.linearVelocity = Vector2.zero;
-            }
-
-            if (!IsDie)
-            {
-                playerState = PlayerState.Idle;
-            }
-
-            if (bodyAnimator != null)
-            {
-                bodyAnimator.speed = 1f;
-                bodyAnimator.SetBool(IsMoveHash, false);
-                bodyAnimator.ResetTrigger(AttackHash);
-            }
-
+            ApplyInputLockedState();
             return;
         }
 
-        canControl = true;
-
-        SyncLocomotionState();
+        ApplyInputUnlockedState();
     }
 
-    private void CancelAttackInputForSystemLock()
+    private void ApplyInputLockedState()
     {
-        EndChargeShot();
+        ClearAttackInput();
 
-        isFireInput = false;
-        requestSingleShot = false;
-        firedThisPress = false;
-        chargeStartTime = -1f;
+        canControl = false;
+        inputDirection = Vector2.zero;
 
-        if (burstShootCoroutine != null)
+        isDashing = false;
+        dashEndTime = -999f;
+
+        if (rb != null)
         {
-            StopCoroutine(burstShootCoroutine);
-            burstShootCoroutine = null;
+            rb.linearVelocity = Vector2.zero;
         }
 
-        isAttackSequenceRunning = false;
+        if (!IsDie)
+        {
+            playerState = PlayerState.Idle;
+        }
 
         if (bodyAnimator != null)
         {
             bodyAnimator.speed = 1f;
-            bodyAnimator.ResetTrigger(AttackHash);
             bodyAnimator.SetBool(IsMoveHash, false);
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.ResetTrigger(HitHash);
         }
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        if (crosshairTransform != null)
+        {
+            crosshairTransform.gameObject.SetActive(false);
+        }
+
+        SyncLocomotionState();
+    }
+
+    private void ApplyInputUnlockedState()
+    {
+        canControl = true;
+
+        if (!IsDie && IsGameplayScene())
+        {
+            if (hideSystemCursor)
+            {
+                Cursor.visible = false;
+            }
+
+            Cursor.lockState = CursorLockMode.None;
+
+            if (crosshairTransform != null)
+            {
+                crosshairTransform.gameObject.SetActive(true);
+            }
+        }
+
+        SyncLocomotionState();
     }
 
     public bool IsSystemInputLocked()
     {
         return isSystemInputLocked;
     }
-    
+
+    public void ClearAllSystemInputLocks()
+    {
+        systemInputLockKeys.Clear();
+        ApplySystemInputLockState(false);
+    }
+
     #endregion
 }

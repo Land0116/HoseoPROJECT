@@ -220,7 +220,8 @@ public class VideoCutsceneManager : MonoBehaviour
     {
         if (data.lockPlayerInput)
         {
-            //PlayerController.Instance?.SetSystemInputLockedByKey(CutsceneInputLockKey, true);
+            PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, true);
+
         }
 
         ShowCutscenePanel();
@@ -358,7 +359,7 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (data != null && data.lockPlayerInput)
         {
-            //PlayerController.Instance?.SetSystemInputLockedByKey(CutsceneInputLockKey, false);
+            PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene ,false);
         }
 
         request.onFinished?.Invoke();
@@ -462,7 +463,7 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (data.lockPlayerInput)
         {
-            //PlayerController.Instance?.SetSystemInputLockedByKey("VideoCutscene", true);
+            PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, true);
         }
 
         ShowCutscenePanel();
@@ -585,6 +586,6 @@ public class VideoCutsceneManager : MonoBehaviour
 
         HideCutscenePanel();
 
-        //PlayerController.Instance?.SetSystemInputLockedByKey("VideoCutscene", false);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, false);
     }
 }

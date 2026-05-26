@@ -144,12 +144,11 @@ public class SkillSelectUIManager : MonoBehaviour
             Debug.LogWarning("[SkillSelectUIManager] panel == null. SkillSelectPanel 바인딩 실패.");
             return;
         }
-
+        
         panel.SetActive(true);
         Time.timeScale = 0f;
 
-       // if (closeSkillButton != null)
-         //   closeSkillButton.gameObject.SetActive(true);
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.SkillPanel, true);
          if (closeSkillButton != null)
          {
              // 보상으로 열린 스킬 선택은 취소하면 문이 안 열리는 문제가 생긴다.
@@ -278,6 +277,8 @@ public class SkillSelectUIManager : MonoBehaviour
     private void ClosePanel()
     {
         Time.timeScale = 1f;
+
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.SkillPanel, false);
 
         if (panel != null)
         {
