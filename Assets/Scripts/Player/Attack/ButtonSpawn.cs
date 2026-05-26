@@ -51,6 +51,15 @@ public class ButtonSpawn : MonoBehaviour
 
     [Header("도트")] [SerializeField] private float dotDamagePerSecond = 0f;
     [SerializeField] private float dotDuration = 0f;
+    [Header("애니메이션")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string attackTriggerName = "Attack";
+
+    [Header("터짐 처리")]
+    [SerializeField] private bool destroyWithExplosionAnimation = true;
+    [SerializeField] private float explosionDestroyFallbackTime = 0.35f;
+
+    private bool isExploding = false;
 
     private Rigidbody2D rb;
     private Vector2 moveDirection;
@@ -91,6 +100,7 @@ public class ButtonSpawn : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         myColliders = GetComponentsInChildren<Collider2D>(true);
+        animator = GetComponentInChildren<Animator>(true);
     }
 
     private void Start()
@@ -636,19 +646,53 @@ public class ButtonSpawn : MonoBehaviour
         return col.GetComponentInParent<IDamageable>();
     }
 
-    /*private void DestroyProjectile()
-    {
-        if (isDestroyed) return;
-        isDestroyed = true;
-        Destroy(gameObject);
-    }*/
+    
     private void DestroyProjectile()
     {
         if (isDestroyed) return;
-        isDestroyed = true;
 
+        isDestroyed = true;
+        isExploding = true;
+
+        // 이동 정지
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = false;
+        }
+
+        // 콜라이더 끄기
+        DisableProjectileColliders();
+
+        // 사운드
         PlayIndependent(bulletDestroySound);
 
+        // 터짐 애니메이션이 없거나 사용 안 하면 바로 삭제
+        if (!destroyWithExplosionAnimation || animator == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        animator.SetTrigger(attackTriggerName);
+
+        // 애니메이션 이벤트가 누락됐을 때를 대비한 보험
+        Destroy(gameObject, explosionDestroyFallbackTime);
+    }
+    private void DisableProjectileColliders()
+    {
+        if (myColliders == null || myColliders.Length == 0)
+            myColliders = GetComponentsInChildren<Collider2D>(true);
+
+        for (int i = 0; i < myColliders.Length; i++)
+        {
+            if (myColliders[i] == null) continue;
+            myColliders[i].enabled = false;
+        }
+    }
+    public void OnExplosionAnimationEnd()
+    {
         Destroy(gameObject);
     }
 

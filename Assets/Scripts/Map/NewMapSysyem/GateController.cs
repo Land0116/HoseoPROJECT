@@ -13,29 +13,24 @@ using UnityEngine;
 /// </summary>
 public class GateController : AutoBindableBehaviour
 {
-    [Header("이 출입구의 그룹")]
-    [SerializeField] private GateGroup gateGroup;
+    [Header("이 출입구의 그룹")] [SerializeField] private GateGroup gateGroup;
 
-    [Header("이 문으로 이동할 방 종류")]
-    [SerializeField] private RoomKind nextRoomKind = RoomKind.Combat;
+    [Header("이 문으로 이동할 방 종류")] [SerializeField]
+    private RoomKind nextRoomKind = RoomKind.Combat;
 
-    [Header("전투방으로 갈 경우 다음 전투방 보상")]
-    [SerializeField] private RewardType rewardType = RewardType.None;
+    [Header("전투방으로 갈 경우 다음 전투방 보상")] [SerializeField]
+    private RewardType rewardType = RewardType.None;
 
-    [Header("문 막는 오브젝트")]
-    [SerializeField] private GameObject blockObject;
+    [Header("문 막는 오브젝트")] [SerializeField] private GameObject blockObject;
 
-    [Header("마커 생성 위치")]
-    [SerializeField] private Transform markerSpawnPoint;
+    [Header("마커 생성 위치")] [SerializeField] private Transform markerSpawnPoint;
 
-    [Header("플레이어 스폰 위치")]
-    [SerializeField] private Transform playerSpawnPoint;
+    [Header("플레이어 스폰 위치")] [SerializeField]
+    private Transform playerSpawnPoint;
 
-    [Header("공통 마커 프리팹")]
-    [SerializeField] private RouteMarkerSpriteView routeMarkerPrefab;
+    [Header("공통 마커 프리팹")] [SerializeField] private RouteMarkerSpriteView routeMarkerPrefab;
 
-    [Header("마커 아이콘")]
-    [SerializeField] private Sprite shopIcon;
+    [Header("마커 아이콘")] [SerializeField] private Sprite shopIcon;
     [SerializeField] private Sprite augmentIcon;
     [SerializeField] private Sprite skillIcon;
     [SerializeField] private Sprite itemIcon;
@@ -164,7 +159,7 @@ public class GateController : AutoBindableBehaviour
     public void SetOpen(bool open)
     {
         isOpen = open;
-        
+
         if (gateCollider != null)
         {
             gateCollider.isTrigger = true;
@@ -304,26 +299,21 @@ public class GateController : AutoBindableBehaviour
 
         if (MapFlowManager.Instance.CurrentRoomKind == RoomKind.Boss)
         {
-            MapFlowManager.Instance.CompleteBossAndGoNextAct(gateGroup);
-            return;
-        }
-        if (MapFlowManager.Instance.CurrentRoomKind == RoomKind.Clear)
-        {
             BossRoomController bossRoom = FindAnyObjectByType<BossRoomController>();
 
             if (bossRoom != null)
             {
-                bossRoom.TryEnterFinalClearGate();
+                bossRoom.TryEnterBossClearGate(gateGroup);
+            }
+            else
+            {
+                Debug.LogWarning("[GateController] BossRoomController를 찾지 못함");
             }
 
             return;
         }
 
         MapFlowManager.Instance.EnterNextRoomFromGate(gateGroup, nextRoomKind, rewardType);
-        /*Debug.Log(
-            $"[Gate 이동] GateObject={name}, GateGroup={gateGroup}, " +
-            $"NextRoom={nextRoomKind}, Reward={rewardType}"
-        );*/
     }
 
     /// <summary>

@@ -449,6 +449,10 @@ public class VideoCutsceneManager : MonoBehaviour
             yield break;
         }
 
+        // 핵심:
+        // 이전 컷씬이 남아있으면 정리하고 지금 요청된 컷씬으로 바로 교체한다.
+        ForceStopCurrentCutscene(false);
+
         string playKey = GetPlayKey(data, stageNumber);
 
         if (data.playOnce && !forceReplay && playedKeys.Contains(playKey))
@@ -470,12 +474,13 @@ public class VideoCutsceneManager : MonoBehaviour
         BringCutsceneToFront();
 
         cutsceneStartScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (BGMSoundManager.Instance != null) //* 사운드 매니저 일시 정지
+
+        if (BGMSoundManager.Instance != null)
         {
             BGMSoundManager.Instance.PauseBGM();
         }
-        // 사운드 시작
-        if (audioSource != null) //*
+
+        if (audioSource != null)
         {
             audioSource.Stop();
             audioSource.clip = data.audioClip;
@@ -485,6 +490,7 @@ public class VideoCutsceneManager : MonoBehaviour
                 audioSource.Play();
             }
         }
+
         if (videoPlayer == null || data.videoClips == null || data.videoClips.Length == 0)
         {
             Debug.LogWarning("[VideoCutsceneManager] VideoPlayer 또는 VideoClip이 없음");
@@ -587,5 +593,33 @@ public class VideoCutsceneManager : MonoBehaviour
         HideCutscenePanel();
 
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, false);
+    }
+    public void ForceStopCurrentCutscene(bool hidePanel = true)
+    {
+        if (playCoroutine != null)
+        {
+            StopCoroutine(playCoroutine);
+            playCoroutine = null;
+        }
+
+        requestQueue.Clear();
+        isPlaying = false;
+
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+            videoPlayer.clip = null;
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+        }
+
+        if (hidePanel)
+        {
+            HideCutscenePanel();
+        }
     }
 }
