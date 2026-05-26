@@ -20,9 +20,24 @@ public class FieldRewardDropMotion : MonoBehaviour
 
     [Header("착지 후 튕김")]
     [SerializeField] private float bounceHeight = 0.18f;
+
     [SerializeField] private float bounceDuration = 0.12f;
 
+    [Header("그림자 크기 변화")]
+    [SerializeField] private float minShadowScaleMultiplier = 0.75f;
+
     private Coroutine dropRoutine;
+
+    private Vector3 visualDefaultLocalPos;
+    private Vector3 shadowDefaultLocalScale;
+
+    private bool hasCachedDefault;
+
+    private void Awake()
+    {
+        AutoBind();
+        CacheDefaultTransform();
+    }
 
     private void Reset()
     {
@@ -59,8 +74,28 @@ public class FieldRewardDropMotion : MonoBehaviour
         }
     }
 
+    private void CacheDefaultTransform()
+    {
+        if (visualRoot != null)
+        {
+            visualDefaultLocalPos = visualRoot.localPosition;
+        }
+
+        if (shadowRoot != null)
+        {
+            shadowDefaultLocalScale = shadowRoot.localScale;
+        }
+
+        hasCachedDefault = true;
+    }
+
     public void Play()
     {
+        if (!hasCachedDefault)
+        {
+            CacheDefaultTransform();
+        }
+
         if (dropRoutine != null)
         {
             StopCoroutine(dropRoutine);
@@ -76,13 +111,13 @@ public class FieldRewardDropMotion : MonoBehaviour
             yield break;
         }
 
-        Vector3 startLocalPos = new Vector3(
+        Vector3 startLocalPos = visualDefaultLocalPos + new Vector3(
             Random.Range(-horizontalDistance, horizontalDistance),
             0f,
             0f
         );
 
-        Vector3 endLocalPos = Vector3.zero;
+        Vector3 endLocalPos = visualDefaultLocalPos;
 
         float time = 0f;
 
@@ -94,16 +129,12 @@ public class FieldRewardDropMotion : MonoBehaviour
 
             float x = Mathf.Lerp(startLocalPos.x, endLocalPos.x, t);
 
-            // 포물선 높이
-            float y = Mathf.Sin(t * Mathf.PI) * jumpHeight;
+            float height01 = Mathf.Sin(t * Mathf.PI);
+            float y = endLocalPos.y + height01 * jumpHeight;
 
-            visualRoot.localPosition = new Vector3(x, y, 0f);
+            visualRoot.localPosition = new Vector3(x, y, endLocalPos.z);
 
-            if (shadowRoot != null)
-            {
-                float shadowScale = Mathf.Lerp(1f, 1f, t);
-                shadowRoot.localScale = new Vector3(shadowScale, shadowScale, 1f);
-            }
+            UpdateShadow(height01);
 
             yield return null;
         }
@@ -115,20 +146,44 @@ public class FieldRewardDropMotion : MonoBehaviour
             time += Time.deltaTime;
 
             float t = Mathf.Clamp01(time / bounceDuration);
-            float y = Mathf.Sin(t * Mathf.PI) * bounceHeight;
 
-            visualRoot.localPosition = new Vector3(0f, y, 0f);
+            float height01 = Mathf.Sin(t * Mathf.PI);
+            float y = visualDefaultLocalPos.y + height01 * bounceHeight;
+
+            visualRoot.localPosition = new Vector3(
+                visualDefaultLocalPos.x,
+                y,
+                visualDefaultLocalPos.z
+            );
+
+            UpdateShadow(height01);
 
             yield return null;
         }
 
-        visualRoot.localPosition = Vector3.zero;
+        visualRoot.localPosition = visualDefaultLocalPos;
 
         if (shadowRoot != null)
         {
-            shadowRoot.localScale = Vector3.one;
+            shadowRoot.localScale = shadowDefaultLocalScale;
         }
 
         dropRoutine = null;
+    }
+
+    private void UpdateShadow(float height01)
+    {
+        if (shadowRoot == null)
+        {
+            return;
+        }
+
+        float scaleMultiplier = Mathf.Lerp(1f, minShadowScaleMultiplier, height01);
+
+        shadowRoot.localScale = new Vector3(
+            shadowDefaultLocalScale.x * scaleMultiplier,
+            shadowDefaultLocalScale.y * scaleMultiplier,
+            shadowDefaultLocalScale.z
+        );
     }
 }
