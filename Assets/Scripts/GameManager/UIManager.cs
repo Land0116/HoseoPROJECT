@@ -547,11 +547,22 @@ public class UIManager : MonoBehaviour
         {
             BGMSoundManager.Instance.ResetBGMState();
         }
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.ResetPlayerForRestart();
+        }
+
+        if (PlayerUIManager.Instance != null)
+        {
+            PlayerUIManager.Instance.ResetUIForNewRun();
+        }
         if (MapFlowManager.Instance != null)
         {
             MapFlowManager.Instance.StartNewRun();
             return;
         }
+        
+
 
         Debug.LogError("[UIManager] MapFlowManager가 없음. 재시작 불가.");
     }

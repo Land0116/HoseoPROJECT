@@ -840,9 +840,7 @@ public class PlayerUIManager : MonoBehaviour
 
         if (PlayerController.Instance != null)
         {
-            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
-            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.DeathPanel, false);
-            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.GameClearPanel, false);
+            PlayerController.Instance.ClearAllSystemInputLocks();
         }
 
         ShowPlayerHUD();

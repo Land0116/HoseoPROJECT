@@ -1,54 +1,58 @@
-using System;
 using UnityEngine;
 
 public class CrossHairController : MonoBehaviour
 {
     [SerializeField] private GameObject[] crossHair;
-    
+
+    [Header("몬스터 감지")]
+    [SerializeField] private LayerMask monsterLayerMask;
+    [SerializeField] private float detectRadius = 0.15f;
+
+    private readonly Collider2D[] hitBuffer = new Collider2D[8];
+    private bool wasOnMonster;
+
     private void Awake()
     {
         crossHair = new GameObject[transform.childCount];
-        int index = 0;
 
-        // 2. foreach 문으로 자식 오브젝트들을 배열에 담기
-        // (부모 자신은 제외하고 직계 자식들만 순회합니다)
+        int index = 0;
         foreach (Transform child in transform)
         {
             crossHair[index] = child.gameObject;
             index++;
         }
-        Debug.Log("크로스헤어 동기화");
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Update()
     {
-        if (collision.gameObject.CompareTag("Monster"))
-        {
-            foreach (GameObject go in crossHair)
-            {
-                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    sr.color =  Color.red;
-                    //Debug.Log("조준점에 적이 들어옴");
-                }
-            }
-        }
+        int hitCount = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            detectRadius,
+            hitBuffer,
+            monsterLayerMask
+        );
+
+        bool isOnMonster = hitCount > 0;
+
+        if (isOnMonster == wasOnMonster)
+            return;
+
+        wasOnMonster = isOnMonster;
+        SetCrosshairColor(isOnMonster ? Color.red : Color.white);
     }
-    
-    private void OnTriggerExit2D(Collider2D collision)
+
+    private void SetCrosshairColor(Color color)
     {
-        if (collision.gameObject.CompareTag("Monster"))
+        if (crossHair == null) return;
+
+        for (int i = 0; i < crossHair.Length; i++)
         {
-            foreach (GameObject go in crossHair)
-            {
-                SpriteRenderer sr = go.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    sr.color =  Color.white;
-                    //Debug.Log("조준점에 적이 나감");
-                }
-            }
+            if (crossHair[i] == null) continue;
+
+            SpriteRenderer sr = crossHair[i].GetComponent<SpriteRenderer>();
+
+            if (sr != null)
+                sr.color = color;
         }
     }
 }

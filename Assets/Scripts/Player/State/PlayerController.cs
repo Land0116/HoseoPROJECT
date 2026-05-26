@@ -618,7 +618,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         TickSpecialRuntime();
 
-        if (isPointerOverUIThisFrame && Mouse.current != null && Mouse.current.leftButton.isPressed)
+        if (isPointerOverUIThisFrame && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
             ClearAttackInput();
             return;
@@ -1474,15 +1474,14 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
-        // 핵심 추가:
-        // Update에서 잡아둔 UI 상태 기준으로 입력 저장 자체를 막음.
-        if (isPointerOverUIThisFrame)
+        bool pressed = value.isPressed;
+
+        // UI 위에서 처음 누른 클릭만 차단
+        if (pressed && !isFireInput && isPointerOverUIThisFrame)
         {
             ClearAttackInput();
             return;
         }
-
-        bool pressed = value.isPressed;
 
         if (pressed && !isFireInput)
         {
@@ -1519,7 +1518,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (!IsGameplayScene()) return false;
         if (IsDie) return false;
         if (!canControl) return false;
-        if (isPointerOverUIThisFrame) return false;
         if (isDashing) return false;
         if (playerState == PlayerState.Hit) return false;
         if (playerState == PlayerState.Death) return false;
@@ -2935,60 +2933,96 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     //게임다시하기
     public void ResetPlayerForRestart()
+{
+    StopAllCoroutines();
+    deathUICoroutine = null;
+
+    // 핵심: DeathPanel / ESC / 컷씬 / 페이드 잠금 전부 제거
+    ClearAllSystemInputLocks();
+
+    EndChargeShot();
+    ClearAttackInput();
+
+    IsDie = false;
+    canControl = true;
+    playerState = PlayerState.Idle;
+
+    isHitAnimating = false;
+
+    isDashing = false;
+    dashEndTime = -999f;
+    lastDashTime = -999f;
+
+    isKnockback = false;
+    knockbackEndTime = -999f;
+
+    isStunned = false;
+    stunEndTime = -999f;
+
+    inputDirection = Vector2.zero;
+    isFireInput = false;
+    requestSingleShot = false;
+    firedThisPress = false;
+    isAttackSequenceRunning = false;
+    chargeStartTime = -1f;
+
+    invincibleUntilTime = -1f;
+
+    Gold = 10;
+
+    currentWeapon = basicWeapon;
+    equippedItems.Clear();
+
+    if (rb == null)
+        rb = GetComponent<Rigidbody2D>();
+
+    if (rb != null)
     {
-        StopAllCoroutines();
-        deathUICoroutine = null;
-
-        isDashing = false;
-        dashEndTime = -999f;
-        lastDashTime = -999f;
-        IsDie = false;
-        canControl = true;
-        isFireInput = false;
-        inputDirection = Vector2.zero;
-        playerState = PlayerState.Idle;
-
-        Gold = 10;
-
-        currentWeapon = basicWeapon;
-        //currentItem = null;
-        equippedItems.Clear();
-
-        RebuildPlayerStats();
-        Hp = MaxHp;
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-        }
-
-        animDirection = Vector2.down;
-        lockedAttackAimDirection = Vector2.down;
-        aimDirection = Vector2.down;
-
-        if (bodyAnimator != null)
-        {
-            bodyAnimator.speed = 1f;
-
-            bodyAnimator.Rebind();
-            bodyAnimator.Update(0f);
-
-            bodyAnimator.ResetTrigger(AttackHash);
-            bodyAnimator.ResetTrigger(HitHash);
-            bodyAnimator.SetBool(IsMoveHash, false);
-            bodyAnimator.SetBool(IsDeathHash, false);
-            bodyAnimator.SetFloat(MoveXHash, animDirection.x);
-            bodyAnimator.SetFloat(MoveYHash, animDirection.y);
-        }
-
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(true);
-        }
-
-        Cursor.visible = !hideSystemCursor;
-        ClearOrbitProjectiles();
+        rb.simulated = true;
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
     }
+
+    if (playerCollider2D == null)
+        playerCollider2D = GetComponent<Collider2D>();
+
+    if (playerCollider2D != null)
+        playerCollider2D.enabled = true;
+
+    RebuildPlayerStats();
+    Hp = MaxHp;
+    
+    animDirection = Vector2.down;
+    lockedAttackAimDirection = Vector2.down;
+    aimDirection = Vector2.down;
+
+    if (bodyAnimator != null)
+    {
+        bodyAnimator.speed = 1f;
+        bodyAnimator.Rebind();
+        bodyAnimator.Update(0f);
+
+        bodyAnimator.SetBool(IsMoveHash, false);
+        bodyAnimator.SetBool(IsDeathHash, false);
+        bodyAnimator.ResetTrigger(AttackHash);
+        bodyAnimator.ResetTrigger(HitHash);
+        bodyAnimator.SetFloat(MoveXHash, animDirection.x);
+        bodyAnimator.SetFloat(MoveYHash, animDirection.y);
+    }
+
+    if (crosshairTransform != null)
+    {
+        crosshairTransform.gameObject.SetActive(true);
+    }
+
+    Cursor.visible = !hideSystemCursor;
+    Cursor.lockState = CursorLockMode.None;
+
+    ClearOrbitProjectiles();
+    RefreshOrbitProjectiles();
+
+    SyncLocomotionState();
+}
 
     private void OnEnable()
     {
