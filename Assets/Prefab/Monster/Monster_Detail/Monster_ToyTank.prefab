@@ -239,6 +239,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  useHitStop: 0
+  hitStopDuration: 1
+  useHitKnockback: 0
+  knockbackDuration: 1
+  knockbackSpeed: 5
   animator: {fileID: 8737345790187462919}
   deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
   deathSoundDelay: 0

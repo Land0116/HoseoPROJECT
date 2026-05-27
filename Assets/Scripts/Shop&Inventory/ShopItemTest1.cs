@@ -242,25 +242,6 @@ public class ShopItemTest1 : MonoBehaviour, IInteractable, IShopInteractable, IP
 
         if (isPotion)
         {
-            string name = "";
-            string desc = "";
-
-            if (potionHealPercent == 0.25f)
-            {
-                name = "하급 체력 회복 포션";
-                desc = "현재 체력을 25% 회복한다.";
-            }
-            else if (potionHealPercent == 0.5f)
-            {
-                name = "중급 체력 회복 포션";
-                desc = "현재 체력을 50% 회복한다.";
-            }
-            else if (potionHealPercent == 0.75f)
-            {
-                name = "상급 체력 회복 포션";
-                desc = "현재 체력을 75% 회복한다.";
-            }
-
             /*ItemUIManager.Instance.ShowShopInteract( //* 수정 필요
                 this,
                 $"[{name}]\n{desc}"

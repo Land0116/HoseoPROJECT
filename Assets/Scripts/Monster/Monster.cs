@@ -6,6 +6,17 @@ public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
 
+    [Header("Hit Stop Setting")]
+    [SerializeField] private bool useHitStop = false;
+    [SerializeField] private float hitStopDuration = 1f;
+
+    private bool isHitStopped = false;
+
+    [Header("Hit Knockback Setting")]
+    [SerializeField] private bool useHitKnockback = false;
+    [SerializeField] private float knockbackDuration = 1f;
+    [SerializeField] private float knockbackSpeed = 5f;
+
     [Header("Animation")]
     [SerializeField] private Animator animator;
     [Header("Death Sound")]
@@ -176,6 +187,7 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         if (isKnockbacked) return;
+        if (isHitStopped) return; //*
         if (player == null) return;
         Vector2 currentPos = rb.position;
         Vector2 moveDir = (currentPos - lastPosition).normalized;
@@ -230,6 +242,8 @@ public class Monster : MonoBehaviour, IDamageable
         currentHP = Mathf.Max(currentHP, 0f);
 
         PlayHitAnimation();
+
+        TriggerHitKnockback(); //*
 
         if (currentHP <= 0)
         {
@@ -560,6 +574,45 @@ public class Monster : MonoBehaviour, IDamageable
         newSource.Play();
 
         Destroy(obj, clip.length + 0.1f);
+    }
+    public void TriggerHitKnockback()
+    {
+        if (!useHitKnockback) return;
+
+        StopCoroutine(nameof(HitKnockbackRoutine));
+        StartCoroutine(HitKnockbackRoutine());
+    }
+
+    private IEnumerator HitStopRoutine()
+    {
+        isHitStopped = true;
+        rb.linearVelocity = Vector2.zero;
+
+        yield return new WaitForSeconds(hitStopDuration);
+
+        isHitStopped = false;
+    }
+    private IEnumerator HitKnockbackRoutine()
+    {
+        isHitStopped = true;
+
+        float timer = 0f;
+
+        while (timer < knockbackDuration)
+        {
+            if (player != null)
+            {
+                Vector2 dir = (rb.position - (Vector2)player.position).normalized;
+
+                rb.linearVelocity = dir * knockbackSpeed;
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = Vector2.zero;
+        isHitStopped = false;
     }
 }
 
