@@ -58,6 +58,11 @@ public class ButtonSpawn : MonoBehaviour
     [Header("터짐 처리")]
     [SerializeField] private bool destroyWithExplosionAnimation = true;
     [SerializeField] private float explosionDestroyFallbackTime = 0.35f;
+    
+    [Header("폭발 범위 시각 효과")]
+    [SerializeField] private GameObject explosionRangeVisualPrefab;
+    [SerializeField] private float explosionRangeVisualLifeTime = 0.25f;
+    [SerializeField] private bool scaleExplosionVisualByRadius = true;
 
     private bool isExploding = false;
 
@@ -580,9 +585,10 @@ public class ButtonSpawn : MonoBehaviour
 
         return fallback;
     }
-
     private void ExplodeAt(Vector2 center, Collider2D excludeTarget)
     {
+        SpawnExplosionRangeVisual(center);
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(center, explosionRadius);
 
         for (int i = 0; i < hits.Length; i++)
@@ -599,9 +605,30 @@ public class ButtonSpawn : MonoBehaviour
 
             damageable.OnDamage(explosionDamage);
 
-            // 폭발 피해도 적중으로 인정해서 흡혈 처리
             NotifyOwnerHitEnemy(explosionDamage);
         }
+    }
+    private void SpawnExplosionRangeVisual(Vector2 center)
+    {
+        if (explosionRangeVisualPrefab == null)
+            return;
+
+        if (explosionRadius <= 0f)
+            return;
+
+        GameObject visual = Instantiate(
+            explosionRangeVisualPrefab,
+            center,
+            Quaternion.identity
+        );
+
+        if (scaleExplosionVisualByRadius)
+        {
+            float diameter = explosionRadius * 2f;
+            visual.transform.localScale = new Vector3(diameter, diameter, 1f);
+        }
+
+        Destroy(visual, explosionRangeVisualLifeTime);
     }
 
     private Transform FindClosestTarget()

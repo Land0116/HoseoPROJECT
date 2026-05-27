@@ -29,7 +29,7 @@ MonoBehaviour:
   subSkillLevels:
   - level: 1
     levelDescription: "\uC801\uC911 \uC2DC \uBC18\uACBD 2.5 \uBC94\uC704\uC758 \uD3ED\uBC1C\uC774
-      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1.2\uBC30\uC774\uBA70,
+      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 0.5\uBC30\uC774\uBA70,
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uD3ED\uBC1C \uBC18\uACBD\uC774
       3.5\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uCDA9\uB3CC \uC2DC \uBC94\uC704 \uD3ED\uBC1C"
@@ -56,14 +56,14 @@ MonoBehaviour:
     orbitDamageMultiplier: 1
     orbitLifetime: 0
     explosionRadius: 2.5
-    explosionDamageMultiplier: 1.2
+    explosionDamageMultiplier: 0.5
     chainCount: 0
     chainRange: 0
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
     levelDescription: "\uC801\uC911 \uC2DC \uBC18\uACBD 3.0 \uBC94\uC704\uC758 \uD3ED\uBC1C\uC774
-      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1.3\uBC30\uC774\uBA70,
+      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 0.8\uBC30\uC774\uBA70,
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uD3ED\uBC1C \uBC18\uACBD\uC774
       3.5\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uD3ED\uBC1C \uBC18\uACBD\uACFC \uD53C\uD574 \uC99D\uAC00"
@@ -90,14 +90,14 @@ MonoBehaviour:
     orbitDamageMultiplier: 1
     orbitLifetime: 0
     explosionRadius: 3
-    explosionDamageMultiplier: 1.3
+    explosionDamageMultiplier: 0.8
     chainCount: 0
     chainRange: 0
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
     levelDescription: "\uC801\uC911 \uC2DC \uBC18\uACBD 3.5 \uBC94\uC704\uC758 \uD3ED\uBC1C\uC774
-      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1.5\uBC30\uC785\uB2C8\uB2E4.
+      \n\uBC1C\uC0DD\uD569\uB2C8\uB2E4. \n\uB370\uBBF8\uC9C0 \uBC30\uC728\uC740 1\uBC30\uC785\uB2C8\uB2E4.
       \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
     tooltipEffectText: "\uAC15\uB825\uD55C \uAD11\uC5ED \uD3ED\uBC1C"
     tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC911\uD558\uBA74 \uD3ED\uBC1C\uC744
@@ -123,7 +123,7 @@ MonoBehaviour:
     orbitDamageMultiplier: 1
     orbitLifetime: 0
     explosionRadius: 3.5
-    explosionDamageMultiplier: 1.5
+    explosionDamageMultiplier: 1
     chainCount: 0
     chainRange: 0
     dotDamagePerSecond: 0

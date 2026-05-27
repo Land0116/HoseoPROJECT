@@ -148,6 +148,7 @@ public class AugmentationSystem : ScriptableObject
 
         [Header("공격 / 회복")] [Tooltip("최대 체력 10당 최종 데미지 추가 배율. 5%면 0.05")]
         public float hpToDamagePercentPer10Hp = 0f;
+        public float bonusMaxHpToScalePercentPer10Hp = 0f;
 
         public float healOnKill = 0f;
         public float hpRegenPerSecond = 0f;

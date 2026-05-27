@@ -86,6 +86,10 @@ public class PlayerUIManager : MonoBehaviour
 
     [SerializeField] private GameObject dashPanel_UI;
     [SerializeField] private Slider dashCooldownSlider;
+        
+    [SerializeField] private GameObject chargeGaugePanel;
+    [SerializeField] private Slider chargeGaugeSlider;
+
     
     [Header("Game Clear")]
     [SerializeField] private GameObject gameClearPanel;
@@ -167,6 +171,7 @@ public class PlayerUIManager : MonoBehaviour
         UpdateDashCooldownUI();
         UpdateQCooldownUI();
         UpdateECooldownUI();
+        UpdateChargeGaugeUI();
     }
     private void UpdateQCooldownUI()
     {
@@ -244,7 +249,30 @@ public class PlayerUIManager : MonoBehaviour
             }
         }
     }
-    
+    private void UpdateChargeGaugeUI()
+    {
+        if (chargeGaugePanel == null || chargeGaugeSlider == null)
+            return;
+
+        if (playerController == null)
+        {
+            chargeGaugePanel.SetActive(false);
+            chargeGaugeSlider.value = 0f;
+            return;
+        }
+
+        bool isCharging = playerController.IsChargeShotCharging;
+
+        chargeGaugePanel.SetActive(isCharging);
+
+        if (!isCharging)
+        {
+            chargeGaugeSlider.value = 0f;
+            return;
+        }
+
+        chargeGaugeSlider.value = playerController.ChargeShotRatio;
+    }
     /// <summary>
     /// 현재 스테이지에 남아있는 몬스터 수 / 현재 스테이지에 존재했던 최대 몬스터 수 표시.
     /// 
@@ -696,6 +724,18 @@ public class PlayerUIManager : MonoBehaviour
 
         }
         
+        Transform chargeGaugeTr = UIManager.FindChildRecursive(playerPanel, "ChargeGaugeSlider");
+
+        if (chargeGaugeTr != null)
+        {
+            chargeGaugePanel = chargeGaugeTr.gameObject;
+            chargeGaugeSlider = UIManager.FindChildRecursive(chargeGaugeTr, "ChargeGaugeSlider")?.GetComponent<Slider>();
+
+            chargeGaugePanel.SetActive(false);
+
+            if (chargeGaugeSlider != null)
+                chargeGaugeSlider.value = 0f;
+        }
 
         // ESC 패널 내부 버튼
         optionBtn = UIManager.FindChildRecursive(playerPanel, "OptionBtn")?.GetComponent<Button>();
