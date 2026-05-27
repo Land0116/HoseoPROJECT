@@ -125,9 +125,9 @@ MonoBehaviour:
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
   weaponPrefabDropChance: 0
-  itemDropChance: 0
+  itemDropChance: 0.1
   weaponPrefab: {fileID: 7114331523729837587, guid: 46a938c50ac9b1f4699428e81d3afed4, type: 3}
-  itemPrefab: {fileID: 1280315325800161457, guid: 67f3c05bdef934842adc3150f5428c7e, type: 3}
+  itemPrefab: {fileID: 6445108765035303100, guid: 2dcdf986445cbc446b81e126d073d84c, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
   isAttacking: 0

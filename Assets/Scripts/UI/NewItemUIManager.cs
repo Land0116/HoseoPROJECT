@@ -241,7 +241,7 @@ public class NewItemUIManager : MonoBehaviour
         int itemCount = Random.value < 0.75f ? 2 : 3;
 
         float[] xPositions = itemCount == 2
-            ? new float[] { -1.0f, 1.0f }
+            ? new float[] { -0.9f, 1.1f }
             : new float[] { -2.0f, 0.0f, 2.0f };
 
         Vector3 basePos = PlayerController.Instance.transform.position;

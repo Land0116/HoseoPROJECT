@@ -8,6 +8,12 @@ public class SkillData : ScriptableObject
     public string skillName;
     [TextArea] public string description;
 
+    [Header("UI Info (Shop Display)")]
+    public string skillDisplayName;     // 스킬 이름 (UI용)
+    public string combatType;           // 전투 타입
+    public string damageText;           // 데미지 (문자 형태)
+    [TextArea] public string skillDesc; // 스킬 설명
+
     [Header("??????")]
     public Sprite icon;
     public Sprite sloticon;

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   stage: 0
   damage: 0
-  moveSpeed: 1.5
+  moveSpeed: 2
   bulletRate: 0
   hp: 0
   itemPrice: 140
@@ -23,3 +23,7 @@ MonoBehaviour:
   itemName: "\uC790\uB3D9\uCC28 \uC5D4\uC9C4"
   zoneType: 2
   description: 
+  itemType: "\uB2E8\uC77C\uD615"
+  itemStatView: "\uC774\uB3D9\uC18D\uB3C4 +2"
+  shopDesc: "\uAC15\uB825\uD55C \uC790\uB3D9\uCC28 \uC5D4\uC9C4\uC785\uB2C8\uB2E4.
+    \uC7A5\uCC29 \uC2DC \uC774\uB3D9 \uC18D\uB3C4\uAC00 \uD06C\uAC8C \uC99D\uAC00\uD569\uB2C8\uB2E4."

@@ -16,10 +16,14 @@ MonoBehaviour:
   damage: 0
   moveSpeed: 0
   bulletRate: 0
-  hp: 30
+  hp: 50
   itemPrice: 140
   equippedIcon: {fileID: -7289701012527404, guid: ee5d64ecca84d144ebef726d76a1141a, type: 3}
   icon: {fileID: -1331071188805401869, guid: 84b1d896b9bdca3469b24c047adf2e0e, type: 3}
   itemName: "\uACF5\uC8FC\uC778\uD615\uC758 \uAC70\uC6B8"
   zoneType: 2
   description: 
+  itemType: "\uB2E8\uC77C\uD615"
+  itemStatView: HP + 50
+  shopDesc: "\uBE5B\uB098\uB294 \uACF5\uC8FC\uC778\uD615\uC758 \uAC70\uC6B8\uC785\uB2C8\uB2E4.
+    \uC7A5\uCC29 \uC2DC \uCD5C\uB300 \uCCB4\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."

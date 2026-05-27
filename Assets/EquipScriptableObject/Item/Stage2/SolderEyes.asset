@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
+  m_Name: SolderEyes
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  stage: 0
+  damage: 0
+  moveSpeed: 0
+  bulletRate: 0.7
+  hp: 0
+  itemPrice: 0
+  equippedIcon: {fileID: 2398404390192522329, guid: faf5ce987464b724bac434fb065b145c, type: 3}
+  icon: {fileID: 6083926105452232845, guid: 3a60bd7a24655ae49af262b67408d68d, type: 3}
+  itemName: "\uBCD1\uC815\uC758 \uB208"
+  zoneType: 0
+  description: 
+  itemType: "\uB2E8\uC77C\uD615"
+  itemStatView: "\uACF5\uACA9\uC18D\uB3C4 +0.7"
+  shopDesc: "\uBCD1\uC815 \uC7A5\uB09C\uAC10\uC758 \uB0A0\uCE74\uB85C\uC6B4 \uB208\uC785\uB2C8\uB2E4.
+    \uC7A5\uCC29 \uC2DC \uACF5\uACA9 \uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4."

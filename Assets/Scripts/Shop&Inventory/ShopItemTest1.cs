@@ -261,10 +261,10 @@ public class ShopItemTest1 : MonoBehaviour, IInteractable, IShopInteractable, IP
                 desc = "현재 체력을 75% 회복한다.";
             }
 
-            ItemUIManager.Instance.ShowShopInteract(
+            /*ItemUIManager.Instance.ShowShopInteract( //* 수정 필요
                 this,
                 $"[{name}]\n{desc}"
-            );
+            );*/
 
             return;
         }
@@ -272,10 +272,10 @@ public class ShopItemTest1 : MonoBehaviour, IInteractable, IShopInteractable, IP
         // 일반 아이템일 때
         if (currentItem == null) return;
 
-        ItemUIManager.Instance.ShowShopInteract(
+        /*ItemUIManager.Instance.ShowShopInteract( //* 수정 필요
             this,
             $"[{currentItem.itemName}]\n{GetStatText()}"
-        );
+        );*/
     }
     private string GetStatText()
     {

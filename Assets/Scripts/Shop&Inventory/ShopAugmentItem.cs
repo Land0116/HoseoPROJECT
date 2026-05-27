@@ -145,7 +145,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
         ItemUIManager.Instance.ShowShopInteract(
             this,
-            $"[{currentAugment.augmentationName}]\n{desc}"
+            currentAugment
         );
     }
     public Transform GetTransform()

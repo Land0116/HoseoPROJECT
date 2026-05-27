@@ -352,7 +352,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         );
 
     }*/
-    private void ShowUI()
+    /*private void ShowUI()
     {
         if (ItemUIManager.Instance == null)
         {
@@ -381,7 +381,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
                 desc = "현재 체력을 75% 회복한다.";
             }
 
-            ItemUIManager.Instance.ShowShopInteract(
+            /*ItemUIManager.Instance.ShowShopInteract( //* 수정 필요
                 this,
                 $"[{name}]\n{desc}"
             );
@@ -401,11 +401,57 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         descText += GetStatText();
 
-        ItemUIManager.Instance.ShowShopInteract(
+        /*ItemUIManager.Instance.ShowShopInteract( //* 수정 필요
             this,
             descText
         );
+    }*/
+    private void ShowUI()
+    {
+        if (ItemUIManager.Instance == null)
+        {
+            Debug.LogError("ItemUIManager가 아직 생성되지 않음");
+            return;
+        }
+
+        if (isPotion)
+        {
+            string title = "";
+            string category = "회복 아이템";
+            string effect = "";
+            string desc = "";
+
+            if (potionHealPercent == 0.25f)
+            {
+                title = "하급 포션";
+                effect = "25%";
+                desc = "체력을 조금 회복한다.";
+            }
+            else if (potionHealPercent == 0.5f)
+            {
+                title = "중급 포션";
+                effect = "50%";
+                desc = "체력을 회복한다.";
+            }
+            else if (potionHealPercent == 0.75f)
+            {
+                title = "고급 포션";
+                effect = "75%";
+                desc = "체력을 많이 회복한다.";
+            }
+
+            ItemUIManager.Instance.ShowShopInteract(this, null);
+            ItemUIManager.Instance.ShowPotionTooltip(title, category, effect, desc);
+
+            return;
+        }
+
+        if (currentItem == null) return;
+
+        ItemUIManager.Instance.ShowShopInteract(this, null); // 위치 UI 활성화
+        ItemUIManager.Instance.ShowShopItemTooltip(currentItem); // 핵심 연결
     }
+
     private string GetStatText()
     {
         string desc = "";

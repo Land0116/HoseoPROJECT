@@ -408,6 +408,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3bae6d27216814c4986a0042cc3e2d47, type: 2}
   - {fileID: 11400000, guid: 148bccd710d15e7449379cbb7057d1d9, type: 2}
   - {fileID: 11400000, guid: 55e1179d174ef634a8812987e45f2097, type: 2}
+  - {fileID: 11400000, guid: b7cf8a064ed3f92448c2a412005baba2, type: 2}
   stage1PremiumItems:
   - {fileID: 11400000, guid: 173164d4b09c73f40b9428780fa3924c, type: 2}
   - {fileID: 11400000, guid: 57fa8fcb8566169429ea76e1ea76855c, type: 2}
@@ -421,6 +422,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 842474c881b28d04eb80f82cb7d9a0a7, type: 2}
   - {fileID: 11400000, guid: 9f075bcb0b728ad4da47779c3c3588e3, type: 2}
   - {fileID: 11400000, guid: 18b29c7d01509754eb4b62517f60ce55, type: 2}
+  - {fileID: 11400000, guid: 2ae5815983dadda429c11e207be285a7, type: 2}
   - {fileID: 11400000, guid: f5f381d694177b64e84b53e9ff88ceca, type: 2}
   - {fileID: 11400000, guid: 608ba5d87f20af64aa7cd3807fdd9d28, type: 2}
   stage2PremiumItems:
@@ -443,6 +445,7 @@ MonoBehaviour:
   potion25Icon: {fileID: 2711315834435705359, guid: 3765710483f05ce48a962274049a83d2, type: 3}
   potion50Icon: {fileID: 6782438661821362104, guid: ff05fea07ca05b245b0fe1855336e819, type: 3}
   potion75Icon: {fileID: 3096315548504554706, guid: 3c1f799e7d95e9947b4c42880349830a, type: 3}
+  potionChance: 0.2
   iconImage: {fileID: 2965967980135372416}
   priceText: {fileID: 6261059460986091659}
 --- !u!82 &829696344440565923

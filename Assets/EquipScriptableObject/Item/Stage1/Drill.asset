@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1dcfb5680e8f3c459a5cae280dce929, type: 3}
+  m_Name: Drill
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  stage: 0
+  damage: 0
+  moveSpeed: 0.7
+  bulletRate: 0.5
+  hp: 0
+  itemPrice: 0
+  equippedIcon: {fileID: -6323532659638373247, guid: 451d079a07b0830488a24b0e3fb5f25a, type: 3}
+  icon: {fileID: -1928783654931461318, guid: 3b2021f2c3d59be49b0c9f889209b8f7, type: 3}
+  itemName: "\uB4DC\uB9B4"
+  zoneType: 0
+  description: 
+  itemType: "\uBCF5\uD569\uD615"
+  itemStatView: "\uACF5\uACA9\uC18D\uB3C4 +0.5 / \uC774\uB3D9\uC18D\uB3C4 +0.7"
+  shopDesc: "\uBE60\uB974\uAC8C \uD68C\uC804\uD558\uB294 \uB4DC\uB9B4\uC785\uB2C8\uB2E4.\n\uC7A5\uCC29
+    \uC2DC \uACF5\uACA9 \uC18D\uB3C4\uC640 \uC774\uB3D9 \uC18D\uB3C4\uAC00 \uD568\uAED8
+    \uC99D\uAC00\uD569\uB2C8\uB2E4."

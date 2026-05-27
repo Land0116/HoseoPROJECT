@@ -50,10 +50,20 @@ public class HealPickup : MonoBehaviour, IShopInteractable
     {
         if (ItemUIManager.Instance == null) return;
 
-        ItemUIManager.Instance.ShowShopInteract(
-            this,
-            "[체력 회복 아이템]\n[F]키로 체력 25% 회복"
-        );
+        string title = "하급 포션";
+        string category = "회복 아이템";
+
+        // 실제 healPercent 기반으로 표시 (유연하게)
+        int percent = Mathf.RoundToInt(healPercent * 100f);
+
+        string effect = $"{percent}%";
+        string desc = "체력을 조금 회복한다.";
+
+        // 위치 UI 활성화
+        ItemUIManager.Instance.ShowShopInteract(this, null);
+
+        // 포션 툴팁 표시
+        ItemUIManager.Instance.ShowPotionTooltip(title, category, effect, desc);
     }
 
     public Transform GetTransform()

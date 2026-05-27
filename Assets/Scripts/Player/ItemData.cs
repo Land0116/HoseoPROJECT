@@ -27,6 +27,15 @@ public class ItemData : ScriptableObject
     [TextArea]
     public string description;
 
+
+
+    public string itemType;
+    [TextArea]
+    public string itemStatView;
+
+    [TextArea]
+    public string shopDesc;
+
     public virtual void OnUpdate(PlayerController player) { }
     
 
