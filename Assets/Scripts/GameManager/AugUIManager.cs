@@ -34,6 +34,9 @@ public class AugUIManager : MonoBehaviour
     [Header("리셋 버튼")] [SerializeField] private Button[] resetBtn;
     private bool[] rerollUsed = new bool[ChoiceCount];
 
+    [Header("리롤 버튼 패널")]
+    [SerializeField] private GameObject rerollButtonPanel;
+    
     [Header("보유 증강 슬롯 UI")] [SerializeField]
     private Image[] slotImages;
 
@@ -57,7 +60,7 @@ public class AugUIManager : MonoBehaviour
     [SerializeField] private TMP_Text tooltipEffectText;
     [SerializeField] private TMP_Text tooltipDescriptionText;
 
-    private const float TooltipOffsetDefaultX = 12f;
+    private const float TooltipOffsetDefaultX = 6f;
     private const float TooltipOffsetDefaultY = 230f;
 
     [Header("보유 증강 설명창 위치")] [SerializeField]
@@ -131,6 +134,8 @@ public class AugUIManager : MonoBehaviour
         {
             if (uiPanel != null)
                 uiPanel.SetActive(false);
+
+            SetRerollPanelVisible(false);
             return;
         }
 
@@ -138,6 +143,8 @@ public class AugUIManager : MonoBehaviour
         {
             if (uiPanel != null)
                 uiPanel.SetActive(false);
+
+            SetRerollPanelVisible(false);
             return;
         }
 
@@ -145,7 +152,9 @@ public class AugUIManager : MonoBehaviour
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, true);
 
         if (uiPanel == null) return;
+
         uiPanel.SetActive(true);
+        SetRerollPanelVisible(true);
 
         ResetRerollState();
         GenerateNewChoices();
@@ -217,12 +226,14 @@ public class AugUIManager : MonoBehaviour
         if (uiPanel != null)
             uiPanel.SetActive(false);
 
+        SetRerollPanelVisible(false);
+
         HideOwnedAugTooltip();
         SetCursorAndCrosshairForSlotHover(false);
 
         ClearOwnedAugmentUI();
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, false);
-    }        
+    }     
 
     public bool IsAugmentationVisible()
     {
@@ -233,6 +244,8 @@ public class AugUIManager : MonoBehaviour
     {
         if (uiPanel != null)
             uiPanel.SetActive(false);
+
+        SetRerollPanelVisible(false);
     }
 
     public void RestoreCurrentAugmentationUI()
@@ -240,8 +253,11 @@ public class AugUIManager : MonoBehaviour
         if (uiPanel != null)
             uiPanel.SetActive(true);
 
+        SetRerollPanelVisible(true);
+        RefreshRerollUI();
+
         Time.timeScale = 0f;
-        
+
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, true);
     }
 
@@ -255,7 +271,7 @@ public class AugUIManager : MonoBehaviour
             uiPanel = augPanelRoot.gameObject;
             uiButtons = augPanelRoot.GetComponentsInChildren<AugButton>(true);
 
-            BindresetBtn(augPanelRoot);
+            BindRerollButtons(systemUIRoot, augPanelRoot);
         }
 
         BindOwnedSlotImages(systemUIRoot);
@@ -979,6 +995,14 @@ public class AugUIManager : MonoBehaviour
             }
         }
     }
+    
+    private void SetRerollPanelVisible(bool visible)
+    {
+        if (rerollButtonPanel != null)
+        {
+            rerollButtonPanel.SetActive(visible);
+        }
+    }
 
     #endregion
 
@@ -995,19 +1019,50 @@ public class AugUIManager : MonoBehaviour
         }
     }
 
-    private void BindresetBtn(Transform augPanelRoot)
+    private void BindRerollButtons(GameObject systemUIRoot, Transform augPanelRoot)
     {
-        if (augPanelRoot == null) return;
-
         if (resetBtn == null || resetBtn.Length != ChoiceCount)
             resetBtn = new Button[ChoiceCount];
 
-        for (int i = 0; i < ChoiceCount; i++)
+        for (int i = 0; i < resetBtn.Length; i++)
         {
             resetBtn[i] = null;
+        }
 
-            Transform rerollBtnTr = UIManager.FindChildRecursive(
+        Transform rerollRoot = null;
+
+        // 1순위: AugmentationUIPanel 안의 RerollButtonPanel
+        if (augPanelRoot != null)
+        {
+            rerollRoot = UIManager.FindChildRecursive(
                 augPanelRoot,
+                "AugmentationUIResetPanel"
+            );
+        }
+
+        // 2순위: System_UI 전체에서 RerollButtonPanel 찾기
+        // 혹시 RerollButtonPanel을 AugmentationUIPanel 밖에 뒀을 때 대비
+        if (rerollRoot == null && systemUIRoot != null)
+        {
+            rerollRoot = UIManager.FindChildRecursive(
+                systemUIRoot.transform,
+                "AugmentationUIResetPanel"
+            );
+        }
+
+        if (rerollRoot == null)
+        {
+            rerollButtonPanel = null;
+            Debug.LogWarning("[AugUIManager] AugmentationUIResetPanel 을 찾지 못함");
+            return;
+        }
+
+        rerollButtonPanel = rerollRoot.gameObject;
+
+        for (int i = 0; i < ChoiceCount; i++)
+        {
+            Transform rerollBtnTr = UIManager.FindChildRecursive(
+                rerollRoot,
                 $"RerollBtn_{i + 1}"
             );
 
@@ -1028,17 +1083,27 @@ public class AugUIManager : MonoBehaviour
             resetBtn[i] = btn;
 
             int capturedIndex = i;
-            resetBtn[i].onClick.RemoveAllListeners();
-            resetBtn[i].onClick.AddListener(() => OnClickReroll(capturedIndex));
 
-            // 기본값은 비활성화.
-            // 증강 패널이 열리고 선택지가 생성된 뒤 RefreshRerollUI()에서 켜준다.
-            resetBtn[i].interactable = false;
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => OnClickReroll(capturedIndex));
+
+            btn.interactable = false;
+
+            // 키보드/패드 네비게이션 때문에 이상한 선택 하이라이트가 생기는 것 방지
+            Navigation navigation = btn.navigation;
+            navigation.mode = Navigation.Mode.None;
+            btn.navigation = navigation;
         }
+
+        RefreshRerollUI();
     }
 
     private void RefreshRerollUI()
     {
+        bool panelVisible = uiPanel != null && uiPanel.activeSelf;
+
+        SetRerollPanelVisible(panelVisible);
+
         if (resetBtn == null) return;
 
         for (int i = 0; i < resetBtn.Length; i++)
@@ -1055,10 +1120,8 @@ public class AugUIManager : MonoBehaviour
                 i < rerollUsed.Length &&
                 rerollUsed[i];
 
-            // 패널이 켜져 있고, 선택지가 있고, 아직 리롤을 안 쓴 경우만 클릭 가능
             resetBtn[i].interactable =
-                uiPanel != null &&
-                uiPanel.activeSelf &&
+                panelVisible &&
                 hasChoice &&
                 !used;
         }
@@ -1136,7 +1199,7 @@ public class AugUIManager : MonoBehaviour
 
     #region Coroutine
 
-    private IEnumerator CloseAugmentationAfterMouseRelease()
+    private IEnumerator CloseAugmentationAfterMouseRelease() 
     {
         while (Mouse.current != null && Mouse.current.leftButton.isPressed)
         {
@@ -1148,13 +1211,14 @@ public class AugUIManager : MonoBehaviour
         if (uiPanel != null)
             uiPanel.SetActive(false);
 
+        SetRerollPanelVisible(false);
+
         Time.timeScale = 1f;
 
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, false);
 
         NotifyRewardAugmentFinished();
     }
-
     #endregion
 
     #region Scene Rule

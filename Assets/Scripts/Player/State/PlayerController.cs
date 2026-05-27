@@ -161,6 +161,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     [Header("증강 - 차지샷")] [SerializeField] private bool chargeShotEnabled = false;
     [SerializeField] private float chargeShotTime = 0f;
     [SerializeField] private float chargeShotDamageMultiplier = 1f;
+    
+    [Header("차지샷 총알 크기")]
+    [SerializeField] private float chargeShotProjectileScaleMultiplier = 2f;
 
     [Header("증강 - 공격 시퀀스")] [SerializeField]
     private bool isAttackSequenceRunning = false;
@@ -250,6 +253,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float specialCheatDeathInvincibleDuration = 1f;
 
     [SerializeField] private float specialHpToDamagePercentPer10Hp = 0f;
+    [SerializeField] private float specialBonusMaxHpToScalePercentPer10Hp = 0f;
     [SerializeField] private float specialHealOnKill = 0f;
     [SerializeField] private float specialHpRegenPerSecond = 0f;
 
@@ -309,6 +313,16 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     #endregion
 
+    #region BugMaster
+
+    [Header("디버그 - Bug Master")]
+    [SerializeField] private bool bugMasterEnabled = false;
+
+    [SerializeField] private float bugMasterDamageAdd = 100f;
+
+    [SerializeField] private bool bugMasterInvincible = true;
+
+    #endregion
     public float Hp
     {
         get => hp;
@@ -477,6 +491,31 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float FinalDotDamagePerSecond => effectDotDamagePerSecond;
     public float FinalDotDuration => effectDotDuration;
 
+    public bool IsChargeShotCharging
+    {
+        get
+        {
+            return chargeShotEnabled &&
+                   isChargingShot &&
+                   chargeStartTime >= 0f &&
+                   isFireInput &&
+                   !IsDie;
+        }
+    }
+
+    public float ChargeShotRatio
+    {
+        get
+        {
+            if (!IsChargeShotCharging)
+                return 0f;
+
+            if (FinalChargeShotTime <= 0f)
+                return 0f;
+
+            return Mathf.Clamp01((Time.time - chargeStartTime) / FinalChargeShotTime);
+        }
+    }
     #endregion
 
 #if UNITY_EDITOR
@@ -1143,7 +1182,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         Vector3 spawnPos = gunTip.position + (Vector3)(shotDirection * bulletSpawnOffset);
 
         GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
-        PlayBulletSound(); //* 0525
+
+        ApplyChargeProjectileScaleIfNeeded(bullet);
+
+        PlayBulletSound();
         ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
         if (bulletScript != null)
@@ -1205,6 +1247,9 @@ public class PlayerController : MonoBehaviour, IDamageable
                 + (Vector3)(sideDirection * sideIndex * multiShotSideSpacing);
 
             GameObject bullet = Instantiate(curProjectilePrefab, spawnPos, bulletRotation);
+
+            ApplyChargeProjectileScaleIfNeeded(bullet);
+
             PlayBulletSound(); //* 0525
             ButtonSpawn bulletScript = bullet.GetComponent<ButtonSpawn>();
 
@@ -1227,6 +1272,26 @@ public class PlayerController : MonoBehaviour, IDamageable
             return 1f;
 
         return chargeShotDamageMultiplier;
+    }
+    private float GetChargeProjectileScaleMultiplierIfReady()
+    {
+        if (!chargeShotEnabled)
+            return 1f;
+
+        return Mathf.Max(0.01f, chargeShotProjectileScaleMultiplier);
+    }
+
+    private void ApplyChargeProjectileScaleIfNeeded(GameObject bullet)
+    {
+        if (bullet == null)
+            return;
+
+        float scaleMultiplier = GetChargeProjectileScaleMultiplierIfReady();
+
+        if (Mathf.Approximately(scaleMultiplier, 1f))
+            return;
+
+        bullet.transform.localScale *= scaleMultiplier;
     }
 
     /// <summary>
@@ -1672,10 +1737,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (IsDie) return;
 
+        if (bugMasterEnabled && bugMasterInvincible)
+            return;
+
         // 피격 무적 시간 중이면 추가 피해 무시
         if (Time.time < invincibleUntilTime)
             return;
-
+        
         // 피격 애니메이션 중 추가 피해를 막고 싶을 때
         if (ignoreDamageWhileHit && playerState == PlayerState.Hit)
             return;
@@ -1767,6 +1835,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         float baseDamage = weaponDamage + itemDamage;
 
+        if (bugMasterEnabled)
+        {
+            baseDamage += bugMasterDamageAdd;
+        }
+
         float subSkillAppliedDamage = baseDamage * shotDamageMultiplier;
         float passiveAppliedDamage = subSkillAppliedDamage * passiveDamageMultiplier;
 
@@ -1779,8 +1852,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         float finalDamage = passiveAppliedDamage * hpBonusMultiplier;
 
-        // Round를 제거해야 낮은 데미지 구간에서도
-        // 패시브 / 스페셜 데미지 증가가 체감된다.
         return Mathf.Max(0f, finalDamage * attackMultiplier);
     }
 
@@ -2421,7 +2492,17 @@ public class PlayerController : MonoBehaviour, IDamageable
             attackPerSecond * (1f + passiveAttackSpeedPercent + shotAttackSpeedBonusPercent)
         );
 
-        transform.localScale = defaultPlayerScale * specialCharacterScaleMultiplier;
+        float bonusMaxHpForGiantPressure = Mathf.Max(0f, maxHp - baseMaxHp);
+
+        float giantPressureScaleMultiplier =
+            1f + ((bonusMaxHpForGiantPressure / 10f) * specialBonusMaxHpToScalePercentPer10Hp);
+
+        giantPressureScaleMultiplier = Mathf.Max(0.01f, giantPressureScaleMultiplier);
+
+        float finalCharacterScaleMultiplier =
+            specialCharacterScaleMultiplier * giantPressureScaleMultiplier;
+
+        transform.localScale = defaultPlayerScale * finalCharacterScaleMultiplier;
         ApplyObstacleCollisionRule(specialIgnoreObstacleCollision);
 
         if (specialShieldInterval > 0f && specialShieldMaxCount > 0)
@@ -2492,23 +2573,24 @@ public class PlayerController : MonoBehaviour, IDamageable
         multiShotProjectileCount = 1;
         multiShotSpreadAngle = 0f;
 
-// 차지샷 초기화
+// 차지샷 초기화 
         chargeShotEnabled = false;
         chargeShotTime = 0f;
         chargeShotDamageMultiplier = 1f;
-
+        chargeShotProjectileScaleMultiplier = 2f;
+// 유도탄
         trajectoryHomingStrength = 0f;
         trajectoryDuration = 0f;
         trajectoryBounceCount = 0;
         trajectoryPierceCount = 0;
-
+//폭발탄
         effectExplosionRadius = 0f;
         effectExplosionDamageMultiplier = 1f;
         effectChainCount = 0;
         effectChainRange = 0f;
         effectDotDamagePerSecond = 0f;
         effectDotDuration = 0f;
-
+//주위탄
         shotUseOrbitProjectile = false;
         shotOrbitProjectileCount = 0;
         shotOrbitRadius = 1.5f;
@@ -2536,6 +2618,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         specialCheatDeathHp = 1;
         specialCheatDeathInvincibleDuration = 1f;
 
+        specialBonusMaxHpToScalePercentPer10Hp = 0f;
         specialHpToDamagePercentPer10Hp = 0f;
         specialHealOnKill = 0f;
         specialHpRegenPerSecond = 0f;
@@ -2864,6 +2947,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 // 최대 체력 10당 최종 데미지 증가
                 // 예: 0.05면 최대 체력 10당 5% 증가
                 specialHpToDamagePercentPer10Hp += data.hpToDamagePercentPer10Hp;
+                specialBonusMaxHpToScalePercentPer10Hp += data.bonusMaxHpToScalePercentPer10Hp;
                 break;
             }
 
@@ -3451,7 +3535,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
     public void OnBugMaster(InputValue value)
     {
-         weaponDamage += 100.0f;
-     }
+        if (!value.isPressed)
+            return;
+
+        bugMasterEnabled = !bugMasterEnabled;
+
+        Debug.Log(
+            bugMasterEnabled
+                ? "[BugMaster] 활성화: 공격력 증가 + 상시 무적"
+                : "[BugMaster] 비활성화"
+        );
+    }
     
 }
