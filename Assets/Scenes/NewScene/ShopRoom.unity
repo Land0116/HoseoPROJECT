@@ -3705,6 +3705,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3960292654042022685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
+      propertyPath: potionChance
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5962146024546627685, guid: 193b8d567e99d2e4eac514a10cc474d9, type: 3}
       propertyPath: m_Name
       value: ShopItem

@@ -19,10 +19,11 @@ public class ItemData : ScriptableObject
     public int hp = 0;
     public int itemPrice = 0;
 
+    public Sprite equippedIcon;
     public Sprite icon;
     public string itemName;
     public ItemZoneType zoneType;
-    [Header("����")]
+    [Header("Desc")]
     [TextArea]
     public string description;
 

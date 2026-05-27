@@ -31,6 +31,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     [SerializeField] private Sprite potion25Icon;
     [SerializeField] private Sprite potion50Icon;
     [SerializeField] private Sprite potion75Icon;
+    [Header("potion percent")]
+    [SerializeField, Range(0f, 1f)] private float potionChance = 0.2f; // 20%
 
     [Header("UI")]
     public Image iconImage;
@@ -151,7 +153,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     // =========================
     // 아이템 생성
     // =========================
-    public void GenerateItem()
+    /*public void GenerateItem()
     {
         ItemData[] normalPool = null;
         ItemData[] premiumPool = null;
@@ -173,6 +175,70 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         float rand = Random.value;
+
+        bool isPremium = RollPremium();
+
+        if (!isPremium && normalPool != null && normalPool.Length > 0)
+        {
+            currentItem = normalPool[Random.Range(0, normalPool.Length)];
+            isPotion = false;
+            price = Random.Range(75, 86);
+        }
+        else if (premiumPool != null && premiumPool.Length > 0)
+        {
+            currentItem = premiumPool[Random.Range(0, premiumPool.Length)];
+            isPotion = false;
+            price = Random.Range(140, 161);
+        }
+        else
+        {
+            isPotion = true;
+            currentItem = null;
+
+            int potionType = Random.Range(0, 3);
+
+            if (potionType == 0) { potionHealPercent = 0.25f; price = 25; }
+            else if (potionType == 1) { potionHealPercent = 0.5f; price = 50; }
+            else { potionHealPercent = 0.75f; price = 100; }
+        }
+
+        UpdateUI();
+    }*/
+    public void GenerateItem()
+    {
+        ItemData[] normalPool = null;
+        ItemData[] premiumPool = null;
+
+        switch (currentStage)
+        {
+            case 1:
+                normalPool = stage1NormalItems;
+                premiumPool = stage1PremiumItems;
+                break;
+            case 2:
+                normalPool = stage2NormalItems;
+                premiumPool = stage2PremiumItems;
+                break;
+            case 3:
+                normalPool = stage3NormalItems;
+                premiumPool = stage3PremiumItems;
+                break;
+        }
+
+        if (Random.value < potionChance)
+        {
+            isPotion = true;
+            currentItem = null;
+
+            int potionType = Random.Range(0, 3);
+
+            if (potionType == 0) { potionHealPercent = 0.25f; price = 25; }
+            else if (potionType == 1) { potionHealPercent = 0.5f; price = 50; }
+            else { potionHealPercent = 0.75f; price = 100; }
+
+            UpdateUI();
+            return;
+        }
 
         bool isPremium = RollPremium();
 

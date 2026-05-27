@@ -7,6 +7,11 @@ using UnityEngine.InputSystem;
 public class CurItemUI : MonoBehaviour
 {
     public static CurItemUI Instance;
+    [SerializeField] private Sprite defaultBGSprite;
+    [SerializeField] private Sprite equippedBGSprite;
+
+
+    [SerializeField] private Image[] itemSlotBGs;
 
     [SerializeField] private Image itemImage;
     [Header("���� ���� �� ������ �⺻ ������")]
@@ -33,11 +38,11 @@ public class CurItemUI : MonoBehaviour
         }
     }
 
-    public void SetItems(List<ItemData> items)
+    /*public void SetItems(List<ItemData> items)
     {
         for (int i = 0; i < itemSlots.Length; i++)
         {
-            if (i < items.Count && items[i] != null && items[i].icon != null)
+            /*if (i < items.Count && items[i] != null && items[i].icon != null)
             {
                 itemSlots[i].sprite = items[i].icon;
                 itemSlots[i].enabled = true;
@@ -47,11 +52,64 @@ public class CurItemUI : MonoBehaviour
                 itemSlots[i].sprite = null;
                 itemSlots[i].enabled = false;
             }
+            if (i < items.Count && items[i] != null)
+            {
+                Sprite targetSprite = items[i].equippedIcon != null
+                    ? items[i].equippedIcon
+                    : items[i].icon;
+
+                if (targetSprite != null)
+                {
+                    itemSlots[i].sprite = targetSprite;
+                    itemSlots[i].enabled = true;
+                }
+                else
+                {
+                    itemSlots[i].sprite = null;
+                    itemSlots[i].enabled = false;
+                }
+            }
         }
 
         
         RefreshHoverAfterUpdate(items);
+    }*/
+    public void SetItems(List<ItemData> items)
+    {
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            itemSlots[i].sprite = null;
+            itemSlots[i].enabled = false;
+
+            if (itemSlotBGs != null && i < itemSlotBGs.Length)
+            {
+                itemSlotBGs[i].sprite = defaultBGSprite;
+            }
+
+            if (i < items.Count && items[i] != null)
+            {
+                var item = items[i];
+
+                Sprite targetSprite = item.equippedIcon != null
+                    ? item.equippedIcon
+                    : item.icon;
+
+                if (targetSprite != null)
+                {
+                    itemSlots[i].sprite = targetSprite;
+                    itemSlots[i].enabled = true;
+                }
+
+                if (itemSlotBGs != null && i < itemSlotBGs.Length)
+                {
+                    itemSlotBGs[i].sprite = equippedBGSprite;
+                }
+            }
+        }
+
+        RefreshHoverAfterUpdate(items);
     }
+
     private void RefreshHoverAfterUpdate(List<ItemData> items)
     {
         if (ItemUIManager.Instance == null) return;
