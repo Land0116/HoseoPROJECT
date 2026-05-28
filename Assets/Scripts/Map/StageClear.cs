@@ -8,6 +8,8 @@ public class StageClear : MonoBehaviour
 {
     public static StageClear Instance;
     public static System.Action<int, bool> OnStageChanged; //* 0524
+    public static bool IsStageClearedGlobal = false;
+
     [System.Serializable]
     private class RouteMarkerData
     {
@@ -500,6 +502,7 @@ public class StageClear : MonoBehaviour
         GivePendingReward();
 
         HandleClearFlow();
+
     }
 
     private void HandleClearFlow()
@@ -1282,6 +1285,8 @@ public class StageClear : MonoBehaviour
     
     private void SpawnRewardObjectAtPlayer(RewardType rewardType)
     {
+
+
         if (rewardType == RewardType.None)
             return;
 
@@ -1365,5 +1370,4 @@ public class StageClear : MonoBehaviour
     {
         return currentStageNumber;
     }
-
 }
