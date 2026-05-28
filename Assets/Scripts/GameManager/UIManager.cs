@@ -585,11 +585,14 @@ public class UIManager : MonoBehaviour
 
         if (PlayerController.Instance != null)
         {
-            Transform crosshair = PlayerController.Instance.GetCrosshairTransform();
-
-            if (crosshair != null)
+            if (CrosshairUI.Instance != null)
             {
-                Destroy(crosshair.gameObject);
+                CrosshairUI.Instance.HideCrosshair();
+            }
+
+            if (PlayerController.Instance != null)
+            {
+                Destroy(PlayerController.Instance.gameObject);
             }
 
             Destroy(PlayerController.Instance.gameObject);
