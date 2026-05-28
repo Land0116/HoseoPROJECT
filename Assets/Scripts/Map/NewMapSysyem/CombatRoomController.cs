@@ -30,6 +30,9 @@ public class CombatRoomController : MapRoomControllerBase
     private bool isRewardFinished = false;
     private bool isRewardObjectSpawned = false;
 
+    public static bool IsCombatInteractable = false;//* 0529 아이템 패널
+    public static bool IsCombatActive = true; // [추가] 전투 중 여부
+
     protected override string RoomDebugName => "전투방";
 
     /// <summary>
@@ -61,8 +64,11 @@ public class CombatRoomController : MapRoomControllerBase
         AutoBind();
 
         LockAllGates();
-
+        
         SpawnPlayerAtRequiredGate();
+
+        IsCombatActive = true;
+        IsCombatInteractable = false; //* 0529 방 시작시 힐 패널 안뜸
 
         // Fade 연출이 끝날 때까지 몬스터 스폰 금지
         if (MapTransitionManager.Instance != null)
@@ -86,6 +92,9 @@ public class CombatRoomController : MapRoomControllerBase
     {
         currentWave++;
 
+        IsCombatActive = true;           // [유지]
+        IsCombatInteractable = false;    // [수정] 전투 시작 → UI 막기//* 0529 힐패널 활성화
+
         if (currentWave > maxWave)
         {
             SpawnRewardObject();
@@ -108,6 +117,9 @@ public class CombatRoomController : MapRoomControllerBase
     /// </summary>
     public void OnAllMonstersDead()
     {
+        IsCombatActive = false;         // [수정] 전투 종료
+        IsCombatInteractable = true;
+
         if (currentWave < maxWave)
         {
             StartNextWave();
@@ -131,6 +143,9 @@ public class CombatRoomController : MapRoomControllerBase
         if (MapFlowManager.Instance == null) return;
 
         isRewardObjectSpawned = true;
+
+        IsCombatActive = false; //* 0529
+        IsCombatInteractable = true;
 
         RewardType rewardType = MapFlowManager.Instance.GetCurrentCombatRewardType();
 

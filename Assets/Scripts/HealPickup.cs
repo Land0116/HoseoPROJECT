@@ -8,9 +8,6 @@ public class HealPickup : MonoBehaviour, IShopInteractable
     private PlayerController player;
     private bool isPlayerInside = false;
 
-
-
-
     // =========================
     // 상호작용 (핵심)
     // =========================
@@ -18,11 +15,15 @@ public class HealPickup : MonoBehaviour, IShopInteractable
     {
         if (player == null) return;
 
+        // [수정] UI 허용 상태 아닐 때 사용 불가
+        if (!CombatRoomController.IsCombatInteractable) return;
+
         float healAmount = player.MaxHp * healPercent;
         player.Heal(healAmount);
 
         Destroy(gameObject);
     }
+
     // =========================
     // 범위 진입
     // =========================
@@ -33,7 +34,12 @@ public class HealPickup : MonoBehaviour, IShopInteractable
         player = collision.GetComponent<PlayerController>();
         isPlayerInside = true;
 
-        ItemUIManager.Instance?.RegisterShop(this);
+        // [수정] UI 허용 상태일 때만 등록
+        if (CombatRoomController.IsCombatInteractable)
+        {
+            ItemUIManager.Instance?.RegisterShop(this);
+            ForceShowUI();
+        }
     }
 
     // =========================
@@ -49,10 +55,15 @@ public class HealPickup : MonoBehaviour, IShopInteractable
         ItemUIManager.Instance?.UnregisterShop(this);
         ItemUIManager.Instance?.HideShopInteract();
     }
+
     public void TryShowUI()
     {
+        // [수정] UI 허용 상태 아닐 때 차단
+        if (!CombatRoomController.IsCombatInteractable) return;
+
         ShowUI();
     }
+
     private void ShowUI()
     {
         if (ItemUIManager.Instance == null) return;
@@ -60,17 +71,17 @@ public class HealPickup : MonoBehaviour, IShopInteractable
         string title = "하급 포션";
         string category = "회복 아이템";
 
-        // 실제 healPercent 기반으로 표시 (유연하게)
         int percent = Mathf.RoundToInt(healPercent * 100f);
 
         string effect = $"{percent}%";
         string desc = "체력을 조금 회복한다.";
 
-        // 위치 UI 활성화
-        ItemUIManager.Instance.ShowShopInteract(this, null);
-
-        // 포션 툴팁 표시
-        ItemUIManager.Instance.ShowPotionTooltip(title, category, effect, desc);
+        // [수정] UI 허용 상태일 때만 표시
+        if (CombatRoomController.IsCombatInteractable)
+        {
+            ItemUIManager.Instance.ShowShopInteract(this, null);
+            ItemUIManager.Instance.ShowPotionTooltip(title, category, effect, desc);
+        }
     }
 
     public Transform GetTransform()
@@ -80,6 +91,9 @@ public class HealPickup : MonoBehaviour, IShopInteractable
 
     public void ForceShowUI()
     {
+        // [수정] 강제 UI도 동일하게 제한
+        if (!CombatRoomController.IsCombatInteractable) return;
+
         ShowUI();
     }
 }
