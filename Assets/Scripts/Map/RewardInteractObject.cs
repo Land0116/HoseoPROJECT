@@ -145,11 +145,13 @@ public class RewardInteractObject : AutoBindableBehaviour
         Debug.Log($"[RewardInteractObject] 상호작용 보상 타입: {rewardType}");
 
         isUsed = true;
+        isPlayerNear = false;
+
+        PlayerUIManager.Instance?.HideInteractObjectPanel();
 
         if (interactCollider != null)
             interactCollider.enabled = false;
 
-        // 상호작용 후에는 보상 오브젝트가 사라지는 흐름이므로 몸통 충돌도 꺼준다.
         if (bodyCollider != null)
             bodyCollider.enabled = false;
 
@@ -226,8 +228,10 @@ public class RewardInteractObject : AutoBindableBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.CompareTag("Player")) return;
-
+        if (isUsed) return;
+        
         isPlayerNear = true;
+        PlayerUIManager.Instance?.ShowInteractObjectPanel(GetPromptText());
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -235,5 +239,26 @@ public class RewardInteractObject : AutoBindableBehaviour
         if (!collision.CompareTag("Player")) return;
 
         isPlayerNear = false;
+        PlayerUIManager.Instance?.HideInteractObjectPanel();
+
+
+    }
+    
+    private string GetPromptText()
+    {
+        switch (rewardType)
+        {
+            case RewardType.Augment:
+                return "F키로 증강 선택";
+
+            case RewardType.Skill:
+                return "F키로 스킬 선택";
+
+            case RewardType.Item:
+                return "F키로 아이템 획득";
+
+            default:
+                return "F키로 상호작용";
+        }
     }
 }

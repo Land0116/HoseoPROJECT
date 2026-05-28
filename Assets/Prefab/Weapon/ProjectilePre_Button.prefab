@@ -129,6 +129,9 @@ MonoBehaviour:
   attackTriggerName: Attack
   destroyWithExplosionAnimation: 1
   explosionDestroyFallbackTime: 0.35
+  explosionRangeVisualPrefab: {fileID: 7074169234125553126, guid: bab35f3922880c947bf17bd1ad1006a0, type: 3}
+  explosionRangeVisualLifeTime: 0.25
+  scaleExplosionVisualByRadius: 1
   chainProjectilePrefab: {fileID: 33401344934054971}
   enemyLayerMask:
     serializedVersion: 2

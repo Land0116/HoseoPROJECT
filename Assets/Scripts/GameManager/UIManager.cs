@@ -575,20 +575,16 @@ public class UIManager : MonoBehaviour
             MapFlowManager.Instance.ResetFlowStateOnly();
         }
 
+        if (CrosshairUI.Instance != null)
+        {
+            CrosshairUI.Instance.HideCrosshair();
+        }
+
         if (PlayerController.Instance != null)
         {
-            if (CrosshairUI.Instance != null)
-            {
-                CrosshairUI.Instance.HideCrosshair();
-            }
-
-            if (PlayerController.Instance != null)
-            {
-                Destroy(PlayerController.Instance.gameObject);
-            }
-
             Destroy(PlayerController.Instance.gameObject);
         }
+
 
         SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
 
@@ -603,7 +599,7 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene("Main");
 
         Cursor.visible = true;
-        //Cursor.lockState = CursorLockMode.None;
+  
     }
 
     /// <summary>

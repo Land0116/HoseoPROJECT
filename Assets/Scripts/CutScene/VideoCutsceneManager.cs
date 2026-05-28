@@ -21,6 +21,9 @@ public class VideoCutsceneManager : MonoBehaviour
         public Action onFinished;
     }
 
+    [Header("컷씬 준비 중 검은 덮개")]
+    [SerializeField] private GameObject blackCover;
+    
     [Header("컷씬 루트")]
     [SerializeField] private GameObject cutsceneRoot;
 
@@ -95,6 +98,17 @@ public class VideoCutsceneManager : MonoBehaviour
         if (audioSource == null)
         {
             audioSource = GetComponentInChildren<AudioSource>(true);
+        }
+
+        if (blackCover == null)
+        {
+            Transform cover = FindChildRecursive(transform, "CutsceneBlackCover");
+
+            if (cover == null)
+                cover = FindChildRecursive(transform, "BlackCover");
+
+            if (cover != null)
+                blackCover = cover.gameObject;
         }
     }
 
@@ -271,12 +285,10 @@ public class VideoCutsceneManager : MonoBehaviour
 
     private IEnumerator PlaySingleClip(VideoClip clip, VideoCutsceneData data)
     {
-        videoPlayer.Stop();
+        ShowBlackCover();
 
-        /*if (audioSource != null)//주석처리함
-        {
-            audioSource.Stop();
-        }*/
+        videoPlayer.Stop();
+        ClearRenderTextureToBlack();
 
         videoPlayer.clip = clip;
         videoPlayer.isLooping = false;
@@ -300,6 +312,11 @@ public class VideoCutsceneManager : MonoBehaviour
 
         videoPlayer.Play();
 
+        // 첫 프레임이 실제로 그려질 시간을 1프레임 준다.
+        yield return null;
+
+        HideBlackCover();
+
         while (!finished)
         {
             if (data.allowSkip && IsSkipPressed(data.skipKey))
@@ -313,12 +330,11 @@ public class VideoCutsceneManager : MonoBehaviour
         videoPlayer.loopPointReached -= OnVideoFinished;
         videoPlayer.Stop();
 
-        /*if (audioSource != null) //주석처리함
-        {
-            audioSource.Stop();
-        }*/
+        ClearRenderTextureToBlack();
+        ShowBlackCover();
     }
-
+    
+    
     private bool IsSkipPressed(Key key)
     {
         if (Keyboard.current == null)
@@ -403,19 +419,34 @@ public class VideoCutsceneManager : MonoBehaviour
 
     public void ShowCutscenePanel()
     {
+        ClearCurrentVideoFrame();
+        ShowBlackCover();
+
         if (cutsceneRoot != null)
         {
             cutsceneRoot.SetActive(true);
             cutsceneRoot.transform.SetAsLastSibling();
         }
-    }
 
+        ShowBlackCover();
+    }
+    
     public void HideCutscenePanel()
     {
         if (videoPlayer != null)
         {
             videoPlayer.Stop();
+            videoPlayer.clip = null;
         }
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+        }
+
+        ClearRenderTextureToBlack();
+        ShowBlackCover();
 
         if (cutsceneRoot != null)
         {
@@ -514,12 +545,10 @@ public class VideoCutsceneManager : MonoBehaviour
     }
     private IEnumerator PlaySingleClipForExternalFade(VideoClip clip, VideoCutsceneData data)
     {
-        videoPlayer.Stop();
+        ShowBlackCover();
 
-        /*if (audioSource != null) //주석처리함
-        {
-            audioSource.Stop();
-        }*/ 
+        videoPlayer.Stop();
+        ClearRenderTextureToBlack();
 
         videoPlayer.clip = clip;
         videoPlayer.isLooping = false;
@@ -540,7 +569,13 @@ public class VideoCutsceneManager : MonoBehaviour
         }
 
         videoPlayer.loopPointReached += OnVideoFinished;
+
         videoPlayer.Play();
+
+        // 새 컷씬 첫 프레임이 올라온 뒤 검은 덮개 제거
+        yield return null;
+
+        HideBlackCover();
 
         while (!finished)
         {
@@ -553,27 +588,23 @@ public class VideoCutsceneManager : MonoBehaviour
         }
 
         videoPlayer.loopPointReached -= OnVideoFinished;
-        
-        // 바로 Stop 하지 않는다.
-        // 페이드아웃이 끝날 때까지 마지막 화면을 유지하기 위함.
-        videoPlayer.Pause();
 
-        /*if (audioSource != null) //주석처리함
-        {
-            audioSource.Stop();
-        }*/
-    }
+        // 페이드아웃 중에는 마지막 프레임 유지
+        videoPlayer.Pause();
+    }    
     
     public void EndExternalFadeCutscene()
     {
         if (videoPlayer != null)
         {
             videoPlayer.Stop();
+            videoPlayer.clip = null;
         }
 
         if (audioSource != null)
         {
             audioSource.Stop();
+            audioSource.clip = null;
         }
 
         if (BGMSoundManager.Instance != null)
@@ -589,6 +620,9 @@ public class VideoCutsceneManager : MonoBehaviour
                 Debug.Log("[컷씬] 씬 변경됨 → Resume 안함");
             }
         }
+
+        ClearRenderTextureToBlack();
+        ShowBlackCover();
 
         HideCutscenePanel();
 
@@ -617,9 +651,62 @@ public class VideoCutsceneManager : MonoBehaviour
             audioSource.clip = null;
         }
 
+        ClearRenderTextureToBlack();
+        ShowBlackCover();
+
         if (hidePanel)
         {
             HideCutscenePanel();
+        }
+    }
+    
+    public void ClearCurrentVideoFrame()
+    {
+        if (videoPlayer != null)
+        {
+            videoPlayer.Stop();
+            videoPlayer.clip = null;
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.clip = null;
+        }
+
+        ClearRenderTextureToBlack();
+    }
+
+    private void ClearRenderTextureToBlack()
+    {
+        if (renderTexture == null)
+            return;
+
+        RenderTexture previous = RenderTexture.active;
+
+        RenderTexture.active = renderTexture;
+        GL.Clear(true, true, Color.black);
+
+        RenderTexture.active = previous;
+
+        if (cutsceneRawImage != null)
+            cutsceneRawImage.texture = renderTexture;
+    }
+    
+    private void ShowBlackCover()
+    {
+        if (blackCover != null)
+        {
+            blackCover.SetActive(true);
+            blackCover.transform.SetAsLastSibling();
+        }
+    }
+
+    private void HideBlackCover()
+    {
+        if (blackCover != null)
+        {
+            blackCover.SetActive(false);
         }
     }
 }
