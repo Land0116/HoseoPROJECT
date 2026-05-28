@@ -113,6 +113,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     public bool gold100Active; //100골드 이상 보유시
     public bool hasDisplayTicket;
 
+    //스킬
+    private float speedBuffMultiplier = 1f;
+
     //몬스터 스킬 넉백
     [Header("Knockback")] [SerializeField] private float knockbackDuration = 0.2f;
     [SerializeField] private float knockbackDrag = 8f;
@@ -404,15 +407,27 @@ public class PlayerController : MonoBehaviour, IDamageable
         shieldActive = value;
     }
 
-    public void SetSpeedBuffState(bool value)
+    /*public void SetSpeedBuffState(bool value)
     {
         speedBuffActive = value;
-    }
+    }*/
 
-    public void ApplySpeedBuffMultiplier(float multiplier)
+    public void SetSpeedBuffState(bool active)
+    {
+        if (!active)
+        {
+            speedBuffMultiplier = 1f;
+        }
+    }
+    /*public void ApplySpeedBuffMultiplier(float multiplier)
     {
         moveSpeed = baseMoveSpeed * multiplier;
         attackPerSecond = baseAttackPerSecond * multiplier;
+    }*/
+    public void ApplySpeedBuffMultiplier(float multiplier)
+    {
+        speedBuffMultiplier = multiplier;
+        RebuildPlayerStats();
     }
 
     public bool IsDashOnCooldown()
@@ -2490,6 +2505,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         AttackPerSecond = Mathf.Max(
             0.1f,
             attackPerSecond * (1f + passiveAttackSpeedPercent + shotAttackSpeedBonusPercent)
+            * speedBuffMultiplier //*속도 버프 적용
         );
 
         float bonusMaxHpForGiantPressure = Mathf.Max(0f, maxHp - baseMaxHp);

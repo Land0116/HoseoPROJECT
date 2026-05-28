@@ -9,7 +9,7 @@ public class RobotAttackPattern : AttackPattern
     [SerializeField] private float rangedMaxRange = 15f;
 
     [Header("All")]
-    [SerializeField] private float cooldown = 2f;
+    [SerializeField] private float cooldown = 0.5f;
 
     [Header("Close Attack")]
     [SerializeField] private GameObject meleePrefab;

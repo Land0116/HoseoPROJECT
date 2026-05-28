@@ -186,9 +186,9 @@ MonoBehaviour:
   attackPattern: {fileID: 2133988174014043253}
   movePattern: {fileID: 4898502589507485991}
   moveSpeed: 3
-  maxHP: 250
-  minGold: 1
-  maxGold: 3
+  maxHP: 500
+  minGold: 100
+  maxGold: 170
   hpUIPrefab: {fileID: 8944156004500592701, guid: 70a7682346a31794fb29796faa12da79, type: 3}
   alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
   weaponPrefabDropChance: 0
@@ -228,7 +228,7 @@ MonoBehaviour:
   rangedKnockback: 6
   minFireDelay: 0.2
   maxFireDelay: 0.5
-  bulletSpeed: 18
+  bulletSpeed: 12
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
   telegraphTime: 0.5
 --- !u!114 &4898502589507485991

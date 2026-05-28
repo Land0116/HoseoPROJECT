@@ -186,9 +186,9 @@ MonoBehaviour:
   attackPattern: {fileID: 5210070389676894093}
   movePattern: {fileID: 5734487032805444401}
   moveSpeed: 3
-  maxHP: 100
-  minGold: 1
-  maxGold: 3
+  maxHP: 150
+  minGold: 75
+  maxGold: 125
   hpUIPrefab: {fileID: 8944156004500592701, guid: 70a7682346a31794fb29796faa12da79, type: 3}
   alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
   weaponPrefabDropChance: 0
