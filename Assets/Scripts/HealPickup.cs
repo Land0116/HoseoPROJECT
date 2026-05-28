@@ -6,6 +6,10 @@ public class HealPickup : MonoBehaviour, IShopInteractable
     [SerializeField, Range(0f, 1f)] private float healPercent = 0.25f;
 
     private PlayerController player;
+    private bool isPlayerInside = false;
+
+
+
 
     // =========================
     // 상호작용 (핵심)
@@ -19,7 +23,6 @@ public class HealPickup : MonoBehaviour, IShopInteractable
 
         Destroy(gameObject);
     }
-
     // =========================
     // 범위 진입
     // =========================
@@ -28,9 +31,9 @@ public class HealPickup : MonoBehaviour, IShopInteractable
         if (!collision.CompareTag("Player")) return;
 
         player = collision.GetComponent<PlayerController>();
+        isPlayerInside = true;
 
         ItemUIManager.Instance?.RegisterShop(this);
-        ShowUI();
     }
 
     // =========================
@@ -41,11 +44,15 @@ public class HealPickup : MonoBehaviour, IShopInteractable
         if (!collision.CompareTag("Player")) return;
 
         player = null;
+        isPlayerInside = false;
 
         ItemUIManager.Instance?.UnregisterShop(this);
         ItemUIManager.Instance?.HideShopInteract();
     }
-
+    public void TryShowUI()
+    {
+        ShowUI();
+    }
     private void ShowUI()
     {
         if (ItemUIManager.Instance == null) return;
@@ -69,5 +76,10 @@ public class HealPickup : MonoBehaviour, IShopInteractable
     public Transform GetTransform()
     {
         return transform;
+    }
+
+    public void ForceShowUI()
+    {
+        ShowUI();
     }
 }

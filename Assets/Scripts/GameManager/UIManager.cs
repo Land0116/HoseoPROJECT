@@ -63,7 +63,7 @@ public class UIManager : MonoBehaviour
 
     private bool isStartingGame;
 
-
+    private bool shouldRestoreAugmentationAfterEscClose = false; //* 패널
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -96,29 +96,6 @@ public class UIManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    /*private void Update()
-    {
-        // 키보드가 없으면 종료
-        if (Keyboard.current == null) return;
-
-        // ESC 입력이 이번 프레임에 눌렸는지 확인
-        if (!Keyboard.current.escapeKey.wasPressedThisFrame) return;
-
-        if (optionUI != null && optionUI.HandleEscapeConsumed())
-        {
-            return;
-        }
-
-        // 메인 씬인지, 게임 씬인지에 따라 ESC 동작 분기
-        if (SceneManager.GetActiveScene().name == "Main")
-        {
-            HandleMainSceneEscape();
-        }
-        else
-        {
-            HandleGameSceneEscape();
-        }
-    }*/
     private void Update()
     {
         if (Keyboard.current == null) return;
@@ -132,6 +109,20 @@ public class UIManager : MonoBehaviour
         if (optionUI != null && optionUI.IsControlViewOpen)
         {
             optionUI.CloseControlView();
+            return;
+        }
+
+        if (playerUIManager != null && playerUIManager.IsEscPanelOpen()) //* 0529 증강 복구
+        {
+            playerUIManager.CloseEscPanel();
+
+            // 증강 복구
+            if (shouldRestoreAugmentationAfterEscClose && augUIManager != null)
+            {
+                augUIManager.RestoreCurrentAugmentationUI();
+                shouldRestoreAugmentationAfterEscClose = false;
+            }
+
             return;
         }
 
@@ -440,6 +431,7 @@ public class UIManager : MonoBehaviour
         if (augUIManager != null && augUIManager.IsAugmentationVisible())
         {
             augUIManager.HideCurrentAugmentationUI();
+            shouldRestoreAugmentationAfterEscClose = true; //* 0529
             playerUIManager.OpenEscPanelFromAugmentation();
             return;
         }

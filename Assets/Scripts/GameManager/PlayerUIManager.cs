@@ -1131,5 +1131,18 @@ public class PlayerUIManager : MonoBehaviour
         Debug.Log("SetEscState 호출됨: " + target);
     }
 
+    public bool IsEscPanelOpen() //* 0529
+    {
+        return escPanel != null && escPanel.activeSelf;
+    }
 
+    public void CloseEscPanel() //* 0529
+    {
+        if (escPanel != null)
+            escPanel.SetActive(false);
+
+        Time.timeScale = 1f;
+
+        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+    }
 }
