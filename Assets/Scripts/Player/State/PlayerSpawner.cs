@@ -15,7 +15,7 @@ public class PlayerSpawner : MonoBehaviour
 {
     [Header("처음 생성할 프리팹")]
     [SerializeField] private PlayerController playerPrefab;
-    [SerializeField] private GameObject crosshairPrefab;
+   
 
     private void Start()
     {
@@ -40,57 +40,41 @@ public class PlayerSpawner : MonoBehaviour
     /// </summary>
     private void SpawnFirstPlayer()
     {
-        // Player 프리팹이 비어 있으면 종료
         if (playerPrefab == null)
         {
             Debug.LogWarning("PlayerSpawner : playerPrefab이 비어 있음");
             return;
         }
 
-        // 현재 스포너 위치에 Player 생성
         PlayerController spawnedPlayer = Instantiate(
             playerPrefab,
             transform.position,
             Quaternion.identity
         );
 
-        // Player는 런 동안 유지해야 하므로 DDOL
         DontDestroyOnLoad(spawnedPlayer.gameObject);
 
-        // Crosshair도 처음 1번만 생성
-        Transform spawnedCrosshair = null;
+        // 이제 Crosshair Transform을 넘기지 않음
+        spawnedPlayer.SetupAfterSpawn();
 
-        if (crosshairPrefab != null)
-        {
-            GameObject crosshairObj = Instantiate(crosshairPrefab);
-            DontDestroyOnLoad(crosshairObj);
-
-            spawnedCrosshair = crosshairObj.transform;
-        }
-
-        // Player가 생성된 직후 필요한 참조를 연결
-        spawnedPlayer.SetupAfterSpawn(spawnedCrosshair);
-
-        // UI가 새 Player를 보도록 연결
         if (PlayerUIManager.Instance != null)
         {
             PlayerUIManager.Instance.BindPlayer(spawnedPlayer);
             PlayerUIManager.Instance.ShowPlayerHUD();
         }
 
-        // 카메라가 새 Player를 따라가게 연결
         if (UIManager.Instance != null)
         {
             UIManager.Instance.BindCameraToPlayer(spawnedPlayer);
         }
 
-        // 증강 슬롯 UI 다시 갱신
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
-    }
 
+        CrosshairUI.Instance?.ShowCrosshair();
+    }
     /// <summary>
     /// 이미 존재하는 Player를 현재 스테이지 스폰 위치로 이동
     /// 새 생성은 하지 않음
@@ -128,6 +112,13 @@ public class PlayerSpawner : MonoBehaviour
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
+        }
+        
+        if (PlayerController.Instance != null &&
+            !PlayerController.Instance.IsDie &&
+            SceneManager.GetActiveScene().name != "Main")
+        {
+            CrosshairUI.Instance?.ShowCrosshair();
         }
     }
 }

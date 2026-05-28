@@ -288,7 +288,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private Vector2 inputDirection;
     private Camera _mainCamera;
 
-    [Header("조준점 설정")] [SerializeField] private Transform crosshairTransform; // 계층 구조의 Crosshair 오브젝트 연결
+    
     [SerializeField] private bool hideSystemCursor = true; // 시스템 커서 숨김 여부
     [SerializeField] private Transform playerBody;
 
@@ -648,6 +648,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
+        if (!IsDie && !isSystemInputLocked)
+        {
+            UpdateAimDirectionFromMouse();
+        }
+        
         HandleKnockback(); //* 0513
         UpdateStun();
 
@@ -684,7 +689,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void LateUpdate()
     {
-        PlayerMouseMovement();
         UpdateShadowVisual();
     }
 
@@ -780,35 +784,35 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     #region 플레이어 마우스 움직임
 
-    void PlayerMouseMovement()
-    {
-        if (isSystemInputLocked) return;
-        if (IsDie) return;
-        if (crosshairTransform == null || playerBody == null) return;
-        if (_mainCamera == null) return;
-
-        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
-            mouseScreenPos.x,
-            mouseScreenPos.y,
-            -_mainCamera.transform.position.z));
-        mouseWorldPos.z = 0f;
-
-        crosshairTransform.position = mouseWorldPos;
-
-        Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position);
-        if (direction.sqrMagnitude > 0.0001f)
-        {
-            aimDirection = direction.normalized;
-            if (playerState != PlayerState.Attack &&
-                playerState != PlayerState.Hit &&
-                playerState != PlayerState.Death)
-            {
-                animDirection = aimDirection;
-                ApplyBlendTreeDirection(animDirection);
-            }
-        }
-    }
+    // void PlayerMouseMovement()
+    // {
+    //     if (isSystemInputLocked) return;
+    //     if (IsDie) return;
+    //     if (crosshairTransform == null || playerBody == null) return;
+    //     if (_mainCamera == null) return;
+    //
+    //     Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+    //     Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(new Vector3(
+    //         mouseScreenPos.x,
+    //         mouseScreenPos.y,
+    //         -_mainCamera.transform.position.z));
+    //     mouseWorldPos.z = 0f;
+    //
+    //     crosshairTransform.position = mouseWorldPos;
+    //
+    //     Vector2 direction = ((Vector2)mouseWorldPos - (Vector2)playerBody.position);
+    //     if (direction.sqrMagnitude > 0.0001f)
+    //     {
+    //         aimDirection = direction.normalized;
+    //         if (playerState != PlayerState.Attack &&
+    //             playerState != PlayerState.Hit &&
+    //             playerState != PlayerState.Death)
+    //         {
+    //             animDirection = aimDirection;
+    //             ApplyBlendTreeDirection(animDirection);
+    //         }
+    //     }
+    // }
 
     #endregion
 
@@ -1979,10 +1983,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         StopAllCoroutines();
         deathUICoroutine = null;
 
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(false);
-        }
+        SetCrosshairVisible(false);
 
         ClearOrbitProjectiles();
     }
@@ -3110,11 +3111,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         bodyAnimator.SetFloat(MoveYHash, animDirection.y);
     }
 
-    if (crosshairTransform != null)
-    {
-        crosshairTransform.gameObject.SetActive(true);
-    }
-
+    SetCrosshairVisible(true);
     Cursor.visible = !hideSystemCursor;
     Cursor.lockState = CursorLockMode.None;
 
@@ -3147,10 +3144,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         _mainCamera = Camera.main;
 
         // 죽은 상태가 아니면 크로스헤어 다시 켜기
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(!IsDie);
-        }
+        SetCrosshairVisible(!IsDie);
 
         // 증강 아이콘 UI 갱신
         if (AugUIManager.instance != null)
@@ -3168,22 +3162,10 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// 2. 현재 씬 Camera 연결
     /// 3. 커서/크로스헤어 상태 정리
     /// </summary>
-    public void SetupAfterSpawn(Transform spawnedCrosshair)
+    public void SetupAfterSpawn()
     {
-        // 새로 생성한 크로스헤어 연결
-        crosshairTransform = spawnedCrosshair;
-
-        // 현재 씬 카메라 연결
         _mainCamera = Camera.main;
-
-        // 시스템 커서 표시 여부 설정
-        Cursor.visible = !hideSystemCursor;
-
-        // 크로스헤어가 있으면 활성화
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(true);
-        }
+        SetCrosshairVisible(!IsDie);
     }
 
     /// <summary>
@@ -3195,14 +3177,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     /// </summary>
     public void RefreshSceneReferences()
     {
-        // 새 씬의 메인 카메라 다시 연결
         _mainCamera = Camera.main;
-
-        // 살아있으면 크로스헤어 다시 켜기
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(!IsDie);
-        }
+        SetCrosshairVisible(!IsDie);
     }
 
     /// <summary>
@@ -3231,16 +3207,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             bodyAnimator.ResetTrigger(AttackHash);
         }
     }
-
-    /// <summary>
-    /// UIManager가 Main 씬으로 돌아갈 때
-    /// 크로스헤어도 같이 삭제할 수 있게 반환
-    /// </summary>
-    public Transform GetCrosshairTransform()
-    {
-        return crosshairTransform;
-    }
-
+    
 
     /// <summary>
     /// 플레이어가 파괴될 때 static Instance 정리
@@ -3507,10 +3474,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        if (crosshairTransform != null)
-        {
-            crosshairTransform.gameObject.SetActive(false);
-        }
+        SetCrosshairVisible(false);
 
         SyncLocomotionState();
     }
@@ -3528,9 +3492,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 
             Cursor.lockState = CursorLockMode.None;
 
-            if (crosshairTransform != null)
+            if (!IsDie && IsGameplayScene())
             {
-                crosshairTransform.gameObject.SetActive(true);
+                SetCrosshairVisible(true);
             }
         }
 
@@ -3562,5 +3526,77 @@ public class PlayerController : MonoBehaviour, IDamageable
                 : "[BugMaster] 비활성화"
         );
     }
+
+
+    #region MouseCrossHair
+
+    private void SetCrosshairVisible(bool visible)
+    {
+        if (!IsGameplayScene())
+        {
+            CrosshairUI.Instance?.HideCrosshair();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            return;
+        }
+
+        if (visible && !IsDie)
+        {
+            CrosshairUI.Instance?.ShowCrosshair();
+
+            if (hideSystemCursor)
+                Cursor.visible = false;
+
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            CrosshairUI.Instance?.HideCrosshair();
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+
+    private Vector2 GetMouseWorldPosition()
+    {
+        if (_mainCamera == null)
+            _mainCamera = Camera.main;
+
+        if (_mainCamera == null)
+            return transform.position;
+
+        if (Mouse.current == null)
+            return transform.position;
+
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+
+        Vector3 mouseWorldPos = _mainCamera.ScreenToWorldPoint(
+            new Vector3(
+                mouseScreenPos.x,
+                mouseScreenPos.y,
+                -_mainCamera.transform.position.z
+            )
+        );
+
+        mouseWorldPos.z = 0f;
+        return mouseWorldPos;
+    }
+
+    private void UpdateAimDirectionFromMouse()
+    {
+        Vector2 origin = gunTip != null
+            ? (Vector2)gunTip.position
+            : (Vector2)transform.position;
+
+        Vector2 mouseWorldPos = GetMouseWorldPosition();
+        Vector2 dir = mouseWorldPos - origin;
+
+        if (dir.sqrMagnitude <= 0.0001f)
+            return;
+
+        aimDirection = dir.normalized;
+    }
+
+    #endregion
     
 }
