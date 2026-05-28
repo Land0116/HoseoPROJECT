@@ -564,7 +564,15 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void GoToMainScene()
     {
+        StartCoroutine(GoToMainSceneRoutine());
+    }
+
+    private IEnumerator GoToMainSceneRoutine()
+    {
+        Time.timeScale = 1f;
+
         ResetRunSystems();
+
         if (BGMSoundManager.Instance != null)
         {
             BGMSoundManager.Instance.ResetBGMState();
@@ -573,6 +581,12 @@ public class UIManager : MonoBehaviour
         if (MapFlowManager.Instance != null)
         {
             MapFlowManager.Instance.ResetFlowStateOnly();
+        }
+
+        if (VideoCutsceneManager.Instance != null)
+        {
+            VideoCutsceneManager.Instance.ForceStopCurrentCutscene(true);
+            VideoCutsceneManager.Instance.ClearCurrentVideoFrame();
         }
 
         if (CrosshairUI.Instance != null)
@@ -585,21 +599,35 @@ public class UIManager : MonoBehaviour
             Destroy(PlayerController.Instance.gameObject);
         }
 
-
         SkillBagInteractable current = FindAnyObjectByType<SkillBagInteractable>();
 
         if (current != null)
         {
             typeof(SkillBagInteractable)
-                .GetField("currentTarget",
-                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
+                .GetField(
+                    "currentTarget",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic
+                )
                 ?.SetValue(null, null);
         }
 
         SceneManager.LoadScene("Main");
 
+        // Main 씬 오브젝트 / UI 바인딩 기다리기
+        yield return null;
+        yield return null;
+
         Cursor.visible = true;
-  
+        Cursor.lockState = CursorLockMode.None;
+
+        // 핵심: 이전 엔딩 컷씬에서 검게 덮은 화면을 여기서 걷어낸다.
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.SetPlayerInputLocked(false);
+            MapTransitionManager.Instance.BringTransitionToFront();
+            yield return MapTransitionManager.Instance.FadeFromBlack();
+            MapTransitionManager.Instance.SetPlayerInputLocked(false);
+        }
     }
 
     /// <summary>
