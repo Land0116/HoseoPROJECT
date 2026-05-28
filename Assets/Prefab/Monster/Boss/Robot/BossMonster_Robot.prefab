@@ -212,11 +212,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0863e109f5c3a2449dcaf379d71607e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotAttackPattern
-  blockMovement: 0
+  blockMovement: 1
+  rangedMoveSpeed: 4
+  moveRange: 4
   meleeRange: 4
   rangedMinRange: 4
   rangedMaxRange: 12
-  cooldown: 0.5
+  cooldown: 1.5
   meleePrefab: {fileID: 1367490270637848893, guid: ab01e955b9f1e5c49a74dda3048580ab, type: 3}
   meleeDamage: 10
   meleeKnockback: 80
@@ -226,7 +228,7 @@ MonoBehaviour:
   bulletCount: 6
   bulletDamage: 4
   rangedKnockback: 6
-  minFireDelay: 0.2
+  minFireDelay: 0.1
   maxFireDelay: 0.5
   bulletSpeed: 12
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}

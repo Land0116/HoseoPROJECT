@@ -281,8 +281,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Attack1
   blockMovement: 0
   bulletPrefab: {fileID: 4330386028504437596, guid: 5f4f401231dce9c4f83f88bb5dc0d187, type: 3}
-  fireRate: 1
-  attackRange: 9
+  fireRate: 0.4
+  attackRange: 13
 --- !u!58 &1100845049900730700
 CircleCollider2D:
   m_ObjectHideFlags: 0

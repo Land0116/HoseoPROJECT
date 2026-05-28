@@ -214,29 +214,12 @@ public class NewItemUIManager : MonoBehaviour
         }
     }
 
-    
     private void SpawnRandomItems()
     {
-        if (itemPickupPrefab == null)
-        {
-            Debug.LogWarning("[NewItemUIManager] itemPickupPrefab이 없음. 아이템 드랍 불가.");
-            return;
-        }
-
-        if (PlayerController.Instance == null)
-        {
-            Debug.LogWarning("[NewItemUIManager] PlayerController.Instance가 없음. 아이템 드랍 불가.");
-            return;
-        }
+        if (itemPickupPrefab == null) return;
+        if (PlayerController.Instance == null) return;
 
         GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB);
-
-        if ((normalDB == null || normalDB.Length == 0) &&
-            (specialDB == null || specialDB.Length == 0))
-        {
-            Debug.LogWarning("[NewItemUIManager] 아이템 DB가 비어 있음. 아이템 드랍 불가.");
-            return;
-        }
 
         int itemCount = Random.value < 0.75f ? 2 : 3;
 
@@ -246,15 +229,16 @@ public class NewItemUIManager : MonoBehaviour
 
         Vector3 basePos = PlayerController.Instance.transform.position;
 
+        // 추가: 이미 뽑은 아이템 저장
+        HashSet<ItemData> selectedItems = new HashSet<ItemData>();
+
         for (int i = 0; i < itemCount; i++)
         {
-            ItemData item = RollItem();
+            ItemData item = RollItemWithoutDuplicate(selectedItems, normalDB, specialDB);
 
-            if (item == null)
-            {
-                Debug.LogWarning("[NewItemUIManager] RollItem 결과가 null임.");
-                continue;
-            }
+            if (item == null) continue;
+
+            selectedItems.Add(item); // 중복 방지
 
             Vector3 spawnPos = basePos + new Vector3(xPositions[i], 0f, 0f);
 
@@ -265,14 +249,10 @@ public class NewItemUIManager : MonoBehaviour
             {
                 pickup.SetItemData(item);
             }
-            else
-            {
-                Debug.LogWarning("[NewItemUIManager] itemPickupPrefab에 ItemPickup 컴포넌트가 없음.");
-            }
         }
     }
-   
-    
+
+
     private ItemData RollItem()
     {
         PlayerController player = PlayerController.Instance;
@@ -300,7 +280,21 @@ public class NewItemUIManager : MonoBehaviour
 
         return normalDB[Random.Range(0, normalDB.Length)];
     }
+    private ItemData RollItemWithoutDuplicate(HashSet<ItemData> selected, ItemData[] normalDB, ItemData[] specialDB)
+    {
+        int tryCount = 20; // 무한루프 방지
 
+        while (tryCount-- > 0)
+        {
+            ItemData item = RollItem();
+
+            if (item != null && !selected.Contains(item))
+                return item;
+        }
+
+        // fallback (DB 자체가 적을 때)
+        return null;
+    }
     private void GetCurrentStageItemDB(out ItemData[] normalDB, out ItemData[] specialDB)
     {
         normalDB = itemDatabase;
@@ -312,10 +306,7 @@ public class NewItemUIManager : MonoBehaviour
         {
             stage = MapFlowManager.Instance.CurrentAct;
         }
-        //else if (StageClear.Instance != null)
-        //{
-        //    stage = StageClear.Instance.GetCurrentStageNumber();
-        //}
+
 
         switch (stage)
         {
