@@ -858,11 +858,7 @@ public class StageClear : MonoBehaviour
 
         // StageClear는 UI를 직접 켜지 않는다.
         // 클리어 UI 출력은 PlayerUIManager에게 요청만 한다.
-        if (PlayerUIManager.Instance != null)
-        {
-            PlayerUIManager.Instance.ShowGameClearUI();
-        }
-        else
+        if (PlayerUIManager.Instance == null)
         {
             Debug.LogWarning("PlayerUIManager.Instance가 없어서 게임 클리어 UI를 열 수 없음");
         }

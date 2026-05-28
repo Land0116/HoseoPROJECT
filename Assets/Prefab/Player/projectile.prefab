@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7331951843326288171
 Transform:
   m_ObjectHideFlags: 0
@@ -123,6 +123,13 @@ MonoBehaviour:
   chainRange: 0
   dotDamagePerSecond: 0
   dotDuration: 0
+  animator: {fileID: 0}
+  attackTriggerName: Attack
+  destroyWithExplosionAnimation: 1
+  explosionDestroyFallbackTime: 0.35
+  explosionRangeVisualPrefab: {fileID: 0}
+  explosionRangeVisualLifeTime: 0.25
+  scaleExplosionVisualByRadius: 1
   chainProjectilePrefab: {fileID: 4537737258282288010}
   enemyLayerMask:
     serializedVersion: 2

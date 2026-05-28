@@ -648,7 +648,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
-        if (!IsDie && !isSystemInputLocked)
+        if (!IsDie && !isSystemInputLocked && canControl && IsGameplayScene())
         {
             UpdateAimDirectionFromMouse();
         }
@@ -3584,8 +3584,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void UpdateAimDirectionFromMouse()
     {
-        Vector2 origin = gunTip != null
-            ? (Vector2)gunTip.position
+        Vector2 origin = playerBody != null
+            ? (Vector2)playerBody.position
             : (Vector2)transform.position;
 
         Vector2 mouseWorldPos = GetMouseWorldPosition();
@@ -3595,8 +3595,19 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
 
         aimDirection = dir.normalized;
-    }
 
+        // 공격 / 피격 / 죽음 상태에서는 방향을 강제로 바꾸지 않는다.
+        // 이유: 공격 애니메이션 도중 마우스를 돌렸을 때 애니메이션이 흔들리거나 캔슬되는 느낌을 막기 위해서.
+        if (playerState == PlayerState.Attack ||
+            playerState == PlayerState.Hit ||
+            playerState == PlayerState.Death)
+        {
+            return;
+        }
+
+        animDirection = aimDirection;
+        ApplyBlendTreeDirection(animDirection);
+    }
     #endregion
     
 }

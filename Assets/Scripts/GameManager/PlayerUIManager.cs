@@ -91,10 +91,9 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private Slider chargeGaugeSlider;
 
     
-    [Header("Game Clear")]
-    [SerializeField] private GameObject gameClearPanel;
-    [SerializeField] private Button clearRestartBtn;
-    [SerializeField] private Button clearToMainBtn;
+    [Header("InteractObjectPanel")]
+    [SerializeField] private GameObject interactObjectPanel;
+    [SerializeField] private TextMeshProUGUI interactObjectText;
 
     private bool isProcessingEscape = false;
     private enum EscReturnTarget
@@ -710,7 +709,6 @@ public class PlayerUIManager : MonoBehaviour
         exitSurePanel = UIManager.FindChildRecursive(playerPanel, "ExitSurePanel")?.gameObject;
         toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
         playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
-        gameClearPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "GameClearUIPanel")?.gameObject;
         newBtnBtn = UIManager.FindChildRecursive(systemUIRoot.transform, "NewBtnBtn")?.GetComponent<Button>(); //*
 
         Transform dashPanelTr = UIManager.FindChildRecursive(playerPanel, "DashPanel");
@@ -720,8 +718,7 @@ public class PlayerUIManager : MonoBehaviour
             dashIcon = UIManager.FindChildRecursive(dashPanelTr, "DashIcon")?.GetComponent<Image>();
             dashCooldownOverlay = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownOverlay")?.GetComponent<Image>();
             dashCooldownText = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownText")?.GetComponent<TextMeshProUGUI>();
-
-
+            
         }
         
         Transform chargeGaugeTr = UIManager.FindChildRecursive(playerPanel, "ChargeGaugeSlider");
@@ -729,12 +726,22 @@ public class PlayerUIManager : MonoBehaviour
         if (chargeGaugeTr != null)
         {
             chargeGaugePanel = chargeGaugeTr.gameObject;
-            chargeGaugeSlider = UIManager.FindChildRecursive(chargeGaugeTr, "ChargeGaugeSlider")?.GetComponent<Slider>();
+            chargeGaugeSlider =
+                UIManager.FindChildRecursive(chargeGaugeTr, "ChargeGaugeSlider")?.GetComponent<Slider>();
 
             chargeGaugePanel.SetActive(false);
 
             if (chargeGaugeSlider != null)
                 chargeGaugeSlider.value = 0f;
+        }
+        
+        interactObjectPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "InteractObjectPanel")?.gameObject;
+        if (interactObjectPanel != null)
+        {
+            interactObjectText = UIManager.FindChildRecursive(interactObjectPanel.transform, "InteractText")
+                ?.GetComponent<TextMeshProUGUI>();
+
+            interactObjectPanel.SetActive(false);
         }
 
         // ESC 패널 내부 버튼
@@ -764,13 +771,6 @@ public class PlayerUIManager : MonoBehaviour
         {
             reStart = UIManager.FindChildRecursive(playerDyingPanel.transform, "ReStartBtn")?.GetComponent<Button>();
             dieToMain = UIManager.FindChildRecursive(playerDyingPanel.transform, "DieToMainBtn")?.GetComponent<Button>();
-        }
-        
-        // 게임 클리어 UI 버튼
-        if (gameClearPanel != null)
-        {
-            clearRestartBtn = UIManager.FindChildRecursive(gameClearPanel.transform, "RestartBtn")?.GetComponent<Button>();
-            clearToMainBtn = UIManager.FindChildRecursive(gameClearPanel.transform, "ToMainBtn")?.GetComponent<Button>();
         }
 
         // 버튼 이벤트 연결
@@ -805,10 +805,7 @@ public class PlayerUIManager : MonoBehaviour
 
         BindButton(reStart, OnClickRestart);
         BindButton(dieToMain, OnClickToMain);
-        
-        
-        BindButton(clearRestartBtn, OnClickRestart);
-        BindButton(clearToMainBtn, OnClickToMain);
+
     }
     private void OnClickNewBtnBtn()
     {
@@ -851,20 +848,6 @@ public class PlayerUIManager : MonoBehaviour
             dashCooldownText.text = "";
             dashCooldownText.gameObject.SetActive(false);
         }
-    }
-    
-    /// <summary>
-    /// 게임 최종 클리어 UI 보여주기.
-    /// StageClear는 클리어 여부만 판단하고,
-    /// 실제 UI 출력은 PlayerUIManager가 담당한다.
-    /// </summary>
-    public void ShowGameClearUI()
-    {
-        Time.timeScale = 0f;
-
-        gameClearPanel.SetActive(true);
-
-        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.GameClearPanel, true);
     }
     
     public void ResetUIForNewRun()
@@ -955,28 +938,43 @@ public class PlayerUIManager : MonoBehaviour
         CloseAllPanels();
         currentState = newState;
     }
+
     private void CloseAllPanels()
     {
-        escPanel.SetActive(false);
-        optionPanel.SetActive(false);
-        exitSurePanel.SetActive(false);
-        toMainSurePanel.SetActive(false);
-        playerDyingPanel.SetActive(false);
-        gameClearPanel.SetActive(false);
+        if (escPanel != null)
+            escPanel.SetActive(false);
+
+        if (optionPanel != null)
+            optionPanel.SetActive(false);
+
+        if (exitSurePanel != null)
+            exitSurePanel.SetActive(false);
+
+        if (toMainSurePanel != null)
+            toMainSurePanel.SetActive(false);
+
+        if (playerDyingPanel != null)
+            playerDyingPanel.SetActive(false);
+
+        if (interactObjectPanel != null)
+            interactObjectPanel.SetActive(false);
+
         if (newBtnBtn != null)
             newBtnBtn.gameObject.SetActive(false);
     }
-    private void ExitEsc()
-    {
-        escPanel.SetActive(false);
 
-        currentState = UIState.Gameplay;
-
-        Time.timeScale = 1f;
-
-        PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
-
-    }
+    // private void ExitEsc()
+    // {
+    //     escPanel.SetActive(false);
+    //
+    //     currentState = UIState.Gameplay;
+    //
+    //     Time.timeScale = 1f;
+    //
+    //     PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+    //
+    // }
+    
     public void EnterEsc()
     {
         CloseAllPanels();
@@ -990,15 +988,16 @@ public class PlayerUIManager : MonoBehaviour
 
         
     }
+    
     /*private void CloseOptionAndReturnToEsc()
     {
         if (optionPanel != null)
             optionPanel.SetActive(false);
 
-        
 
         EnterEsc();
     }*/
+    
     private void CloseOptionAndReturnToEsc()
     {
         SetEscState(UIState.EscMenu);
@@ -1144,5 +1143,27 @@ public class PlayerUIManager : MonoBehaviour
         Time.timeScale = 1f;
 
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
+    }
+    public void ShowInteractObjectPanel(string message)
+    {
+        if (interactObjectPanel == null)
+            return;
+
+        if (interactObjectText != null)
+        {
+            interactObjectText.text = string.IsNullOrWhiteSpace(message)
+                ? "F키로 상호작용"
+                : message;
+        }
+
+        interactObjectPanel.SetActive(true);
+    }
+
+    public void HideInteractObjectPanel()
+    {
+        if (interactObjectPanel == null)
+            return;
+
+        interactObjectPanel.SetActive(false);
     }
 }

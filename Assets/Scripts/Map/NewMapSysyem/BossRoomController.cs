@@ -147,17 +147,7 @@ public class BossRoomController : MapRoomControllerBase
 
         if (isFinalStage)
         {
-            ShowGameClearUI();
-
-            if (MapTransitionManager.Instance != null)
-            {
-                yield return MapTransitionManager.Instance.FadeFromBlack();
-
-                // MapTransition 잠금만 해제.
-                // GameClearPanel 잠금은 PlayerUIManager.ShowGameClearUI()에서 유지됨.
-                MapTransitionManager.Instance.SetPlayerInputLocked(false);
-            }
-
+            yield return ReturnToMainAfterEndingCutscene();
             yield break;
         }
 
@@ -169,6 +159,34 @@ public class BossRoomController : MapRoomControllerBase
         else
         {
             Debug.LogWarning("[BossRoomController] MapFlowManager가 없음");
+        }
+    }
+    private IEnumerator ReturnToMainAfterEndingCutscene()
+    {
+        Debug.Log("[BossRoomController] 엔딩 컷씬 종료. GameClear UI 없이 Main 씬으로 이동.");
+
+        Time.timeScale = 1f;
+
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.SetPlayerInputLocked(false);
+        }
+
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, false);
+        }
+
+        yield return null;
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.GoToMainScene();
+        }
+        else
+        {
+            Debug.LogWarning("[BossRoomController] UIManager가 없음. 직접 Main 씬 로드.");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Main");
         }
     }
 
@@ -185,6 +203,7 @@ public class BossRoomController : MapRoomControllerBase
         // 2. 컷씬 패널 켜기
         if (VideoCutsceneManager.Instance != null)
         {
+            VideoCutsceneManager.Instance.ClearCurrentVideoFrame();
             VideoCutsceneManager.Instance.ShowCutscenePanel();
             VideoCutsceneManager.Instance.BringCutsceneToFront();
         }
@@ -218,14 +237,5 @@ public class BossRoomController : MapRoomControllerBase
         // 6. 검은 화면 뒤에서 컷씬 패널 끄기
         VideoCutsceneManager.Instance.EndExternalFadeCutscene();
     }
-
-    private void ShowGameClearUI()
-    {
-        Debug.Log("[BossRoomController] 게임 클리어 UI 표시");
-
-        if (PlayerUIManager.Instance != null)
-        {
-            PlayerUIManager.Instance.ShowGameClearUI();
-        }
-    }
+    
 }
