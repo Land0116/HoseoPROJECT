@@ -3,7 +3,7 @@
 public class ItemPickup : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer iconRenderer;
-    [SerializeField] private float itemRenderSize = 20f;
+    [SerializeField] private float itemRenderSize = 150f;
     [SerializeField] private ItemData itemData;
     public ItemData GetItemData() => itemData;
 
