@@ -63,29 +63,55 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
     private void TryPurchase()
     {
         if (player == null) return;
+
         int finalPrice = GetFinalPrice();
-        // 골드 부족
+
+        // =========================
+        // 1. 돈 부족
+        // =========================
         if (player.Gold < finalPrice)
         {
             Debug.Log("골드 부족");
+
+            if (ItemUIManager.Instance != null)
+            {
+                ItemUIManager.Instance.ShowAlertMessage("돈이 부족합니다.", false);
+            }
+
             PlayIndependent(purchaseFailSound);
             return;
         }
 
-        // 구매 성공
+        // =========================
+        // 2. 증강 추가 시도
+        // =========================
         bool added = AugmentRunManager.Instance.TryAddAugment(currentAugment);
 
         if (!added)
         {
-            Debug.Log("증강 추가 실패 (슬롯 가득 or 조건 불가)");
-            
+            Debug.Log("증강 추가 실패 (슬롯 가득)");
+
+            if (ItemUIManager.Instance != null)
+            {
+                ItemUIManager.Instance.ShowAlertMessage("더 이상 증강을 보유할 수 없습니다.", false);
+            }
+
+            PlayIndependent(purchaseFailSound);
             return;
         }
 
-        // 골드 차감
+        // =========================
+        // 3. 구매 성공
+        // =========================
         player.Gold -= finalPrice;
+
+        if (ItemUIManager.Instance != null)
+        {
+            ItemUIManager.Instance.ShowAlertMessage("구매 성공!", false);
+        }
+
         PlayIndependent(purchaseSuccessSound);
-        // UI 갱신 (핵심)
+
         if (AugUIManager.instance != null)
         {
             AugUIManager.instance.RefreshOwnedAugmentUI();
@@ -93,7 +119,6 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
         Debug.Log("구매 성공: " + currentAugment.augmentationName);
 
-        // 구매 후 비활성 or 재생성
         AfterPurchase();
     }
 

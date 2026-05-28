@@ -64,33 +64,59 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     // =========================
     public void Interact(PlayerController player)
     {
-
         if (player == null) return;
 
         int finalPrice = GetFinalPrice();
+
+        // =========================
+        // 1. 돈 부족 → 구매 실패
+        // =========================
         if (player.Gold < finalPrice)
         {
+            ItemUIManager.Instance?.ShowAlertMessage("돈이 부족합니다.", false);
             PlayIndependent(purchaseFailSound);
             return;
         }
 
+        // =========================
+        // 2. 예외 방어
+        // =========================
         if (!isPotion && currentItem == null)
-        {
-
             return;
-        }
 
+        // =========================
+        // 3. 골드 차감 (구매 확정)
+        // =========================
         player.Gold -= finalPrice;
 
+        // =========================
+        // 4. 아이템 지급
+        // =========================
         if (isPotion)
         {
             ApplyPotion(player);
         }
         else
         {
-            ApplyItem(player);
+            bool equipSuccess = player.EquipItem(currentItem);
+
+            if (!equipSuccess)
+            {
+                // 인벤 꽉참 → 바닥 드랍 (UI는 안 띄움)
+                SpawnWorldItem(currentItem);
+            }
+            else
+            {
+                CurItemUI.Instance?.SetItems(player.GetEquippedItems());
+            }
         }
+
+        // =========================
+        // 5. 구매 성공 (단일 메시지)
+        // =========================
+        ItemUIManager.Instance?.ShowAlertMessage("구매 성공!", false);
         PlayIndependent(purchaseSuccessSound);
+
         gameObject.SetActive(false);
     }
 
@@ -153,57 +179,6 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     // =========================
     // 아이템 생성
     // =========================
-    /*public void GenerateItem()
-    {
-        ItemData[] normalPool = null;
-        ItemData[] premiumPool = null;
-
-        switch (currentStage)
-        {
-            case 1:
-                normalPool = stage1NormalItems;
-                premiumPool = stage1PremiumItems;
-                break;
-            case 2:
-                normalPool = stage2NormalItems;
-                premiumPool = stage2PremiumItems;
-                break;
-            case 3:
-                normalPool = stage3NormalItems;
-                premiumPool = stage3PremiumItems;
-                break;
-        }
-
-        float rand = Random.value;
-
-        bool isPremium = RollPremium();
-
-        if (!isPremium && normalPool != null && normalPool.Length > 0)
-        {
-            currentItem = normalPool[Random.Range(0, normalPool.Length)];
-            isPotion = false;
-            price = Random.Range(75, 86);
-        }
-        else if (premiumPool != null && premiumPool.Length > 0)
-        {
-            currentItem = premiumPool[Random.Range(0, premiumPool.Length)];
-            isPotion = false;
-            price = Random.Range(140, 161);
-        }
-        else
-        {
-            isPotion = true;
-            currentItem = null;
-
-            int potionType = Random.Range(0, 3);
-
-            if (potionType == 0) { potionHealPercent = 0.25f; price = 25; }
-            else if (potionType == 1) { potionHealPercent = 0.5f; price = 50; }
-            else { potionHealPercent = 0.75f; price = 100; }
-        }
-
-        UpdateUI();
-    }*/
     public void GenerateItem()
     {
         ItemData[] normalPool = null;

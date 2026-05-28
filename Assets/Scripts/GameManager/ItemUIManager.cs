@@ -25,6 +25,8 @@ public class ItemUIManager : MonoBehaviour
     private object currentTarget;
 
     [SerializeField] private GameObject alertItemPanel;
+    [SerializeField] private TextMeshProUGUI alertItemText;
+
     [SerializeField] private GameObject alertWeaponPanel;
     [SerializeField] private GameObject alertMaxItemPanel;
 
@@ -479,12 +481,18 @@ public class ItemUIManager : MonoBehaviour
         currentInteractTarget = target;
         currentInteractName = name;
     }
-    private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
+    /*private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
     {
         alertItemPanel.SetActive(true);
         PlayIndependent(alertSound);
         yield return new WaitForSeconds(duration);
         alertItemPanel.SetActive(false);
+    }*/
+    private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
+    {
+        ShowAlertMessage("æ∆¿Ã≈€¿ª »πµÊ«ﬂΩ¿¥œ¥Ÿ.", true);
+
+        yield break;
     }
 
     private System.Collections.IEnumerator ShowAlertWeaponPaenl(float duration)
@@ -536,6 +544,10 @@ public class ItemUIManager : MonoBehaviour
         Transform alertItemRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AlertItemPanel");
         if (alertItemRoot != null)
             alertItemPanel = alertItemRoot.gameObject;
+
+        Transform alertItemTextRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AlertItemTextItemMix");
+        if (alertItemTextRoot != null)
+            alertItemText = alertItemTextRoot.GetComponent<TextMeshProUGUI>();
 
         Transform alertWeaponRoot = UIManager.FindChildRecursive(systemUIRoot.transform, "AlertWeaponPanel");
         if (alertWeaponRoot != null)
@@ -888,4 +900,28 @@ public class ItemUIManager : MonoBehaviour
         shopAugEffectText.text = effect;
         shopAugDescText.text = desc;
     }
+
+    public void ShowAlertMessage(string msg, bool playSound = true)
+    {
+        if (alertItemPanel == null) return;
+
+        StopAllCoroutines();
+        StartCoroutine(ShowAlertMessageRoutine(msg, 1f, playSound));
+    }
+
+    private System.Collections.IEnumerator ShowAlertMessageRoutine(string msg, float duration, bool playSound)
+    {
+        alertItemPanel.SetActive(true);
+
+        if (alertItemText != null)
+            alertItemText.text = msg;
+
+        if (playSound)
+            PlayIndependent(alertSound);
+
+        yield return new WaitForSeconds(duration);
+
+        alertItemPanel.SetActive(false);
+    }
+
 }

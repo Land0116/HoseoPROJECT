@@ -83,7 +83,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         this.player = player;
         TryPurchase();
     }
-    
+
     private void TryPurchase()
     {
         PlayerController p = PlayerController.Instance;
@@ -91,16 +91,22 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 
         int finalPrice = GetFinalPrice();
 
+        // 1. 돈 부족
         if (p.Gold < finalPrice)
         {
-            Debug.Log("골드 부족");
+            ItemUIManager.Instance?.ShowAlertMessage("돈이 부족합니다.", false);
             PlayIndependent(purchaseFailClip);
             return;
         }
 
+        // 2. 구매 성공
         p.Gold -= finalPrice;
-        PlayIndependent(purchaseSuccessClip);
+
         HandleSkillAcquire(currentSkill);
+
+        // 3. 성공 UI
+        ItemUIManager.Instance?.ShowAlertMessage("구매 성공!", false);
+        PlayIndependent(purchaseSuccessClip);
 
         gameObject.SetActive(false);
     }
