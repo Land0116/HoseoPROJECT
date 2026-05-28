@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2163869196540442969}
   - component: {fileID: 9139514254418439615}
   - component: {fileID: 2915404773871214574}
-  m_Layer: 0
+  m_Layer: 16
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,6 +344,7 @@ MonoBehaviour:
   chargeShotEnabled: 0
   chargeShotTime: 0
   chargeShotDamageMultiplier: 1
+  chargeShotProjectileScaleMultiplier: 2
   isAttackSequenceRunning: 0
   orbitFormationSpacing: 0.35
   orbitStartAngleOffset: 90
@@ -383,6 +384,7 @@ MonoBehaviour:
   specialCheatDeathHp: 1
   specialCheatDeathInvincibleDuration: 1
   specialHpToDamagePercentPer10Hp: 0
+  specialBonusMaxHpToScalePercentPer10Hp: 0
   specialHealOnKill: 0
   specialHpRegenPerSecond: 0
   specialHealToAutoAttackThreshold: 0
@@ -394,12 +396,14 @@ MonoBehaviour:
   obstacleLayerName: Obstacle
   rb: {fileID: 5864595452075051824}
   inputDirection: {x: 0, y: 0}
-  crosshairTransform: {fileID: 0}
   hideSystemCursor: 1
   playerBody: {fileID: 6444624563947541171}
   gunTip: {fileID: 6879044860308773687}
   deathUIShowDelay: 0.75
   shadowVisual: {fileID: 1711830842978373244}
+  bugMasterEnabled: 0
+  bugMasterDamageAdd: 100
+  bugMasterInvincible: 1
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5
