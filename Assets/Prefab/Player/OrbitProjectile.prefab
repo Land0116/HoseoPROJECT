@@ -177,6 +177,9 @@ MonoBehaviour:
   damage: 1
   hitInterval: 0.2
   lifeTime: 0
+  explosionRangeVisualPrefab: {fileID: 7074169234125553126, guid: bab35f3922880c947bf17bd1ad1006a0, type: 3}
+  explosionRangeVisualLifeTime: 0.25
+  scaleExplosionVisualByRadius: 1
   explosionRadius: 0
   explosionDamageMultiplier: 1
   dotDamagePerSecond: 0
@@ -184,6 +187,9 @@ MonoBehaviour:
   formationOffset: {x: 0, y: 0}
   faceOrbitMoveDirection: 1
   visualAngleOffset: 0
+  animator: {fileID: 0}
+  hitTriggerName: HitOrb
+  playHitAnimationOnDamage: 1
 --- !u!95 &-80998944050089643
 Animator:
   serializedVersion: 7
