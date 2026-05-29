@@ -1,3 +1,4 @@
+
 using System.Collections;
 using UnityEngine;
 
@@ -20,18 +21,20 @@ public class Attack_BossDashCombo : AttackPattern
     [SerializeField] private float firstDashDelay = 0.5f;
     [SerializeField] private float secondDashDelay = 0.5f;
     [SerializeField] private float finalAttackDelay = 0.3f;
-    [SerializeField] private float BeforefinalAttackDelay = 0.5f;
 
     [Header("프리팹")]
     [SerializeField] private GameObject finalAttackPrefab;
-
-    [SerializeField] private GameObject dashTelegraphPrefab; //*
-    [SerializeField] private float telegraphTime = 0.3f;//*
+    [SerializeField] private GameObject dashTelegraphPrefab;
+    [SerializeField] private float telegraphTime = 0.3f;
 
     private bool hasShownAlert = false;
-
     private float timer;
     private bool isAttacking = false;
+
+    private GameObject telegraphObj;
+    private GameObject finalAttackObj;
+
+    public float attackAnimationTest = 0.5f;
 
     public override void Execute()
     {
@@ -46,7 +49,6 @@ public class Attack_BossDashCombo : AttackPattern
 
         float dist = Vector2.Distance(monster.transform.position, player.position);
 
-        // 범위 들어오면 즉시 느낌표
         if (dist <= attackRange)
         {
             if (!hasShownAlert)
@@ -55,12 +57,8 @@ public class Attack_BossDashCombo : AttackPattern
                 hasShownAlert = true;
             }
         }
-        else
-        {
-            hasShownAlert = false;
-        }
+        else hasShownAlert = false;
 
-        // 실제 공격 조건
         if (dist <= attackRange && timer >= cooldown)
         {
             timer = 0f;
@@ -70,42 +68,42 @@ public class Attack_BossDashCombo : AttackPattern
 
     private IEnumerator AttackRoutine()
     {
+        monster.ignoreHitAnimation = true;  
+        monster.isAttacking = true;
+
         isAttacking = true;
         blockMovement = true;
 
         Transform player = monster.Player;
 
-        // 1첫번째 대쉬
+        monster.ForceLookAt(player.position);
         yield return Dash(player, dash1Damage);
-
         yield return new WaitForSeconds(firstDashDelay);
 
-        // 2두번째 대쉬
+        monster.ForceLookAt(player.position);
         yield return Dash(player, dash2Damage);
-
         yield return new WaitForSeconds(secondDashDelay);
 
-        // 3마지막 공격
         Vector2 dir = (player.position - monster.transform.position).normalized;
+        Vector3 fixedPos = monster.transform.position + (Vector3)dir * 2f;
 
-        // 공격 위치 미리 고정
-        Vector3 fixedAttackPos = monster.transform.position + (Vector3)dir * 2f;
+        monster.lockBossFinalAttack = true;
+        monster.PlayBossFinalAttackAnimation(dir);
 
-        // 방향 고정
-        monster.PlayAttackAnimation(dir);
-
-        // 딜레이 
         yield return new WaitForSeconds(finalAttackDelay);
 
-        // 고정된 위치에 공격 생성
-        GameObject obj = Instantiate(finalAttackPrefab, fixedAttackPos, Quaternion.identity);
+        monster.lockBossFinalAttack = false;
+
+        GameObject obj = Instantiate(finalAttackPrefab, fixedPos, Quaternion.identity);
 
         BossAttackHitbox hitbox = obj.GetComponent<BossAttackHitbox>();
         if (hitbox != null)
-        {
             hitbox.SetDamage(finalAttackDamage);
-        }
 
+        yield return new WaitForSeconds(attackAnimationTest);
+
+        monster.ignoreHitAnimation = false;
+        monster.isAttacking = false;
         blockMovement = false;
         isAttacking = false;
     }
@@ -119,8 +117,6 @@ public class Attack_BossDashCombo : AttackPattern
         float dashDistance = Vector2.Distance(startPos, targetPos) + dashExtraDistance;
         Vector2 dashTarget = targetPos + dir * dashExtraDistance;
 
-        GameObject telegraphObj = null;
-
         if (dashTelegraphPrefab != null)
         {
             telegraphObj = Instantiate(
@@ -131,17 +127,14 @@ public class Attack_BossDashCombo : AttackPattern
 
             DashTelegraph telegraph = telegraphObj.GetComponent<DashTelegraph>();
             if (telegraph != null)
-            {
                 telegraph.Init(dir, dashDistance, telegraphTime);
-            }
         }
 
         yield return new WaitForSeconds(telegraphTime);
 
-        if (telegraphObj != null)
-            Destroy(telegraphObj);
+        DestroyTelegraph();
 
-        monster.PlayAttackAnimation(dir);
+        monster.PlayBossDashAnimation(dir);
 
         GameObject hitboxObj = new GameObject("DashHitbox");
         CircleCollider2D col = hitboxObj.AddComponent<CircleCollider2D>();
@@ -161,14 +154,21 @@ public class Attack_BossDashCombo : AttackPattern
             Vector2 nextPos = monster.RB.position + dir * dashSpeed * Time.fixedDeltaTime;
             monster.RB.MovePosition(nextPos);
 
-            if (Vector2.Distance(nextPos, dashTarget) <= 0.1f)
-                break;
+            if (Vector2.Distance(nextPos, dashTarget) <= 0.1f) break;
 
-            Vector2 toTarget = dashTarget - monster.RB.position;
-            if (Vector2.Dot(toTarget, dir) <= 0f)
-                break;
+            if (Vector2.Dot(dashTarget - monster.RB.position, dir) <= 0f) break;
 
             yield return new WaitForFixedUpdate();
+        }
+    }
+
+
+    private void DestroyTelegraph()
+    {
+        if (telegraphObj != null)
+        {
+            Destroy(telegraphObj);
+            telegraphObj = null;
         }
     }
 }

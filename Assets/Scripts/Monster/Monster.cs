@@ -99,9 +99,17 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private float deathAnimationTime = 0.7f;
     private bool isDead = false;
 
+
     private CircleCollider2D col;//콜리더가져오기
     // 플레이어를 기다리는 코루틴 저장용
     private Coroutine bindPlayerRoutine;
+
+    //태엽원숭이 공격 애니메이션 관련
+    public bool lockBossFinalAttack = false;
+    [Header("Boss Hit Control")]
+    public bool ignoreHitAnimation = false;
+
+    private bool isForceDead = false;
 
     private void OnEnable()
     {
@@ -185,7 +193,7 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void FixedUpdate()
     {
-        if (isDead) return;
+        if (isDead || isForceDead) return;
         if (isKnockbacked) return;
         if (isHitStopped) return; //*
         if (player == null) return;
@@ -193,7 +201,7 @@ public class Monster : MonoBehaviour, IDamageable
         Vector2 moveDir = (currentPos - lastPosition).normalized;
 
         // 이동 중일 때만 방향 업데이트
-        if (!isAttacking && !isHit ) 
+        if (!isAttacking && !isHit && !lockBossFinalAttack && !ignoreHitAnimation)//* 0529
         {
             if (moveDir.magnitude > 0.01f)
             {
@@ -235,7 +243,7 @@ public class Monster : MonoBehaviour, IDamageable
     }
 
     //데미지 입음
-    public void OnDamage(float damage)
+    /*public void OnDamage(float damage)
     {
         currentHP -= damage;
         //Debug.Log("[" + currentHP + "]" + "남음");
@@ -249,12 +257,35 @@ public class Monster : MonoBehaviour, IDamageable
         {
             Death();
         }
+    }*/
+    public void OnDamage(float damage)
+    {
+        if (isDead) return;
+
+        currentHP -= damage;
+        currentHP = Mathf.Max(currentHP, 0f);
+
+        if (currentHP <= 0)
+        {
+            Death();
+            return;
+        }
+
+        // 죽는 중이면 Hit 무시
+        if (ignoreHitAnimation)
+            return;
+
+        PlayHitAnimation();
+        TriggerHitKnockback();
     }
 
     public void Death()
     {
         if (isDead) return;
         isDead = true;
+        isForceDead = true;
+        StopAllCoroutines();
+
         PlayDeathSound();
         isAttacking = false;
         isHit = false;
@@ -281,7 +312,7 @@ public class Monster : MonoBehaviour, IDamageable
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             string anim = GetDirectionName(angle) + "_Death";
 
-            PlayAnim(anim);
+            animator.Play(anim, 0, 0f);
 
             StartCoroutine(DeathFallbackRoutine());
         }
@@ -389,6 +420,8 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void PlayHitAnimation()
     {
+        if (ignoreHitAnimation) return;
+
         Vector2 dir = lastLookDir;
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -415,11 +448,19 @@ public class Monster : MonoBehaviour, IDamageable
     }
     void PlayAnim(string animName)
     {
+        if (isForceDead) return;
+
         if (animator == null) return;
 
         if (animator.runtimeAnimatorController == null) return; 
 
         if (!HasState(animName)) return;//*
+
+        if (lockBossFinalAttack) //* 0529 보스
+        {
+            if (!animName.Contains("_Attack"))
+                return;
+        }
 
         if (currentAnim == animName) return;
 
@@ -613,6 +654,40 @@ public class Monster : MonoBehaviour, IDamageable
 
         rb.linearVelocity = Vector2.zero;
         isHitStopped = false;
+    }
+    public void ForceLookAt(Vector2 targetPos)
+    {
+        Vector2 dir = (targetPos - (Vector2)transform.position).normalized;
+
+        if (dir.magnitude < 0.01f) return;
+
+        lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Idle";
+
+        PlayAnim(anim);
+    }
+    public void PlayBossDashAnimation(Vector2 dir)
+    {
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Dash";
+
+        PlayAnim(anim);
+    }
+
+    public void PlayBossFinalAttackAnimation(Vector2 dir)
+    {
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Attack";
+
+        PlayAnim(anim);
     }
 }
 

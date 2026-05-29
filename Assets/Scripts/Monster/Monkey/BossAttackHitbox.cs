@@ -19,7 +19,8 @@ public class BossAttackHitbox : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         col = GetComponent<Collider2D>();
 
-        col.enabled = false; // Ã³À½¿£ Ãæµ¹ ²¨µÒ
+        if (col != null)
+            col.enabled = false;
     }
 
     public void SetDamage(float value)
@@ -30,6 +31,9 @@ public class BossAttackHitbox : MonoBehaviour
 
     private IEnumerator FadeInRoutine()
     {
+        if (sr == null)
+            yield break;
+
         float t = 0f;
 
         Color c = sr.color;
