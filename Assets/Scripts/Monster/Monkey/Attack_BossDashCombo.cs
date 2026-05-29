@@ -1,5 +1,6 @@
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Attack_BossDashCombo : AttackPattern
@@ -35,6 +36,8 @@ public class Attack_BossDashCombo : AttackPattern
     private GameObject finalAttackObj;
 
     public float attackAnimationTest = 0.5f;
+
+    private float currentDashDamage;
 
     public override void Execute()
     {
@@ -114,8 +117,12 @@ public class Attack_BossDashCombo : AttackPattern
         Vector2 targetPos = player.position;
 
         Vector2 dir = (targetPos - startPos).normalized;
+
         float dashDistance = Vector2.Distance(startPos, targetPos) + dashExtraDistance;
         Vector2 dashTarget = targetPos + dir * dashExtraDistance;
+
+
+        currentDashDamage = damage; //*
 
         if (dashTelegraphPrefab != null)
         {
@@ -149,6 +156,23 @@ public class Attack_BossDashCombo : AttackPattern
 
         Destroy(hitboxObj, 0.5f);
 
+        float traveled = 0f; // 이동 거리 누적
+
+        while (traveled < dashDistance)
+        {
+            Vector2 currentPos = monster.RB.position;
+
+            Vector2 move = dir * dashSpeed * Time.fixedDeltaTime;
+            Vector2 nextPos = currentPos + move;
+
+            monster.RB.MovePosition(nextPos);
+
+            traveled += move.magnitude;
+
+            yield return new WaitForFixedUpdate();
+        }
+        /*Vector2 lastPos = monster.RB.position;
+
         while (true)
         {
             Vector2 nextPos = monster.RB.position + dir * dashSpeed * Time.fixedDeltaTime;
@@ -159,6 +183,18 @@ public class Attack_BossDashCombo : AttackPattern
             if (Vector2.Dot(dashTarget - monster.RB.position, dir) <= 0f) break;
 
             yield return new WaitForFixedUpdate();
+        }*/
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!isAttacking) return;
+
+        if (!collision.CompareTag("Player")) return;
+
+        if (collision.TryGetComponent<IDamageable>(out var dmg))
+        {
+            dmg.OnDamage(currentDashDamage); // Dash 데미지 적용
         }
     }
 

@@ -70,14 +70,6 @@ public class MonsterAttack_Dash : AttackPattern
                 blockMovement = true;
                 timer += Time.deltaTime;
 
-                /*if (distance > detectRange)
-                {
-                    state = State.Idle;
-                    timer = 0f;
-                    DestroyTelegraph();
-                    break;
-                }*/
-
                 float baseDistance = Vector2.Distance(monster.transform.position, targetPosition);
                 float dashLength = baseDistance + dashExtraDistance;
 
