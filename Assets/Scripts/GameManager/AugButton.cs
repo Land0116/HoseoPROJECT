@@ -59,16 +59,7 @@ public class AugButton : MonoBehaviour
     }
 
     #endregion
-
-    /// <summary>
-    /// 외부에서 버튼 클릭 가능 여부를 제어할 때 사용한다.
-    /// AugUIManager가 선택 연출 중 중복 클릭을 막기 위해 호출한다.
-    /// </summary>
-    public void SetInteractable(bool value)
-    {
-        if (selectBtn != null)
-            selectBtn.interactable = value;
-    }
+    
     #region Description Format
 
     /// <summary>

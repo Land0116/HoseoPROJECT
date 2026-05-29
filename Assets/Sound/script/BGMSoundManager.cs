@@ -32,13 +32,13 @@ public class BGMSoundManager : MonoBehaviour
         public AudioClip bossBGM;
     }
 
-    [Header("¾Àº° ¼³Á¤")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private SceneBGMData[] sceneDatas;
 
-    [Header("¸ÞÀÎ BGM")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ BGM")]
     [SerializeField] private AudioClip mainBGM;
 
-    [Header("½ºÅ×ÀÌÁö BGM")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ BGM")]
     [SerializeField] private StageBGM[] stageBGMs;
 
     [SerializeField] private AudioSource bgmSource;
@@ -55,8 +55,7 @@ public class BGMSoundManager : MonoBehaviour
             return;
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(this);
     }
 
     private void OnEnable()
@@ -71,7 +70,7 @@ public class BGMSoundManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log($"[BGM] ¾À ·Îµå: {scene.name}");
+        Debug.Log($"[BGM] ï¿½ï¿½ ï¿½Îµï¿½: {scene.name}");
 
         ApplyBGM(scene.name);
     }
@@ -83,11 +82,11 @@ public class BGMSoundManager : MonoBehaviour
 
         if (data == null)
         {
-            Debug.LogError($"[BGM] ¾À µ¥ÀÌÅÍ ¾øÀ½ ¡æ {sceneName}");
+            Debug.LogError($"[BGM] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ {sceneName}");
             return;
         }
 
-        // ¸ÞÀÎ
+        // ï¿½ï¿½ï¿½ï¿½
         if (data.bgmType == BGMType.Main)
         {
             PlayClip(mainBGM);
@@ -98,7 +97,7 @@ public class BGMSoundManager : MonoBehaviour
 
         if (stageData == null)
         {
-            Debug.LogError($"[BGM] ½ºÅ×ÀÌÁö µ¥ÀÌÅÍ ¾øÀ½ ¡æ {data.stageNumber}");
+            Debug.LogError($"[BGM] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ {data.stageNumber}");
             return;
         }
 
@@ -118,16 +117,16 @@ public class BGMSoundManager : MonoBehaviour
 
         if (target == null)
         {
-            Debug.LogError("[BGM] Å¬¸³ ¾øÀ½");
+            Debug.LogError("[BGM] Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
-        // °°Àº ½ºÅ×ÀÌÁö Normal/ShopÀÌ¸é À¯Áö
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Normal/Shopï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (currentStage == data.stageNumber &&
             currentType != BGMType.Boss &&
             data.bgmType != BGMType.Boss)
         {
-            Debug.Log("[BGM] À¯ÁöµÊ");
+            Debug.Log("[BGM] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -147,17 +146,17 @@ public class BGMSoundManager : MonoBehaviour
         bgmSource.clip = clip;
         bgmSource.Play();
 
-        Debug.Log($"[BGM] Àç»ý ¡æ {clip.name}");
+        Debug.Log($"[BGM] ï¿½ï¿½ï¿½ ï¿½ï¿½ {clip.name}");
     }*/
     private void PlayClip(AudioClip clip)
     {
         if (bgmSource.clip == clip)
         {
-            // °°Àº Å¬¸³ÀÎµ¥ ¸ØÃçÀÖÀ¸¸é ´Ù½Ã Àç»ý
+            // ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½
             if (!bgmSource.isPlaying)
             {
                 bgmSource.Play();
-                Debug.Log($"[BGM] °°Àº Å¬¸³ Àç»ý º¹±¸ ¡æ {clip.name}");
+                Debug.Log($"[BGM] ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ {clip.name}");
             }
             return;
         }
@@ -165,7 +164,7 @@ public class BGMSoundManager : MonoBehaviour
         bgmSource.clip = clip;
         bgmSource.Play();
 
-        Debug.Log($"[BGM] Àç»ý ¡æ {clip.name}");
+        Debug.Log($"[BGM] ï¿½ï¿½ï¿½ ï¿½ï¿½ {clip.name}");
     }
 
     private SceneBGMData GetSceneData(string sceneName)
@@ -195,17 +194,17 @@ public class BGMSoundManager : MonoBehaviour
         if (bgmSource != null && bgmSource.isPlaying)
         {
             bgmSource.Pause();
-            Debug.Log("[BGM] ÀÏ½ÃÁ¤Áö");
+            Debug.Log("[BGM] ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½");
         }
     }
     public void ForceApplyBGM(string sceneName)
     {
-        Debug.Log("[BGM] °­Á¦ ÀçÀû¿ë");
+        Debug.Log("[BGM] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
         ApplyBGM(sceneName);
     }
     public void ResumeBGM(string expectedScene)
     {
-        // ÇöÀç ¾À µ¥ÀÌÅÍ °¡Á®¿À±â
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         SceneBGMData data = GetSceneData(expectedScene);
 
         if (data == null)
@@ -216,14 +215,14 @@ public class BGMSoundManager : MonoBehaviour
 
         if (!allowResume)
         {
-            Debug.Log("[BGM] Resume Á¶°Ç ºÒÃæÁ· ¡æ Â÷´Ü");
+            Debug.Log("[BGM] Resume ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (bgmSource != null && bgmSource.clip != null)
         {
             bgmSource.UnPause();
-            Debug.Log("[BGM] Àç°³");
+            Debug.Log("[BGM] ï¿½ç°³");
         }
     }
     public void BlockNextResume()
@@ -233,7 +232,7 @@ public class BGMSoundManager : MonoBehaviour
 
     public void ResetBGMState()
     {
-        Debug.Log("[BGM] »óÅÂ ÃÊ±âÈ­");
+        Debug.Log("[BGM] ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­");
 
         currentStage = -1;
         currentType = BGMType.Main;

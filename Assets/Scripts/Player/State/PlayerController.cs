@@ -457,6 +457,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         get => isHitAnimating;
         set => isHitAnimating = value;
     }
+    private float GetAttackSpeedMultiplierForOrbit()
+    {
+        if (baseAttackPerSecond <= 0f)
+            return 1f;
+
+        return Mathf.Max(0.1f, attackPerSecond / baseAttackPerSecond);
+    }
 
     #region 증강 Getter
 
@@ -2178,20 +2185,25 @@ public class PlayerController : MonoBehaviour, IDamageable
 
                 float orbitDamage = GetFinalDamage() * shotOrbitDamageMultiplier;
 
-                float orbitAttackSpeedMultiplier = Mathf.Max(0.1f, 1f + passiveAttackSpeedPercent);
-                float finalOrbitAngularSpeed = shotOrbitAngularSpeed * orbitAttackSpeedMultiplier;
-                float finalOrbitHitInterval = shotOrbitHitInterval / orbitAttackSpeedMultiplier;
+                float orbitAttackSpeedMultiplier = GetAttackSpeedMultiplierForOrbit();
+                float finalOrbitHitInterval = shotOrbitHitInterval;
 
                 orbit.Initialize(
                     orbitOwner,
                     baseAngle,
                     shotOrbitRadius,
-                    finalOrbitAngularSpeed,
+
+                    // 여기서는 기본 주위탄 속도만 넘김
+                    shotOrbitAngularSpeed,
+
                     orbitDamage,
                     finalOrbitHitInterval,
                     shotOrbitLifetime,
                     formationOffset
                 );
+
+
+                orbit.SetAttackSpeedMultiplier(orbitAttackSpeedMultiplier);
 
                 orbit.SetOwner(gameObject);
 

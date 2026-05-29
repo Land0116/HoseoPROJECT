@@ -26,6 +26,10 @@ public class Monster : MonoBehaviour, IDamageable
     private Vector2 lastMoveDir = Vector2.down;
     private Vector2 lastPosition;
     
+    [Header("보스 보상 스포너")]
+    [SerializeField] private RewardObjectSpawner rewardObjectSpawner;
+    
+    [SerializeField] private Vector3 bossRewardSpawnOffset = new Vector3(0f, 0.5f, 0f);
     [Header("보스 여부")]
     [SerializeField] private bool isBossMonster = false;
 
@@ -169,6 +173,10 @@ public class Monster : MonoBehaviour, IDamageable
         {
             movePattern.Init(this);
         }
+        if (rewardObjectSpawner == null)
+        {
+            rewardObjectSpawner = FindAnyObjectByType<RewardObjectSpawner>();
+        }
     }
 
     void Update()
@@ -243,21 +251,6 @@ public class Monster : MonoBehaviour, IDamageable
     }
 
     //데미지 입음
-    /*public void OnDamage(float damage)
-    {
-        currentHP -= damage;
-        //Debug.Log("[" + currentHP + "]" + "남음");
-        currentHP = Mathf.Max(currentHP, 0f);
-
-        PlayHitAnimation();
-
-        TriggerHitKnockback(); //*
-
-        if (currentHP <= 0)
-        {
-            Death();
-        }
-    }*/
     public void OnDamage(float damage)
     {
         if (isDead) return;
@@ -334,26 +327,21 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (isBossMonster)
         {
-            if (bossSpawner != null)
-            {
-                bossSpawner.NotifyBossDead();
-            }
-            else
-            {
-                FindAnyObjectByType<BossSpawner>()?.NotifyBossDead();
-            }
+            HandleBossDeathReward();
+            Destroy(gameObject);
+            return;
         }
 
         Destroy(gameObject);
     }
-    
+
     private void DropReward()
     {
         if (PlayerController.Instance != null)
         {
             int rewardGold = Random.Range(minGold, maxGold + 1);
             //PlayerController.Instance.Gold += rewardGold;
-            float multiplier = PlayerController.Instance.GetGoldMultiplierFromItems();//*
+            float multiplier = PlayerController.Instance.GetGoldMultiplierFromItems(); //*
             int finalGold = Mathf.RoundToInt(rewardGold * multiplier);
 
             PlayerController.Instance.Gold += finalGold;
@@ -368,7 +356,56 @@ public class Monster : MonoBehaviour, IDamageable
         {
             Instantiate(itemPrefab, transform.position + itemSpawner, Quaternion.identity);
         }
+       
     }
+    private void HandleBossDeathReward()
+    {
+        if (!dropRewardOnDeath)
+        {
+            NotifyBossDead();
+            return;
+        }
+
+        if (rewardObjectSpawner == null)
+        {
+            rewardObjectSpawner = FindAnyObjectByType<RewardObjectSpawner>();
+        }
+
+        if (rewardObjectSpawner == null)
+        {
+            Debug.LogWarning("[Monster] RewardObjectSpawner가 없음. 보스 클리어만 처리함.");
+            NotifyBossDead();
+            return;
+        }
+
+        RewardType rewardType = rewardObjectSpawner.GetRandomBossRewardType();
+
+        Vector3 spawnPosition = transform.position + bossRewardSpawnOffset;
+
+        rewardObjectSpawner.SpawnRewardObjectAtPosition(
+            rewardType,
+            spawnPosition,
+            () =>
+            {
+                NotifyBossDead();
+            }
+        );
+
+        Debug.Log($"[Monster] 보스 보상 생성: {rewardType}");
+    }
+
+    private void NotifyBossDead()
+    {
+        if (bossSpawner != null)
+        {
+            bossSpawner.NotifyBossDead();
+            return;
+        }
+
+        FindAnyObjectByType<BossSpawner>()?.NotifyBossDead();
+    }
+    
+    
     private void UpdateAnimation(Vector2 dir, bool isMoving)
     {
         if (dir.magnitude > 0.01f)

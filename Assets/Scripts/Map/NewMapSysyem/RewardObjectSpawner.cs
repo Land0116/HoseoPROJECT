@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RewardObjectSpawner : MonoBehaviour
 {
@@ -16,14 +17,24 @@ public class RewardObjectSpawner : MonoBehaviour
 
     public void SpawnRewardObject(RewardType rewardType, Action onRewardFinished)
     {
+        SpawnRewardObjectAtPosition(
+            rewardType,
+            GetRewardSpawnPosition(),
+            onRewardFinished
+        );
+    }
+
+    public void SpawnRewardObjectAtPosition(
+        RewardType rewardType,
+        Vector3 spawnPosition,
+        Action onRewardFinished)
+    {
         if (rewardObjectPrefab == null)
         {
             Debug.LogWarning("[RewardObjectSpawner] RewardObjectPrefab이 없음. 보상 완료 처리.");
             onRewardFinished?.Invoke();
             return;
         }
-
-        Vector3 spawnPosition = GetRewardSpawnPosition();
 
         RewardInteractObject rewardObject = Instantiate(
             rewardObjectPrefab,
@@ -42,6 +53,14 @@ public class RewardObjectSpawner : MonoBehaviour
             dropMotion.Play();
         }
     }
+
+    public RewardType GetRandomBossRewardType()
+    {
+        return Random.value < 0.5f
+            ? RewardType.Augment
+            : RewardType.Skill;
+    }
+
     private Vector3 GetRewardSpawnPosition()
     {
         if (PlayerController.Instance != null)

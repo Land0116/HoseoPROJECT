@@ -26,6 +26,9 @@ public class OrbitProjectile : MonoBehaviour
     [SerializeField] private float lifeTime = 0f;
 
     [Header("선택적 추가 효과")]
+    [SerializeField] private GameObject explosionRangeVisualPrefab;
+    [SerializeField] private float explosionRangeVisualLifeTime = 0.25f;
+    [SerializeField] private bool scaleExplosionVisualByRadius = true;
     [SerializeField] private float explosionRadius = 0f;
     [SerializeField] private float explosionDamageMultiplier = 1f;
     [SerializeField] private float dotDamagePerSecond = 0f;
@@ -39,10 +42,29 @@ public class OrbitProjectile : MonoBehaviour
     private Collider2D[] ownerColliders;
     private Collider2D[] myColliders;
     private float destroyTime = -1f;
+    private float baseAngularSpeed = 180f;
+    private float orbitAttackSpeedMultiplier = 1f;
+    [Header("비주얼 방향")]
+    [SerializeField] private bool faceOrbitMoveDirection = true;
+
+    [Tooltip("스프라이트의 앞 방향 보정값. 오른쪽을 보고 그린 스프라이트면 0, 위를 보고 그렸으면 -90")]
+    [SerializeField] private float visualAngleOffset = 0f;
+    [Header("피격 연출 애니메이션")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string hitTriggerName = "HitOrb";
+    [SerializeField] private bool playHitAnimationOnDamage = true;
 
     // 같은 적을 프레임마다 계속 때리지 않도록, 적별 다음 타격 가능 시간 기록
     private readonly Dictionary<Collider2D, float> nextHitTimeByTarget = new Dictionary<Collider2D, float>();
 
+    
+    private void Awake()
+    {
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>(true);
+        }
+    }
     /// <summary>
     /// PlayerController가 생성 직후 호출해서 초기값을 넣는다.
     /// </summary>
@@ -59,7 +81,8 @@ public class OrbitProjectile : MonoBehaviour
         owner = newOwner;
         currentAngle = startAngle;
         radius = newRadius;
-        angularSpeed = newAngularSpeed;
+        baseAngularSpeed = newAngularSpeed;
+        angularSpeed = baseAngularSpeed * orbitAttackSpeedMultiplier;
         damage = newDamage;
         hitInterval = Mathf.Max(0.01f, newHitInterval);
         lifeTime = newLifeTime;
@@ -69,8 +92,15 @@ public class OrbitProjectile : MonoBehaviour
             destroyTime = Time.time + lifeTime;
         else
             destroyTime = -1f;
+
     }
 
+    public void SetAttackSpeedMultiplier(float multiplier)
+    {
+        orbitAttackSpeedMultiplier = Mathf.Max(0.1f, multiplier);
+        angularSpeed = baseAngularSpeed * orbitAttackSpeedMultiplier;
+    }
+    
     public void SetExplosion(float radiusValue, float damageMultiplierValue)
     {
         explosionRadius = radiusValue;
@@ -100,10 +130,8 @@ public class OrbitProjectile : MonoBehaviour
         currentAngle += angularSpeed * Time.deltaTime;
 
         Vector2 orbitPosition = GetOrbitWorldPosition();
-        
-
         transform.position = orbitPosition;
-        UpdateVisualDirection(orbitPosition);
+        UpdateVisualDirection();
     }
     
     /// <summary>
@@ -125,14 +153,49 @@ public class OrbitProjectile : MonoBehaviour
     }
     
     
-    private void UpdateVisualDirection(Vector2 orbitPosition)
+    private void UpdateVisualDirection()
     {
-        Vector2 dir = orbitPosition - (Vector2)owner.position;
+        if (!faceOrbitMoveDirection)
+            return;
 
-        if (dir.sqrMagnitude > 0.0001f)
-        {
-            transform.right = dir.normalized;
-        }
+        Vector2 moveDir = GetOrbitMoveDirection();
+
+        if (moveDir.sqrMagnitude <= 0.0001f)
+            return;
+
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle + visualAngleOffset);
+    }
+
+    private Vector2 GetOrbitMoveDirection()
+    {
+        float rad = currentAngle * Mathf.Deg2Rad;
+
+        Vector2 radialDir = new Vector2(
+            Mathf.Cos(rad),
+            Mathf.Sin(rad)
+        ).normalized;
+
+        Vector2 tangentDir = new Vector2(
+            -radialDir.y,
+            radialDir.x
+        ).normalized;
+
+        float rotateSign = angularSpeed >= 0f ? 1f : -1f;
+
+        /*
+         * 기본 원 궤도:
+         * - radialDir = 플레이어 중심에서 바깥 방향
+         * - tangentDir = 원을 따라 도는 방향
+         *
+         * formationOffset.x가 있으면 좌우 편대 배치 때문에
+         * 실제 이동 방향이 살짝 달라질 수 있으므로 같이 반영한다.
+         */
+        Vector2 moveDir =
+            tangentDir * (radius + formationOffset.y)
+            - radialDir * formationOffset.x;
+
+        return moveDir.normalized * rotateSign;
     }
     
     private void OnTriggerStay2D(Collider2D other)
@@ -193,7 +256,7 @@ public class OrbitProjectile : MonoBehaviour
 
         // 본체 데미지
         damageable.OnDamage(damage);
-
+        PlayHitAnimation();
         // 실제 준 데미지 기준으로 흡혈 처리
         NotifyOwnerHitEnemy(damage);
 
@@ -215,6 +278,17 @@ public class OrbitProjectile : MonoBehaviour
             ExplodeAt(other.transform.position, other);
         }
     }
+    private void PlayHitAnimation()
+    {
+        if (!playHitAnimationOnDamage)
+            return;
+
+        if (animator == null)
+            return;
+
+        animator.ResetTrigger(hitTriggerName);
+        animator.SetTrigger(hitTriggerName);
+    }
 
     /// <summary>
     /// 폭발 범위 내 적들에게 추가 피해
@@ -222,6 +296,8 @@ public class OrbitProjectile : MonoBehaviour
     /// </summary>
     private void ExplodeAt(Vector2 center, Collider2D directHitTarget)
     {
+        SpawnExplosionRangeVisual(center);
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(center, explosionRadius);
 
         for (int i = 0; i < hits.Length; i++)
@@ -230,7 +306,6 @@ public class OrbitProjectile : MonoBehaviour
             if (hit == null) continue;
             if (hit == directHitTarget) continue;
 
-            // owner는 폭발에도 맞지 않게 처리
             if (IsOwnerCollider(hit)) continue;
 
             IDamageable damageable = GetDamageable(hit);
@@ -241,6 +316,28 @@ public class OrbitProjectile : MonoBehaviour
             damageable.OnDamage(explosionDamage);
             NotifyOwnerHitEnemy(explosionDamage);
         }
+    }
+    private void SpawnExplosionRangeVisual(Vector2 center)
+    {
+        if (explosionRangeVisualPrefab == null)
+            return;
+
+        if (explosionRadius <= 0f)
+            return;
+
+        GameObject visual = Instantiate(
+            explosionRangeVisualPrefab,
+            center,
+            Quaternion.identity
+        );
+
+        if (scaleExplosionVisualByRadius)
+        {
+            float diameter = explosionRadius * 2f;
+            visual.transform.localScale = new Vector3(diameter, diameter, 1f);
+        }
+
+        Destroy(visual, explosionRangeVisualLifeTime);
     }
     
 

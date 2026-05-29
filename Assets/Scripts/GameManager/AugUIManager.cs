@@ -802,7 +802,11 @@ public class AugUIManager : MonoBehaviour
                 break;
 
             currentChoices[i] = picked;
-            candidateBuffer.Remove(picked);
+
+            // 핵심:
+            // 같은 참조 1개만 제거하지 말고,
+            // 같은 augmentID를 가진 후보를 전부 제거한다.
+            RemoveSameAugmentFromCandidateBuffer(picked);
         }
     }
 
@@ -820,6 +824,71 @@ public class AugUIManager : MonoBehaviour
 
             candidateBuffer.Add(aug);
         }
+    }
+    private void RemoveSameAugmentFromCandidateBuffer(AugmentationSystem picked)
+    {
+        if (picked == null)
+            return;
+
+        for (int i = candidateBuffer.Count - 1; i >= 0; i--)
+        {
+            AugmentationSystem candidate = candidateBuffer[i];
+
+            if (IsSameAugmentChoice(candidate, picked))
+            {
+                candidateBuffer.RemoveAt(i);
+            }
+        }
+    }
+
+    private void RemoveCurrentChoicesFromCandidateBuffer()
+    {
+        for (int i = candidateBuffer.Count - 1; i >= 0; i--)
+        {
+            AugmentationSystem candidate = candidateBuffer[i];
+
+            if (IsSameAsAnyCurrentChoice(candidate))
+            {
+                candidateBuffer.RemoveAt(i);
+            }
+        }
+    }
+
+    private bool IsSameAsAnyCurrentChoice(AugmentationSystem candidate)
+    {
+        if (candidate == null) return false;
+        if (currentChoices == null) return false;
+
+        for (int i = 0; i < currentChoices.Length; i++)
+        {
+            AugmentationSystem current = currentChoices[i];
+
+            if (current == null)
+                continue;
+
+            if (IsSameAugmentChoice(candidate, current))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsSameAugmentChoice(AugmentationSystem a, AugmentationSystem b)
+    {
+        if (a == null || b == null)
+            return false;
+
+        // 가장 우선 기준: augmentID
+        // 같은 증강이면 반드시 같은 ID를 쓰는 구조가 가장 안전함.
+        if (!string.IsNullOrEmpty(a.augmentID) &&
+            !string.IsNullOrEmpty(b.augmentID))
+        {
+            return a.augmentID == b.augmentID;
+        }
+
+        // augmentID가 비어 있는 예외 상황 대비
+        // 같은 ScriptableObject 참조면 같은 증강으로 본다.
+        return a == b;
     }
 
     private AugmentationSystem.AugmentCategory GetWeightedCategory()
@@ -1091,7 +1160,7 @@ public class AugUIManager : MonoBehaviour
         if (rerollUsed == null || choiceIndex >= rerollUsed.Length) return;
         if (rerollUsed[choiceIndex]) return;
 
-        AugmentationSystem rerolled = GenerateSingleChoiceForRerollSlot();
+        AugmentationSystem rerolled = GenerateSingleChoiceForRerollSlot(choiceIndex);
         if (rerolled == null)
         {
             Debug.LogWarning("[AugUIManager] 리롤 후보가 없음");
@@ -1105,18 +1174,22 @@ public class AugUIManager : MonoBehaviour
         RefreshRerollUI();
     }
 
-    private AugmentationSystem GenerateSingleChoiceForRerollSlot()
+    private AugmentationSystem GenerateSingleChoiceForRerollSlot(int rerollSlotIndex)
     {
         candidateBuffer.Clear();
         FillCandidateBuffer();
 
+        // 핵심:
+        // 현재 화면에 떠 있는 다른 선택지들과 겹치는 후보 제거.
+        // rerollSlotIndex까지 포함해서 제거하면
+        // 리롤했는데 똑같은 카드가 다시 나오는 것도 막을 수 있다.
+        RemoveCurrentChoicesFromCandidateBuffer();
+
         if (candidateBuffer.Count == 0)
             return null;
 
-        // 기존과 동일한 카테고리 확률 규칙
         AugmentationSystem.AugmentCategory targetCategory = GetWeightedCategory();
 
-        // 기존과 동일한 weight 규칙
         AugmentationSystem picked = PickWeightedAugment(candidateBuffer, targetCategory);
 
         if (picked == null)

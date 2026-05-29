@@ -274,6 +274,10 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: d5533cd9c92632f438f82c1395a216f4, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: 8185819640412817495}
+  bossRewardObjectPrefab: {fileID: -3516417887111285893, guid: f84ad38b4647e6e4d83c9370e4601c68, type: 3}
+  bossAugmentRewardIcon: {fileID: 8579041055815407696, guid: 237c3d6e621ccbe42bfa79bac1ae102e, type: 3}
+  bossSkillRewardIcon: {fileID: 3319096123497896272, guid: ed2ed7ffc4139904c9178376eb112274, type: 3}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 1
   dropRewardOnDeath: 0
   attackPattern: {fileID: 5210070389676894093}
