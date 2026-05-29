@@ -13974,14 +13974,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8673756312040429146, guid: 12aa03f799ce763478eae3d151e8ddda, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15271,7 +15271,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eeb147de296e25447849a2ed5fe190c4, type: 2}
   - {fileID: 11400000, guid: d942adf3a22522a489707dfb7edf7cdf, type: 2}
   - {fileID: 11400000, guid: 74f9ee81acfa3fe4a869be9fa62af872, type: 2}
-  - {fileID: 11400000, guid: 4ea14dfd633b0fd448f77d952d192ae0, type: 2}
   - {fileID: 11400000, guid: 6b225f0d2c09e3a4b9e06c52a5e7e26b, type: 2}
   - {fileID: 11400000, guid: e173f5613806e374ca068c74c42f9b13, type: 2}
   - {fileID: 11400000, guid: 189b42f91d4874d4892103f4115a5fff, type: 2}
@@ -15290,7 +15289,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 063deb0010089304aa0360c43685dea1, type: 2}
   - {fileID: 11400000, guid: ab3dae71e8a4ea34cafdfd7cb231e826, type: 2}
   - {fileID: 11400000, guid: 567cc764d1d9c6e46a62d93b09128394, type: 2}
-  - {fileID: 11400000, guid: 94fca5858e448b9458e61658b950f364, type: 2}
   currentChoices:
   - {fileID: 0}
   - {fileID: 0}
@@ -25447,10 +25445,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "F\uD0A4\uB85C \uC0C1\uD638\uC791\uC6A9"
+  m_text: "[F]\uB85C \uC0C1\uD638\uC791\uC6A9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
-  m_sharedMaterial: {fileID: 1763495443006275429, guid: 62e014f48e4fd0947a38fe4bd18b92d3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 182bc695703857647a0e48c5700cfa8f, type: 2}
+  m_sharedMaterial: {fileID: 7441030260513459862, guid: 182bc695703857647a0e48c5700cfa8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
