@@ -104,7 +104,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8555629504678823905}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -173,6 +173,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrincessDollAttack
   blockMovement: 0
+  explosionEffectPrefabs:
+  - {fileID: 3830614522430265470, guid: 3ff89537aa9b5904baf081e8a246f36b, type: 3}
+  - {fileID: 3830614522430265470, guid: fb47160782283dd48a1569cca9ad2481, type: 3}
+  - {fileID: 3830614522430265470, guid: e45380901108cd84fa9ff06d7ba094c6, type: 3}
+  - {fileID: 3830614522430265470, guid: 8a77c8ba81fb0104e9aeafd4c0971366, type: 3}
+  - {fileID: 3830614522430265470, guid: 37659f88ff488cc4ab08a11d531a2076, type: 3}
   detectRange: 14
   dashMinCount: 3
   dashMaxCount: 6

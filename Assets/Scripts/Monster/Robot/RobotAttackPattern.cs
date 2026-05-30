@@ -39,45 +39,6 @@ public class RobotAttackPattern : AttackPattern
     private bool hasShownAlert = false;
     [SerializeField] private GameObject dashTelegraphPrefab;
     [SerializeField] private float telegraphTime = 0.5f;
-    /* public override void Execute()
-     {
-         if (monster == null) return;
-         if (monster.IsHit()) return;
-         if (isAttacking) return;
-
-         timer += Time.deltaTime;
-
-         Transform player = monster.Player;
-         if (player == null) return;
-
-         float dist = Vector2.Distance(monster.transform.position, player.position);
-
-         // 범위 들어오면 ! 출력
-         if (dist <= rangedMaxRange)
-         {
-             if (!hasShownAlert)
-             {
-                 monster.ShowAttackAlert(0.5f);
-                 hasShownAlert = true;
-             }
-         }
-         else
-         {
-             hasShownAlert = false;
-         }
-
-         if (timer < cooldown) return;
-
-         // 공격 시작
-         if (dist <= meleeRange)
-         {
-             StartCoroutine(MeleeAttack(player));
-         }
-         else if (dist >= rangedMinRange && dist <= rangedMaxRange)
-         {
-             StartCoroutine(RangedAttack(player));
-         }
-     }*/
     public override void Execute()
     {
         if (monster == null) return;
@@ -174,38 +135,6 @@ public class RobotAttackPattern : AttackPattern
         blockMovement = false;
         isAttacking = false;
     }
-
-    /*private IEnumerator RangedAttack(Transform player)
-    {
-        isAttacking = true;
-        blockMovement = false;
-        timer = 0f;
-
-        for (int i = 0; i < bulletCount; i++) 
-        { 
-            if (player == null) break; 
-
-            Vector2 dir = (player.position - monster.transform.position).normalized;
-            
-            monster.PlayAttackAnimation(dir); 
-
-            GameObject bullet = Instantiate(bulletPrefab, monster.transform.position, Quaternion.identity); 
-            RobotBullet rb = bullet.GetComponent<RobotBullet>(); 
-            if (rb != null) 
-            {
-                rb.Init(dir, bulletDamage, rangedKnockback, bulletSpeed, player);
-            }
-
-            MoveWhileAttacking();
-            float delay = Random.Range(minFireDelay, maxFireDelay);
-            yield return new WaitForSeconds(delay); 
-        }
-
-        yield return new WaitForSeconds(0.3f);
-
-        blockMovement = false;
-        isAttacking = false;
-    }*/
     private IEnumerator RangedAttack(Transform player)
     {
         isAttacking = true;

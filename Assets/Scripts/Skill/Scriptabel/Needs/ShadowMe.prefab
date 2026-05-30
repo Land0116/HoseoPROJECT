@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5864166716543761453}
   - component: {fileID: 526615817852270363}
   - component: {fileID: 627870469308875506}
+  - component: {fileID: 823176220231956193}
   m_Layer: 0
   m_Name: ShadowMe
   m_TagString: Untagged
@@ -83,8 +84,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.2195203, g: 1, b: 0.11792451, a: 1}
+  m_Sprite: {fileID: 6049129526779505407, guid: bcae7196cb658d145ac9a6eeec0b2f38, type: 3}
+  m_Color: {r: 0.69411767, g: 0.69411767, b: 0.69411767, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -105,6 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54e2ffa4c57a1e9428f2ed149106d5c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShadowMeInstance
+  animator: {fileID: 823176220231956193}
   bulletPrefab: {fileID: 7233499852582160678, guid: 094c112e8c7dc7c4d86b62d08ac6267b, type: 3}
 --- !u!58 &627870469308875506
 CircleCollider2D:
@@ -141,4 +143,26 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 1
+--- !u!95 &823176220231956193
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4164475953808966437}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 477358442ae28784ab1a8b6d1b545c86, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

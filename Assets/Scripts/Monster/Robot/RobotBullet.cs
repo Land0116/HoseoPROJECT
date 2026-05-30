@@ -71,17 +71,19 @@ public class RobotBullet : MonoBehaviour
         {
             float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
 
-            // 기본 회전
             transform.rotation = Quaternion.AngleAxis(angle +90f, Vector3.forward);
 
             if (moveDir.x < 0) // 왼쪽으로 갈 때
             {
+                angle += 180f;
                 transform.localScale = new Vector3(1, -1, 1);
             }
             else // 오른쪽으로 갈 때
             {
                 transform.localScale = new Vector3(1, 1, 1);
             }
+
+            transform.rotation = Quaternion.AngleAxis(angle + 90f, Vector3.forward);
         }
 
         if (t >= 1f)
