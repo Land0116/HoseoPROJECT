@@ -45,6 +45,7 @@ public class PlayerUIManager : MonoBehaviour
     [Header("Pause")]
     [SerializeField] private GameObject escPanel;
     [SerializeField] private GameObject optionPanel;
+    [SerializeField] private GameObject optionBlackPanel;
 
     [SerializeField] private Button optionBtn;
     [SerializeField] private Button toMainBtn;
@@ -553,6 +554,9 @@ public class PlayerUIManager : MonoBehaviour
         ChangeState(UIState.Option);
         optionPanel.SetActive(true);
 
+        if (optionBlackPanel != null)
+            optionBlackPanel.SetActive(true);
+
         Debug.Log($"newBtnBtn null? {newBtnBtn == null}");
         Debug.Log("현재 씬: " + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
@@ -705,7 +709,7 @@ public class PlayerUIManager : MonoBehaviour
 
         // OptionPanel은 System_UI 아래 공용 패널을 사용
         optionPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "OptionPanel")?.gameObject;
-
+        optionBlackPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "OptionBlackPanel")?.gameObject;
         exitSurePanel = UIManager.FindChildRecursive(playerPanel, "ExitSurePanel")?.gameObject;
         toMainSurePanel = UIManager.FindChildRecursive(playerPanel, "ToMainSurePanel")?.gameObject;
         playerDyingPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "PlayerDyingPanel")?.gameObject;
@@ -947,6 +951,9 @@ public class PlayerUIManager : MonoBehaviour
         if (optionPanel != null)
             optionPanel.SetActive(false);
 
+        if (optionBlackPanel != null)
+            optionBlackPanel.SetActive(false);
+
         if (exitSurePanel != null)
             exitSurePanel.SetActive(false);
 
@@ -1110,6 +1117,10 @@ public class PlayerUIManager : MonoBehaviour
 
             case UIState.Option:
                 optionPanel.SetActive(true);
+
+                if (optionBlackPanel != null)
+                    optionBlackPanel.SetActive(true);
+
                 Time.timeScale = 0f;
                 PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, true);
                 break;
@@ -1127,7 +1138,7 @@ public class PlayerUIManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log("SetEscState 호출됨: " + target);
+        //Debug.Log("SetEscState 호출됨: " + target);
     }
 
     public bool IsEscPanelOpen() //* 0529

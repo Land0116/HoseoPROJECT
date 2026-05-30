@@ -173,7 +173,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrincessDollAttack
   blockMovement: 0
-  detectRange: 7
+  detectRange: 14
   dashMinCount: 3
   dashMaxCount: 6
   dashSpeed: 35
@@ -219,6 +219,8 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 0c91317f1ee228747b492e19db8c6b45, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: 792431145989907244}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 1
   dropRewardOnDeath: 0
   attackPattern: {fileID: 4263896983294297948}
@@ -238,6 +240,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &1049455016007415334
 MonoBehaviour:
   m_ObjectHideFlags: 0

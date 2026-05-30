@@ -105,8 +105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf70ed4b4b8314f4393483865ff5dcf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SonicWave
-  lifeTime: 0.8
-  damage: 1
+  lifeTime: 0.2
+  damage: 10
 --- !u!60 &6466706314569617286
 PolygonCollider2D:
   m_ObjectHideFlags: 0

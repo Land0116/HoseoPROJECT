@@ -248,12 +248,14 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: -4660316167111828068}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 0
   dropRewardOnDeath: 1
   attackPattern: {fileID: 3875865195104918760}
   movePattern: {fileID: 8327386214904472354}
   moveSpeed: 3
-  maxHP: 15
+  maxHP: 35
   minGold: 15
   maxGold: 25
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
@@ -267,6 +269,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &3875865195104918760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Attack1
   blockMovement: 0
   bulletPrefab: {fileID: 4330386028504437596, guid: 5f4f401231dce9c4f83f88bb5dc0d187, type: 3}
-  fireRate: 0.4
+  fireRate: 2
   attackRange: 13
 --- !u!58 &1100845049900730700
 CircleCollider2D:

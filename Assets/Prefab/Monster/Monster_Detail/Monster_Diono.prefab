@@ -155,12 +155,14 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: 4019550805505043258}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 0
   dropRewardOnDeath: 1
   attackPattern: {fileID: 767769241712529471}
   movePattern: {fileID: 7765766562761034559}
   moveSpeed: 3
-  maxHP: 30
+  maxHP: 40
   minGold: 1
   maxGold: 3
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
@@ -174,6 +176,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &767769241712529471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,7 +193,7 @@ MonoBehaviour:
   blockMovement: 0
   sonicPrefab: {fileID: 8402585459488711915, guid: 57cd86fbcb4e10145be2376ac51ae741, type: 3}
   attackRange: 5
-  cooldown: 2
+  cooldown: 0.7
   rotateSpeed: 360
   trackingTime: 0.7
   fireDelay: 0.5

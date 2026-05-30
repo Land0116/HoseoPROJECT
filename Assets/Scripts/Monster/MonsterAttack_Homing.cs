@@ -23,7 +23,7 @@ public class MonsterAttack_Homing : AttackPattern
         if (monster == null || monster.Player == null) return;
         if (monster.IsMovementLocked()) return;
 
-        if (monster.IsHit()) return;
+        //if (monster.IsHit()) return;
 
         float distance = Vector2.Distance(monster.transform.position, monster.Player.position);
 

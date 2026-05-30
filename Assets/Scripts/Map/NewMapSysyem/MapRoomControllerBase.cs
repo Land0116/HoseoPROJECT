@@ -137,21 +137,21 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
 
         if (player == null)
         {
-            Debug.LogWarning("[Room Spawn] Player를 찾지 못함");
+           // Debug.LogWarning("[Room Spawn] Player를 찾지 못함");
             return;
         }
 
         GateGroup requiredGroup = MapFlowManager.Instance.RequiredEntranceGroup;
 
-        Debug.Log($"[Room Spawn] RequiredEntranceGroup={requiredGroup}");
+        //Debug.Log($"[Room Spawn] RequiredEntranceGroup={requiredGroup}");
 
         for (int i = 0; i < gates.Length; i++)
         {
             if (gates[i] == null) continue;
 
-            Debug.Log(
-                $"[Room Spawn] Gate[{i}] Name={gates[i].name}, Group={gates[i].GateGroup}"
-            );
+            //Debug.Log(
+            //    $"[Room Spawn] Gate[{i}] Name={gates[i].name}, Group={gates[i].GateGroup}"
+           // );
         }
 
         GateController[] targetGates = System.Array.FindAll(
@@ -161,7 +161,7 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
 
         if (targetGates.Length <= 0)
         {
-            Debug.LogWarning($"[Room Spawn] 현재 방에 {requiredGroup} 입구가 없음");
+            //Debug.LogWarning($"[Room Spawn] 현재 방에 {requiredGroup} 입구가 없음");
             return;
         }
 
@@ -188,12 +188,12 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
             Physics2D.SyncTransforms();
         }
 
-        Debug.Log(
-            $"[Room Spawn] SelectedGate={selectedGate.name}, " +
-            $"SelectedGroup={selectedGate.GateGroup}, " +
-            $"SpawnPosition={spawnPosition}, " +
-            $"ActualPlayerPosition={player.position}"
-        );
+        //Debug.Log(
+    //        $"[Room Spawn] SelectedGate={selectedGate.name}, " +
+        //    $"SelectedGroup={selectedGate.GateGroup}, " +
+        //    $"SpawnPosition={spawnPosition}, " +
+        //    $"ActualPlayerPosition={player.position}"
+       // );
 
         StartCoroutine(VerifyPlayerSpawnPositionNextFrame(spawnPosition, selectedGate));
     }
@@ -215,9 +215,9 @@ public abstract class MapRoomControllerBase : AutoBindableBehaviour
 
         if (distance > 0.1f)
         {
-            Debug.Log(
-                "[Room Spawn Verify] 플레이어 위치가 스폰 직후 다른 곳으로 덮어써짐. 다시 보정함."
-            );
+            //Debug.Log(
+               // "[Room Spawn Verify] 플레이어 위치가 스폰 직후 다른 곳으로 덮어써짐. 다시 보정함."
+           // );
 
             PlayerController.Instance.TeleportToMapSpawnPosition(expectedPosition);
         }

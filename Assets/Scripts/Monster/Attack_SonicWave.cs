@@ -91,6 +91,8 @@ public class Attack_SonicWave : AttackPattern
 
             telegraphInstance = obj.GetComponent<TriangleTelegraph>();
             telegraphInstance.Init(attackDir, adjustedRange, telegraphWidth, fireDelay);
+
+            telegraphInstance.StartFill(trackingTime + fireDelay); //*
         }
 
         if (isTracking && !isLocked)
@@ -104,8 +106,8 @@ public class Attack_SonicWave : AttackPattern
                 lockedDir = attackDir;
                 isLocked = true;
 
-                if (telegraphInstance != null)
-                    telegraphInstance.StartFill(fireDelay);
+                /*if (telegraphInstance != null)
+                    telegraphInstance.StartFill(fireDelay);*/
 
                 StartCoroutine(FireDelayRoutine());
             }

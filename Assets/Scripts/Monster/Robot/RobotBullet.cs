@@ -63,7 +63,26 @@ public class RobotBullet : MonoBehaviour
         Vector2 b = Vector2.Lerp(controlPoint, targetPos, t);
         Vector2 pos = Vector2.Lerp(a, b, t);
 
+        Vector2 moveDir = pos - (Vector2)transform.position;
+
         transform.position = pos;
+
+        if (moveDir.sqrMagnitude > 0.0001f)
+        {
+            float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+
+            // 기본 회전
+            transform.rotation = Quaternion.AngleAxis(angle +90f, Vector3.forward);
+
+            if (moveDir.x < 0) // 왼쪽으로 갈 때
+            {
+                transform.localScale = new Vector3(1, -1, 1);
+            }
+            else // 오른쪽으로 갈 때
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
 
         if (t >= 1f)
             Destroy(gameObject);

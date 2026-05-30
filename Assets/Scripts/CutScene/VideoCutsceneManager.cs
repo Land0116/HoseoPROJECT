@@ -232,6 +232,9 @@ public class VideoCutsceneManager : MonoBehaviour
 
     private IEnumerator PlayCutsceneRoutine(VideoCutsceneData data, VideoCutsceneRequest request)
     {
+        
+
+
         if (data.lockPlayerInput)
         {
             PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, true);
@@ -242,14 +245,23 @@ public class VideoCutsceneManager : MonoBehaviour
         BringCutsceneToFront();
 
         cutsceneStartScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        // 컷씬 시작 시 BGM 정지
+
         if (BGMSoundManager.Instance != null)
         {
+            // 추가: 현재 BGM 완전 정지
+            BGMSoundManager.Instance.SetCutsceneState(true);
             BGMSoundManager.Instance.PauseBGM();
+            BGMSoundManager.Instance.ResetBGMState();
+            Debug.Log("[컷씬] BGM 차단 활성화");
+
         }
+        AudioListener.pause = true;
+
         // 컷씬 사운드
         if (audioSource != null)
         {
+            audioSource.ignoreListenerPause = true; //*
+
             audioSource.Stop();
             audioSource.clip = data.audioClip;
 
@@ -345,6 +357,8 @@ public class VideoCutsceneManager : MonoBehaviour
 
     private void FinishCutscene(VideoCutsceneData data, VideoCutsceneRequest request)
     {
+        AudioListener.pause = false;
+
         if (videoPlayer != null)
         {
             videoPlayer.Stop();
@@ -359,17 +373,22 @@ public class VideoCutsceneManager : MonoBehaviour
 
         if (BGMSoundManager.Instance != null)
         {
-            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            BGMSoundManager.Instance.SetCutsceneState(false);
 
-            // 핵심 조건
+            Debug.Log("[컷씬] BGM 차단 해제");
+
+            string currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            BGMSoundManager.Instance.ForceApplyBGM(currentScene);
+
+            // 씬 유지 시에만 재생
             if (currentScene == cutsceneStartScene)
             {
-                BGMSoundManager.Instance.ResumeBGM(cutsceneStartScene);
+                Debug.Log("[컷씬] 같은 씬 → BGM 강제 적용");
+                BGMSoundManager.Instance.ForceApplyBGM(currentScene);
             }
             else
             {
-                Debug.Log("[컷씬] 씬 변경됨 → Resume 막기");
-                BGMSoundManager.Instance.BlockNextResume();
+                Debug.Log("[컷씬] 씬 변경됨 → 자동 BGM 적용됨");
             }
         }
 

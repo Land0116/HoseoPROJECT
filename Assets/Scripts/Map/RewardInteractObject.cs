@@ -142,7 +142,7 @@ public class RewardInteractObject : AutoBindableBehaviour
     {
         if (isUsed) return;
 
-        Debug.Log($"[RewardInteractObject] 상호작용 보상 타입: {rewardType}");
+        //Debug.Log($"[RewardInteractObject] 상호작용 보상 타입: {rewardType}");
 
         isUsed = true;
         isPlayerNear = false;

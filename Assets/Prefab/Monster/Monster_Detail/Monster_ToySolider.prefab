@@ -119,6 +119,8 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: -8336661572809062557}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 0
   dropRewardOnDeath: 1
   attackPattern: {fileID: 799363193295790904}
@@ -138,6 +140,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &799363193295790904
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MonsterAttack_Dash
   blockMovement: 0
   detectRange: 8
-  chargeTime: 0.7
+  chargeTime: 0.2
   dashSpeed: 20
   dashCooldown: 1.5
   dashExtraDistance: 1
