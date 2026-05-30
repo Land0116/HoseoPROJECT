@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: a099c522f01d2114aa3475657dbc1d80
-timeCreated: 1543829702
+timeCreated: 1529061539
 licenseType: Store
 TextureImporter:
   fileIDToRecycleName: {}
@@ -74,15 +74,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-  - buildTarget: Android
-    maxTextureSize: 1024
-    resizeAlgorithm: 0
-    textureFormat: 47
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 1
   spriteSheet:
     serializedVersion: 2
     sprites: []
@@ -90,12 +81,12 @@ TextureImporter:
     physicsShape: []
   spritePackingTag: 
   userData: 
-  assetBundleName: fx_textures_particle.unity3d
+  assetBundleName: 
   assetBundleVariant: 
 AssetOrigin:
   serializedVersion: 1
-  productId: 300008
-  packageName: Game VFX - Hit Collection(URP)
+  productId: 345212
+  packageName: Free Game VFX Collection(URP)
   packageVersion: 1.02
   assetPath: Assets/FX_Hit_Collection/Textures/particle_sprite_01.png
-  uploadId: 845634
+  uploadId: 845446

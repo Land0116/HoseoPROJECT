@@ -28,8 +28,7 @@ public class EightDirectionHitbox : MonoBehaviour
         while (t < fadeTime)
         {
             t += Time.deltaTime;
-
-            float alpha = t / fadeTime;
+            float alpha = (t / fadeTime);
 
             if (sr != null)
             {

@@ -17,6 +17,11 @@ public class PrincessDollAttack : AttackPattern
     [SerializeField] private float dashDamage = 1f;
     [SerializeField] private float dashDuration = 0.35f;
 
+    [Header("Dash Effect")]
+    [SerializeField] private GameObject dashEffectPrefab;
+    [SerializeField] private float dashEffectDelay = 0.1f;
+    [SerializeField] private Vector3 dashEffectOffset;
+
     private float dashTimer;
     private float dashPauseTimer;
     private float patternCooldownTimer;
@@ -34,10 +39,15 @@ public class PrincessDollAttack : AttackPattern
     [Header("8 Direction Unit Size")]
     [SerializeField] private Vector3 eightDirScale = new Vector3(1f, 1f, 1f);
     [SerializeField] private float eightHitRadiusMultiplier = 0.5f;
+    [SerializeField] private float dashEffectBeforeEndTime = 0.5f;
 
     [Header("8 Direction Spawn Origin")]
     [SerializeField] private Transform eightOrigin;
     [SerializeField] private float eightDistance = 1f;
+    private bool dashEffectSpawned;
+
+    [Header("8 Direction Telegraph")]
+    [SerializeField] private GameObject eightTelegraphPrefab;
 
     [Header("Explosion Attack")]
     [SerializeField] private GameObject explosionPrefab;
@@ -123,6 +133,8 @@ public class PrincessDollAttack : AttackPattern
 
                 if (dashTimer >= dashDuration)
                 {
+                    SpawnDashEffectNow(); // 대쉬 끝나자마자 즉시 생성
+
                     dashTimer = 0f;
                     isDashing = false;
                     state = State.DashPause;
@@ -138,6 +150,7 @@ public class PrincessDollAttack : AttackPattern
                 if (dashPauseTimer >= dashPauseTime)
                 {
                     dashPauseTimer = 0f;
+                    //StartCoroutine(SpawnDashEffectNMow());//*
                     dashIndex++;
 
                     if (dashIndex >= dashCount)
@@ -228,7 +241,7 @@ public class PrincessDollAttack : AttackPattern
         }
     }
 
-    private IEnumerator EightDirectionAttack()
+    /*private IEnumerator EightDirectionAttack()
     {
         Vector2 center = monster.transform.position;
 
@@ -261,8 +274,103 @@ public class PrincessDollAttack : AttackPattern
         isDashing = false;
         patternCooldownTimer = 0f;
         state = State.Cooldown;
+    }*/
+    private IEnumerator EightDirectionAttack()
+    {
+        Vector2 center = monster.transform.position;
+
+        // 1. 전조 생성
+        GameObject[] telegraphs = new GameObject[8];
+
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * 45f * Mathf.Deg2Rad;
+
+            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            Vector2 pos = center + dir * eightDistance;
+
+            float rotZ = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            GameObject tele = Instantiate(
+                eightTelegraphPrefab,
+                pos,
+                Quaternion.Euler(0, 0, rotZ)
+            );
+            SpriteRenderer sr = tele.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                StartCoroutine(FadeTelegraph(sr, eightFadeTime));
+            }
+            tele.transform.localScale = eightDirScale;
+            telegraphs[i] = tele;
+        }
+
+        // 전조 시간 기다림 (기존 fadeTime 활용)
+        yield return new WaitForSeconds(eightFadeTime);
+
+        // 전조 제거
+        for (int i = 0; i < telegraphs.Length; i++)
+        {
+            if (telegraphs[i] != null)
+                Destroy(telegraphs[i]);
+        }
+
+        // 2. 실제 공격 생성
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = i * 45f * Mathf.Deg2Rad;
+
+            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            Vector2 pos = center + dir * eightDistance;
+
+            float rotZ = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            GameObject obj = Instantiate(
+                eightDirPrefab,
+                pos,
+                Quaternion.Euler(0, 0, rotZ)
+            );
+
+            obj.transform.localScale = eightDirScale;
+
+            var hitbox = obj.GetComponent<EightDirectionHitbox>();
+            if (hitbox != null)
+            {
+                hitbox.SetDamage(eightDamage);
+            }
+        }
+
+        yield return new WaitForSeconds(eightPatternCooldown);
+
+        isDashing = false;
+        patternCooldownTimer = 0f;
+        state = State.Cooldown;
     }
 
+    private IEnumerator FadeTelegraph(SpriteRenderer sr, float duration)
+    {
+        float t = 0f;
+
+        Color color = sr.color;
+        color.a = 0f;
+        sr.color = color;
+
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+
+            float alpha = Mathf.Lerp(0f, 0.6f, t / duration);
+
+            if (sr != null)
+            {
+                Color c = sr.color;
+                c.a = alpha;
+                sr.color = c;
+            }
+
+            yield return null;
+        }
+    }
     private IEnumerator ExplosionAttack()
     {
         Vector2 center = monster.transform.position;
@@ -296,7 +404,7 @@ public class PrincessDollAttack : AttackPattern
         while (t < explosionFadeTime)
         {
             t += Time.deltaTime;
-            float alpha = (t / explosionFadeTime) * 0.65f;
+            float alpha = (t / explosionFadeTime) * 0.5f;
 
             if (sr != null)
                 sr.color = new Color(1, 1, 1, alpha);
@@ -330,5 +438,16 @@ public class PrincessDollAttack : AttackPattern
         }
 
         Destroy(obj.gameObject);
+    }
+
+    private void SpawnDashEffectNow()
+    {
+        if (dashEffectPrefab != null)
+        {
+            Vector3 pos = monster.transform.position + dashEffectOffset;
+
+            GameObject obj = Instantiate(dashEffectPrefab, pos, Quaternion.identity);
+            Destroy(obj, 0.2f);
+        }
     }
 }

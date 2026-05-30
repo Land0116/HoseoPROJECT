@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Shock_05
-  m_Shader: {fileID: 4800000, guid: c08db238fb8e2504caac9ff70cbc28b7, type: 3}
+  m_Shader: {fileID: 4800000, guid: ce47b9045a7a3214ca1379e605f54d9f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -46,6 +46,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Blend2: 1
+    - _Brightness: 2
     - _CullMode: 0
     - _Depthpower: 1
     - _Emission: 2
@@ -56,6 +57,7 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DistortionSpeedXYPowerZ: {r: 0, g: 0, b: 0, a: 0}
+    - _FlowSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _SpeedMainTexUVNoiseZW: {r: 0, g: 0, b: 0, a: 0}
     - _TintColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
