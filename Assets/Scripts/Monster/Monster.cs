@@ -328,8 +328,6 @@ public class Monster : MonoBehaviour, IDamageable
         if (isBossMonster)
         {
             HandleBossDeathReward();
-            Destroy(gameObject);
-            return;
         }
 
         Destroy(gameObject);

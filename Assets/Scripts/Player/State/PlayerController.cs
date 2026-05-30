@@ -166,7 +166,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     [SerializeField] private float chargeShotDamageMultiplier = 1f;
     
     [Header("차지샷 총알 크기")]
-    [SerializeField] private float chargeShotProjectileScaleMultiplier = 2f;
+    [SerializeField] private float chargeShotProjectileScaleMultiplier = 2.5f;
 
     [Header("증강 - 공격 시퀀스")] [SerializeField]
     private bool isAttackSequenceRunning = false;
@@ -1821,6 +1821,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 핵심:
         // 실제로 체력이 깎인 뒤, 일정 시간 동안 추가 피해를 막는다.
         invincibleUntilTime = Time.time + hitInvincibleDuration;
+        if (IsChargeShotCharging)
+        {
+            return;
+        }
 
         EnterHitState();
     }

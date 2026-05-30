@@ -56,7 +56,7 @@ public class RewardObjectSpawner : MonoBehaviour
 
     public RewardType GetRandomBossRewardType()
     {
-        return Random.value < 0.5f
+        return Random.value < 0.8f
             ? RewardType.Augment
             : RewardType.Skill;
     }

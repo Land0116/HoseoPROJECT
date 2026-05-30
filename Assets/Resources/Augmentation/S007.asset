@@ -38,15 +38,16 @@ MonoBehaviour:
     cheatDeathRemainHp: 1
     cheatDeathInvincibleDuration: 1
     hpToDamagePercentPer10Hp: 0
+    bonusMaxHpToScalePercentPer10Hp: 0
     healOnKill: 0
     hpRegenPerSecond: 2
     healToAutoAttackThreshold: 0
     healToAutoAttackDamageMultiplier: 0
     shieldInterval: 0
     shieldMaxCount: 0
-    ruleDescription: "\uC804\uD22C \uC911 \uCD08\uB2F9 \uCCB4\uB825\uC744 2\uC529
-      \uD68C\uBCF5\uD569\uB2C8\uB2E4. \n\uB2E8\uC77C \uB808\uBCA8 \uC99D\uAC15\uC774\uBA70,
-      \n\uCD94\uAC00 \uAC15\uD654\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    ruleDescription: "\uCD08\uB2F9 \uCCB4\uB825\uC744 2\uC529 \uD68C\uBCF5\uD569\uB2C8\uB2E4.
+      \n\uB2E8\uC77C \uB808\uBCA8 \uC99D\uAC15\uC774\uBA70, \n\uCD94\uAC00 \uAC15\uD654\uB418\uC9C0
+      \uC54A\uC2B5\uB2C8\uB2E4."
     tooltipEffectText: "\uCD08\uB2F9 \uCCB4\uB825 +2 \uD68C\uBCF5"
     tooltipDescription: "\uC2DC\uAC04\uC774 \uC9C0\uB0A0\uC218\uB85D \uCCB4\uB825\uC774
       \uC870\uAE08\uC529 \uD68C\uBCF5\uB429\uB2C8\uB2E4. \n\uC7A5\uAE30 \uC804\uD22C\uC5D0\uC11C

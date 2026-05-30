@@ -28,10 +28,10 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "\uCC28\uC9C0 \uD6C4 2.0\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
+    levelDescription: "\uCC28\uC9C0 \uD6C4 1.5\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
       \n\uBC1C\uC0AC\uD569\uB2C8\uB2E4. \uCC28\uC9C0 \uC2DC\uAC04\uC740 1.0\uCD08\uC774\uBA70,
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uD53C\uD574 \uBC30\uC728\uC774
-      3.0\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+      2.5\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uCC28\uC9C0 \uD6C4 \uAC15\uD55C \uD55C \uBC1C"
     tooltipDescription: "\uACF5\uACA9\uC744 \uBAA8\uC544 \uAC15\uB825\uD55C \uD0C4\uD658\uC744
       \uBC1C\uC0AC\uD569\uB2C8\uB2E4. \n\uC9E7\uC740 \uB51C\uB808\uC774 \uD6C4 \uB192\uC740
@@ -39,7 +39,7 @@ MonoBehaviour:
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
-    damageMultiplier: 2
+    damageMultiplier: 1.5
     spreadAngle: 0
     chargeTime: 1
     attackSpeedBonusPercent: 0
@@ -62,10 +62,10 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 2
-    levelDescription: "\uCC28\uC9C0 \uD6C4 2.5\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
+    levelDescription: "\uCC28\uC9C0 \uD6C4 2\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
       \n\uBC1C\uC0AC\uD569\uB2C8\uB2E4. \uCC28\uC9C0 \uC2DC\uAC04\uC740 0.8\uCD08\uC774\uBA70,
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uD53C\uD574 \uBC30\uC728\uC774
-      3.0\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+      2.5\uBC30\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uCC28\uC9C0 \uD53C\uD574 \uC99D\uAC00"
     tooltipDescription: "\uACF5\uACA9\uC744 \uBAA8\uC544 \uAC15\uB825\uD55C \uD0C4\uD658\uC744
       \uBC1C\uC0AC\uD569\uB2C8\uB2E4. \n\uC9E7\uC740 \uB51C\uB808\uC774 \uD6C4 \uB192\uC740
@@ -73,7 +73,7 @@ MonoBehaviour:
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
-    damageMultiplier: 2.5
+    damageMultiplier: 2
     spreadAngle: 0
     chargeTime: 0.8
     attackSpeedBonusPercent: 0
@@ -96,8 +96,8 @@ MonoBehaviour:
     dotDamagePerSecond: 0
     dotDuration: 0
   - level: 3
-    levelDescription: "\uCC28\uC9C0 \uD6C4 3.0\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
-      \n\uBC1C\uC0AC\uD569\uB2C8\uB2E4. \uCC28\uC9C0 \uC2DC\uAC04\uC740 0.6\uCD08\uC785\uB2C8\uB2E4.
+    levelDescription: "\uCC28\uC9C0 \uD6C4 2.5\uBC30 \uD53C\uD574\uC758 \uD0C4\uD658\uC744
+      \n\uBC1C\uC0AC\uD569\uB2C8\uB2E4. \n\uCC28\uC9C0 \uC2DC\uAC04\uC740 0.6\uCD08\uC785\uB2C8\uB2E4.
       \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
     tooltipEffectText: "\uAC15\uB825\uD55C \uACE0\uC18D \uCC28\uC9C0\uC0F7"
     tooltipDescription: "\uACF5\uACA9\uC744 \uBAA8\uC544 \uAC15\uB825\uD55C \uD0C4\uD658\uC744
@@ -106,7 +106,7 @@ MonoBehaviour:
     shotFireMode: 0
     burstInterval: 0
     projectileCountAdd: 0
-    damageMultiplier: 3
+    damageMultiplier: 2.5
     spreadAngle: 0
     chargeTime: 0.6
     attackSpeedBonusPercent: 0

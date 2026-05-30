@@ -28,10 +28,10 @@ MonoBehaviour:
   maxLevel: 3
   subSkillLevels:
   - level: 1
-    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 5\uC758
+    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 1\uC758
       \uC9C0\uC18D \uD53C\uD574\uB97C 5\uCD08 \uB3D9\uC548 \uBD80\uC5EC\uD569\uB2C8\uB2E4.
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uCD08\uB2F9 \uD53C\uD574\uAC00
-      12\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+      4\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uC801\uC5D0\uAC8C \uC9C0\uC18D \uD53C\uD574 \uBD80\uC5EC"
     tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC911\uD55C \uC801\uC5D0\uAC8C
       \uD654\uC0C1\uC744 \uBD80\uC5EC\uD569\uB2C8\uB2E4. \n\uC77C\uC815 \uC2DC\uAC04
@@ -62,10 +62,10 @@ MonoBehaviour:
     dotDamagePerSecond: 1
     dotDuration: 5
   - level: 2
-    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 8\uC758
+    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 2\uC758
       \uC9C0\uC18D \uD53C\uD574\uB97C 6\uCD08 \uB3D9\uC548 \uBD80\uC5EC\uD569\uB2C8\uB2E4.
       \n\uCD5C\uB300 Lv3\uAE4C\uC9C0 \uAC15\uD654 \uC2DC \uCD08\uB2F9 \uD53C\uD574\uAC00
-      12\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+      4\uAE4C\uC9C0 \uC99D\uAC00\uD569\uB2C8\uB2E4."
     tooltipEffectText: "\uD654\uC0C1 \uD53C\uD574\uC640 \uC9C0\uC18D \uC2DC\uAC04
       \uC99D\uAC00"
     tooltipDescription: "\uD0C4\uD658\uC774 \uC801\uC911\uD55C \uC801\uC5D0\uAC8C
@@ -94,10 +94,10 @@ MonoBehaviour:
     explosionDamageMultiplier: 0
     chainCount: 0
     chainRange: 0
-    dotDamagePerSecond: 1
+    dotDamagePerSecond: 2
     dotDuration: 6
   - level: 3
-    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 12\uC758
+    levelDescription: "\uC801\uC911\uD55C \uC801\uC5D0\uAC8C \uCD08\uB2F9 4\uC758
       \uC9C0\uC18D \uD53C\uD574\uB97C 7\uCD08 \uB3D9\uC548 \uBD80\uC5EC\uD569\uB2C8\uB2E4.
       \n\uD604\uC7AC \uCD5C\uB300 \uB808\uBCA8\uC785\uB2C8\uB2E4."
     tooltipEffectText: "\uAC15\uB825\uD55C \uD654\uC0C1 \uC9C0\uC18D \uD53C\uD574"
@@ -127,7 +127,7 @@ MonoBehaviour:
     explosionDamageMultiplier: 0
     chainCount: 0
     chainRange: 0
-    dotDamagePerSecond: 1
+    dotDamagePerSecond: 4
     dotDuration: 7
   passiveLevels: []
   specialLevels: []
