@@ -324,6 +324,7 @@ public class Monster : MonoBehaviour, IDamageable
 
                 animator.Play("Front_Death", 0, 0.1f);
                 StartCoroutine(DeathRoutine(frontDeathAnimationTime));
+
             }
             else
             {
@@ -333,6 +334,7 @@ public class Monster : MonoBehaviour, IDamageable
 
                 animator.Play(anim, 0, 0f);
                 StartCoroutine(DeathRoutine(deathAnimationTime));
+
             }
 
             //StartCoroutine(DeathFallbackRoutine());

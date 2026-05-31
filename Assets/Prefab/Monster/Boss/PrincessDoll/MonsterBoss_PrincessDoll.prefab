@@ -207,13 +207,13 @@ MonoBehaviour:
   eightDistance: 9
   eightTelegraphPrefab: {fileID: 5945707791796830103, guid: 99b510e13526e3d4291cec7aa2cdd3cc, type: 3}
   explosionPrefab: {fileID: 3830614522430265470, guid: d0f37cd5518b2e04eb4673dee16602fd, type: 3}
-  explosionRange: 13
-  explosionCount: 8
+  explosionRange: 20
+  explosionCount: 28
   explosionFadeTime: 0.7
   explosionDamage: 17
-  explosionPatternCooldown: 2
+  explosionPatternCooldown: 1
   stuntime: 3
-  explosionUnitRadius: 4
+  explosionUnitRadius: 3.2
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
 --- !u!114 &2029946389438896784
 MonoBehaviour:

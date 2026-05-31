@@ -104,9 +104,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: FX_Yellow_Hit_02
       objectReference: {fileID: 0}
+    - target: {fileID: 1437247063509167476, guid: b9d05d014d2b01642a21d226ed564c98, type: 3}
+      propertyPath: m_SortingOrder
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 2984077162576318290, guid: b9d05d014d2b01642a21d226ed564c98, type: 3}
       propertyPath: m_SortingOrder
-      value: 4
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4907737995568073855, guid: b9d05d014d2b01642a21d226ed564c98, type: 3}
       propertyPath: m_LocalScale.x

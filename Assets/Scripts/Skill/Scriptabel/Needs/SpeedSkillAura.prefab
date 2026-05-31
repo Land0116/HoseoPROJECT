@@ -100,6 +100,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1098688564383314554}
     m_Modifications:
+    - target: {fileID: 893138453512439490, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
+      propertyPath: m_SortingOrder
+      value: 92
+      objectReference: {fileID: 0}
     - target: {fileID: 1344322938972960943, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
       propertyPath: m_Name
       value: SpeedUp
@@ -164,6 +168,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6178916139023834598, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
+      propertyPath: m_SortingOrder
+      value: 92
+      objectReference: {fileID: 0}
     - target: {fileID: 7600856083379767010, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
       propertyPath: lengthInSec
       value: 2
@@ -178,7 +186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7936193247354244258, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
       propertyPath: m_SortingOrder
-      value: 11
+      value: 92
       objectReference: {fileID: 0}
     - target: {fileID: 9080603785690476508, guid: 018da2f2276b047c89c59c4e165244f1, type: 3}
       propertyPath: m_LocalScale.x

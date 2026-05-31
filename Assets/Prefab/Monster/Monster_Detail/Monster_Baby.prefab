@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6900379530350747460}
   - component: {fileID: 4226913835277225039}
   - component: {fileID: -7251507777566734331}
+  - component: {fileID: -5628919539511190124}
   m_Layer: 12
   m_Name: Monster_Baby
   m_TagString: Monster
@@ -145,12 +146,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  forceFrontDeath: 0
+  frontDeathAnimationTime: 1.2
   useHitStop: 0
   hitStopDuration: 1
   useHitKnockback: 0
   knockbackDuration: 1
   knockbackSpeed: 5
-  animator: {fileID: 0}
+  animator: {fileID: -5628919539511190124}
   deathSound: {fileID: 8300000, guid: 893fd4c74de90194784f04a1f8cfbbe9, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: -7251507777566734331}
@@ -334,3 +337,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &-5628919539511190124
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5072550965480936731}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

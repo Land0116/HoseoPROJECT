@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9068274780891047224}
   - component: {fileID: 6886853644148261033}
   - component: {fileID: 987374145082319398}
+  - component: {fileID: 8972072886578009163}
   m_Layer: 0
   m_Name: BossMonster_Stage2_ToyDino
   m_TagString: Monster
@@ -108,7 +109,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
-  animator: {fileID: 0}
+  forceFrontDeath: 0
+  frontDeathAnimationTime: 2
+  useHitStop: 0
+  hitStopDuration: 1
+  useHitKnockback: 0
+  knockbackDuration: 1
+  knockbackSpeed: 5
+  animator: {fileID: 8972072886578009163}
+  deathSound: {fileID: 0}
+  deathSoundDelay: 0
+  audioSource: {fileID: 0}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
+  isBossMonster: 0
+  dropRewardOnDeath: 1
   attackPattern: {fileID: 6909106019782626182}
   movePattern: {fileID: 6886853644148261033}
   moveSpeed: 3
@@ -116,6 +131,7 @@ MonoBehaviour:
   minGold: 15
   maxGold: 25
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
+  alertUIPrefab: {fileID: 0}
   weaponPrefabDropChance: 0
   itemDropChance: 0
   weaponPrefab: {fileID: 848678835105187383, guid: 8133d4b0dea9fcb4a9e01b0cb08c14ce, type: 3}
@@ -125,6 +141,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &6909106019782626182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,3 +234,25 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!95 &8972072886578009163
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8565604840341420036}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
