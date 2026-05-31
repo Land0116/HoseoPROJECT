@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 2029946389438896784}
   - component: {fileID: 1049455016007415334}
   - component: {fileID: 792431145989907244}
+  - component: {fileID: 2524009285069636014}
   m_Layer: 12
   m_Name: MonsterBoss_PrincessDoll
   m_TagString: Monster
@@ -87,8 +88,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.5707547, b: 0.97171485, a: 1}
+  m_Sprite: {fileID: -4249267086336159533, guid: 2c662161d9a119e40a4a5c9068979a03, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -132,7 +133,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 2
 --- !u!50 &2245430131046673564
 Rigidbody2D:
   serializedVersion: 5
@@ -227,7 +228,7 @@ MonoBehaviour:
   useHitKnockback: 0
   knockbackDuration: 1
   knockbackSpeed: 5
-  animator: {fileID: 0}
+  animator: {fileID: 2524009285069636014}
   deathSound: {fileID: 8300000, guid: 0c91317f1ee228747b492e19db8c6b45, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: 792431145989907244}
@@ -363,3 +364,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &2524009285069636014
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8555629504678823905}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 85438823596df8045962f988a7227207, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
