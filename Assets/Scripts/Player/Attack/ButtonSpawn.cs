@@ -321,43 +321,7 @@ public class ButtonSpawn : MonoBehaviour
     
         DestroyProjectile();
     }
-
-    // private void OnCollisionEnter2D(Collision2D collision)
-    // {
-    //     if (isDestroyed) return;
-    //     if (collision.contactCount <= 0) return;
-    //
-    //     if (IsOwnerCollider(collision.collider))
-    //         return;
-    //
-    //     // 적이면 적 처리
-    //     IDamageable damageable = GetDamageable(collision.collider);
-    //     if (damageable != null)
-    //     {
-    //         HandleEnemyHit(collision.collider, damageable);
-    //         return;
-    //     }
-    //
-    //     // 벽/장애물만 반사 또는 소멸 처리
-    //     if (!IsWallLayer(collision.collider.gameObject))
-    //         return;
-    //
-    //     if (remainingBounceCount > 0)
-    //     {
-    //         Vector2 normal = collision.GetContact(0).normal;
-    //         moveDirection = Vector2.Reflect(moveDirection, normal).normalized;
-    //         remainingBounceCount--;
-    //         return;
-    //     }
-    //
-    //     if (explosionRadius > 0f)
-    //     {
-    //         ExplodeAt(collision.GetContact(0).point, null);
-    //         //PlayExplosionVfx(collision.GetContact(0).point, explosionRadius);
-    //     }
-    //
-    //     DestroyProjectile();
-    // }
+    
 
     private void HandleEnemyHit(Collider2D targetCollider, IDamageable damageable)
     {
