@@ -5,6 +5,9 @@ using UnityEngine.Audio;
 public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
+    [Header("Death Animation Override")]
+    [SerializeField] private bool forceFrontDeath = false;
+    [SerializeField] private float frontDeathAnimationTime = 2f;
 
     [Header("Hit Stop Setting")]
     [SerializeField] private bool useHitStop = false;
@@ -277,6 +280,11 @@ public class Monster : MonoBehaviour, IDamageable
         if (isDead) return;
         isDead = true;
         isForceDead = true;
+
+        currentAnim = ""; //* 추가
+        animator.Rebind();
+        animator.Update(0f);
+
         StopAllCoroutines();
 
         PlayDeathSound();
@@ -299,7 +307,7 @@ public class Monster : MonoBehaviour, IDamageable
             PlayerController.Instance.OnKillEnemy();
         }
         // 애니메이션 있으면 재생
-        if (animator != null)
+        /*if (animator != null)
         {
             Vector2 dir = lastLookDir;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
@@ -308,8 +316,37 @@ public class Monster : MonoBehaviour, IDamageable
             animator.Play(anim, 0, 0f);
 
             StartCoroutine(DeathFallbackRoutine());
+        }*/
+        if (animator != null)
+        {
+            if (forceFrontDeath)
+            {
+
+                animator.Play("Front_Death", 0, 0.1f);
+                StartCoroutine(DeathRoutine(frontDeathAnimationTime));
+            }
+            else
+            {
+                Vector2 dir = lastLookDir;
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                string anim = GetDirectionName(angle) + "_Death";
+
+                animator.Play(anim, 0, 0f);
+                StartCoroutine(DeathRoutine(deathAnimationTime));
+            }
+
+            //StartCoroutine(DeathFallbackRoutine());
         }
         else
+        {
+            FinishDeath();
+        }
+    }
+    private IEnumerator DeathRoutine(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        if (this != null)
         {
             FinishDeath();
         }
@@ -487,7 +524,10 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (animator.runtimeAnimatorController == null) return; 
 
-        if (!HasState(animName)) return;//*
+        if (!HasState(animName)) return;
+
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Front_Death"))
+            return;
 
         if (lockBossFinalAttack) //* 0529 보스
         {

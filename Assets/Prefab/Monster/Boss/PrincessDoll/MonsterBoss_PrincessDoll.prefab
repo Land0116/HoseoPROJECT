@@ -227,6 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  forceFrontDeath: 1
+  frontDeathAnimationTime: 1.7
   useHitStop: 0
   hitStopDuration: 1
   useHitKnockback: 0
