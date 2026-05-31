@@ -320,14 +320,18 @@ public class Monster : MonoBehaviour, IDamageable
 
         deathFinished = true;
 
-        if (dropRewardOnDeath)
-        {
-            DropReward();
-        }
-
         if (isBossMonster)
         {
+            DropReward();
             HandleBossDeathReward();
+        }
+
+        else
+        {
+            if (dropRewardOnDeath)
+            {
+                DropReward();
+            }
         }
 
         Destroy(gameObject);
@@ -358,12 +362,6 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void HandleBossDeathReward()
     {
-        if (!dropRewardOnDeath)
-        {
-            NotifyBossDead();
-            return;
-        }
-
         if (rewardObjectSpawner == null)
         {
             rewardObjectSpawner = FindAnyObjectByType<RewardObjectSpawner>();

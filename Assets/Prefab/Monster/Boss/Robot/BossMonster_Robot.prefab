@@ -85,7 +85,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 12
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0.4481132, g: 0.89323384, b: 1, a: 1}
@@ -181,6 +181,8 @@ MonoBehaviour:
   deathSound: {fileID: 8300000, guid: faf32e3738a9cfc4b9241070a45b171f, type: 3}
   deathSoundDelay: 0
   audioSource: {fileID: -7482430823266265871}
+  rewardObjectSpawner: {fileID: 0}
+  bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 1
   dropRewardOnDeath: 0
   attackPattern: {fileID: 2133988174014043253}
@@ -200,6 +202,8 @@ MonoBehaviour:
   isAttacking: 0
   hitAnimationTime: 0.5
   deathAnimationTime: 0.7
+  lockBossFinalAttack: 0
+  ignoreHitAnimation: 0
 --- !u!114 &2133988174014043253
 MonoBehaviour:
   m_ObjectHideFlags: 0
