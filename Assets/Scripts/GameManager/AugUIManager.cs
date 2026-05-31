@@ -34,9 +34,8 @@ public class AugUIManager : MonoBehaviour
     [Header("리셋 버튼")] [SerializeField] private Button[] resetBtn;
     private bool[] rerollUsed = new bool[ChoiceCount];
 
-    [Header("리롤 버튼 패널")]
-    [SerializeField] private GameObject rerollButtonPanel;
-    
+    [Header("리롤 버튼 패널")] [SerializeField] private GameObject rerollButtonPanel;
+
     [Header("보유 증강 슬롯 UI")] [SerializeField]
     private Image[] slotImages;
 
@@ -231,7 +230,7 @@ public class AugUIManager : MonoBehaviour
 
         ClearOwnedAugmentUI();
         PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.AugmentPanel, false);
-    }     
+    }
 
     public bool IsAugmentationVisible()
     {
@@ -701,7 +700,7 @@ public class AugUIManager : MonoBehaviour
             CrosshairUI.Instance?.HideCrosshair();
         }
     }
-    
+
 
     private void RefreshOwnedHoverAfterUpdate()
     {
@@ -825,6 +824,7 @@ public class AugUIManager : MonoBehaviour
             candidateBuffer.Add(aug);
         }
     }
+
     private void RemoveSameAugmentFromCandidateBuffer(AugmentationSystem picked)
     {
         if (picked == null)
@@ -1019,7 +1019,7 @@ public class AugUIManager : MonoBehaviour
             }
         }
     }
-    
+
     private void SetRerollPanelVisible(bool visible)
     {
         if (rerollButtonPanel != null)
@@ -1227,7 +1227,7 @@ public class AugUIManager : MonoBehaviour
 
     #region Coroutine
 
-    private IEnumerator CloseAugmentationAfterMouseRelease() 
+    private IEnumerator CloseAugmentationAfterMouseRelease()
     {
         while (Mouse.current != null && Mouse.current.leftButton.isPressed)
         {
@@ -1247,6 +1247,7 @@ public class AugUIManager : MonoBehaviour
 
         NotifyRewardAugmentFinished();
     }
+
     #endregion
 
     #region Scene Rule
