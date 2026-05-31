@@ -155,7 +155,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 20
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3174320408264164923, guid: 0e1e4614e751b184986ccde49b89070f, type: 3}
   m_Color: {r: 1, g: 0.7122642, b: 0.7122642, a: 1}
@@ -179,6 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  forceFrontDeath: 0
+  frontDeathAnimationTime: 1.2
   useHitStop: 0
   hitStopDuration: 1
   useHitKnockback: 0
