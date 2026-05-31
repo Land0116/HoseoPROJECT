@@ -2352,13 +2352,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         float actualHealed = Hp - beforeHp;
 
         if (actualHealed <= 0f) return;
-
-        Debug.Log(
-            "회복량: " + actualHealed.ToString("F2") +
-            " / 현재 체력: " + Hp.ToString("F2") +
-            " / 최대 체력: " + MaxHp.ToString("F2")
-        );
-
+        
         if (triggerAutoAttack &&
             specialHealToAutoAttackThreshold > 0f &&
             specialHealToAutoAttackDamageMultiplier > 0f)

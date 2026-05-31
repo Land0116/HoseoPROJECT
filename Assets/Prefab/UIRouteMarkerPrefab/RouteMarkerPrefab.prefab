@@ -51,7 +51,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RouteMarkerSpriteView
   iconRenderer: {fileID: 1235465553699825645}
-  rewardNameText: {fileID: 1543017509433126224}
 --- !u!1 &1737374900936871788
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +134,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
