@@ -174,6 +174,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrincessDollAttack
   blockMovement: 0
+  audioSource: {fileID: 792431145989907244}
+  dashSound: {fileID: 8300000, guid: 21298a556cdec97489dc62e4ef6e6db5, type: 3}
+  eightDirSound: {fileID: 8300000, guid: 846085510ca30424db02232dc7c2c6f7, type: 3}
+  explosionSound: {fileID: 8300000, guid: 94debc179d1d04a46840cfa1807cea60, type: 3}
   explosionEffectPrefabs:
   - {fileID: 3830614522430265470, guid: 3ff89537aa9b5904baf081e8a246f36b, type: 3}
   - {fileID: 3830614522430265470, guid: fb47160782283dd48a1569cca9ad2481, type: 3}

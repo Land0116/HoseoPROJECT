@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class PrincessDollAttack : AttackPattern
 {
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip dashSound;
+    [SerializeField] private AudioClip eightDirSound;
+    [SerializeField] private AudioClip explosionSound;
+
     [SerializeField] private GameObject[] explosionEffectPrefabs;
 
     [Header("Detect")]
@@ -315,6 +321,10 @@ public class PrincessDollAttack : AttackPattern
                 Destroy(telegraphs[i]);
         }
 
+        if (audioSource != null && eightDirSound != null)
+        {
+            audioSource.PlayOneShot(eightDirSound);
+        }
         // 2. 실제 공격 생성
         for (int i = 0; i < 8; i++)
         {
@@ -392,9 +402,16 @@ public class PrincessDollAttack : AttackPattern
 
         obj.transform.localScale = Vector3.one * explosionUnitRadius * 2f;
 
-        StartCoroutine(ExplosionDamage(obj.transform));
+        StartCoroutine(ExplosionDelayRoutine(obj.transform));
     }
+    private IEnumerator ExplosionDelayRoutine(Transform obj)
+    {
+        float delay = Random.Range(0.05f, 0.6f);
 
+        yield return new WaitForSeconds(delay);
+        
+        StartCoroutine(ExplosionDamage(obj));
+    }
     private IEnumerator ExplosionDamage(Transform obj)
     {
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
@@ -415,6 +432,12 @@ public class PrincessDollAttack : AttackPattern
         if (explosionEffectPrefabs != null && explosionEffectPrefabs.Length > 0)
         {
             int index = Random.Range(0, explosionEffectPrefabs.Length);
+            if (audioSource != null && explosionSound != null)
+            {
+                audioSource.pitch = Random.Range(0.9f, 1.1f);
+                audioSource.PlayOneShot(explosionSound, 0.5f);
+                audioSource.pitch = 1f;
+            }
 
             GameObject effect = Instantiate(
                 explosionEffectPrefabs[index],
@@ -447,6 +470,11 @@ public class PrincessDollAttack : AttackPattern
             Vector3 pos = monster.transform.position + dashEffectOffset;
 
             GameObject obj = Instantiate(dashEffectPrefab, pos, Quaternion.identity);
+            if (audioSource != null && dashSound != null)
+            {
+                audioSource.PlayOneShot(dashSound);
+            }
+
             Destroy(obj, 0.2f);
         }
     }
