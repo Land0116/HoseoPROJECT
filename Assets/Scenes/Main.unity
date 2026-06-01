@@ -10080,10 +10080,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc1e7a157a53e6a4980934d5523493fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BGMSoundManager
+  shopSound: {fileID: 8300000, guid: 0fcef6469ab9d1742858b90c049c6dd5, type: 3}
+  shopOpenSound: {fileID: 8300000, guid: 74c72ac78f5d8c7418698ed3b1891b22, type: 3}
+  shopOpenDelay: 0
+  shopSoundVolume: 1
   sceneDatas:
   - sceneName: Main
     bgmType: 0
-    stageNumber: 0
+    stageNumber: 1
   - sceneName: CombatRoom_1
     bgmType: 1
     stageNumber: 1

@@ -1,334 +1,3 @@
-/*using UnityEngine;
-using UnityEngine.SceneManagement;
-
-public class BGMSoundManager : MonoBehaviour
-{
-    public static BGMSoundManager Instance;
-    private string lastSceneName;
-    private bool blockNextResume = false;
-    private BGMType lastBGMType;
-    private bool isCutscenePlaying = false; //*
-
-    private Coroutine bossBGMCoroutine;
-    private enum BGMType
-    {
-        Main,
-        Normal,
-        Shop,
-        Boss
-    }
-
-    [System.Serializable]
-    private class SceneBGMData
-    {
-        public string sceneName;
-        public BGMType bgmType;
-        public int stageNumber;
-
-        public float bossBGMDelay;
-    }
-
-    [System.Serializable]
-    private class StageBGM
-    {
-        public int stageNumber;
-        public AudioClip normalBGM;
-        public AudioClip bossBGM;
-    }
-
-    [Header("���� ����")]
-    [SerializeField] private SceneBGMData[] sceneDatas;
-
-    [Header("���� BGM")]
-    [SerializeField] private AudioClip mainBGM;
-
-    [Header("�������� BGM")]
-    [SerializeField] private StageBGM[] stageBGMs;
-
-    [SerializeField] private AudioSource bgmSource;
-
-    private string currentSceneName = "";
-    private int currentStage = -1;
-    private BGMType currentType;
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        DontDestroyOnLoad(this);
-    }
-
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        //Debug.Log($"[BGM] OnSceneLoaded: {scene.name}");
-
-        ApplyBGM(scene.name);
-    }
-
-    /*private void ApplyBGM(string sceneName)
-    {
-        lastSceneName = sceneName;
-        SceneBGMData data = GetSceneData(sceneName);
-
-        if (data == null)
-        {
-            Debug.LogError($"[BGM] �� ������ ���� �� {sceneName}");
-            return;
-        }
-
-        // ����
-        if (data.bgmType == BGMType.Main)
-        {
-            PlayClip(mainBGM);
-            return;
-        }
-
-        StageBGM stageData = GetStageBGM(data.stageNumber);
-
-        if (stageData == null)
-        {
-            Debug.LogError($"[BGM] �������� ������ ���� �� {data.stageNumber}");
-            return;
-        }
-
-        AudioClip target = null;
-
-        switch (data.bgmType)
-        {
-            case BGMType.Normal:
-            case BGMType.Shop:
-                target = stageData.normalBGM;
-                break;
-
-            case BGMType.Boss:
-                target = stageData.bossBGM;
-                break;
-        }
-
-        if (target == null)
-        {
-            Debug.LogError("[BGM] Ŭ�� ����");
-            return;
-        }
-
-        // ���� �������� Normal/Shop�̸� ����
-        if (currentStage == data.stageNumber &&
-            currentType != BGMType.Boss &&
-            data.bgmType != BGMType.Boss)
-        {
-            Debug.Log("[BGM] ������");
-            return;
-        }
-
-        lastBGMType = currentType;
-
-        PlayClip(target);
-
-        currentStage = data.stageNumber;
-        currentType = data.bgmType;
-        
-    }
-
-    private void ApplyBGM(string sceneName)
-    {
-        // 추가
-        if (isCutscenePlaying)
-        {
-            Debug.Log("[BGM] 컷씬 중이라 BGM 재생 차단");
-            return;
-        }
-
-        lastSceneName = sceneName;
-        SceneBGMData data = GetSceneData(sceneName);
-
-        if (data == null)
-        {
-            Debug.LogError($"[BGM] 씬 데이터 없음: {sceneName}");
-            return;
-        }
-
-        if (data.bgmType == BGMType.Main)
-        {
-            PlayClip(mainBGM);
-            return;
-        }
-
-        StageBGM stageData = GetStageBGM(data.stageNumber);
-
-        if (stageData == null)
-        {
-            Debug.LogError($"[BGM] 스테이지 데이터 없음: {data.stageNumber}");
-            return;
-        }
-
-        AudioClip target = null;
-
-        switch (data.bgmType)
-        {
-            case BGMType.Normal:
-            case BGMType.Shop:
-                target = stageData.normalBGM;
-                break;
-
-            case BGMType.Boss:
-                target = stageData.bossBGM;
-
-                currentStage = data.stageNumber;
-                currentType = data.bgmType;
-                return; // 여기서 끝내야 즉시 재생 안됨
-        }
-
-        if (target == null)
-        {
-            Debug.LogError("[BGM] 클립 없음");
-            return;
-        }
-
-        if (currentStage == data.stageNumber &&
-            currentType != BGMType.Boss &&
-            data.bgmType != BGMType.Boss)
-        {
-            Debug.Log("[BGM] 유지");
-            return;
-        }
-
-        lastBGMType = currentType;
-
-        PlayClip(target);
-
-        currentStage = data.stageNumber;
-        currentType = data.bgmType;
-    }
-
-    private void PlayClip(AudioClip clip)
-    {
-        if (bgmSource.clip == clip)
-        {
-            if (!bgmSource.isPlaying)
-            {
-                bgmSource.Play();
-                Debug.Log($"[BGM] PlayClip {clip.name}");
-            }
-            return;
-        }
-
-        bgmSource.clip = clip;
-        bgmSource.Play();
-    }
-
-    private SceneBGMData GetSceneData(string sceneName)
-    {
-        for (int i = 0; i < sceneDatas.Length; i++)
-        {
-            if (sceneDatas[i].sceneName == sceneName)
-                return sceneDatas[i];
-        }
-
-        return null;
-    }
-
-    private StageBGM GetStageBGM(int stage)
-    {
-        for (int i = 0; i < stageBGMs.Length; i++)
-        {
-            if (stageBGMs[i].stageNumber == stage)
-                return stageBGMs[i];
-        }
-
-        return null;
-    }
-
-    public void PauseBGM()
-    {
-        if (bgmSource != null && bgmSource.isPlaying)
-        {
-            bgmSource.Pause();
-            Debug.Log("[BGM] �Ͻ�����");
-        }
-    }
-    public void ForceApplyBGM(string sceneName)
-    {
-        Debug.Log("[BGM] ���� ������");
-        ApplyBGM(sceneName);
-    }
-    public void ResumeBGM(string expectedScene)
-    {
-        // ���� �� ������ ��������
-        SceneBGMData data = GetSceneData(expectedScene);
-
-        if (data == null)
-            return;
-
-        bool allowResume =
-            (lastBGMType == BGMType.Normal && data.bgmType == BGMType.Boss);
-
-        if (!allowResume)
-        {
-            Debug.Log("[BGM] Resume ���� ������ �� ����");
-            return;
-        }
-
-        if (bgmSource != null && bgmSource.clip != null)
-        {
-            bgmSource.UnPause();
-            Debug.Log("[BGM] �簳");
-        }
-    }
-    public void BlockNextResume()
-    {
-        blockNextResume = true;
-    }
-
-    public void ResetBGMState()
-    {
-        Debug.Log("[BGM] ResetBGMState");
-
-        currentStage = -1;
-        currentType = BGMType.Main;
-        lastBGMType = BGMType.Main;
-        lastSceneName = "";
-
-        if (bgmSource != null)
-        {
-            bgmSource.Stop();
-            bgmSource.clip = null;
-        }
-    }
-    public void SetCutsceneState(bool playing)
-    {
-        isCutscenePlaying = playing;
-
-        if (playing)
-        {
-            Debug.Log("[BGM] 컷씬 시작 → BGM 강제 정지");
-
-            if (bgmSource != null)
-            {
-                bgmSource.Stop();
-                bgmSource.clip = null;
-            }
-        }
-        else
-        {
-            Debug.Log("[BGM] 컷씬 종료 → BGM 재개 준비");
-        }
-    }
-}*/
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -343,6 +12,20 @@ public class BGMSoundManager : MonoBehaviour
     private bool isCutscenePlaying = false;
 
     private Coroutine bossBGMCoroutine;
+
+    [Header("Shop BGM")]
+    [SerializeField] private AudioClip shopSound;
+    [SerializeField] private AudioClip shopOpenSound;
+    [SerializeField] private float shopOpenDelay = 0f;
+
+
+
+    [SerializeField][Range(0f, 1f)] private float shopSoundVolume = 0.5f;
+
+    private bool shopOpenPlayed = false;
+
+    private Coroutine shopCoroutine;
+    private float shopBaseVolume = 0.5f;
 
     private enum BGMType
     {
@@ -395,7 +78,10 @@ public class BGMSoundManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this);
     }
-
+    private void Start()
+    {
+        ApplyBGM(SceneManager.GetActiveScene().name);
+    }
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -420,17 +106,12 @@ public class BGMSoundManager : MonoBehaviour
         }
 
         lastSceneName = sceneName;
+
         SceneBGMData data = GetSceneData(sceneName);
 
         if (data == null)
         {
             Debug.LogError($"[BGM] 씬 데이터 없음: {sceneName}");
-            return;
-        }
-
-        if (data.bgmType == BGMType.Main)
-        {
-            PlayClip(mainBGM);
             return;
         }
 
@@ -442,53 +123,73 @@ public class BGMSoundManager : MonoBehaviour
             return;
         }
 
-        AudioClip target = null;
+        StopShopIfNeeded(data.bgmType);
+
+        if (data.bgmType == BGMType.Main)
+        {
+            shopOpenPlayed = false;
+        }
 
         switch (data.bgmType)
         {
+            case BGMType.Main:
+                currentType = BGMType.Main;
+                currentStage = data.stageNumber;
+
+                PlayClip(mainBGM);
+                return;
+
             case BGMType.Normal:
-            case BGMType.Shop:
-                target = stageData.normalBGM;
-                break;
+                currentType = BGMType.Normal;
+                currentStage = data.stageNumber;
 
-            case BGMType.Boss:
-                target = stageData.bossBGM;
-
-                if (bossBGMCoroutine != null)
+                if (bgmSource.clip != stageData.normalBGM)
                 {
-                    StopCoroutine(bossBGMCoroutine);
+                    bgmSource.Stop();
+                    bgmSource.clip = stageData.normalBGM;
+                    bgmSource.loop = true;
+                    bgmSource.Play();
+                }
+                else
+                {
+                    if (!bgmSource.isPlaying)
+                        bgmSource.Play();
                 }
 
+                return;
+
+            case BGMType.Shop:
+                if (shopSound != null)
+                {
+                    bgmSource.clip = shopSound;
+                    bgmSource.loop = true;
+                    bgmSource.volume = shopBaseVolume;
+                    bgmSource.Play();
+                }
+
+                if (!shopOpenPlayed && shopOpenSound != null)
+                {
+                    shopOpenPlayed = true;
+                    StartCoroutine(PlayShopOpenOnce(shopOpenDelay));
+                }
+
+                currentType = BGMType.Shop;
+                currentStage = data.stageNumber;
+                return;
+
+            case BGMType.Boss:
+                if (bossBGMCoroutine != null)
+                    StopCoroutine(bossBGMCoroutine);
+
                 bossBGMCoroutine = StartCoroutine(
-                    PlayBossBGMWithDelay(target, stageData.bossBGMDelay)
+                    PlayBossBGMWithDelay(stageData.bossBGM, stageData.bossBGMDelay)
                 );
 
+                currentType = BGMType.Boss;
                 currentStage = data.stageNumber;
-                currentType = data.bgmType;
                 return;
         }
-
-        if (target == null)
-        {
-            Debug.LogError("[BGM] 클립 없음");
-            return;
-        }
-
-        if (currentStage == data.stageNumber &&
-            currentType != BGMType.Boss &&
-            data.bgmType != BGMType.Boss)
-        {
-            return;
-        }
-
-        lastBGMType = currentType;
-
-        PlayClip(target);
-
-        currentStage = data.stageNumber;
-        currentType = data.bgmType;
     }
-
     private IEnumerator PlayBossBGMWithDelay(AudioClip clip, float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -504,9 +205,7 @@ public class BGMSoundManager : MonoBehaviour
         if (bgmSource.clip == clip)
         {
             if (!bgmSource.isPlaying)
-            {
                 bgmSource.Play();
-            }
             return;
         }
 
@@ -566,6 +265,7 @@ public class BGMSoundManager : MonoBehaviour
         }
     }
 
+
     public void ResetBGMState()
     {
         currentStage = -1;
@@ -573,14 +273,16 @@ public class BGMSoundManager : MonoBehaviour
         lastBGMType = BGMType.Main;
         lastSceneName = "";
 
+        shopOpenPlayed = false;
+
         if (bgmSource != null)
         {
             bgmSource.Stop();
             bgmSource.clip = null;
         }
+        shopOpenPlayed = false;
     }
-
-    public void SetCutsceneState(bool playing)
+    /*public void SetCutsceneState(bool playing)
     {
         isCutscenePlaying = playing;
 
@@ -596,6 +298,53 @@ public class BGMSoundManager : MonoBehaviour
                 bgmSource.Stop();
                 bgmSource.clip = null;
             }
+        }
+    }*/
+    public void SetCutsceneState(bool playing)
+    {
+        isCutscenePlaying = playing;
+
+        if (playing)
+        {
+            if (bossBGMCoroutine != null)
+                StopCoroutine(bossBGMCoroutine);
+
+            if (shopCoroutine != null)
+                StopCoroutine(shopCoroutine);
+
+            if (bgmSource != null)
+            {
+                bgmSource.Stop();
+                bgmSource.clip = null;
+            }
+        }
+    }
+
+    private IEnumerator PlayShopOpenDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (!isCutscenePlaying && shopOpenSound != null)
+        {
+            PlayClip(shopOpenSound);
+        }
+    }
+    private IEnumerator PlayShopOpenOnce(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (!isCutscenePlaying && shopOpenSound != null)
+        {
+            bgmSource.PlayOneShot(shopOpenSound);
+        }
+    }
+    private void StopShopIfNeeded(BGMType newType)
+    {
+        if (currentType == BGMType.Shop && newType != BGMType.Shop)
+        {
+            bgmSource.Stop();
+            bgmSource.loop = false;
+            bgmSource.clip = null;
         }
     }
 }
