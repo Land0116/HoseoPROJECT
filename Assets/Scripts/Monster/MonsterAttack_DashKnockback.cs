@@ -115,7 +115,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 {
                     state = State.Idle;
                     timer = 0f;
-                    monster.EndAttack();
+                    //monster.EndAttack();
 
                     break;
                 }
@@ -126,7 +126,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
                     state = State.Idle;
                     timer = 0f;
 
-                    monster.EndAttack();
+                    //monster.EndAttack();
                 }
                 break;
         }
@@ -138,14 +138,14 @@ public class MonsterAttack_DashKnockback : AttackPattern
 
         if (collision.gameObject.CompareTag("Player"))
         {
-            // µ¥¹ÌÁö
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
             if (damageable != null)
             {
                 damageable.OnDamage(dashDamage);
             }
 
-            //³Ë¹é
+            //ï¿½Ë¹ï¿½
             Monster playerMonster = collision.gameObject.GetComponent<Monster>();
             PlayerController player = collision.gameObject.GetComponent<PlayerController>();
 
@@ -160,7 +160,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
         state = State.Idle;
         timer = 0f;
 
-        monster.EndAttack();
+        //monster.EndAttack();
 
     }
     private void OnDestroy()
