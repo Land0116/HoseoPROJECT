@@ -167,11 +167,26 @@ public class PrincessDollAttack : AttackPattern
                 break;
 
             case State.Eight:
+                /*blockMovement = true;
+
+                if (!isDashing)
+                {
+                    isDashing = true;
+                    StartCoroutine(EightDirectionAttack());
+                }
+                break;*/
                 blockMovement = true;
 
                 if (!isDashing)
                 {
                     isDashing = true;
+
+                    if (monster != null)
+                    {
+                        monster.SetAnimationLock(false);
+                        monster.PlayForceAnimation("Attack_2", 1.8f);
+                    }
+
                     StartCoroutine(EightDirectionAttack());
                 }
                 break;
@@ -189,7 +204,20 @@ public class PrincessDollAttack : AttackPattern
                 break;
 
             case State.Explosion:
+                /*blockMovement = true;
+
+                StartCoroutine(ExplosionAttack());
+
+                patternCooldownTimer = explosionPatternCooldown;
+                state = State.Idle;
+                break;*/
                 blockMovement = true;
+
+                if (monster != null)
+                {
+                    monster.SetAnimationLock(false);
+                    monster.PlayForceAnimation("Attack_3", 1.8f);
+                }
 
                 StartCoroutine(ExplosionAttack());
 

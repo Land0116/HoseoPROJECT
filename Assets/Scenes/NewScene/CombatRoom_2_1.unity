@@ -1950,6 +1950,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1510533987}
     m_Modifications:
+    - target: {fileID: -3821707361916606326, guid: 469e108c15cb7e44f8a564dfb77be16d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3347509366818278624, guid: 469e108c15cb7e44f8a564dfb77be16d, type: 3}
       propertyPath: m_Name
       value: Wall_5_Right
@@ -23889,6 +23893,9 @@ MonoBehaviour:
   augmentIcon: {fileID: 8579041055815407696, guid: 237c3d6e621ccbe42bfa79bac1ae102e, type: 3}
   skillIcon: {fileID: 3319096123497896272, guid: ed2ed7ffc4139904c9178376eb112274, type: 3}
   itemIcon: {fileID: -3724301749286218736, guid: c28f8593d2b32db41b6c974b8bb119fe, type: 3}
+  bossHealthItemPrefab: {fileID: 0}
+  bossHealthItemDropChance: 0.1
+  bossHealthItemSpawnOffset: {x: 0.6, y: 0, z: 0}
 --- !u!1001 &2110474912
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -8,6 +8,11 @@ public class Monster : MonoBehaviour, IDamageable
     [Header("몬스터 이동중 다른애니메이션 표시 x")]
     private bool isInAttackAnimation = false;
 
+    //공주 공격 2,3
+    private bool isAnimationLocked = false;
+    private bool forcePlayAnimation = false;
+    private float forceAnimEndTime = 0f;
+
     [Header("Animation Speed")]
     [SerializeField] private bool attackAnimationX2 = false;
     [SerializeField] private float normalAttackAnimSpeed = 1f;
@@ -204,6 +209,11 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void LateUpdate()
     {
+        if (forcePlayAnimation && Time.time >= forceAnimEndTime) //공주 인형
+        {
+            forcePlayAnimation = false;
+        }
+
         if (alertUIInstance != null)
         {
             alertUIInstance.transform.position = transform.position + new Vector3(1f, 0.2f, 0);
@@ -470,7 +480,10 @@ public class Monster : MonoBehaviour, IDamageable
     
     private void UpdateAnimation(Vector2 dir, bool isMoving)
     {
+        if (forcePlayAnimation) return;//공주 인형
         if (isInAttackAnimation) return; //* 0601
+
+        if (isAnimationLocked) return;//공주 인형
 
         if (dir.magnitude > 0.01f)
             lastLookDir = dir;
@@ -563,6 +576,9 @@ public class Monster : MonoBehaviour, IDamageable
         if (!HasState(animName)) return;
 
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Front_Death"))
+            return;
+
+        if (isAnimationLocked && !animName.Contains("Death")) //공주 인형
             return;
 
         if (lockBossFinalAttack) //* 0529 보스
@@ -854,6 +870,27 @@ public class Monster : MonoBehaviour, IDamageable
         ResetAnimSpeed();
         SetAttackAnimationLock(false);
     }
+    public void PlaySimpleAttackAnim(string animName)
+    {
+        if (animator == null) return;
 
+        PlayAnim(animName);
+    }
+
+    public void SetAnimationLock(bool value)
+    {
+        isAnimationLocked = value;
+    }
+
+    public void PlayForceAnimation(string animName, float duration)
+    {
+        if (animator == null) return;
+
+        forcePlayAnimation = true;
+        forceAnimEndTime = Time.time + duration;
+
+        currentAnim = animName;
+        animator.Play(animName);
+    }
 }
 
