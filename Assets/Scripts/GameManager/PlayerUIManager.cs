@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 플레이어 UI 전담 매니저
@@ -352,6 +353,35 @@ public class PlayerUIManager : MonoBehaviour
         // Gold 텍스트
         goldText.text = "" + playerController.Gold;
     }
+    
+    private void SetupHudSlider(Slider slider)
+    {
+        if (slider == null)
+            return;
+
+        // HUD 슬라이더는 플레이어가 조작하는 UI가 아님
+        slider.transition = Selectable.Transition.None;
+        slider.interactable = false;
+
+        Navigation navigation = slider.navigation;
+        navigation.mode = Navigation.Mode.None;
+        slider.navigation = navigation;
+
+        // 마우스/키보드 UI 선택 방지
+        Graphic[] graphics = slider.GetComponentsInChildren<Graphic>(true);
+        for (int i = 0; i < graphics.Length; i++)
+        {
+            if (graphics[i] == null) continue;
+            graphics[i].raycastTarget = false;
+        }
+
+        // 혹시 현재 선택된 UI가 이 Slider면 선택 해제
+        if (EventSystem.current != null &&
+            EventSystem.current.currentSelectedGameObject == slider.gameObject)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
 
     /// <summary>
     /// 현재 패널을 닫고 새 패널 열기
@@ -500,7 +530,9 @@ public class PlayerUIManager : MonoBehaviour
 
             // Slider 감소 (1 → 0)
             if (dashCooldownSlider != null)
-                dashCooldownSlider.value = ratio;
+            {
+                SetupHudSlider(dashCooldownSlider);
+            }
 
             // Overlay (선택)
             if (dashCooldownOverlay != null)
@@ -697,6 +729,8 @@ public class PlayerUIManager : MonoBehaviour
         // 플레이어 상태 UI
         playerTextUIPanel = playerPanel.gameObject;
         hpBar = UIManager.FindChildRecursive(playerPanel, "PlayerHpBar")?.GetComponent<Slider>();
+        SetupHudSlider(hpBar);
+
         hpText = UIManager.FindChildRecursive(playerPanel, "HpTxt")?.GetComponent<TextMeshProUGUI>();
         goldText = UIManager.FindChildRecursive(playerPanel, "GoldTxt")?.GetComponent<TextMeshProUGUI>();
         
@@ -736,7 +770,10 @@ public class PlayerUIManager : MonoBehaviour
             chargeGaugePanel.SetActive(false);
 
             if (chargeGaugeSlider != null)
+            {
+                SetupHudSlider(chargeGaugeSlider);
                 chargeGaugeSlider.value = 0f;
+            }
         }
         
         interactObjectPanel = UIManager.FindChildRecursive(systemUIRoot.transform, "InteractObjectPanel")?.gameObject;
@@ -969,18 +1006,6 @@ public class PlayerUIManager : MonoBehaviour
         if (newBtnBtn != null)
             newBtnBtn.gameObject.SetActive(false);
     }
-
-    // private void ExitEsc()
-    // {
-    //     escPanel.SetActive(false);
-    //
-    //     currentState = UIState.Gameplay;
-    //
-    //     Time.timeScale = 1f;
-    //
-    //     PlayerController.Instance?.SetSystemInputLockedByKey(InputLockKeys.EscPanel, false);
-    //
-    // }
     
     public void EnterEsc()
     {
@@ -996,14 +1021,6 @@ public class PlayerUIManager : MonoBehaviour
         
     }
     
-    /*private void CloseOptionAndReturnToEsc()
-    {
-        if (optionPanel != null)
-            optionPanel.SetActive(false);
-
-
-        EnterEsc();
-    }*/
     
     private void CloseOptionAndReturnToEsc()
     {
