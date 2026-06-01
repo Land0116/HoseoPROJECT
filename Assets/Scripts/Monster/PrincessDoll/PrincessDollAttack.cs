@@ -247,40 +247,6 @@ public class PrincessDollAttack : AttackPattern
         }
     }
 
-    /*private IEnumerator EightDirectionAttack()
-    {
-        Vector2 center = monster.transform.position;
-
-        for (int i = 0; i < 8; i++)
-        {
-            float angle = i * 45f * Mathf.Deg2Rad;
-
-            Vector2 dir = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            Vector2 pos = center + dir * eightDistance;
-
-            float rotZ = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-            GameObject obj = Instantiate(
-                eightDirPrefab,
-                pos,
-                Quaternion.Euler(0, 0, rotZ)
-            );
-
-            obj.transform.localScale = eightDirScale;
-
-            var hitbox = obj.GetComponent<EightDirectionHitbox>();
-            if (hitbox != null)
-            {
-                hitbox.SetDamage(eightDamage);
-            }
-        }
-
-        yield return new WaitForSeconds(eightPatternCooldown);
-
-        isDashing = false;
-        patternCooldownTimer = 0f;
-        state = State.Cooldown;
-    }*/
     private IEnumerator EightDirectionAttack()
     {
         Vector2 center = monster.transform.position;
@@ -448,7 +414,7 @@ public class PrincessDollAttack : AttackPattern
             );
 
             effect.transform.localScale = obj.localScale;
-            Destroy(effect, 1.5f); //* Effect Destroy
+            Destroy(effect, 1f); //* Effect Destroy
         }
 
         if (monster.Player != null)
