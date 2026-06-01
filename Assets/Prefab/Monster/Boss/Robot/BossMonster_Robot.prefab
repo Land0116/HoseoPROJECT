@@ -173,6 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  loopMove: 0
   attackAnimationX2: 1
   normalAttackAnimSpeed: 1
   x2AttackAnimSpeed: 2
@@ -207,7 +208,7 @@ MonoBehaviour:
   itemSpawner: {x: 0.5, y: 0, z: 0}
   isAttacking: 0
   hitAnimationTime: 0.5
-  deathAnimationTime: 0.7
+  deathAnimationTime: 1.5
   lockBossFinalAttack: 0
   ignoreHitAnimation: 0
 --- !u!114 &2133988174014043253
@@ -259,6 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+  loopMove: 0
 --- !u!82 &-7482430823266265871
 AudioSource:
   m_ObjectHideFlags: 0

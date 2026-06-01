@@ -179,6 +179,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  loopMove: 0
+  attackAnimationX2: 0
+  normalAttackAnimSpeed: 1
+  x2AttackAnimSpeed: 2
   forceFrontDeath: 0
   frontDeathAnimationTime: 1.2
   useHitStop: 0
@@ -203,7 +207,7 @@ MonoBehaviour:
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   alertUIPrefab: {fileID: 0}
   weaponPrefabDropChance: 0
-  itemDropChance: 0.1
+  itemDropChance: 0
   weaponPrefab: {fileID: 1623683425526410053, guid: a9c9b42632a3d544a8fb5bb663f877d1, type: 3}
   itemPrefab: {fileID: 6445108765035303100, guid: 2dcdf986445cbc446b81e126d073d84c, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
@@ -305,6 +309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+  loopMove: 0
 --- !u!95 &8338232489236343278
 Animator:
   serializedVersion: 7

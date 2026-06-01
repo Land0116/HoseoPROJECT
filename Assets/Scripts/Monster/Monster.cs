@@ -8,6 +8,9 @@ public class Monster : MonoBehaviour, IDamageable
     [Header("몬스터 이동중 다른애니메이션 표시 x")]
     private bool isInAttackAnimation = false;
 
+    [Header("Movement Animation")]
+    [SerializeField] private bool loopMove = false;
+
     //공주 공격 2,3
     private bool isAnimationLocked = false;
     private bool forcePlayAnimation = false;
@@ -490,6 +493,12 @@ public class Monster : MonoBehaviour, IDamageable
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         string anim = GetDirectionName(angle);
+
+        if (loopMove)
+        {
+            PlayAnim(anim + "_Walk");
+            return;
+        }
 
         if (isMoving)
             PlayAnim(anim + "_Walk");

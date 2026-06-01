@@ -89,8 +89,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 21
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.28773582, g: 0.7524353, b: 1, a: 0}
+  m_Sprite: {fileID: 6360708891999928702, guid: d16edc35acc22a8419ada0c385c7bb22, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -111,6 +111,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  loopMove: 1
+  attackAnimationX2: 0
+  normalAttackAnimSpeed: 1
+  x2AttackAnimSpeed: 2
   forceFrontDeath: 0
   frontDeathAnimationTime: 1.2
   useHitStop: 0
@@ -135,14 +139,14 @@ MonoBehaviour:
   hpUIPrefab: {fileID: 8944156004500592701, guid: 7739501267e417444bfc1c3de7f0794b, type: 3}
   alertUIPrefab: {fileID: 2956088271034875645, guid: f5fea1c6027981644b09e183ade89a93, type: 3}
   weaponPrefabDropChance: 0
-  itemDropChance: 0.1
+  itemDropChance: 0
   weaponPrefab: {fileID: 7114331523729837587, guid: 46a938c50ac9b1f4699428e81d3afed4, type: 3}
   itemPrefab: {fileID: 6445108765035303100, guid: 2dcdf986445cbc446b81e126d073d84c, type: 3}
   weaponSpawner: {x: -0.5, y: 0, z: 0}
   itemSpawner: {x: 0.5, y: 0, z: 0}
   isAttacking: 0
-  hitAnimationTime: 0.5
-  deathAnimationTime: 0.7
+  hitAnimationTime: 0.2
+  deathAnimationTime: 1.5
   lockBossFinalAttack: 0
   ignoreHitAnimation: 0
 --- !u!114 &799363193295790904
@@ -200,7 +204,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.7
+  m_Radius: 1.4
 --- !u!50 &4901923299072539103
 Rigidbody2D:
   serializedVersion: 5
@@ -240,6 +244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
+  loopMove: 1
 --- !u!82 &-8336661572809062557
 AudioSource:
   m_ObjectHideFlags: 0
@@ -347,7 +352,7 @@ Animator:
   m_GameObject: {fileID: 3117710496602542777}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 14c7f446006867f4699266a9edae7b5b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -442,7 +447,7 @@ SpriteRenderer:
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 5956163912326680738, guid: f0f6010be35c3404fa22a9233471fb67, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -486,4 +491,4 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 2.35
+  m_Radius: 5
