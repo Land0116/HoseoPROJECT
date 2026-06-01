@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 12
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.003921569}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -101,13 +101,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5945707791796830103}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1cb92b1d8a35b254e847e49b174ba35f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EightDirectionHitbox
-  damage: 1
-  fadeTime: 0.9
+  knockback: 0
 --- !u!61 &-5226421806544246412
 BoxCollider2D:
   m_ObjectHideFlags: 0

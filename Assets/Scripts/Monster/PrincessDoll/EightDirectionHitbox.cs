@@ -1,4 +1,4 @@
-using System.Collections;
+/*using System.Collections;
 using UnityEngine;
 
 public class EightDirectionHitbox : MonoBehaviour
@@ -67,5 +67,46 @@ public class EightDirectionHitbox : MonoBehaviour
     public void SetDamage(float value)
     {
         damage = value;
+    }
+}*/using UnityEngine;
+
+public class EightDirectionHitbox : MonoBehaviour
+{
+    private float damage;
+    [SerializeField] private float knockback = 5f;
+
+    private bool hasHit = false; 
+
+    private void Start()
+    {
+        Destroy(gameObject, 0.5f); 
+    }
+
+    public void SetDamage(float dmg)
+    {
+        damage = dmg;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (hasHit) return;
+        if (!collision.CompareTag("Player")) return;
+
+        hasHit = true;
+
+        // 데미지 적용
+        IDamageable dmg = collision.GetComponent<IDamageable>();
+        if (dmg != null)
+        {
+            dmg.OnDamage(damage);
+        }
+
+        // 넉백
+        PlayerController player = collision.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            Vector2 dir = (collision.transform.position - transform.position).normalized;
+            player.ApplyKnockback(dir * knockback);
+        }
     }
 }

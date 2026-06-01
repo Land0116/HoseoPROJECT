@@ -403,6 +403,8 @@ public class PrincessDollAttack : AttackPattern
         obj.transform.localScale = Vector3.one * explosionUnitRadius * 2f;
 
         StartCoroutine(ExplosionDelayRoutine(obj.transform));
+
+        Destroy(obj, 1.5f);//* ªË¡¶
     }
     private IEnumerator ExplosionDelayRoutine(Transform obj)
     {
@@ -446,6 +448,7 @@ public class PrincessDollAttack : AttackPattern
             );
 
             effect.transform.localScale = obj.localScale;
+            Destroy(effect, 1.5f); //* Effect Destroy
         }
 
         if (monster.Player != null)
