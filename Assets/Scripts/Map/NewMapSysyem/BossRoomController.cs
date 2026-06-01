@@ -9,12 +9,19 @@ public class BossRoomController : MapRoomControllerBase
     [Header("컷씬 설정")]
     [SerializeField] private int stageNumberForCutscene = 1;
     [SerializeField] private int finalStageNumber = 3;
+    
+    [Header("최종 보스 클리어 연출")]
+    [SerializeField] private float finalBossEndingDelay = 1.2f;
 
     protected override string RoomDebugName => "보스방";
 
     private bool isBossCleared = false;
     private bool isBossClearGateUsed = false;
 
+    public bool IsFinalBossRoom()
+    {
+        return stageNumberForCutscene >= finalStageNumber;
+    }
     protected override void AutoBindRoomReferences()
     {
         if (bossSpawner == null)
@@ -65,10 +72,40 @@ public class BossRoomController : MapRoomControllerBase
 
         isBossCleared = true;
 
-        // 중요:
-        // 보스가 죽었다고 컷씬을 바로 재생하지 않는다.
-        // 게이트만 열고, 컷씬은 게이트를 밟았을 때 재생한다.
+        if (IsFinalBossRoom())
+        {
+            StartCoroutine(FinalBossDeadRoutine());
+            return;
+        }
+
+        // 일반 보스는 기존처럼 게이트를 열고,
+        // 게이트를 밟았을 때 보스 클리어 컷씬 재생
         OpenOnlyOneBossClearGate();
+    }
+    private IEnumerator FinalBossDeadRoutine()
+    {
+        Debug.Log("[BossRoomController] 최종 보스 사망. 보상 없이 엔딩 컷씬 준비.");
+
+        LockAllGates();
+
+        if (MapTransitionManager.Instance != null)
+        {
+            MapTransitionManager.Instance.SetPlayerInputLocked(true);
+        }
+
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.SetSystemInputLockedByKey(InputLockKeys.VideoCutscene, true);
+        }
+
+        if (finalBossEndingDelay > 0f)
+        {
+            yield return new WaitForSecondsRealtime(finalBossEndingDelay);
+        }
+
+        yield return PlayCutsceneWithFade(VideoCutsceneType.Ending);
+
+        yield return ReturnToMainAfterEndingCutscene();
     }
 
     private void OpenOnlyOneBossClearGate()

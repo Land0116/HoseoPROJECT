@@ -43,6 +43,13 @@ public class BossSpawner : MonoBehaviour
             spawnPoint = transform;
         }
     }
+    public bool ShouldDropBossReward()
+    {
+        if (bossRoomController == null)
+            return true;
+
+        return !bossRoomController.IsFinalBossRoom();
+    }
 
     public void SpawnBoss()
     {

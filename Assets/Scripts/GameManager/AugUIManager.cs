@@ -112,17 +112,10 @@ public class AugUIManager : MonoBehaviour
         if (AugmentRunManager.Instance == null) return false;
         if (augmentationDatabase == null || augmentationDatabase.Length == 0) return false;
 
-        for (int i = 0; i < augmentationDatabase.Length; i++)
-        {
-            AugmentationSystem aug = augmentationDatabase[i];
-            if (aug == null) continue;
-            if (!aug.isUnlocked) continue;
+        candidateBuffer.Clear();
+        FillCandidateBuffer();
 
-            if (AugmentRunManager.Instance.CanOfferAugment(aug))
-                return true;
-        }
-
-        return false;
+        return candidateBuffer.Count > 0;
     }
 
     public void ShowAugmentation()
@@ -811,7 +804,20 @@ public class AugUIManager : MonoBehaviour
 
     private void FillCandidateBuffer()
     {
-        if (augmentationDatabase == null || AugmentRunManager.Instance == null)
+        if (AugmentRunManager.Instance == null)
+            return;
+
+        // 핵심:
+        // 슬롯이 꽉 찬 상태면 새 증강은 후보에 넣지 않는다.
+        // 이미 보유 중이고 레벨업 가능한 서브스킬/패시브만 후보로 넣는다.
+        if (AugmentRunManager.Instance.IsCurrentSlotsFull())
+        {
+            FillOwnedLevelUpCandidateBuffer();
+            return;
+        }
+
+        // 슬롯이 비어 있을 때는 기존처럼 전체 DB에서 후보 생성
+        if (augmentationDatabase == null)
             return;
 
         for (int i = 0; i < augmentationDatabase.Length; i++)
@@ -821,8 +827,56 @@ public class AugUIManager : MonoBehaviour
             if (!aug.isUnlocked) continue;
             if (!AugmentRunManager.Instance.CanOfferAugment(aug)) continue;
 
-            candidateBuffer.Add(aug);
+            AddCandidateIfNotDuplicate(aug);
         }
+    }
+    private void FillOwnedLevelUpCandidateBuffer()
+    {
+        if (AugmentRunManager.Instance == null)
+            return;
+
+        AugmentSlotData[] ownedSlots = AugmentRunManager.Instance.OwnedSlots;
+        if (ownedSlots == null)
+            return;
+
+        int slotCount = Mathf.Min(
+            AugmentRunManager.Instance.CurrentSlotCount,
+            ownedSlots.Length
+        );
+
+        for (int i = 0; i < slotCount; i++)
+        {
+            AugmentSlotData slot = ownedSlots[i];
+
+            if (slot == null) continue;
+            if (!slot.isOccupied) continue;
+            if (slot.augmentData == null) continue;
+
+            AugmentationSystem aug = slot.augmentData;
+
+            // 스페셜은 레벨업 개념이 없으므로 제외
+            if (aug.category == AugmentationSystem.AugmentCategory.Special)
+                continue;
+
+            // 서브스킬 / 패시브가 현재 더 성장 가능한지 확인
+            if (!AugmentRunManager.Instance.CanOfferAugment(aug))
+                continue;
+
+            AddCandidateIfNotDuplicate(aug);
+        }
+    }
+    private void AddCandidateIfNotDuplicate(AugmentationSystem aug)
+    {
+        if (aug == null)
+            return;
+
+        for (int i = 0; i < candidateBuffer.Count; i++)
+        {
+            if (IsSameAugmentChoice(candidateBuffer[i], aug))
+                return;
+        }
+
+        candidateBuffer.Add(aug);
     }
 
     private void RemoveSameAugmentFromCandidateBuffer(AugmentationSystem picked)

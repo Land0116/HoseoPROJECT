@@ -21,6 +21,11 @@ public class AugmentRunManager : MonoBehaviour
 
     public int CurrentSlotCount => currentSlotCount;
     public AugmentSlotData[] OwnedSlots => ownedSlots;
+    
+    public bool IsCurrentSlotsFull()
+    {
+        return FindFirstEmptySlotIndex() < 0;
+    }
 
     #endregion
 
