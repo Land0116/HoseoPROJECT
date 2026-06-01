@@ -185,12 +185,12 @@ MonoBehaviour:
   - {fileID: 3830614522430265470, guid: 8a77c8ba81fb0104e9aeafd4c0971366, type: 3}
   - {fileID: 3830614522430265470, guid: 37659f88ff488cc4ab08a11d531a2076, type: 3}
   - {fileID: 3830614522430265470, guid: 31ff9aa238f664b49b87daa82965f2cf, type: 3}
-  detectRange: 14
+  detectRange: 13
   dashMinCount: 3
   dashMaxCount: 6
   dashSpeed: 35
   dashPauseTime: 0.25
-  dashPatternCooldown: 1
+  dashPatternCooldown: 1.5
   dashDamage: 10
   dashDuration: 0.2
   dashEffectPrefab: {fileID: 4261820780069341249, guid: 00e1c50da2820d94ab68b8a038f183dd, type: 3}

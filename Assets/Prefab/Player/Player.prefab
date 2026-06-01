@@ -273,6 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58725693be7b1a44497c9593a5ae32e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  stunPrefab: {fileID: 9160621411624097770, guid: 35051df798ed59c4cb2ae46b2a5d28c9, type: 3}
   sfxSource: {fileID: -7890117478234761821}
   bulletSource: {fileID: -7890117478234761821}
   deathSound: {fileID: 8300000, guid: f72b0995927885441989455afccfed63, type: 3}

@@ -12,6 +12,10 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
+    [Header("Stun VFX")]
+    [SerializeField] private GameObject stunPrefab;
+    private GameObject stunInstance;
+
     public static PlayerController Instance;
 
     public enum PlayerState
@@ -3345,6 +3349,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (Time.time >= stunEndTime)
         {
             isStunned = false;
+            RemoveStunPrefab();
         }
     }
 
@@ -3352,8 +3357,29 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         isStunned = true;
         stunEndTime = Time.time + duration;
+        SpawnStunPrefab();
+    }
+    private void SpawnStunPrefab()
+    {
+        if (stunPrefab == null) return;
+
+        if (stunInstance != null)
+        {
+            Destroy(stunInstance);
+        }
+
+        Vector3 spawnPos = transform.position + new Vector3(0f, -1f, 0f);
+        stunInstance = Instantiate(stunPrefab, spawnPos, Quaternion.identity, transform);
     }
 
+    private void RemoveStunPrefab()
+    {
+        if (stunInstance != null)
+        {
+            Destroy(stunInstance);
+            stunInstance = null;
+        }
+    }
     public void TeleportToMapSpawnPosition(Vector3 spawnPosition)
     {
         transform.position = spawnPosition;
