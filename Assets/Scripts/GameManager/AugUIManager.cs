@@ -1126,9 +1126,13 @@ public class AugUIManager : MonoBehaviour
     {
         bool panelVisible = uiPanel != null && uiPanel.activeSelf;
 
-        SetRerollPanelVisible(panelVisible);
+        if (resetBtn == null)
+        {
+            SetRerollPanelVisible(false);
+            return;
+        }
 
-        if (resetBtn == null) return;
+        bool hasAnyVisibleRerollButton = false;
 
         for (int i = 0; i < resetBtn.Length; i++)
         {
@@ -1144,11 +1148,24 @@ public class AugUIManager : MonoBehaviour
                 i < rerollUsed.Length &&
                 rerollUsed[i];
 
+            // 핵심:
+            // 선택지가 없는 자리의 리롤 버튼은 아예 숨긴다.
+            bool shouldShowButton = panelVisible && hasChoice;
+
+            resetBtn[i].gameObject.SetActive(shouldShowButton);
+
             resetBtn[i].interactable =
-                panelVisible &&
-                hasChoice &&
+                shouldShowButton &&
                 !used;
+
+            if (shouldShowButton)
+            {
+                hasAnyVisibleRerollButton = true;
+            }
         }
+
+        // 리롤 버튼이 하나도 없으면 리롤 패널 자체도 숨김
+        SetRerollPanelVisible(panelVisible && hasAnyVisibleRerollButton);
     }
 
     private void OnClickReroll(int choiceIndex)
@@ -1160,6 +1177,14 @@ public class AugUIManager : MonoBehaviour
         if (rerollUsed == null || choiceIndex >= rerollUsed.Length) return;
         if (rerollUsed[choiceIndex]) return;
 
+        // 추가
+        if (currentChoices == null ||
+            choiceIndex >= currentChoices.Length ||
+            currentChoices[choiceIndex] == null)
+        {
+            Debug.LogWarning("[AugUIManager] 선택지가 없는 슬롯은 리롤할 수 없음");
+            return;
+        }
         AugmentationSystem rerolled = GenerateSingleChoiceForRerollSlot(choiceIndex);
         if (rerolled == null)
         {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AugmentationSystem
   shotModifierType: 0
   augmentID: S009
-  augmentationName: "\uD0DC\uC5FD \uBCF4\uD638\uB9C9"
+  augmentationName: "\uBCF4\uD638\uB9C9"
   augmentationDesc: "30\uCD08\uB9C8\uB2E4 \uD53C\uD574\uB97C 1\uD68C \uB9C9\uB294
     \uBCF4\uD638\uB9C9\uC0DD\uC131"
   icon: {fileID: -1127782097511428103, guid: 7c38ca3112f4f514a80b952730e088cc, type: 3}
@@ -39,6 +39,7 @@ MonoBehaviour:
     cheatDeathRemainHp: 1
     cheatDeathInvincibleDuration: 1
     hpToDamagePercentPer10Hp: 0
+    bonusMaxHpToScalePercentPer10Hp: 0
     healOnKill: 0
     hpRegenPerSecond: 0
     healToAutoAttackThreshold: 0
