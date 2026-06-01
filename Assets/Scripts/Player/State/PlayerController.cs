@@ -323,11 +323,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     #region BugMaster
 
     [Header("디버그 - Bug Master")]
-    [SerializeField] private bool bugMasterEnabled = false;
+    [SerializeField] private bool bugMasterDamageEnabled = false;
 
     [SerializeField] private float bugMasterDamageAdd = 100f;
 
-    [SerializeField] private bool bugMasterInvincible = true;
+    [SerializeField] private bool bugMasterInvincibleEnabled = false;
 
     #endregion
     public float Hp
@@ -1766,8 +1766,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void OnDamage(float damage)
     {
         if (IsDie) return;
-
-        if (bugMasterEnabled && bugMasterInvincible)
+            
+        if (bugMasterInvincibleEnabled)
             return;
 
         // 피격 무적 시간 중이면 추가 피해 무시
@@ -1869,7 +1869,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         float baseDamage = weaponDamage + itemDamage;
 
-        if (bugMasterEnabled)
+        if (bugMasterDamageEnabled)
         {
             baseDamage += bugMasterDamageAdd;
         }
@@ -3549,20 +3549,42 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     #endregion
-    public void OnBugMaster(InputValue value)
+    private void OnBugMaster(InputValue value)
     {
         if (!value.isPressed)
             return;
 
-        bugMasterEnabled = !bugMasterEnabled;
+        if (Keyboard.current == null)
+            return;
 
-        Debug.Log(
-            bugMasterEnabled
-                ? "[BugMaster] 활성화: 공격력 증가 + 상시 무적"
-                : "[BugMaster] 비활성화"
-        );
+        // B키: 상시 공격력 증가 토글
+        if (Keyboard.current.bKey.wasPressedThisFrame)
+        {
+            bugMasterDamageEnabled = !bugMasterDamageEnabled;
+
+            Debug.Log(
+                bugMasterDamageEnabled
+                    ? $"[BugMaster] 공격력 증가 ON / 추가 공격력: {bugMasterDamageAdd}"
+                    : "[BugMaster] 공격력 증가 OFF"
+            );
+
+            return;
+        }
+
+        // V키: 상시 무적 토글
+        if (Keyboard.current.vKey.wasPressedThisFrame)
+        {
+            bugMasterInvincibleEnabled = !bugMasterInvincibleEnabled;
+
+            Debug.Log(
+                bugMasterInvincibleEnabled
+                    ? "[BugMaster] 상시 무적 ON"
+                    : "[BugMaster] 상시 무적 OFF"
+            );
+
+            return;
+        }
     }
-
 
     #region MouseCrossHair
 

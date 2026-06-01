@@ -708,6 +708,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""BugMaster"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""37150f97-96a5-4c4b-8066-f137f04b02bd"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""BugMaster"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },

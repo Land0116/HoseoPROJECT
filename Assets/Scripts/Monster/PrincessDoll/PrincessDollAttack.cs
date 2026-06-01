@@ -139,7 +139,7 @@ public class PrincessDollAttack : AttackPattern
 
                 if (dashTimer >= dashDuration)
                 {
-                    SpawnDashEffectNow(); // ´ë½¬ ³¡³ªÀÚ¸¶ÀÚ Áï½Ã »ý¼º
+                    SpawnDashEffectNow(); // ï¿½ë½¬ ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
                     dashTimer = 0f;
                     isDashing = false;
@@ -251,7 +251,7 @@ public class PrincessDollAttack : AttackPattern
     {
         Vector2 center = monster.transform.position;
 
-        // 1. ÀüÁ¶ »ý¼º
+        // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         GameObject[] telegraphs = new GameObject[8];
 
         for (int i = 0; i < 8; i++)
@@ -277,10 +277,10 @@ public class PrincessDollAttack : AttackPattern
             telegraphs[i] = tele;
         }
 
-        // ÀüÁ¶ ½Ã°£ ±â´Ù¸² (±âÁ¸ fadeTime È°¿ë)
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½Ù¸ï¿½ (ï¿½ï¿½ï¿½ï¿½ fadeTime È°ï¿½ï¿½)
         yield return new WaitForSeconds(eightFadeTime);
 
-        // ÀüÁ¶ Á¦°Å
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < telegraphs.Length; i++)
         {
             if (telegraphs[i] != null)
@@ -291,7 +291,7 @@ public class PrincessDollAttack : AttackPattern
         {
             audioSource.PlayOneShot(eightDirSound);
         }
-        // 2. ½ÇÁ¦ °ø°Ý »ý¼º
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < 8; i++)
         {
             float angle = i * 45f * Mathf.Deg2Rad;
@@ -370,7 +370,7 @@ public class PrincessDollAttack : AttackPattern
 
         StartCoroutine(ExplosionDelayRoutine(obj.transform));
 
-        Destroy(obj, 1.5f);//* »èÁ¦
+        Destroy(obj, 1.5f);//* ï¿½ï¿½ï¿½ï¿½
     }
     private IEnumerator ExplosionDelayRoutine(Transform obj)
     {
