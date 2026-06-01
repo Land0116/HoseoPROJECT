@@ -75,7 +75,7 @@ public class RobotBullet : MonoBehaviour
 
             if (moveDir.x < 0) // 왼쪽으로 갈 때
             {
-                angle += 180f;
+                angle += 180f; 
                 transform.localScale = new Vector3(1, -1, 1);
             }
             else // 오른쪽으로 갈 때
@@ -83,7 +83,7 @@ public class RobotBullet : MonoBehaviour
                 transform.localScale = new Vector3(1, 1, 1);
             }
 
-            transform.rotation = Quaternion.AngleAxis(angle + 90f, Vector3.forward);
+            transform.rotation = Quaternion.AngleAxis(angle + 90f, Vector3.forward);  //* 0601 여기 수정 예상
         }
 
         if (t >= 1f)

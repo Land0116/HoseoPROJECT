@@ -26,6 +26,8 @@ public class RobotAttackPattern : AttackPattern
     [SerializeField] private float attackDistance = 3;
 
     [Header("Misile Attack")]
+    [SerializeField] private float missilePrepareTime = 0.3f;
+
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private int bulletCount = 6;
     [SerializeField] private float bulletDamage = 1f;
@@ -116,11 +118,11 @@ public class RobotAttackPattern : AttackPattern
         if (telegraphObj != null)
             Destroy(telegraphObj);
 
-        monster.PlayAttackAnimation(dir);
-
         Quaternion rot = Quaternion.FromToRotation(Vector3.right, dir);
 
         GameObject obj = Instantiate(meleePrefab, fixedPos, rot);
+
+        monster.PlayAttackAnimation(dir);
 
         RobotAttackHitbox hitbox = obj.GetComponent<RobotAttackHitbox>();
         if (hitbox != null)
@@ -132,9 +134,12 @@ public class RobotAttackPattern : AttackPattern
 
         yield return new WaitForSeconds(0.3f);
 
+        monster.SetAttackAnimationLock(false);//* 0601
+
         blockMovement = false;
         isAttacking = false;
     }
+    
     private IEnumerator RangedAttack(Transform player)
     {
         isAttacking = true;
@@ -156,9 +161,15 @@ public class RobotAttackPattern : AttackPattern
                 yield break;
             }
 
+            // 방향 먼저 고정
             Vector2 dir = (player.position - monster.transform.position).normalized;
 
-            monster.PlayAttackAnimation(dir);
+            // 준비 애니메이션
+            monster.PlayMissilePrepareAnimation(dir);
+            yield return new WaitForSeconds(missilePrepareTime);
+
+            // 발사 애니메이션
+            monster.PlayMissileAnimation(dir);
 
             GameObject bullet = Instantiate(bulletPrefab, monster.transform.position, Quaternion.identity);
             RobotBullet rb = bullet.GetComponent<RobotBullet>();
@@ -176,8 +187,11 @@ public class RobotAttackPattern : AttackPattern
 
         yield return new WaitForSeconds(0.2f);
 
+        monster.SetAttackAnimationLock(false);//* 0601
+
         isAttacking = false;
     }
+
 
     private Vector2 GetRandomMovePoint()
     {

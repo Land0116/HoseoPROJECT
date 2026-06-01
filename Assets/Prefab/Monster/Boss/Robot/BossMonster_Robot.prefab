@@ -89,7 +89,7 @@ SpriteRenderer:
   m_SortingOrder: 20
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.4481132, g: 0.89323384, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -231,6 +231,7 @@ MonoBehaviour:
   meleeKnockback: 80
   attack1Delay: 0.3
   attackDistance: 2
+  missilePrepareTime: 0.3
   bulletPrefab: {fileID: 8305481097669472954, guid: 9edf894b29688bc41b4dec847af66b11, type: 3}
   bulletCount: 6
   bulletDamage: 4
@@ -239,7 +240,7 @@ MonoBehaviour:
   maxFireDelay: 0.5
   bulletSpeed: 12
   dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
-  telegraphTime: 0.5
+  telegraphTime: 0.7
 --- !u!114 &4898502589507485991
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,7 +360,7 @@ Animator:
   m_GameObject: {fileID: 8811275338972092146}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b801cafce30e6a84b938bcf60229cc31, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -5,6 +5,9 @@ using UnityEngine.Audio;
 public class Monster : MonoBehaviour, IDamageable
 {
     private Transform player;
+    [Header("몬스터 이동중 다른애니메이션 표시 x")]
+    private bool isInAttackAnimation = false;
+
     [Header("Death Animation Override")]
     [SerializeField] private bool forceFrontDeath = false;
     [SerializeField] private float frontDeathAnimationTime = 2f;
@@ -443,6 +446,8 @@ public class Monster : MonoBehaviour, IDamageable
     
     private void UpdateAnimation(Vector2 dir, bool isMoving)
     {
+        if (isInAttackAnimation) return; //* 0601
+
         if (dir.magnitude > 0.01f)
             lastLookDir = dir;
 
@@ -481,6 +486,8 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (isHit) return;
 
+        isInAttackAnimation = true; //* 0601
+
         if (dir.magnitude > 0.01f)
             lastLookDir = dir;
 
@@ -493,6 +500,7 @@ public class Monster : MonoBehaviour, IDamageable
     public void PlayHitAnimation()
     {
         if (ignoreHitAnimation) return;
+        if (isInAttackAnimation) return; //* 0601
 
         Vector2 dir = lastLookDir;
 
@@ -763,6 +771,40 @@ public class Monster : MonoBehaviour, IDamageable
         string anim = GetDirectionName(angle) + "_Attack";
 
         PlayAnim(anim);
+    }
+
+    public void PlayMissilePrepareAnimation(Vector2 dir)
+    {
+        if (isHit) return;
+
+        isInAttackAnimation = true;//* 0601
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Missile_Pre";
+
+        PlayAnim(anim);
+    }
+
+    public void PlayMissileAnimation(Vector2 dir)
+    {
+        if (isHit) return;
+
+        isInAttackAnimation = true; //* 0601
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Missile";
+
+        PlayAnim(anim);
+    }
+    public void SetAttackAnimationLock(bool value)
+    {
+        isInAttackAnimation = value;
     }
 }
 
