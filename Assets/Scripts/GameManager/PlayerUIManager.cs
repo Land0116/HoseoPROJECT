@@ -512,67 +512,78 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (playerController == null)
         {
-            if (dashPanel_UI != null)
-                dashPanel_UI.SetActive(false);
+            HideDashCooldownUI();
+            return;
+        }
+
+        bool onCooldown = playerController.IsDashOnCooldown();
+
+        // 쿨타임이 아니면 숨김
+        if (!onCooldown)
+        {
+            HideDashCooldownUI();
             return;
         }
 
         float remain = playerController.GetDashCooldownRemain();
-        float ratio = playerController.GetDashCooldownRatio();
-        bool onCooldown = playerController.IsDashOnCooldown();
 
-        // 쿨타임 중
-        if (onCooldown)
+        // 기존 ratio:
+        // 대쉬 직후 1
+        // 쿨타임 끝 0
+        float cooldownRemainRatio = playerController.GetDashCooldownRatio();
+
+        // 원하는 차오르는 게이지:
+        // 대쉬 직후 0
+        // 쿨타임 끝 1
+        float fillRatio = 1f - cooldownRemainRatio;
+        fillRatio = Mathf.Clamp01(fillRatio);
+
+        // 쿨타임 중에는 슬라이더 UI 보이기
+        if (dashPanel_UI != null)
+            dashPanel_UI.SetActive(true);
+
+        if (dashCooldownSlider != null)
         {
-            // UI 켜기
-            if (dashPanel_UI != null)
-                dashPanel_UI.SetActive(true);
-
-            // Slider 감소 (1 → 0)
-            if (dashCooldownSlider != null)
-            {
-                SetupHudSlider(dashCooldownSlider);
-            }
-
-            // Overlay (선택)
-            if (dashCooldownOverlay != null)
-            {
-                dashCooldownOverlay.gameObject.SetActive(true);
-                dashCooldownOverlay.fillAmount = ratio;
-            }
-
-            // 텍스트
-            if (dashCooldownText != null)
-            {
-                dashCooldownText.gameObject.SetActive(true);
-                dashCooldownText.text = Mathf.Max(0f, remain).ToString("F1");
-            }
+            dashCooldownSlider.gameObject.SetActive(true);
+            dashCooldownSlider.value = fillRatio;
         }
-        // 쿨타임 끝
-        else
+
+        // Overlay도 같이 차오르게 쓸 거면 fillRatio 사용
+        if (dashCooldownOverlay != null)
         {
-            // UI 꺼버림
-            if (dashPanel_UI != null)
-                dashPanel_UI.SetActive(false);
+            dashCooldownOverlay.gameObject.SetActive(true);
+            dashCooldownOverlay.fillAmount = fillRatio;
+        }
 
-            // 값 초기화
-            if (dashCooldownSlider != null)
-                dashCooldownSlider.value = 0f;
-
-            if (dashCooldownOverlay != null)
-            {
-                dashCooldownOverlay.fillAmount = 0f;
-                dashCooldownOverlay.gameObject.SetActive(false);
-            }
-
-            if (dashCooldownText != null)
-            {
-                dashCooldownText.text = "";
-                dashCooldownText.gameObject.SetActive(false);
-            }
+        if (dashCooldownText != null)
+        {
+            dashCooldownText.gameObject.SetActive(true);
+            dashCooldownText.text = Mathf.Max(0f, remain).ToString("F1");
         }
     }
+    private void HideDashCooldownUI()
+    {
+        if (dashPanel_UI != null)
+            dashPanel_UI.SetActive(false);
 
+        if (dashCooldownSlider != null)
+        {
+            dashCooldownSlider.value = 0f;
+            dashCooldownSlider.gameObject.SetActive(false);
+        }
+
+        if (dashCooldownOverlay != null)
+        {
+            dashCooldownOverlay.fillAmount = 0f;
+            dashCooldownOverlay.gameObject.SetActive(false);
+        }
+
+        if (dashCooldownText != null)
+        {
+            dashCooldownText.text = "";
+            dashCooldownText.gameObject.SetActive(false);
+        }
+    }
 
 
 
@@ -753,10 +764,37 @@ public class PlayerUIManager : MonoBehaviour
         if (dashPanelTr != null)
         {
             dashPanel = dashPanelTr.gameObject;
+
+            // dashPanel_UI를 따로 안 쓰고 DashPanel 자체를 쿨타임 UI 패널로 사용
+            dashPanel_UI = dashPanel;
+
             dashIcon = UIManager.FindChildRecursive(dashPanelTr, "DashIcon")?.GetComponent<Image>();
             dashCooldownOverlay = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownOverlay")?.GetComponent<Image>();
             dashCooldownText = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownText")?.GetComponent<TextMeshProUGUI>();
-            
+
+            // Slider 자동 바인딩
+            Transform dashSliderTr = UIManager.FindChildRecursive(dashPanelTr, "DashCoolDownBar");
+
+            if (dashSliderTr != null)                                               
+            {
+                dashCooldownSlider = dashSliderTr.GetComponent<Slider>();
+            }
+
+            // 이름이 다를 경우 대비
+            if (dashCooldownSlider == null)
+            {
+                dashCooldownSlider = dashPanelTr.GetComponentInChildren<Slider>(true);
+            }
+
+            if (dashCooldownSlider != null)
+            {
+                SetupHudSlider(dashCooldownSlider);
+
+                dashCooldownSlider.minValue = 0f;
+                dashCooldownSlider.maxValue = 1f;
+                dashCooldownSlider.wholeNumbers = false;
+                dashCooldownSlider.value = 0f;
+            }
         }
         
         Transform chargeGaugeTr = UIManager.FindChildRecursive(playerPanel, "ChargeGaugeSlider");
@@ -872,23 +910,7 @@ public class PlayerUIManager : MonoBehaviour
 
     private void ResetDashUI()
     {
-        if (dashPanel_UI != null)
-            dashPanel_UI.SetActive(false);
-
-        if (dashCooldownSlider != null)
-            dashCooldownSlider.value = 0f;
-
-        if (dashCooldownOverlay != null)
-        {
-            dashCooldownOverlay.fillAmount = 0f;
-            dashCooldownOverlay.gameObject.SetActive(false);
-        }
-
-        if (dashCooldownText != null)
-        {
-            dashCooldownText.text = "";
-            dashCooldownText.gameObject.SetActive(false);
-        }
+        HideDashCooldownUI();
     }
     
     public void ResetUIForNewRun()

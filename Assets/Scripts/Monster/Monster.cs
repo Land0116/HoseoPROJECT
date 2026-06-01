@@ -7,7 +7,7 @@ public class Monster : MonoBehaviour, IDamageable
     private Transform player;
     [Header("몬스터 이동중 다른애니메이션 표시 x")]
     private bool isInAttackAnimation = false;
-
+    
     //공주 공격 2,3
     private bool isAnimationLocked = false;
     private bool forcePlayAnimation = false;
@@ -17,6 +17,7 @@ public class Monster : MonoBehaviour, IDamageable
     [SerializeField] private bool attackAnimationX2 = false;
     [SerializeField] private float normalAttackAnimSpeed = 1f;
     [SerializeField] private float x2AttackAnimSpeed = 2f;
+
 
     [Header("Death Animation Override")]
     [SerializeField] private bool forceFrontDeath = false;
@@ -230,7 +231,7 @@ public class Monster : MonoBehaviour, IDamageable
         Vector2 moveDir = (currentPos - lastPosition).normalized;
 
         // 이동 중일 때만 방향 업데이트
-        /*if (!isAttacking && !isHit && !lockBossFinalAttack && !ignoreHitAnimation)//* 0529
+        if (!isAttacking && !isHit && !lockBossFinalAttack && !ignoreHitAnimation)//* 0529
         {
             if (moveDir.magnitude > 0.01f)
             {
@@ -241,16 +242,6 @@ public class Monster : MonoBehaviour, IDamageable
             {
                 UpdateAnimation(lastMoveDir, false);
             }
-        }*/
-        if (!isHit && !lockBossFinalAttack && !ignoreHitAnimation)
-        {
-            if (moveDir.magnitude > 0.01f)
-            {
-                lastMoveDir = moveDir;
-            }
-
-            // 공격 중이어도 방향은 갱신 가능하게 유지
-            UpdateAnimation(lastMoveDir, moveDir.magnitude > 0.01f);
         }
 
         lastPosition = currentPos;
@@ -527,8 +518,6 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (dir.magnitude > 0.01f)
             lastLookDir = dir;
-
-        SetAttackAnimSpeed();
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         string anim = GetDirectionName(angle) + "_Attack";
@@ -847,11 +836,8 @@ public class Monster : MonoBehaviour, IDamageable
     public void SetAttackAnimationLock(bool value)
     {
         isInAttackAnimation = value;
-        if (!value)
-        {
-            ResetAnimSpeed();
-        }
     }
+
     private void SetAttackAnimSpeed()
     {
         if (animator == null) return;
@@ -892,5 +878,7 @@ public class Monster : MonoBehaviour, IDamageable
         currentAnim = animName;
         animator.Play(animName);
     }
+
 }
 
+                                                                                    

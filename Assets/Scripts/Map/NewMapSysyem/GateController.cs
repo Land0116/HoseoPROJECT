@@ -37,6 +37,9 @@ public class GateController : AutoBindableBehaviour
     [SerializeField] private Sprite bossIcon;
     [SerializeField] private Sprite combatIcon;
 
+    [Header("스테이지 문 비주얼")]
+    [SerializeField] private StageDoorVisualController stageDoorVisual;
+
     private RouteMarkerSpriteView currentMarkerView;
     private Collider2D gateCollider;
     private bool isOpen;
@@ -83,6 +86,10 @@ public class GateController : AutoBindableBehaviour
         if (playerSpawnPoint == null || !playerSpawnPoint.IsChildOf(transform))
         {
             playerSpawnPoint = AutoBindUtility.FindChildStartsWith(transform, "playerSpawnPoint");
+        }
+        if (stageDoorVisual == null)
+        {
+            stageDoorVisual = GetComponentInChildren<StageDoorVisualController>(true);
         }
     }
 
@@ -169,6 +176,14 @@ public class GateController : AutoBindableBehaviour
         if (blockObject != null)
         {
             blockObject.SetActive(!open);
+        }
+
+        if (stageDoorVisual != null)
+        {
+            if (open)
+                stageDoorVisual.PlayOpen();
+            else
+                stageDoorVisual.SetClosedImmediate();
         }
 
         if (open)
