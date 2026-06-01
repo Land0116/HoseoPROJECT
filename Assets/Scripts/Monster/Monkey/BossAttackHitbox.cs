@@ -93,11 +93,16 @@ public class BossAttackHitbox : MonoBehaviour
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Audio;
 
 public class BossAttackHitbox : MonoBehaviour
 {
     [Header("Effect")]
     [SerializeField] private GameObject hitEffectPrefab;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip attackSound;
 
     private float damage;
     private HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
@@ -157,7 +162,10 @@ public class BossAttackHitbox : MonoBehaviour
         if (hitEffectPrefab != null)
         {
             GameObject effect = Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
-
+            if (audioSource != null && attackSound != null) //* 0601
+            {
+                PlayIndependent(attackSound);
+            }
             // 히트박스 크기 그대로 복사
             effect.transform.localScale = transform.localScale;
         }
@@ -183,4 +191,22 @@ public class BossAttackHitbox : MonoBehaviour
         hitTargets.Add(target);
         target.OnDamage(damage);
     }
+    private void PlayIndependent(AudioClip clip)
+    {
+        if (clip == null || audioSource == null) return;
+
+        GameObject obj = new GameObject("BossAttack_SFX_TEMP");
+        AudioSource newSource = obj.AddComponent<AudioSource>();
+
+        newSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+        newSource.volume = audioSource.volume;
+        newSource.pitch = audioSource.pitch;
+        newSource.spatialBlend = audioSource.spatialBlend;
+
+        newSource.clip = clip;
+        newSource.Play();
+
+        Destroy(obj, clip.length);
+    }
+
 }

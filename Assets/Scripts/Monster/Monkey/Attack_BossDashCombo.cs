@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class Attack_BossDashCombo : AttackPattern
 {
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip dash1Sound;
+    [SerializeField] private AudioClip dash2Sound;
+    [SerializeField] private AudioClip attackSound;
+
     [Header("공격 설정")]
     [SerializeField] private float attackRange = 8f;
     [SerializeField] private float cooldown = 3f;
@@ -80,11 +86,11 @@ public class Attack_BossDashCombo : AttackPattern
         Transform player = monster.Player;
 
         monster.ForceLookAt(player.position);
-        yield return Dash(player, dash1Damage);
+        yield return Dash(player, dash1Damage, 1);
         yield return new WaitForSeconds(firstDashDelay);
 
         monster.ForceLookAt(player.position);
-        yield return Dash(player, dash2Damage);
+        yield return Dash(player, dash2Damage, 2);
         yield return new WaitForSeconds(secondDashDelay);
 
         Vector2 dir = (player.position - monster.transform.position).normalized;
@@ -99,6 +105,8 @@ public class Attack_BossDashCombo : AttackPattern
 
         GameObject obj = Instantiate(finalAttackPrefab, fixedPos, Quaternion.identity);
 
+        
+
         BossAttackHitbox hitbox = obj.GetComponent<BossAttackHitbox>();
         if (hitbox != null)
             hitbox.SetDamage(finalAttackDamage);
@@ -111,7 +119,7 @@ public class Attack_BossDashCombo : AttackPattern
         isAttacking = false;
     }
 
-    private IEnumerator Dash(Transform player, float damage)
+    private IEnumerator Dash(Transform player, float damage, int dashIndex) //* 0601
     {
         Vector2 startPos = monster.RB.position;
         Vector2 targetPos = player.position;
@@ -140,6 +148,14 @@ public class Attack_BossDashCombo : AttackPattern
         yield return new WaitForSeconds(telegraphTime);
 
         DestroyTelegraph();
+
+        if (audioSource != null) //* 0601
+        {
+            if (dashIndex == 1 && dash1Sound != null)
+                audioSource.PlayOneShot(dash1Sound);
+            else if (dashIndex == 2 && dash2Sound != null)
+                audioSource.PlayOneShot(dash2Sound);
+        }
 
         monster.PlayBossDashAnimation(dir);
 
@@ -206,5 +222,11 @@ public class Attack_BossDashCombo : AttackPattern
             Destroy(telegraphObj);
             telegraphObj = null;
         }
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        DestroyTelegraph();
     }
 }

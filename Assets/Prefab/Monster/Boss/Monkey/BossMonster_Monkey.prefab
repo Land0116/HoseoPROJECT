@@ -349,6 +349,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack_BossDashCombo
   blockMovement: 0
+  audioSource: {fileID: 8185819640412817495}
+  dash1Sound: {fileID: 8300000, guid: e538ae280ae7fc94781ce0cc37e3253c, type: 3}
+  dash2Sound: {fileID: 8300000, guid: 9cda19469e5f76041b06abbd164b5e70, type: 3}
+  attackSound: {fileID: 8300000, guid: 85a59b55a9c5f824290c27fb7b784d06, type: 3}
   attackRange: 13
   cooldown: 1
   dashSpeed: 30
@@ -388,7 +392,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 0
   Mute: 0

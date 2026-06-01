@@ -24,14 +24,12 @@ public class RobotAttackHitbox : MonoBehaviour
 
         hasHit = true;
 
-        // 데미지
         IDamageable dmg = collision.GetComponent<IDamageable>();
         if (dmg != null)
         {
             dmg.OnDamage(damage);
         }
 
-        // 넉백
         PlayerController player = collision.GetComponent<PlayerController>();
         if (player != null)
         {

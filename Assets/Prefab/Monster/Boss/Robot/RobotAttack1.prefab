@@ -220,6 +220,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FX_Fire_Hit
       objectReference: {fileID: 0}
+    - target: {fileID: 6757685114697075779, guid: 24344a7c247326342b9f619f7334a037, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7249478680450527771, guid: 24344a7c247326342b9f619f7334a037, type: 3}
       propertyPath: m_SortingOrder
       value: 12

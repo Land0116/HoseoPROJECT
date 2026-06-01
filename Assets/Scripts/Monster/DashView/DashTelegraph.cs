@@ -5,6 +5,8 @@ public class DashTelegraph : MonoBehaviour
     [SerializeField] private Transform baseTransform;
     [SerializeField] private Transform fillTransform;
 
+    private bool isActive = true; //
+
     private float maxLength;
     private float duration;
     private float currentTime;
@@ -14,6 +16,7 @@ public class DashTelegraph : MonoBehaviour
     private Vector3 startPos;
     public void Init(Vector2 dir, float length, float time)
     {
+        isActive = true;//
         startPos = transform.position;
 
         direction = dir.normalized;
@@ -35,6 +38,7 @@ public class DashTelegraph : MonoBehaviour
 
     void Update()
     {
+        if (!isActive) return;//
         currentTime += Time.deltaTime;
 
         float t = Mathf.Clamp01(currentTime / duration);
@@ -43,5 +47,9 @@ public class DashTelegraph : MonoBehaviour
         fillTransform.localScale = new Vector3(currentLength, fillTransform.localScale.y, 1f);
 
         fillTransform.localPosition = new Vector3(currentLength * 0.5f, 0f, 0f);
+    }
+    private void OnDestroy()
+    {
+        isActive = false;
     }
 }

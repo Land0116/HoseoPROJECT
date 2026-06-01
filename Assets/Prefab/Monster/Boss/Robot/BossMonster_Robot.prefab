@@ -220,17 +220,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotAttackPattern
   blockMovement: 1
-  rangedMoveSpeed: 6
+  audioSource: {fileID: -7482430823266265871}
+  attackSound: {fileID: 8300000, guid: df34efbe787a5f64f93714ab38f2958d, type: 3}
+  bulletSound: {fileID: 8300000, guid: 825b83ee38dd6cd40b6e9e547cdeae90, type: 3}
+  rangedMoveSpeed: 5
   moveRange: 4
-  meleeRange: 4
-  rangedMinRange: 4
+  meleeRange: 7
+  rangedMinRange: 7
   rangedMaxRange: 12
   cooldown: 1.5
   meleePrefab: {fileID: 1367490270637848893, guid: ab01e955b9f1e5c49a74dda3048580ab, type: 3}
   meleeDamage: 10
   meleeKnockback: 80
   attack1Delay: 0.3
-  attackDistance: 2
+  attackDistance: 4
   missilePrepareTime: 0.3
   bulletPrefab: {fileID: 8305481097669472954, guid: 9edf894b29688bc41b4dec847af66b11, type: 3}
   bulletCount: 6
@@ -239,7 +242,7 @@ MonoBehaviour:
   minFireDelay: 0.1
   maxFireDelay: 0.5
   bulletSpeed: 12
-  dashTelegraphPrefab: {fileID: 7794493906582068780, guid: cde6febc77ab1154cb7fc8c07428f44f, type: 3}
+  dashTelegraphPrefab: {fileID: 8613289290573804930, guid: 9d436654fa6e40e41a1c5edb389b7b02, type: 3}
   telegraphTime: 0.7
 --- !u!114 &4898502589507485991
 MonoBehaviour:
