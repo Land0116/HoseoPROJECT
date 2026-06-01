@@ -423,6 +423,8 @@ public class Monster : MonoBehaviour, IDamageable
             return;
         }
 
+        rewardObjectSpawner.TrySpawnBossHealthItem(transform.position);
+
         RewardType rewardType = rewardObjectSpawner.GetRandomBossRewardType();
 
         Vector3 spawnPosition = transform.position + bossRewardSpawnOffset;

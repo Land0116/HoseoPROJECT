@@ -14,6 +14,35 @@ public class RewardObjectSpawner : MonoBehaviour
     [SerializeField] private Sprite augmentIcon;
     [SerializeField] private Sprite skillIcon;
     [SerializeField] private Sprite itemIcon;
+    
+    [Header("보스 추가 체력 아이템 드랍")]
+    [SerializeField] private GameObject bossHealthItemPrefab;
+
+    [SerializeField, Range(0f, 1f)]
+    private float bossHealthItemDropChance = 0.1f;
+
+    [SerializeField] private Vector3 bossHealthItemSpawnOffset = new Vector3(0.6f, 0f, 0f);
+    public void TrySpawnBossHealthItem(Vector3 bossPosition)
+    {
+        if (bossHealthItemPrefab == null)
+        {
+            Debug.LogWarning("[RewardObjectSpawner] bossHealthItemPrefab이 없음. 체력 아이템 드랍 생략.");
+            return;
+        }
+
+        if (Random.value > bossHealthItemDropChance)
+            return;
+
+        Vector3 spawnPosition = bossPosition + bossHealthItemSpawnOffset;
+
+        Instantiate(
+            bossHealthItemPrefab,
+            spawnPosition,
+            Quaternion.identity
+        );
+
+        Debug.Log("[RewardObjectSpawner] 보스 추가 체력 아이템 드랍 성공");
+    }
 
     public void SpawnRewardObject(RewardType rewardType, Action onRewardFinished)
     {
