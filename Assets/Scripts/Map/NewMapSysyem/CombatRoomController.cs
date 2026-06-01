@@ -181,7 +181,7 @@ public class CombatRoomController : MapRoomControllerBase
         if (MapFlowManager.Instance != null &&
             MapFlowManager.Instance.IsLastCombatRoomBeforeBoss())
         {
-            OpenOnlyOneBossGate();
+            OpenShopAndBossGates();
             return;
         }
 
@@ -189,8 +189,7 @@ public class CombatRoomController : MapRoomControllerBase
 
         OpenAllGates();
     }
-    
-    private void OpenOnlyOneBossGate()
+    private void OpenShopAndBossGates()
     {
         if (gates == null || gates.Length <= 0)
         {
@@ -198,17 +197,38 @@ public class CombatRoomController : MapRoomControllerBase
             return;
         }
 
+        if (gates.Length == 1)
+        {
+            gates[0].SetRoute(RoomKind.Boss, RewardType.None);
+            gates[0].SetOpen(true);
+            return;
+        }
+
         int bossGateIndex = Random.Range(0, gates.Length);
+        int shopGateIndex = Random.Range(0, gates.Length);
+
+        int safetyCount = 0;
+        while (shopGateIndex == bossGateIndex && safetyCount < 20)
+        {
+            shopGateIndex = Random.Range(0, gates.Length);
+            safetyCount++;
+        }
 
         for (int i = 0; i < gates.Length; i++)
         {
             GateController gate = gates[i];
 
-            if (gate == null) continue;
+            if (gate == null)
+                continue;
 
             if (i == bossGateIndex)
             {
                 gate.SetRoute(RoomKind.Boss, RewardType.None);
+                gate.SetOpen(true);
+            }
+            else if (i == shopGateIndex)
+            {
+                gate.SetRoute(RoomKind.Shop, RewardType.None);
                 gate.SetOpen(true);
             }
             else
@@ -218,9 +238,45 @@ public class CombatRoomController : MapRoomControllerBase
             }
         }
 
-        Debug.Log("[CombatRoomController] 보스 직전 전투방 클리어. 보스룸 출구 1개만 개방.");
+        Debug.Log("[CombatRoomController] 마지막 전투방 클리어. 상점 + 보스룸 게이트만 개방.");
     }
 
+    #region 이전 함수
+
+    // private void OpenOnlyOneBossGate()
+    // {
+    //     if (gates == null || gates.Length <= 0)
+    //     {
+    //         Debug.LogWarning("[CombatRoomController] 열 수 있는 Gate가 없음");
+    //         return;
+    //     }
+    //
+    //     int bossGateIndex = Random.Range(0, gates.Length);
+    //
+    //     for (int i = 0; i < gates.Length; i++)
+    //     {
+    //         GateController gate = gates[i];
+    //
+    //         if (gate == null) continue;
+    //
+    //         if (i == bossGateIndex)
+    //         {
+    //             gate.SetRoute(RoomKind.Boss, RewardType.None);
+    //             gate.SetOpen(true);
+    //         }
+    //         else
+    //         {
+    //             gate.SetRoute(RoomKind.Combat, RewardType.None);
+    //             gate.SetOpen(false);
+    //         }
+    //     }
+    //
+    //     Debug.Log("[CombatRoomController] 보스 직전 전투방 클리어. 보스룸 출구 1개만 개방.");
+    // }
+
+
+    #endregion
+    
     /// <summary>
     /// 전투방 클리어 후 다음 출구들의 경로를 배정한다.
     /// 

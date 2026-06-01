@@ -404,6 +404,13 @@ public class Monster : MonoBehaviour, IDamageable
     }
     private void HandleBossDeathReward()
     {
+        if (bossSpawner != null && !bossSpawner.ShouldDropBossReward())
+        {
+            Debug.Log("[Monster] 최종 보스이므로 보스 보상 드롭 생략");
+            NotifyBossDead();
+            return;
+        }
+
         if (rewardObjectSpawner == null)
         {
             rewardObjectSpawner = FindAnyObjectByType<RewardObjectSpawner>();

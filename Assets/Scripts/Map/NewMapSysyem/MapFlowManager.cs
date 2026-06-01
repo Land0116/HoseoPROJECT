@@ -39,6 +39,8 @@ public class ActSceneSet
 
     [Header("해당 액트의 보스 씬")]
     public string bossSceneName;
+    [Header("보스 진입 전 필요한 전투방 클리어 수")]
+    public int combatRoomsBeforeBoss = 2;
 }
 
 public class MapFlowManager : MonoBehaviour
@@ -55,8 +57,8 @@ public class MapFlowManager : MonoBehaviour
     [Header("현재 액트의 전투방 번호")]
     [SerializeField] private int currentCombatRoomNumber = 1;
 
-    [Header("보스 진입 전 마지막 전투방 번호")]
-    [SerializeField] private int bossEnterCombatRoomNumber = 6;
+    //[Header("보스 진입 전 마지막 전투방 번호")]
+    //[SerializeField] private int bossEnterCombatRoomNumber = 6;
 
     [Header("다음 방에서 필요한 입구 그룹")]
     [SerializeField] private GateGroup requiredEntranceGroup = GateGroup.A;
@@ -84,16 +86,25 @@ public class MapFlowManager : MonoBehaviour
         }
         Instance = this;
     }
-
-    public bool IsFirstCombatRoomOfAct()
+    
+    public int GetCombatRoomsBeforeBoss()
     {
-        return currentCombatRoomNumber == 1;
+        ActSceneSet actSet = GetCurrentActSceneSet();
+
+        if (actSet == null)
+            return 2;
+
+        return Mathf.Max(1, actSet.combatRoomsBeforeBoss);
     }
 
     public bool IsLastCombatRoomBeforeBoss()
     {
-        return currentCombatRoomNumber >= bossEnterCombatRoomNumber;
-        
+        return currentCombatRoomNumber >= GetCombatRoomsBeforeBoss();
+    }
+
+    public bool ShouldShopConnectToBoss()
+    {
+        return IsLastCombatRoomBeforeBoss();
     }
     
     private void LoadRandomCombatScene()
@@ -178,18 +189,82 @@ public class MapFlowManager : MonoBehaviour
         // 일반 전투방은 이전 출구에서 선택한 보상 사용
         return pendingRewardType;
     }
+    public bool IsFirstCombatRoomOfAct()
+    {
+        return currentCombatRoomNumber == 1;
+    }
 
+    #region 이전 파일
+    
+    // public bool IsFirstCombatRoomOfAct()
+    // {
+    //     return currentCombatRoomNumber == 1;
+    // }
+    //
+    // public bool IsLastCombatRoomBeforeBoss()
+    // {
+    //     return currentCombatRoomNumber >= bossEnterCombatRoomNumber;
+    //     
+    // }
+    
+    // public void EnterNextRoomFromGate(GateGroup usedGateGroup, RoomKind nextRoomKind, RewardType selectedRewardType)
+    // {
+    //     requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
+    //
+    //     Debug.Log(
+    //         $"[MapFlow] Act={currentAct}, RoomNumber={currentCombatRoomNumber}, " +
+    //         $"UsedGate={usedGateGroup}, RequiredEntrance={requiredEntranceGroup}, " +
+    //         $"NextRoom={nextRoomKind}, Reward={selectedRewardType}"
+    //     );
+    //
+    //     currentCombatRoomNumber++;
+    //
+    //     ActSceneSet actSet = GetCurrentActSceneSet();
+    //
+    //     if (actSet == null) return;
+    //
+    //     if (nextRoomKind == RoomKind.Shop)
+    //     {
+    //         currentRoomKind = RoomKind.Shop;
+    //         pendingRewardType = RewardType.None;
+    //
+    //         LoadSceneByTransition(actSet.shopSceneName, true);
+    //         return;
+    //     }
+    //
+    //     if (nextRoomKind == RoomKind.Boss)
+    //     {
+    //         currentRoomKind = RoomKind.Boss;
+    //         pendingRewardType = RewardType.None;
+    //
+    //         LoadSceneByTransition(actSet.bossSceneName, false);
+    //         return;
+    //     }
+    //
+    //     if (nextRoomKind == RoomKind.Combat)
+    //     {
+    //         currentRoomKind = RoomKind.Combat;
+    //         pendingRewardType = selectedRewardType;
+    //
+    //         LoadRandomCombatScene();
+    //     }
+    // }
+    
+    // public bool ShouldShopConnectToBoss()
+    // {
+    //     return currentCombatRoomNumber >= bossEnterCombatRoomNumber;
+    // }
+    
+    #endregion
     public void EnterNextRoomFromGate(GateGroup usedGateGroup, RoomKind nextRoomKind, RewardType selectedRewardType)
     {
         requiredEntranceGroup = GetOppositeGateGroup(usedGateGroup);
 
         Debug.Log(
-            $"[MapFlow] Act={currentAct}, RoomNumber={currentCombatRoomNumber}, " +
+            $"[MapFlow] Act={currentAct}, CombatRoom={currentCombatRoomNumber}, " +
             $"UsedGate={usedGateGroup}, RequiredEntrance={requiredEntranceGroup}, " +
             $"NextRoom={nextRoomKind}, Reward={selectedRewardType}"
         );
-
-        currentCombatRoomNumber++;
 
         ActSceneSet actSet = GetCurrentActSceneSet();
 
@@ -197,6 +272,7 @@ public class MapFlowManager : MonoBehaviour
 
         if (nextRoomKind == RoomKind.Shop)
         {
+            // 상점은 전투방 카운트에 포함하지 않음
             currentRoomKind = RoomKind.Shop;
             pendingRewardType = RewardType.None;
 
@@ -206,6 +282,7 @@ public class MapFlowManager : MonoBehaviour
 
         if (nextRoomKind == RoomKind.Boss)
         {
+            // 보스방도 전투방 카운트에 포함하지 않음
             currentRoomKind = RoomKind.Boss;
             pendingRewardType = RewardType.None;
 
@@ -215,6 +292,9 @@ public class MapFlowManager : MonoBehaviour
 
         if (nextRoomKind == RoomKind.Combat)
         {
+            // 전투방으로 갈 때만 카운트 증가
+            currentCombatRoomNumber++;
+
             currentRoomKind = RoomKind.Combat;
             pendingRewardType = selectedRewardType;
 
@@ -251,11 +331,7 @@ public class MapFlowManager : MonoBehaviour
 
         CompleteBossAndGoNextAct();
     }
-
-    public bool ShouldShopConnectToBoss()
-    {
-        return currentCombatRoomNumber >= bossEnterCombatRoomNumber;
-    }
+    
 
     private GateGroup GetOppositeGateGroup(GateGroup gateGroup)
     {
