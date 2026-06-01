@@ -146,9 +146,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  attackAnimationX2: 1
+  normalAttackAnimSpeed: 1
+  x2AttackAnimSpeed: 2
   forceFrontDeath: 0
   frontDeathAnimationTime: 1.2
-  useHitStop: 0
+  useHitStop: 1
   hitStopDuration: 1
   useHitKnockback: 0
   knockbackDuration: 1
@@ -347,7 +350,7 @@ Animator:
   m_GameObject: {fileID: 5072550965480936731}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d9401badaad155d4f827684fd31ae8e1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

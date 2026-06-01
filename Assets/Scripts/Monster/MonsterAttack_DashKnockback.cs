@@ -68,6 +68,16 @@ public class MonsterAttack_DashKnockback : AttackPattern
 
                     telegraphInstance.Init(dir, dashDistance, chargeTime);
 
+
+                    monster.SetAttackAnimationLock(true);
+
+                    // monster.ForceLookAt(monster.transform.position + (Vector3)dir);
+
+                    //  monster.PlayBossDashAnimation(dir);
+                    monster.ForceLookAt(monster.transform.position + (Vector3)dir);
+                    monster.PlayAttackAnimation(dir);
+
+
                     blockMovement = true;
                     state = State.Charge;
                 }
@@ -77,17 +87,6 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 blockMovement = true;
                 timer += Time.deltaTime;
 
-                /*if (distance > detectRange)
-                {
-                    if (telegraphInstance != null)
-                    {
-                        Destroy(telegraphInstance.gameObject); //*
-                    }
-
-                    state = State.Idle;
-                    timer = 0f;
-                    return;
-                }*/
                 if (timer >= chargeTime)
                 {
                     if (telegraphInstance != null)
@@ -99,6 +98,7 @@ public class MonsterAttack_DashKnockback : AttackPattern
                         (targetPosition - (Vector2)monster.transform.position).normalized;
 
                     dashTargetPosition = targetPosition + dashDirection * dashExtraDistance;
+
 
                     timer = 0f;
                     state = State.Dash;
@@ -115,6 +115,8 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 {
                     state = State.Idle;
                     timer = 0f;
+                    monster.EndAttack();
+
                     break;
                 }
 
@@ -123,6 +125,8 @@ public class MonsterAttack_DashKnockback : AttackPattern
                 {
                     state = State.Idle;
                     timer = 0f;
+
+                    monster.EndAttack();
                 }
                 break;
         }
@@ -155,6 +159,9 @@ public class MonsterAttack_DashKnockback : AttackPattern
 
         state = State.Idle;
         timer = 0f;
+
+        monster.EndAttack();
+
     }
     private void OnDestroy()
     {
