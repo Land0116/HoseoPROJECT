@@ -465,7 +465,7 @@ public class PrincessDollAttack : AttackPattern
         
         StartCoroutine(ExplosionDamage(obj));
     }
-    private IEnumerator ExplosionDamage(Transform obj)
+    /*private IEnumerator ExplosionDamage(Transform obj)
     {
         SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
 
@@ -515,7 +515,65 @@ public class PrincessDollAttack : AttackPattern
         }
 
         Destroy(obj.gameObject);
+    }*/
+    private IEnumerator ExplosionDamage(Transform obj)
+    {
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
+
+        float t = 0f;
+
+        // 시작 색 빨강 + 투명도 0
+        if (sr != null)
+            sr.color = new Color(1f, 0f, 0f, 0f);
+
+        while (t < explosionFadeTime)
+        {
+            t += Time.deltaTime;
+
+            // 0 → 65% (0.65f)
+            float alpha = (t / explosionFadeTime) * 0.50f;
+
+            if (sr != null)
+                sr.color = new Color(1f, 0f, 0f, alpha);
+
+            yield return null;
+        }
+
+        if (explosionEffectPrefabs != null && explosionEffectPrefabs.Length > 0)
+        {
+            int index = Random.Range(0, explosionEffectPrefabs.Length);
+            if (audioSource != null && explosionSound != null)
+            {
+                audioSource.pitch = Random.Range(0.9f, 1.1f);
+                audioSource.PlayOneShot(explosionSound, 0.5f);
+                audioSource.pitch = 1f;
+            }
+
+            GameObject effect = Instantiate(
+                explosionEffectPrefabs[index],
+                obj.position,
+                Quaternion.identity
+            );
+
+            effect.transform.localScale = obj.localScale;
+            Destroy(effect, 1f);
+        }
+
+        if (monster.Player != null)
+        {
+            float dist = Vector2.Distance(obj.position, monster.Player.position);
+
+            if (dist <= explosionUnitRadius &&
+                monster.Player.TryGetComponent<PlayerController>(out var player))
+            {
+                player.OnDamage(explosionDamage);
+                player.ApplyExplosionStun(stuntime);
+            }
+        }
+
+        Destroy(obj.gameObject);
     }
+
     private string GetBossDirectionName(float angle)
     {
         // SideR: 오른쪽 전체 (QBackR ~ QFrontR)
