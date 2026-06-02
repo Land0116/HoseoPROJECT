@@ -8,18 +8,21 @@ public class StageDoorVisualController : MonoBehaviour
         RightOpen
     }
 
-    [Header("닫힌 문 스프라이트 - 부모 오브젝트")]
+    [Header("닫힌 문 스프라이트 - Door 부모")]
     [SerializeField] private SpriteRenderer closedDoorRenderer;
 
     [Header("열리는 문 조각")]
-    [SerializeField] private GameObject leftDoorObject;
     [SerializeField] private GameObject rightDoorObject;
+    [SerializeField] private GameObject leftDoorObject;
 
     [Header("애니메이터")]
     [SerializeField] private Animator animator;
 
     [Header("문 열림 방향")]
     [SerializeField] private DoorOpenAnimationType openAnimationType = DoorOpenAnimationType.LeftOpen;
+
+    [Header("Door 부모에 있는 문 막는 콜라이더")]
+    [SerializeField] private Collider2D doorBlockCollider;
 
     private static readonly int LeftOpenHash = Animator.StringToHash("LeftOpen");
     private static readonly int RightOpenHash = Animator.StringToHash("RightOpen");
@@ -47,13 +50,19 @@ public class StageDoorVisualController : MonoBehaviour
     private void AutoBind()
     {
         if (closedDoorRenderer == null)
-        {
             closedDoorRenderer = GetComponent<SpriteRenderer>();
-        }
 
         if (animator == null)
-        {
             animator = GetComponent<Animator>();
+
+        if (doorBlockCollider == null)
+            doorBlockCollider = GetComponent<Collider2D>();
+
+        if (rightDoorObject == null)
+        {
+            Transform right = FindChildRecursive(transform, "RightDoor");
+            if (right != null)
+                rightDoorObject = right.gameObject;
         }
 
         if (leftDoorObject == null)
@@ -62,18 +71,12 @@ public class StageDoorVisualController : MonoBehaviour
             if (left != null)
                 leftDoorObject = left.gameObject;
         }
-
-        if (rightDoorObject == null)
-        {
-            Transform right = FindChildRecursive(transform, "RightDoor");
-            if (right != null)
-                rightDoorObject = right.gameObject;
-        }
     }
 
     private Transform FindChildRecursive(Transform parent, string targetName)
     {
-        if (parent == null) return null;
+        if (parent == null)
+            return null;
 
         for (int i = 0; i < parent.childCount; i++)
         {
@@ -105,11 +108,15 @@ public class StageDoorVisualController : MonoBehaviour
         if (closedDoorRenderer != null)
             closedDoorRenderer.enabled = true;
 
+        if (rightDoorObject != null)
+            rightDoorObject.SetActive(false);
+
         if (leftDoorObject != null)
             leftDoorObject.SetActive(false);
 
-        if (rightDoorObject != null)
-            rightDoorObject.SetActive(false);
+        SetDoorBlockColliderEnabled(true);
+
+        Debug.Log($"[StageDoor] Closed: {name}");
     }
 
     public void PlayOpen()
@@ -119,14 +126,19 @@ public class StageDoorVisualController : MonoBehaviour
 
         isOpen = true;
 
-        if (leftDoorObject != null)
-            leftDoorObject.SetActive(true);
+        Debug.Log($"[StageDoor] PlayOpen 호출됨: {name}");
 
         if (rightDoorObject != null)
             rightDoorObject.SetActive(true);
 
+        if (leftDoorObject != null)
+            leftDoorObject.SetActive(true);
+
         if (closedDoorRenderer != null)
             closedDoorRenderer.enabled = false;
+
+        // 핵심: 문 열림 → Door 부모의 큰 BoxCollider2D 끄기
+        SetDoorBlockColliderEnabled(false);
 
         if (animator == null)
             return;
@@ -146,15 +158,17 @@ public class StageDoorVisualController : MonoBehaviour
         }
     }
 
-    public void AnimationEvent_HideClosedDoor()
+    private void SetDoorBlockColliderEnabled(bool enabled)
     {
-        if (closedDoorRenderer != null)
-            closedDoorRenderer.enabled = false;
+        if (doorBlockCollider == null)
+        {
+            Debug.LogWarning($"[StageDoor] Door Block Collider가 없음: {name}");
+            return;
+        }
 
-        if (leftDoorObject != null)
-            leftDoorObject.SetActive(true);
+        // Door의 콜라이더는 문 막는 용도라서 Trigger가 아니어야 함
+        doorBlockCollider.enabled = enabled;
 
-        if (rightDoorObject != null)
-            rightDoorObject.SetActive(true);
+        Debug.Log($"[StageDoor] Door Block Collider {(enabled ? "ON" : "OFF")}: {doorBlockCollider.name}");
     }
 }

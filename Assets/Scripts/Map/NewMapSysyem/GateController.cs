@@ -178,12 +178,23 @@ public class GateController : AutoBindableBehaviour
             blockObject.SetActive(!open);
         }
 
+        // 핵심 추가:
+        // Gate가 열릴 때 Door도 같이 열고,
+        // Gate가 닫힐 때 Door도 닫는다.
         if (stageDoorVisual != null)
         {
             if (open)
+            {
                 stageDoorVisual.PlayOpen();
+            }
             else
+            {
                 stageDoorVisual.SetClosedImmediate();
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[{name}] StageDoorVisualController가 연결되지 않음");
         }
 
         if (open)
