@@ -2514,7 +2514,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         maxHp += passiveMaxHpAdd;
         maxHp = Mathf.Max(1, maxHp);
 
-        moveSpeed = (moveSpeed * specialMoveSpeedMultiplier) + specialMoveSpeedAdd;
+        moveSpeed = (moveSpeed * specialMoveSpeedMultiplier * speedBuffMultiplier) + specialMoveSpeedAdd;
         moveSpeed = Mathf.Max(0f, moveSpeed);
 
         AttackPerSecond = Mathf.Max(
