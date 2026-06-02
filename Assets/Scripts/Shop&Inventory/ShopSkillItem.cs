@@ -10,7 +10,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
     [SerializeField] private AudioClip purchaseSuccessClip;
     [SerializeField] private AudioClip purchaseFailClip;
 
-    [Header("µ¥ÀÌÅÍ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private SkillData[] skillPool;
 
     [Header("UI")]
@@ -68,7 +68,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
             iconImage.sprite = currentSkill.icon;
 
         if (priceText != null) 
-            priceText.text = "Skill\n"+ GetFinalPrice().ToString()+"G";
+            priceText.text = ""+ GetFinalPrice().ToString()+"G";
     }
 
     private void RefreshPriceUI()
@@ -76,7 +76,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         if (priceText == null) return;
         if (currentSkill == null) return;
 
-        priceText.text = "Skill\n" + GetFinalPrice().ToString() + "G";
+        priceText.text = "" + GetFinalPrice().ToString() + "G";
     }
     public void Interact(PlayerController player)
     {
@@ -91,21 +91,21 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
 
         int finalPrice = GetFinalPrice();
 
-        // 1. µ· ºÎÁ·
+        // 1. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (p.Gold < finalPrice)
         {
-            ItemUIManager.Instance?.ShowAlertMessage("µ·ÀÌ ºÎÁ·ÇÕ´Ï´Ù.", false);
+            ItemUIManager.Instance?.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.", false);
             PlayIndependent(purchaseFailClip);
             return;
         }
 
-        // 2. ±¸¸Å ¼º°ø
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         p.Gold -= finalPrice;
 
         HandleSkillAcquire(currentSkill);
 
-        // 3. ¼º°ø UI
-        ItemUIManager.Instance?.ShowAlertMessage("±¸¸Å ¼º°ø!", false);
+        // 3. ï¿½ï¿½ï¿½ï¿½ UI
+        ItemUIManager.Instance?.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!", false);
         PlayIndependent(purchaseSuccessClip);
 
         gameObject.SetActive(false);
@@ -114,7 +114,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
     {
         SkillManager sm = SkillManager.Instance;
 
-        // 1. °°Àº ½ºÅ³ ÀÖÀ½ ¡æ ¹«Á¶°Ç ¾÷±Û (ÃÖ¿ì¼±)
+        // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ö¿ì¼±)
         if (sm.qSkill == skill)
         {
             sm.EquipSkill(skill, SkillSlotType.Q);
@@ -127,21 +127,21 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
             return;
         }
 
-        // 2. Q ºñ¾îÀÖÀ½ ¡æ Q ÀåÂø
+        // 2. Q ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Q ï¿½ï¿½ï¿½ï¿½
         if (sm.qSkill == null)
         {
             sm.EquipSkill(skill, SkillSlotType.Q);
             return;
         }
 
-        // 3. E ºñ¾îÀÖÀ½ ¡æ E ÀåÂø
+        // 3. E ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ E ï¿½ï¿½ï¿½ï¿½
         if (sm.eSkill == null)
         {
             sm.EquipSkill(skill, SkillSlotType.E);
             return;
         }
 
-        // 4. µÑ ´Ù ÀÖ°í ´Ù¸¥ ½ºÅ³ ¡æ ¼±ÅÃ UI
+        // 4. ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½Å³ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ UI
         OpenReplaceUI(skill);
     }
     private void OpenReplaceUI(SkillData skill)
@@ -158,7 +158,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         if (ItemUIManager.Instance == null) return;
         if (currentSkill == null) return;
 
-        ItemUIManager.Instance.ShowShopInteract(this, null); // À§Ä¡ UI À¯Áö¿ë
+        ItemUIManager.Instance.ShowShopInteract(this, null); // ï¿½ï¿½Ä¡ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         ItemUIManager.Instance.ShowShopSkillTooltip(currentSkill);
     }

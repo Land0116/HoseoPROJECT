@@ -27,7 +27,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     [Range(1, 3)]
     public int currentStage = 1;
 
-    [Header("Æ÷¼Ç ¾ÆÀÌÄÜ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private Sprite potion25Icon;
     [SerializeField] private Sprite potion50Icon;
     [SerializeField] private Sprite potion75Icon;
@@ -60,7 +60,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     }
 
     // =========================
-    // Interact (±¸¸Å ÇÙ½É)
+    // Interact (ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½)
     // =========================
     public void Interact(PlayerController player)
     {
@@ -69,28 +69,28 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         int finalPrice = GetFinalPrice();
 
         // =========================
-        // 1. µ· ºÎÁ· ¡æ ±¸¸Å ½ÇÆÐ
+        // 1. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // =========================
         if (player.Gold < finalPrice)
         {
-            ItemUIManager.Instance?.ShowAlertMessage("µ·ÀÌ ºÎÁ·ÇÕ´Ï´Ù.", false);
+            ItemUIManager.Instance?.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.", false);
             PlayIndependent(purchaseFailSound);
             return;
         }
 
         // =========================
-        // 2. ¿¹¿Ü ¹æ¾î
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         // =========================
         if (!isPotion && currentItem == null)
             return;
 
         // =========================
-        // 3. °ñµå Â÷°¨ (±¸¸Å È®Á¤)
+        // 3. ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½)
         // =========================
         player.Gold -= finalPrice;
 
         // =========================
-        // 4. ¾ÆÀÌÅÛ Áö±Þ
+        // 4. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // =========================
         if (isPotion)
         {
@@ -102,7 +102,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
             if (!equipSuccess)
             {
-                // ÀÎº¥ ²ËÂü ¡æ ¹Ù´Ú µå¶ø (UI´Â ¾È ¶ç¿ò)
+                // ï¿½Îºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù´ï¿½ ï¿½ï¿½ï¿½ (UIï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½)
                 SpawnWorldItem(currentItem);
             }
             else
@@ -112,16 +112,16 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         // =========================
-        // 5. ±¸¸Å ¼º°ø (´ÜÀÏ ¸Þ½ÃÁö)
+        // 5. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½)
         // =========================
-        ItemUIManager.Instance?.ShowAlertMessage("±¸¸Å ¼º°ø!", false);
+        ItemUIManager.Instance?.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!", false);
         PlayIndependent(purchaseSuccessSound);
 
         gameObject.SetActive(false);
     }
 
     // =========================
-    // ¾ÆÀÌÅÛ Àû¿ë (ÇÙ½É ±¸Á¶)
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     // =========================
     private void ApplyItem(PlayerController player)
     {
@@ -131,7 +131,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         if (!success)
         {
-            Debug.Log("[ShopItem] ÀÎº¥Åä¸® °¡µæÂü ¡æ ¾ÆÀÌÅÛ ¿ùµå »ý¼º");
+            Debug.Log("[ShopItem] ï¿½Îºï¿½ï¿½ä¸® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             PlayIndependent(purchaseSuccessSound);
             SpawnWorldItem(itemToGive);
         }
@@ -142,13 +142,13 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     }
 
     // =========================
-    // ¿ùµå µå¶ø
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     // =========================
     private void SpawnWorldItem(ItemData item)
     {
         if (worldItemPrefab == null)
         {
-            Debug.LogError("worldItemPrefab ¾øÀ½");
+            Debug.LogError("worldItemPrefab ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -158,17 +158,17 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         if (pickup == null)
         {
-            Debug.LogError("ItemPickup ¾øÀ½ (ÇÁ¸®ÆÕ È®ÀÎ)");
+            Debug.LogError("ItemPickup ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½)");
             return;
         }
 
         pickup.SetItemData(item);
 
-        Debug.Log($"[ShopItem] ¾ÆÀÌÅÛ µå¶ø »ý¼º = {item.itemName}");
+        Debug.Log($"[ShopItem] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ = {item.itemName}");
     }
 
     // =========================
-    // Æ÷¼Ç
+    // ï¿½ï¿½ï¿½ï¿½
     // =========================
     private void ApplyPotion(PlayerController player)
     {
@@ -177,7 +177,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     }
 
     // =========================
-    // ¾ÆÀÌÅÛ »ý¼º
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     // =========================
     public void GenerateItem()
     {
@@ -285,7 +285,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     {
         if (ItemUIManager.Instance == null)
         {
-            Debug.LogError("ItemUIManager°¡ ¾ÆÁ÷ »ý¼ºµÇÁö ¾ÊÀ½");
+            Debug.LogError("ItemUIManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -296,18 +296,18 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
             if (potionHealPercent == 0.25f)
             {
-                name = "ÇÏ±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 25% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½Ï±ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 25% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.5f)
             {
-                name = "Áß±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 50% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½ß±ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 50% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.75f)
             {
-                name = "»ó±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 75% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 75% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
 
             ItemUIManager.Instance.ShowShopInteract(
@@ -318,7 +318,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
             return;
         }
 
-        // ÀÏ¹Ý ¾ÆÀÌÅÛÀÏ ¶§
+        // ï¿½Ï¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         if (currentItem == null) return;
 
         ItemUIManager.Instance.ShowShopInteract(
@@ -331,7 +331,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     {
         if (ItemUIManager.Instance == null)
         {
-            Debug.LogError("ItemUIManager°¡ ¾ÆÁ÷ »ý¼ºµÇÁö ¾ÊÀ½");
+            Debug.LogError("ItemUIManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -342,21 +342,21 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
             if (potionHealPercent == 0.25f)
             {
-                name = "ÇÏ±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 25% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½Ï±ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 25% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.5f)
             {
-                name = "Áß±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 50% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½ß±ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 50% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.75f)
             {
-                name = "»ó±Þ Ã¼·Â È¸º¹ Æ÷¼Ç";
-                desc = "ÇöÀç Ã¼·ÂÀ» 75% È¸º¹ÇÑ´Ù.";
+                name = "ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+                desc = "ï¿½ï¿½ï¿½ï¿½ Ã¼ï¿½ï¿½ï¿½ï¿½ 75% È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
 
-            /*ItemUIManager.Instance.ShowShopInteract( //* ¼öÁ¤ ÇÊ¿ä
+            /*ItemUIManager.Instance.ShowShopInteract( //* ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
                 this,
                 $"[{name}]\n{desc}"
             );
@@ -376,7 +376,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         descText += GetStatText();
 
-        /*ItemUIManager.Instance.ShowShopInteract( //* ¼öÁ¤ ÇÊ¿ä
+        /*ItemUIManager.Instance.ShowShopInteract( //* ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
             this,
             descText
         );
@@ -385,34 +385,34 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     {
         if (ItemUIManager.Instance == null)
         {
-            Debug.LogError("ItemUIManager°¡ ¾ÆÁ÷ »ý¼ºµÇÁö ¾ÊÀ½");
+            Debug.LogError("ItemUIManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (isPotion)
         {
             string title = "";
-            string category = "È¸º¹ ¾ÆÀÌÅÛ";
+            string category = "È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
             string effect = "";
             string desc = "";
 
             if (potionHealPercent == 0.25f)
             {
-                title = "ÇÏ±Þ Æ÷¼Ç";
+                title = "ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½";
                 effect = "25%";
-                desc = "Ã¼·ÂÀ» Á¶±Ý È¸º¹ÇÑ´Ù.";
+                desc = "Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.5f)
             {
-                title = "Áß±Þ Æ÷¼Ç";
+                title = "ï¿½ß±ï¿½ ï¿½ï¿½ï¿½ï¿½";
                 effect = "50%";
-                desc = "Ã¼·ÂÀ» È¸º¹ÇÑ´Ù.";
+                desc = "Ã¼ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
             else if (potionHealPercent == 0.75f)
             {
-                title = "°í±Þ Æ÷¼Ç";
+                title = "ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
                 effect = "75%";
-                desc = "Ã¼·ÂÀ» ¸¹ÀÌ È¸º¹ÇÑ´Ù.";
+                desc = "Ã¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½Ñ´ï¿½.";
             }
 
             ItemUIManager.Instance.ShowShopInteract(this, null);
@@ -423,8 +423,8 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
 
         if (currentItem == null) return;
 
-        ItemUIManager.Instance.ShowShopInteract(this, null); // À§Ä¡ UI È°¼ºÈ­
-        ItemUIManager.Instance.ShowShopItemTooltip(currentItem); // ÇÙ½É ¿¬°á
+        ItemUIManager.Instance.ShowShopInteract(this, null); // ï¿½ï¿½Ä¡ UI È°ï¿½ï¿½È­
+        ItemUIManager.Instance.ShowShopItemTooltip(currentItem); // ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     private string GetStatText()
@@ -434,16 +434,16 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         
 
         if (currentItem.damage != 0)
-            desc += FormatStat("µ¥¹ÌÁö", currentItem.damage);
+            desc += FormatStat("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", currentItem.damage);
 
         if (currentItem.moveSpeed != 0)
-            desc += FormatStat("ÀÌµ¿¼Óµµ", currentItem.moveSpeed);
+            desc += FormatStat("ï¿½Ìµï¿½ï¿½Óµï¿½", currentItem.moveSpeed);
 
         if (currentItem.hp != 0)
-            desc += FormatStat("Ã¼·Â", currentItem.hp);
+            desc += FormatStat("Ã¼ï¿½ï¿½", currentItem.hp);
 
         if (currentItem.bulletRate != 0)
-            desc += FormatStat("°ø°Ý¼Óµµ", currentItem.bulletRate);
+            desc += FormatStat("ï¿½ï¿½ï¿½Ý¼Óµï¿½", currentItem.bulletRate);
 
         return desc;
     }
@@ -475,14 +475,14 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
     private void RefreshPriceUI()
     {
         if (priceText == null) return;
-        priceText.text = "Item\n" + GetFinalPrice().ToString() + "G";
+        priceText.text = "" + GetFinalPrice().ToString() + "G";
     }
 
     private bool RollPremium()
     {
         PlayerController player = PlayerController.Instance;
 
-        float basePremiumChance = 0.2f; // ¿¹½Ã (¿ø·¡ 20%)
+        float basePremiumChance = 0.2f; // ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ 20%)
 
         float bonus = 0f;
 

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 {
-    [Header("µ¥ÀÌÅÍ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private AugmentationSystem[] augmentPool;
 
     [Header("UI")]
@@ -44,13 +44,13 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
         price = currentAugment.goldCost;
 
-        // UI Àû¿ë
+        // UI ï¿½ï¿½ï¿½ï¿½
         if (iconImage != null)
             iconImage.sprite = currentAugment.icon;
 
         RefreshPriceUI();
         if (priceText != null)
-            priceText.text = "Aug\n" + GetFinalPrice().ToString() + "G";
+            priceText.text = "" + GetFinalPrice().ToString() + "G";
 
     }
 
@@ -67,15 +67,15 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         int finalPrice = GetFinalPrice();
 
         // =========================
-        // 1. µ· ºÎÁ·
+        // 1. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // =========================
         if (player.Gold < finalPrice)
         {
-            Debug.Log("°ñµå ºÎÁ·");
+            Debug.Log("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
             if (ItemUIManager.Instance != null)
             {
-                ItemUIManager.Instance.ShowAlertMessage("µ·ÀÌ ºÎÁ·ÇÕ´Ï´Ù.", false);
+                ItemUIManager.Instance.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.", false);
             }
 
             PlayIndependent(purchaseFailSound);
@@ -83,17 +83,17 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         // =========================
-        // 2. Áõ°­ Ãß°¡ ½Ãµµ
+        // 2. ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Ãµï¿½
         // =========================
         bool added = AugmentRunManager.Instance.TryAddAugment(currentAugment);
 
         if (!added)
         {
-            Debug.Log("Áõ°­ Ãß°¡ ½ÇÆÐ (½½·Ô °¡µæ)");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)");
 
             if (ItemUIManager.Instance != null)
             {
-                ItemUIManager.Instance.ShowAlertMessage("´õ ÀÌ»ó Áõ°­À» º¸À¯ÇÒ ¼ö ¾ø½À´Ï´Ù.", false);
+                ItemUIManager.Instance.ShowAlertMessage("ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.", false);
             }
 
             PlayIndependent(purchaseFailSound);
@@ -101,13 +101,13 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         }
 
         // =========================
-        // 3. ±¸¸Å ¼º°ø
+        // 3. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // =========================
         player.Gold -= finalPrice;
 
         if (ItemUIManager.Instance != null)
         {
-            ItemUIManager.Instance.ShowAlertMessage("±¸¸Å ¼º°ø!", false);
+            ItemUIManager.Instance.ShowAlertMessage("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!", false);
         }
 
         PlayIndependent(purchaseSuccessSound);
@@ -117,14 +117,14 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
             AugUIManager.instance.RefreshOwnedAugmentUI();
         }
 
-        Debug.Log("±¸¸Å ¼º°ø: " + currentAugment.augmentationName);
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: " + currentAugment.augmentationName);
 
         AfterPurchase();
     }
 
     private void AfterPurchase()
     {
-        // ¹æ¹ý 1: ±×³É »ç¶óÁö°Ô
+        // ï¿½ï¿½ï¿½ 1: ï¿½×³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         gameObject.SetActive(false);
 
         
@@ -154,7 +154,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
     {
         if (ItemUIManager.Instance == null)
         {
-            Debug.LogError("ItemUIManager°¡ ¾ÆÁ÷ »ý¼ºµÇÁö ¾ÊÀ½");
+            Debug.LogError("ItemUIManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -192,7 +192,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
         if (priceText == null) return;
         if (currentAugment == null) return;
 
-        priceText.text = "Aug\n" + GetFinalPrice().ToString() + "G";
+        priceText.text = "" + GetFinalPrice().ToString() + "G";
     }
     private string GetAugmentDescription(AugmentationSystem augment)
     {

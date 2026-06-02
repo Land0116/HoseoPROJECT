@@ -298,7 +298,7 @@ MonoBehaviour:
   animDirection: {x: 0, y: -1}
   lockedAttackAimDirection: {x: 0, y: -1}
   isHitAnimating: 0
-  hitInvincibleDuration: 0.6
+  hitInvincibleDuration: 0.15
   ignoreDamageWhileHit: 1
   lastMoveDirection: {x: 0, y: -1}
   dashDistance: 5
@@ -403,9 +403,9 @@ MonoBehaviour:
   gunTip: {fileID: 6879044860308773687}
   deathUIShowDelay: 0.75
   shadowVisual: {fileID: 1711830842978373244}
-  bugMasterEnabled: 0
+  bugMasterDamageEnabled: 0
   bugMasterDamageAdd: 100
-  bugMasterInvincible: 1
+  bugMasterInvincibleEnabled: 0
 --- !u!50 &5864595452075051824
 Rigidbody2D:
   serializedVersion: 5

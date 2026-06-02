@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: 69812b9b45544094d9ed508ba1bf5fd7
+guid: 6b6cab0cfa9b0a942bd6a8befe214187
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -979351779879458722
-    second: circular_sector_3_0
-  - first:
-      213: 8829166022689086292
-    second: circular_sector_3_1
-  - first:
-      213: -561956998511379235
-    second: circular_sector_3_2
+      213: -5865665082893662984
+    second: PriceTag_4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -90,19 +84,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: Standalone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -117,6 +98,19 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -184,23 +178,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: circular_sector_3_0
+      name: PriceTag_4_0
       rect:
         serializedVersion: 2
-        x: 50
-        y: 35
-        width: 456
-        height: 467
+        x: 3
+        y: 0
+        width: 663
+        height: 377
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e58632abeb4a862f0800000000000000
-      internalID: -979351779879458722
+      spriteID: 8f406ba4fa8f89ea0800000000000000
+      internalID: -5865665082893662984
       vertices: []
       indices: 
       edges: []
@@ -209,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 8947493b4e5cbcd4bb2d4a035ae310b9
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -219,9 +213,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      circular_sector_3_0: -979351779879458722
-      circular_sector_3_1: 8829166022689086292
-      circular_sector_3_2: -561956998511379235
+      PriceTag_4_0: -5865665082893662984
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
