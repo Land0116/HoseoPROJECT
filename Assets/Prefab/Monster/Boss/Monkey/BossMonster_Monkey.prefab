@@ -289,7 +289,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 2.3
+  m_Radius: 2
 --- !u!114 &22526311254954121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,7 +302,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
+  forceADCDeathDuration: 0
   loopMove: 0
+  blockMovement: 0
   attackAnimationX2: 0
   normalAttackAnimSpeed: 1
   x2AttackAnimSpeed: 2
@@ -353,6 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Attack_BossDashCombo
   blockMovement: 0
+  dashKnockbackForce: 0.2
   audioSource: {fileID: 8185819640412817495}
   dash1Sound: {fileID: 8300000, guid: e538ae280ae7fc94781ce0cc37e3253c, type: 3}
   dash2Sound: {fileID: 8300000, guid: 9cda19469e5f76041b06abbd164b5e70, type: 3}

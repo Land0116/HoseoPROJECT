@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class Attack_BossDashCombo : AttackPattern
 {
+    [SerializeField] private float dashKnockbackForce = 1.2f;
+
+    private bool hasHitPlayerDuringDash = false;
+
     [Header("Sound")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip dash1Sound;
@@ -121,6 +125,9 @@ public class Attack_BossDashCombo : AttackPattern
 
     private IEnumerator Dash(Transform player, float damage, int dashIndex) //* 0601
     {
+        currentDashDamage = damage;
+        hasHitPlayerDuringDash = false;// end
+
         Vector2 startPos = monster.RB.position;
         Vector2 targetPos = player.position;
 
@@ -187,19 +194,7 @@ public class Attack_BossDashCombo : AttackPattern
 
             yield return new WaitForFixedUpdate();
         }
-        /*Vector2 lastPos = monster.RB.position;
-
-        while (true)
-        {
-            Vector2 nextPos = monster.RB.position + dir * dashSpeed * Time.fixedDeltaTime;
-            monster.RB.MovePosition(nextPos);
-
-            if (Vector2.Distance(nextPos, dashTarget) <= 0.1f) break;
-
-            if (Vector2.Dot(dashTarget - monster.RB.position, dir) <= 0f) break;
-
-            yield return new WaitForFixedUpdate();
-        }*/
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -210,7 +205,17 @@ public class Attack_BossDashCombo : AttackPattern
 
         if (collision.TryGetComponent<IDamageable>(out var dmg))
         {
-            dmg.OnDamage(currentDashDamage); // Dash 데미지 적용
+            dmg.OnDamage(currentDashDamage);
+        }
+
+
+        PlayerController player = collision.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            Vector2 knockDir = ((Vector2)collision.transform.position - monster.RB.position).normalized;
+
+            float knockbackForce = dashKnockbackForce;
+            player.ApplyKnockback(knockDir * knockbackForce);
         }
     }
 
