@@ -227,8 +227,7 @@ MonoBehaviour:
   leftDoorObject: {fileID: 5670172376066601511}
   animator: {fileID: 1251544637531166396}
   openAnimationType: 1
-  doorBlockColliders:
-  - {fileID: -7024196848459402390}
+  doorBlockCollider: {fileID: -7024196848459402390}
 --- !u!114 &-2905326461840529806
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,7 +252,7 @@ MonoBehaviour:
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  fadeRadius: 1.2
+  fadeRadius: 2
   fadeSoftness: 0.35
   innerAlpha: 0.25
   fadeCenterOffset: {x: 0, y: 0.35}
