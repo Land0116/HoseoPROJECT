@@ -9047,7 +9047,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2549401049774206700, guid: 450e9d2b9931e64459e4da61d513a055, type: 3}
       propertyPath: m_SortingOrder
-      value: 11
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 8472937969189091080, guid: 450e9d2b9931e64459e4da61d513a055, type: 3}
       propertyPath: m_Name
@@ -21818,7 +21818,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8337296703788063632, guid: b836a881db09e1741b65ec0ac7b1673a, type: 3}
       propertyPath: m_SortingOrder
-      value: 12
+      value: 97
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -23205,7 +23205,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4886314286761645209, guid: 8d5e1b246bd66894fb8663a96bdeadcb, type: 3}
       propertyPath: m_SortingOrder
-      value: 14
+      value: 98
       objectReference: {fileID: 0}
     - target: {fileID: 5385176735473420043, guid: 8d5e1b246bd66894fb8663a96bdeadcb, type: 3}
       propertyPath: m_Name
@@ -34988,6 +34988,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1248239573}
     m_Modifications:
+    - target: {fileID: 2018233069068170190, guid: 5e34a4f572d13bb44ad910fc6b8fd360, type: 3}
+      propertyPath: m_SortingOrder
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5323784412404295774, guid: 5e34a4f572d13bb44ad910fc6b8fd360, type: 3}
       propertyPath: m_Name
       value: Wall_3_Right
