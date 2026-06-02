@@ -510,6 +510,10 @@ public class PlayerUIManager : MonoBehaviour
 
     private void UpdateDashCooldownUI()
     {
+        // 대쉬 아이콘 패널은 플레이 중 항상 보이게 유지
+        if (dashPanel != null)
+            dashPanel.SetActive(true);
+
         if (playerController == null)
         {
             HideDashCooldownUI();
@@ -518,7 +522,6 @@ public class PlayerUIManager : MonoBehaviour
 
         bool onCooldown = playerController.IsDashOnCooldown();
 
-        // 쿨타임이 아니면 숨김
         if (!onCooldown)
         {
             HideDashCooldownUI();
@@ -532,13 +535,13 @@ public class PlayerUIManager : MonoBehaviour
         // 쿨타임 끝 0
         float cooldownRemainRatio = playerController.GetDashCooldownRatio();
 
-        // 원하는 차오르는 게이지:
+        // 차오르는 게이지:
         // 대쉬 직후 0
         // 쿨타임 끝 1
         float fillRatio = 1f - cooldownRemainRatio;
         fillRatio = Mathf.Clamp01(fillRatio);
 
-        // 쿨타임 중에는 슬라이더 UI 보이기
+        // 게이지 UI만 켜기
         if (dashPanel_UI != null)
             dashPanel_UI.SetActive(true);
 
@@ -548,7 +551,7 @@ public class PlayerUIManager : MonoBehaviour
             dashCooldownSlider.value = fillRatio;
         }
 
-        // Overlay도 같이 차오르게 쓸 거면 fillRatio 사용
+        // 아이콘 위 쿨타임 오버레이를 같이 쓸 거면 이것도 켜기
         if (dashCooldownOverlay != null)
         {
             dashCooldownOverlay.gameObject.SetActive(true);
@@ -563,6 +566,11 @@ public class PlayerUIManager : MonoBehaviour
     }
     private void HideDashCooldownUI()
     {
+        // dashPanel은 아이콘 UI라서 끄면 안 됨
+        if (dashPanel != null)
+            dashPanel.SetActive(true);
+
+        // 게이지 UI만 숨김
         if (dashPanel_UI != null)
             dashPanel_UI.SetActive(false);
 
@@ -584,7 +592,6 @@ public class PlayerUIManager : MonoBehaviour
             dashCooldownText.gameObject.SetActive(false);
         }
     }
-
 
 
     /// <summary>
@@ -764,9 +771,6 @@ public class PlayerUIManager : MonoBehaviour
         if (dashPanelTr != null)
         {
             dashPanel = dashPanelTr.gameObject;
-
-            // dashPanel_UI를 따로 안 쓰고 DashPanel 자체를 쿨타임 UI 패널로 사용
-            dashPanel_UI = dashPanel;
 
             dashIcon = UIManager.FindChildRecursive(dashPanelTr, "DashIcon")?.GetComponent<Image>();
             dashCooldownOverlay = UIManager.FindChildRecursive(dashPanelTr, "DashCooldownOverlay")?.GetComponent<Image>();
