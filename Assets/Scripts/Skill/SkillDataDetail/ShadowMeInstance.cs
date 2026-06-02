@@ -13,7 +13,7 @@ public class ShadowMeInstance : MonoBehaviour
     private float duration;
 
     private float attackInterval = 1f;
-    private float range = 5f;
+    private float range = 15f;
 
     [SerializeField] private GameObject bulletPrefab;
 

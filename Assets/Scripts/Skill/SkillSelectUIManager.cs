@@ -156,10 +156,17 @@ public class SkillSelectUIManager : MonoBehaviour
              closeSkillButton.gameObject.SetActive(!isRewardMode);
          }
 
-        List<SkillData> randomSkills = skillDatabase
+        /*List<SkillData> randomSkills = skillDatabase
             .OrderBy(x => Random.value)
             .Take(2)
-            .ToList();
+            .ToList();*/
+        List<SkillData> randomSkills = skillDatabase
+    .Where(s => s != SkillManager.Instance.qSkill &&
+                s != SkillManager.Instance.eSkill)
+    .OrderBy(x => Random.value)
+    .Distinct()
+    .Take(2)
+    .ToList();
 
         for (int i = 0; i < buttons.Length; i++)
         {
