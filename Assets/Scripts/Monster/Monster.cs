@@ -7,6 +7,7 @@ public class Monster : MonoBehaviour, IDamageable
     private Transform player;
     [Header("몬스터 이동중 다른애니메이션 표시 x")]
     private bool isInAttackAnimation = false;
+    [HideInInspector] public bool forceADCDeathDuration = false; //탱크 죽음
 
     [Header("Movement Animation")]
     [SerializeField] private bool loopMove = false;
@@ -135,6 +136,8 @@ public class Monster : MonoBehaviour, IDamageable
     public bool ignoreHitAnimation = false;
 
     private bool isForceDead = false;
+
+    private bool forceAnimationRefresh;
 
     private void OnEnable()
     {
@@ -326,25 +329,42 @@ public class Monster : MonoBehaviour, IDamageable
         {
             PlayerController.Instance.OnKillEnemy();
         }
-        // 애니메이션 있으면 재생
-        /*if (animator != null)
-        {
-            Vector2 dir = lastLookDir;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            string anim = GetDirectionName(angle) + "_Death";
 
-            animator.Play(anim, 0, 0f);
+        /* if (animator != null)
+         {
+             if (forceFrontDeath)
+             {
 
-            StartCoroutine(DeathFallbackRoutine());
-        }*/
-        if (animator != null)
+                 animator.Play("Front_Death", 0, 0.1f);
+                 StartCoroutine(DeathRoutine(frontDeathAnimationTime));
+
+             }
+             else
+             {
+                 Vector2 dir = lastLookDir;
+                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                 string anim = GetDirectionName(angle) + "_Death";
+
+                 animator.Play(anim, 0, 0f);
+                 StartCoroutine(DeathRoutine(deathAnimationTime));
+
+             }
+         }
+         else
+         {
+             FinishDeath();
+         }*/
+        if (animator != null) // end
         {
+            float deathTime = deathAnimationTime;
+
+            if (forceADCDeathDuration)
+                deathTime = 1.5f;
+
             if (forceFrontDeath)
             {
-
                 animator.Play("Front_Death", 0, 0.1f);
-                StartCoroutine(DeathRoutine(frontDeathAnimationTime));
-
+                StartCoroutine(DeathRoutine(deathTime));
             }
             else
             {
@@ -353,17 +373,13 @@ public class Monster : MonoBehaviour, IDamageable
                 string anim = GetDirectionName(angle) + "_Death";
 
                 animator.Play(anim, 0, 0f);
-                StartCoroutine(DeathRoutine(deathAnimationTime));
-
+                StartCoroutine(DeathRoutine(deathTime));
             }
-
-            //StartCoroutine(DeathFallbackRoutine());
-        }
-        else
-        {
-            FinishDeath();
         }
     }
+
+
+
     private IEnumerator DeathRoutine(float time)
     {
         yield return new WaitForSeconds(time);
@@ -468,9 +484,9 @@ public class Monster : MonoBehaviour, IDamageable
 
         FindAnyObjectByType<BossSpawner>()?.NotifyBossDead();
     }
-    
-    
-    private void UpdateAnimation(Vector2 dir, bool isMoving)
+
+
+    /*private void UpdateAnimation(Vector2 dir, bool isMoving) //* end
     {
         if (forcePlayAnimation) return;//공주 인형
         if (isInAttackAnimation) return; //* 0601
@@ -493,6 +509,38 @@ public class Monster : MonoBehaviour, IDamageable
             PlayAnim(anim + "_Walk");
         else
             PlayAnim(anim + "_Idle");
+    }*/
+    // UpdateAnimation 함수 수정
+    private void UpdateAnimation(Vector2 dir, bool isMoving)
+    {
+        if (forcePlayAnimation) return;
+        if (isInAttackAnimation) return;
+        if (isAnimationLocked) return;
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(lastLookDir.y, lastLookDir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle);
+
+        string targetAnim;
+
+        if (loopMove)
+        {
+            targetAnim = anim + "_Walk";
+        }
+        else
+        {
+            targetAnim = isMoving ? anim + "_Walk" : anim + "_Idle";
+        }
+
+        if (forceAnimationRefresh)
+        {
+            currentAnim = "";
+            forceAnimationRefresh = false;
+        }
+
+        PlayAnim(targetAnim);
     }
 
     public string GetDirectionName(float angle)
@@ -890,5 +938,44 @@ public class Monster : MonoBehaviour, IDamageable
         currentAnim = animName;
         animator.Play(animName);
     }
+
+
+    public void PlayAttackPreAnimation(Vector2 dir)
+    {
+        if (isHit) return;
+
+        isInAttackAnimation = true;
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(lastLookDir.y, lastLookDir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Attack_Pre";
+
+        currentAnim = ""; // 핵심
+        animator.Play(anim, 0, 0f);
+    }
+
+
+    public void PlayAttackFireAnimation(Vector2 dir)
+    {
+        if (isHit) return;
+
+        if (dir.magnitude > 0.01f)
+            lastLookDir = dir;
+
+        float angle = Mathf.Atan2(lastLookDir.y, lastLookDir.x) * Mathf.Rad2Deg;
+        string anim = GetDirectionName(angle) + "_Attack";
+
+        currentAnim = ""; // 핵심
+        animator.Play(anim, 0, 0f);
+    }
+
+    public void ForceAnimationRefresh()
+    {
+        currentAnim = "";
+        animator.Play("Empty", 0, 0f);
+    }
+    
 }
 

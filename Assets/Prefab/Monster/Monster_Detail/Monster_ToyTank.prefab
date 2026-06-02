@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9176122009169712612, guid: 541570e8aec92cd438e40b2cff6610fd, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -217,8 +217,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 21
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Sprite: {fileID: 1817673885562059765, guid: bbe06a10dbab131459ab9f46bfa88c10, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -240,6 +240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
   loopMove: 0
+  blockMovement: 0
   attackAnimationX2: 0
   normalAttackAnimSpeed: 1
   x2AttackAnimSpeed: 2
@@ -293,6 +294,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4330386028504437596, guid: 5f4f401231dce9c4f83f88bb5dc0d187, type: 3}
   fireRate: 2
   attackRange: 13
+  preDelay: 0.3
 --- !u!58 &1100845049900730700
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -328,7 +330,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.7
+  m_Radius: 1
 --- !u!114 &8327386214904472354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -341,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
-  loopMove: 0
+  loopMove: 1
 --- !u!50 &7405641069116044333
 Rigidbody2D:
   serializedVersion: 5
@@ -379,7 +381,7 @@ Animator:
   m_GameObject: {fileID: 5733596665570298416}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 00223f8cedb8bf8488f4b933788b04a9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
