@@ -3,6 +3,15 @@ using UnityEngine;
 
 public class PrincessDollAttack : AttackPattern
 {
+    [SerializeField] private GameObject rightDashEffectPrefab;
+    [SerializeField] private GameObject backDashEffectPrefab;
+    [SerializeField] private GameObject leftDashEffectPrefab;
+    [SerializeField] private GameObject frontDashEffectPrefab;
+    private bool dashEffectSpawnedOnce;
+    [Header("Dash Directional Effect Delay (Grouped)")]
+    [SerializeField] private float frontBackEffectDelay = 0f;
+    [SerializeField] private float leftRightEffectDelay = 0f;
+
     [Header("Sound")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip dashSound;
@@ -31,7 +40,7 @@ public class PrincessDollAttack : AttackPattern
     private float dashTimer;
     private float dashPauseTimer;
     private float patternCooldownTimer;
-
+    
     private bool dashHit;
     private bool isDashing;
     private bool isTelegraphing = false;
@@ -68,7 +77,11 @@ public class PrincessDollAttack : AttackPattern
     [SerializeField] private float explosionUnitRadius = 1.5f;
 
     [SerializeField] private GameObject dashTelegraphPrefab;
+    private bool attackPlayedThisDash;
 
+    [SerializeField] private float attackAnimLockTime = 0.4f;
+    private float attackAnimLockTimer;
+    private bool justEnteredDash;
     private enum State
     {
         Idle,
@@ -96,90 +109,129 @@ public class PrincessDollAttack : AttackPattern
         switch (state)
         {
             case State.Idle:
-                blockMovement = false;
-                isDashing = false;
-
-                patternCooldownTimer -= Time.deltaTime;
-
-                if (dist <= detectRange && patternCooldownTimer <= 0f)
                 {
-                    dashCount = Random.Range(dashMinCount, dashMaxCount + 1);
-                    dashIndex = 0;
-                    dashTimer = 0f;
-                    dashPauseTimer = 0f;
+                    blockMovement = false;
+                    isDashing = false;
 
-                    state = State.Dash;
+                    patternCooldownTimer -= Time.deltaTime;
+
+                    if (dist <= detectRange && patternCooldownTimer <= 0f)
+                    {
+                        dashCount = Random.Range(dashMinCount, dashMaxCount + 1);
+                        dashIndex = 0;
+
+                        attackPlayedThisDash = false;
+                        attackAnimLockTimer = 0f;
+
+                        dashTimer = 0f;
+                        dashPauseTimer = 0f;
+
+                        justEnteredDash = true;
+
+                        state = State.Dash;
+                    }
                 }
                 break;
 
             case State.Dash:
-                blockMovement = true;
-
-                if (dashTimer <= 0f && !isTelegraphing)
                 {
-                    dashTarget = monster.Player.position;
-                    dashDir = ((Vector2)dashTarget - (Vector2)monster.transform.position).normalized;
-                    dashHit = false;
+                    blockMovement = true;
 
-                    float dashDistance = Vector2.Distance(monster.transform.position, dashTarget);
+                    if (justEnteredDash)
+                    {
+                        monster.SetAttackAnimationLock(true);
 
-                    StartCoroutine(DashTelegraphRoutine(dashDir, dashDistance));
-                    return;
-                }
+                        dashTarget = monster.Player.position;
+                        dashDir = ((Vector2)dashTarget - (Vector2)monster.transform.position).normalized;
+                        dashHit = false;
 
-                if (isTelegraphing)
-                    return;
+                        float dashDistance = Vector2.Distance(monster.transform.position, dashTarget);
 
-                isDashing = true;
+                        float angle = Mathf.Atan2(dashDir.y, dashDir.x) * Mathf.Rad2Deg;
+                        string anim = GetBossDirectionName(angle) + "_Attack";
 
-                dashTimer += Time.fixedDeltaTime;
+                        monster.PlaySimpleAttackAnim(anim);
 
-                Vector2 nextPos = monster.RB.position + dashDir * dashSpeed * Time.fixedDeltaTime;
-                monster.RB.MovePosition(nextPos);
+                        attackPlayedThisDash = true;
+                        attackAnimLockTimer = attackAnimLockTime;
 
-                if (dashTimer >= dashDuration)
-                {
-                    SpawnDashEffectNow(); // �뽬 �����ڸ��� ��� ����
+                        dashEffectSpawnedOnce = false;
 
-                    dashTimer = 0f;
-                    isDashing = false;
-                    state = State.DashPause;
+                        // 여기서 바로 생성 (대쉬 시작 전)
+                        SpawnDashDirectionalEffect();
+
+                        StartCoroutine(DashTelegraphRoutine(dashDir, dashDistance));
+
+                        justEnteredDash = false;
+                        return;
+                    }
+
+                    if (isTelegraphing)
+                        return;
+
+                    isDashing = true;
+
+                    dashTimer += Time.fixedDeltaTime;
+
+                    Vector2 nextPos = monster.RB.position + dashDir * dashSpeed * Time.fixedDeltaTime;
+                    monster.RB.MovePosition(nextPos);
+
+                    if (dashTimer >= dashDuration)
+                    {
+                        dashTimer = 0f;
+                        isDashing = false;
+
+                        monster.SetAttackAnimationLock(false);
+
+                        state = State.DashPause;
+                    }
                 }
                 break;
 
             case State.DashPause:
-                blockMovement = true;
-                isDashing = false;
-
-                dashPauseTimer += Time.deltaTime;
-
-                if (dashPauseTimer >= dashPauseTime)
                 {
-                    dashPauseTimer = 0f;
-                    //StartCoroutine(SpawnDashEffectNMow());//*
-                    dashIndex++;
+                    blockMovement = true;
+                    isDashing = false;
 
-                    if (dashIndex >= dashCount)
-                        state = State.Eight;
-                    else
-                        state = State.Dash;
+                    dashPauseTimer += Time.deltaTime;
+
+                    attackAnimLockTimer -= Time.deltaTime;
+
+                    if (attackAnimLockTimer <= 0f)
+                    {
+                        attackPlayedThisDash = false;
+                    }
+
+                    if (dashPauseTimer >= dashPauseTime)
+                    {
+                        dashPauseTimer = 0f;
+
+                        dashEffectSpawnedOnce = false;
+
+                        dashIndex++;
+
+                        if (dashIndex >= dashCount)
+                        {
+                            monster.SetAttackAnimationLock(false);
+                            state = State.Eight;
+                        }
+                        else
+                        {
+                            justEnteredDash = true;
+                            state = State.Dash;
+                        }
+                    }
                 }
                 break;
 
             case State.Eight:
-                /*blockMovement = true;
-
-                if (!isDashing)
-                {
-                    isDashing = true;
-                    StartCoroutine(EightDirectionAttack());
-                }
-                break;*/
                 blockMovement = true;
 
                 if (!isDashing)
                 {
                     isDashing = true;
+
+                    monster.SetAttackAnimationLock(true);
 
                     if (monster != null)
                     {
@@ -204,14 +256,9 @@ public class PrincessDollAttack : AttackPattern
                 break;
 
             case State.Explosion:
-                /*blockMovement = true;
-
-                StartCoroutine(ExplosionAttack());
-
-                patternCooldownTimer = explosionPatternCooldown;
-                state = State.Idle;
-                break;*/
                 blockMovement = true;
+
+                monster.SetAttackAnimationLock(true);
 
                 if (monster != null)
                 {
@@ -258,7 +305,20 @@ public class PrincessDollAttack : AttackPattern
         dashTimer = 0.0001f;
         isDashing = true;
     }
+    private IEnumerator ReturnToIdleAfterAttack()
+    {
 
+        yield return new WaitForSeconds(0.4f);
+
+        if (monster == null) yield break;
+
+        Vector2 dir = monster.GetLookDirection();
+
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        string anim = monster.GetDirectionName(angle) + "_Idle";
+
+        monster.PlaySimpleAttackAnim(anim);
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isDashing) return;
@@ -279,7 +339,6 @@ public class PrincessDollAttack : AttackPattern
     {
         Vector2 center = monster.transform.position;
 
-        // 1. ���� ����
         GameObject[] telegraphs = new GameObject[8];
 
         for (int i = 0; i < 8; i++)
@@ -305,10 +364,8 @@ public class PrincessDollAttack : AttackPattern
             telegraphs[i] = tele;
         }
 
-        // ���� �ð� ��ٸ� (���� fadeTime Ȱ��)
         yield return new WaitForSeconds(eightFadeTime);
 
-        // ���� ����
         for (int i = 0; i < telegraphs.Length; i++)
         {
             if (telegraphs[i] != null)
@@ -459,7 +516,23 @@ public class PrincessDollAttack : AttackPattern
 
         Destroy(obj.gameObject);
     }
+    private string GetBossDirectionName(float angle)
+    {
+        // SideR: 오른쪽 전체 (QBackR ~ QFrontR)
+        if (angle >= -67.5f && angle < 67.5f)
+            return "SideR";
 
+        // Back: 위쪽 전체 (QBackR ~ QBackL)
+        if (angle >= 67.5f && angle < 112.5f)
+            return "Back";
+
+        // SideL: 왼쪽 전체 (QBackL ~ QFrontL)
+        if (angle >= 112.5f || angle < -112.5f)
+            return "SideL";
+
+        // Front: 아래쪽 전체 (QFrontL ~ QFrontR)
+        return "Front";
+    }
     private void SpawnDashEffectNow()
     {
         if (dashEffectPrefab != null)
@@ -474,5 +547,72 @@ public class PrincessDollAttack : AttackPattern
 
             Destroy(obj, 0.2f);
         }
+    }
+    private void SpawnDashDirectionalEffect()
+    {
+        float angle = Mathf.Atan2(dashDir.y, dashDir.x) * Mathf.Rad2Deg;
+        string dirName = GetBossDirectionName(angle);
+
+        GameObject prefab = null;
+
+        switch (dirName)
+        {
+            case "SideR":
+                prefab = rightDashEffectPrefab;
+                break;
+
+            case "Back":
+                prefab = backDashEffectPrefab;
+                break;
+
+            case "SideL":
+                prefab = leftDashEffectPrefab;
+                break;
+
+            case "Front":
+                prefab = frontDashEffectPrefab;
+                break;
+        }
+
+        if (prefab != null)
+        {
+            Vector3 pos = monster.transform.position + dashEffectOffset;
+
+            GameObject obj = Instantiate(prefab, pos, Quaternion.identity);
+
+            if (audioSource != null && dashSound != null)
+            {
+                audioSource.PlayOneShot(dashSound);
+            }
+
+            Destroy(obj, 0.2f);
+        }
+    }
+    private IEnumerator SpawnDashEffectWithDelay()
+    {
+        float delay = GetDirectionalDelay();
+
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        SpawnDashDirectionalEffect();
+    }
+    private float GetDirectionalDelay()
+    {
+        float angle = Mathf.Atan2(dashDir.y, dashDir.x) * Mathf.Rad2Deg;
+        string dirName = GetBossDirectionName(angle);
+
+        switch (dirName)
+        {
+            case "Front":
+            case "Back":
+                return frontBackEffectDelay;
+
+            case "SideL":
+            case "SideR":
+                return leftRightEffectDelay;
+        }
+
+        return 0f;
     }
 }

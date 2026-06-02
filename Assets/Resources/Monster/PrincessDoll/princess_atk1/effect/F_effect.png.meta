@@ -1,0 +1,199 @@
+fileFormatVersion: 2
+guid: ef4d2bfad9f797441bd42e384c7b3df0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9527240303945173
+    second: F_effect_0
+  - first:
+      213: -798201917918603478
+    second: F_effect_1
+  - first:
+      213: -3578936506360532949
+    second: F_effect_2
+  - first:
+      213: -5934547267737811527
+    second: F_effect_3
+  - first:
+      213: 1528048606805721228
+    second: F_effect_4
+  - first:
+      213: -7492613407707348869
+    second: F_effect_5
+  - first:
+      213: -7936371009656173030
+    second: F_effect_6
+  - first:
+      213: -843981761602216607
+    second: F_effect_7
+  - first:
+      213: -7981290063839721104
+    second: F_effect_8
+  - first:
+      213: -591115060673693830
+    second: F_effect_9
+  - first:
+      213: 4969033169229412352
+    second: F_effect_10
+  - first:
+      213: -3590047851842116896
+    second: F_effect_11
+  - first:
+      213: 1934842888298756303
+    second: F_effect_12
+  - first:
+      213: -2702527007879192553
+    second: F_effect_13
+  - first:
+      213: 3684906531192715504
+    second: F_effect_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: F_effect_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1024
+        height: 1536
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e2eb48ef769d2ec0800000000000000
+      internalID: -3590047851842116896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b9e9f3f672e523f46a59bf0e67e1ae46
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      F_effect_0: -9527240303945173
+      F_effect_1: -798201917918603478
+      F_effect_10: 4969033169229412352
+      F_effect_11: -3590047851842116896
+      F_effect_12: 1934842888298756303
+      F_effect_13: -2702527007879192553
+      F_effect_14: 3684906531192715504
+      F_effect_2: -3578936506360532949
+      F_effect_3: -5934547267737811527
+      F_effect_4: 1528048606805721228
+      F_effect_5: -7492613407707348869
+      F_effect_6: -7936371009656173030
+      F_effect_7: -843981761602216607
+      F_effect_8: -7981290063839721104
+      F_effect_9: -591115060673693830
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

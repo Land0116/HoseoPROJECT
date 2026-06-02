@@ -506,7 +506,7 @@ public class Monster : MonoBehaviour, IDamageable
             PlayAnim(anim + "_Idle");
     }
 
-    private string GetDirectionName(float angle)
+    public string GetDirectionName(float angle)
     {
         if (angle >= -22.5f && angle < 22.5f)//¿À¸¥ÂÊ
             return "SideR";
