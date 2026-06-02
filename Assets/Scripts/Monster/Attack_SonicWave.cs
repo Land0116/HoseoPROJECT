@@ -134,7 +134,7 @@ public class Attack_SonicWave : AttackPattern
         Fire();
     }
 
-    private void Fire()
+    /*private void Fire()
     {
         DestroyTelegraph(); 
 
@@ -148,6 +148,34 @@ public class Attack_SonicWave : AttackPattern
             sonicPrefab,
             spawnPos,
             monster.transform.rotation * Quaternion.Euler(0, 0, 90f)
+        );
+
+        SonicWave wave = obj.GetComponent<SonicWave>();
+        if (wave != null)
+        {
+            wave.onDestroy += OnWaveEnd;
+            blockMovement = true;
+        }
+
+        isTracking = false;
+        isLocked = false;
+    }*/
+    private void Fire()
+    {
+        DestroyTelegraph();
+
+        if (monster == null) return;
+
+        monster.PlayAttackAnimation(lockedDir);
+
+        Vector3 spawnPos = attackOrigin + (Vector3)(lockedDir * 3f);
+
+        float angle = Mathf.Atan2(lockedDir.y, lockedDir.x) * Mathf.Rad2Deg;
+
+        GameObject obj = Object.Instantiate(
+            sonicPrefab,
+            spawnPos,
+            Quaternion.Euler(0f, 0f, angle + 90f)
         );
 
         SonicWave wave = obj.GetComponent<SonicWave>();

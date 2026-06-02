@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 8212230135559662859}
   - component: {fileID: 5236783233632876661}
   - component: {fileID: 4201045533758938128}
-  - component: {fileID: 767769241712529471}
   - component: {fileID: 7765766562761034559}
   - component: {fileID: -3164010655067040997}
   - component: {fileID: 4019550805505043258}
   - component: {fileID: 7539365174553017261}
+  - component: {fileID: 6522230669069988504}
   m_Layer: 12
   m_Name: Monster_Diono
   m_TagString: Monster
@@ -90,7 +90,7 @@ SpriteRenderer:
   m_SortingOrder: 21
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.75263727, g: 1, b: 0.4669811, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -147,7 +147,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c181591eb47f6c4993c68a874d21f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Monster
-  loopMove: 0
+  loopMove: 1
+  blockMovement: 1
   attackAnimationX2: 0
   normalAttackAnimSpeed: 1
   x2AttackAnimSpeed: 2
@@ -166,7 +167,7 @@ MonoBehaviour:
   bossRewardSpawnOffset: {x: 0, y: 0.5, z: 0}
   isBossMonster: 0
   dropRewardOnDeath: 1
-  attackPattern: {fileID: 767769241712529471}
+  attackPattern: {fileID: 6522230669069988504}
   movePattern: {fileID: 7765766562761034559}
   moveSpeed: 3
   maxHP: 40
@@ -185,27 +186,6 @@ MonoBehaviour:
   deathAnimationTime: 0.7
   lockBossFinalAttack: 0
   ignoreHitAnimation: 0
---- !u!114 &767769241712529471
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 925977744875747198}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b097c8761256f34783461f2fab161fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Attack_SonicWave
-  blockMovement: 0
-  sonicPrefab: {fileID: 8402585459488711915, guid: 57cd86fbcb4e10145be2376ac51ae741, type: 3}
-  attackRange: 5
-  cooldown: 0.7
-  rotateSpeed: 360
-  trackingTime: 0.7
-  fireDelay: 0.5
-  triangleTelegraphPrefab: {fileID: 9093591108808434859, guid: 3eb0ec62b0d354f48b82d6cca6a92e38, type: 3}
-  telegraphWidth: 3
 --- !u!114 &7765766562761034559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 898c7d03c03aab147b4b7e2d8c771c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveRandomly
-  loopMove: 0
+  loopMove: 1
 --- !u!50 &-3164010655067040997
 Rigidbody2D:
   serializedVersion: 5
@@ -353,7 +333,7 @@ Animator:
   m_GameObject: {fileID: 925977744875747198}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5060062d55de3f04bac845fcbe8aabc3, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -365,6 +345,24 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6522230669069988504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925977744875747198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 337ef30115908bf4f939e701fe502c99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Attack_SonicWave2
+  blockMovement: 0
+  sonicWavePrefab: {fileID: 5223530773310391956, guid: f46caf54234de134ba7962981ed0df62, type: 3}
+  attackRange: 8
+  cooldown: 2
+  spawnOffset: 3
+  AttackAnimationTime: 1
 --- !u!1 &9032851601889684516
 GameObject:
   m_ObjectHideFlags: 0
@@ -447,7 +445,7 @@ SpriteRenderer:
   m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

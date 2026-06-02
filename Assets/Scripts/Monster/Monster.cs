@@ -16,6 +16,8 @@ public class Monster : MonoBehaviour, IDamageable
     private bool forcePlayAnimation = false;
     private float forceAnimEndTime = 0f;
 
+    public bool blockMovement = false;
+
     [Header("Animation Speed")]
     [SerializeField] private bool attackAnimationX2 = false;
     [SerializeField] private float normalAttackAnimSpeed = 1f;
@@ -232,19 +234,6 @@ public class Monster : MonoBehaviour, IDamageable
         Vector2 currentPos = rb.position;
         Vector2 moveDir = (currentPos - lastPosition).normalized;
 
-        // 이동 중일 때만 방향 업데이트
-        /*if (!isAttacking && !isHit && !lockBossFinalAttack && !ignoreHitAnimation)//* 0529
-        {
-            if (moveDir.magnitude > 0.01f)
-            {
-                lastMoveDir = moveDir;
-                UpdateAnimation(moveDir, true);
-            }
-            else
-            {
-                UpdateAnimation(lastMoveDir, false);
-            }
-        }*/
         if (!isHit && !lockBossFinalAttack && !ignoreHitAnimation)
         {
             if (moveDir.magnitude > 0.01f)
@@ -262,7 +251,7 @@ public class Monster : MonoBehaviour, IDamageable
         {
             attackPattern.Execute();
 
-            if (!attackPattern.blockMovement && movePattern != null)
+            if (!attackPattern.blockMovement && !blockMovement && movePattern != null)
             {
                 movePattern.Execute();
             }
