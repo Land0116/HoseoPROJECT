@@ -107,7 +107,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShadowMeInstance
   animator: {fileID: 823176220231956193}
-  bulletPrefab: {fileID: 7233499852582160678, guid: 094c112e8c7dc7c4d86b62d08ac6267b, type: 3}
+  attackInterval: 1
+  range: 5
+  bulletPrefab: {fileID: 33401344934054971, guid: 2df8a4b864d0583439ada03a3c3799b2, type: 3}
+  bulletSpawnForwardOffset: 0.35
 --- !u!58 &627870469308875506
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -138,7 +141,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
