@@ -4,6 +4,11 @@ using UnityEngine;
 public class OccluderMultiCircleFade2D : MonoBehaviour
 {
     private const int MaxFadeTargets = 16;
+    private const int MaxOverlapResults = 32;
+
+    [Header("문 / 벽 스프라이트 루트")]
+    [Tooltip("StageDoor, WallRoot처럼 실제 가려지는 SpriteRenderer들이 들어있는 루트")]
+    [SerializeField] private Transform occluderRoot;
 
     [Header("페이드 대상 SpriteRenderer들")]
     [SerializeField] private SpriteRenderer[] targetRenderers;
@@ -12,26 +17,36 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
     [SerializeField] private Material fadeMaterial;
 
     [Header("감지 트리거")]
+    [Tooltip("문에 닿는 영역이 아니라, 플레이어/몬스터가 문 뒤에 가려질 가능성이 있는 전체 영역")]
     [SerializeField] private Collider2D fadeTrigger;
 
-    [Header("감지 대상 태그")]
+    [Header("감지 대상")]
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private string monsterTag = "Monster";
 
-    [Header("원형 페이드 설정")]
-    [SerializeField] private float fadeRadius = 1.2f;
+    [Tooltip("Player, Monster 레이어를 체크. 비워두면 모든 레이어 검사")]
+    [SerializeField] private LayerMask targetLayerMask = ~0;
 
-    [SerializeField] private float fadeSoftness = 0.35f;
+    [Header("원형 페이드 설정")]
+    [SerializeField] private float fadeRadius = 1.6f;
+    [SerializeField] private float fadeSoftness = 0.45f;
 
     [Range(0f, 1f)]
-    [SerializeField] private float innerAlpha = 0.25f;
+    [SerializeField] private float innerAlpha = 0.18f;
+
+    [Header("페이드 중심 보정")]
+    [SerializeField] private Vector2 fadeCenterOffset = new Vector2(0f, 0.35f);
+    [SerializeField] private bool useRendererBoundsCenter = true;
 
     [Header("디버그")]
+    [SerializeField] private bool debugLog = true;
     [SerializeField] private bool drawGizmos = true;
 
     private readonly List<Transform> fadeTargets = new List<Transform>(MaxFadeTargets);
     private readonly Vector4[] fadeTargetPositions = new Vector4[MaxFadeTargets];
+    private readonly Collider2D[] overlapResults = new Collider2D[MaxOverlapResults];
 
+    private ContactFilter2D contactFilter;
     private MaterialPropertyBlock propertyBlock;
 
     private static readonly int UseFadeID = Shader.PropertyToID("_UseFade");
@@ -44,11 +59,16 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
     private void Awake()
     {
         AutoBind();
-        ApplyFadeMaterialIfNeeded();
 
         propertyBlock = new MaterialPropertyBlock();
 
+        SetupContactFilter();
+        ApplyFadeMaterialIfNeeded();
+
+        ClearFadeTargetPositions();
         SetFadeEnabled(false);
+
+        PrintDebugState();
     }
 
 #if UNITY_EDITOR
@@ -68,11 +88,6 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
 
     private void AutoBind()
     {
-        if (targetRenderers == null || targetRenderers.Length == 0)
-        {
-            targetRenderers = GetComponentsInChildren<SpriteRenderer>(true);
-        }
-
         if (fadeTrigger == null)
         {
             fadeTrigger = GetComponent<Collider2D>();
@@ -82,22 +97,49 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
         {
             fadeTrigger.isTrigger = true;
         }
+
+        if (occluderRoot == null)
+        {
+            occluderRoot = transform;
+        }
+
+        if ((targetRenderers == null || targetRenderers.Length == 0) && occluderRoot != null)
+        {
+            targetRenderers = occluderRoot.GetComponentsInChildren<SpriteRenderer>(true);
+        }
+
+        if (targetRenderers == null || targetRenderers.Length == 0)
+        {
+            targetRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        }
+    }
+
+    private void SetupContactFilter()
+    {
+        contactFilter = new ContactFilter2D();
+        contactFilter.useTriggers = true;
+        contactFilter.useLayerMask = true;
+        contactFilter.layerMask = targetLayerMask;
     }
 
     private void ApplyFadeMaterialIfNeeded()
     {
         if (fadeMaterial == null)
+        {
+            Debug.LogWarning($"[OccluderFade] {name} FadeMaterial이 없음. M_MultiCircleFade를 넣어야 함.");
             return;
+        }
 
-        if (targetRenderers == null)
+        if (targetRenderers == null || targetRenderers.Length == 0)
+        {
+            Debug.LogWarning($"[OccluderFade] {name} TargetRenderers가 없음. OccluderRoot를 StageDoor/WallRoot로 넣어.");
             return;
+        }
 
         for (int i = 0; i < targetRenderers.Length; i++)
         {
             SpriteRenderer sr = targetRenderers[i];
-
-            if (sr == null)
-                continue;
+            if (sr == null) continue;
 
             sr.sharedMaterial = fadeMaterial;
         }
@@ -105,10 +147,11 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
 
     private void LateUpdate()
     {
-        RemoveNullTargets();
+        RefreshFadeTargetsByOverlap();
 
         if (fadeTargets.Count <= 0)
         {
+            ClearFadeTargetPositions();
             SetFadeEnabled(false);
             return;
         }
@@ -117,39 +160,39 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
         ApplyFadeToRenderers();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void RefreshFadeTargetsByOverlap()
     {
-        if (!IsValidFadeTarget(collision))
+        fadeTargets.Clear();
+
+        if (fadeTrigger == null)
             return;
 
-        Transform target = GetTargetRoot(collision);
+        int count = fadeTrigger.Overlap(contactFilter, overlapResults);
 
-        if (target == null)
-            return;
-
-        if (fadeTargets.Contains(target))
-            return;
-
-        if (fadeTargets.Count >= MaxFadeTargets)
-            return;
-
-        fadeTargets.Add(target);
-
-        SetFadeEnabled(true);
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        Transform target = GetTargetRoot(collision);
-
-        if (target == null)
-            return;
-
-        fadeTargets.Remove(target);
-
-        if (fadeTargets.Count <= 0)
+        for (int i = 0; i < count; i++)
         {
-            SetFadeEnabled(false);
+            Collider2D hit = overlapResults[i];
+            if (hit == null) continue;
+
+            if (!IsValidFadeTarget(hit))
+                continue;
+
+            Transform target = GetTargetRoot(hit);
+            if (target == null) continue;
+
+            if (fadeTargets.Contains(target))
+                continue;
+
+            if (fadeTargets.Count >= MaxFadeTargets)
+                break;
+
+            fadeTargets.Add(target);
+        }
+
+        if (debugLog && fadeTargets.Count > 0)
+        {
+            // 너무 많이 찍히면 꺼도 됨
+            // Debug.Log($"[OccluderFade] {name} Current Targets: {fadeTargets.Count}");
         }
     }
 
@@ -164,7 +207,6 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
         if (collision.CompareTag(monsterTag))
             return true;
 
-        // 몬스터의 자식 콜라이더가 들어오는 경우 대비
         Transform root = GetTargetRoot(collision);
 
         if (root == null)
@@ -184,43 +226,65 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
         if (collision == null)
             return null;
 
-        // Rigidbody2D가 있으면 그 Transform을 기준으로 사용
         if (collision.attachedRigidbody != null)
             return collision.attachedRigidbody.transform;
 
-        return collision.transform;
-    }
-
-    private void RemoveNullTargets()
-    {
-        for (int i = fadeTargets.Count - 1; i >= 0; i--)
-        {
-            if (fadeTargets[i] == null)
-            {
-                fadeTargets.RemoveAt(i);
-            }
-        }
+        return collision.transform.root;
     }
 
     private void UpdateFadeTargetPositions()
     {
-        for (int i = 0; i < MaxFadeTargets; i++)
-        {
-            fadeTargetPositions[i] = Vector4.zero;
-        }
+        ClearFadeTargetPositions();
 
         int count = Mathf.Min(fadeTargets.Count, MaxFadeTargets);
 
         for (int i = 0; i < count; i++)
         {
-            Vector3 pos = fadeTargets[i].position;
+            Vector3 pos = GetFadeCenter(fadeTargets[i]);
             fadeTargetPositions[i] = new Vector4(pos.x, pos.y, 0f, 0f);
+        }
+    }
+
+    private Vector3 GetFadeCenter(Transform target)
+    {
+        if (target == null)
+            return transform.position;
+
+        Vector3 center = target.position;
+
+        if (useRendererBoundsCenter)
+        {
+            SpriteRenderer renderer = target.GetComponentInChildren<SpriteRenderer>();
+
+            if (renderer != null)
+            {
+                center = renderer.bounds.center;
+                return center + (Vector3)fadeCenterOffset;
+            }
+        }
+
+        Collider2D col = target.GetComponentInChildren<Collider2D>();
+
+        if (col != null)
+        {
+            center = col.bounds.center;
+            return center + (Vector3)fadeCenterOffset;
+        }
+
+        return target.position + (Vector3)fadeCenterOffset;
+    }
+
+    private void ClearFadeTargetPositions()
+    {
+        for (int i = 0; i < MaxFadeTargets; i++)
+        {
+            fadeTargetPositions[i] = Vector4.zero;
         }
     }
 
     private void ApplyFadeToRenderers()
     {
-        if (targetRenderers == null)
+        if (targetRenderers == null || targetRenderers.Length == 0)
             return;
 
         int count = Mathf.Min(fadeTargets.Count, MaxFadeTargets);
@@ -247,10 +311,11 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
 
     private void SetFadeEnabled(bool enabled)
     {
-        if (targetRenderers == null)
+        if (targetRenderers == null || targetRenderers.Length == 0)
             return;
 
         float useFadeValue = enabled ? 1f : 0f;
+        int count = enabled ? Mathf.Min(fadeTargets.Count, MaxFadeTargets) : 0;
 
         for (int i = 0; i < targetRenderers.Length; i++)
         {
@@ -262,19 +327,34 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
             sr.GetPropertyBlock(propertyBlock);
 
             propertyBlock.SetFloat(UseFadeID, useFadeValue);
-            propertyBlock.SetInt(FadeTargetCountID, enabled ? fadeTargets.Count : 0);
             propertyBlock.SetFloat(FadeRadiusID, fadeRadius);
             propertyBlock.SetFloat(FadeSoftnessID, fadeSoftness);
             propertyBlock.SetFloat(InnerAlphaID, innerAlpha);
+            propertyBlock.SetInt(FadeTargetCountID, count);
             propertyBlock.SetVectorArray(FadeTargetPositionsID, fadeTargetPositions);
 
             sr.SetPropertyBlock(propertyBlock);
         }
     }
 
+    private void PrintDebugState()
+    {
+        if (!debugLog)
+            return;
+
+        Debug.Log(
+            $"[OccluderFade] Init / Object={name}" +
+            $" / OccluderRoot={(occluderRoot == null ? "NULL" : occluderRoot.name)}" +
+            $" / TargetRenderers={(targetRenderers == null ? 0 : targetRenderers.Length)}" +
+            $" / FadeMaterial={(fadeMaterial == null ? "NULL" : fadeMaterial.name)}" +
+            $" / FadeTrigger={(fadeTrigger == null ? "NULL" : fadeTrigger.name)}"
+        );
+    }
+
     private void OnDisable()
     {
         fadeTargets.Clear();
+        ClearFadeTargetPositions();
         SetFadeEnabled(false);
     }
 
@@ -283,7 +363,7 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
         if (!drawGizmos)
             return;
 
-        Gizmos.color = new Color(1f, 1f, 0f, 0.25f);
+        Gizmos.color = new Color(1f, 1f, 0f, 0.8f);
 
         if (fadeTargets != null && fadeTargets.Count > 0)
         {
@@ -292,11 +372,18 @@ public class OccluderMultiCircleFade2D : MonoBehaviour
                 if (fadeTargets[i] == null)
                     continue;
 
-                Gizmos.DrawWireSphere(fadeTargets[i].position, fadeRadius);
+                Vector3 center = Application.isPlaying
+                    ? GetFadeCenter(fadeTargets[i])
+                    : fadeTargets[i].position + (Vector3)fadeCenterOffset;
+
+                Gizmos.DrawWireSphere(center, fadeRadius);
             }
         }
         else
         {
+            if (fadeTrigger != null)
+                Gizmos.DrawWireCube(fadeTrigger.bounds.center, fadeTrigger.bounds.size);
+
             Gizmos.DrawWireSphere(transform.position, fadeRadius);
         }
     }
