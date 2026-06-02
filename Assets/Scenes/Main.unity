@@ -15632,9 +15632,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8103d4d5d14b3034b9a398b94bac01cd, type: 2}
   - {fileID: 11400000, guid: e3ad1089910efc54a9fc3a83105d988c, type: 2}
   - {fileID: 11400000, guid: da1d091aa3c385c4da01c6f9f5b50202, type: 2}
-  - {fileID: 11400000, guid: 631a760f668ba1e4f93a596663e12f2d, type: 2}
-  - {fileID: 11400000, guid: 850cccb2900614543b1644ed3642e0d2, type: 2}
   - {fileID: 11400000, guid: d2c304fb7baa4ef48aad5011e2f45db4, type: 2}
+  - {fileID: 11400000, guid: 850cccb2900614543b1644ed3642e0d2, type: 2}
   panel: {fileID: 761839268}
   buttons:
   - {fileID: 1877132497}
@@ -22759,8 +22758,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1406349987}
   m_HandleRect: {fileID: 1406349986}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.7978361
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -34393,7 +34392,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000038146973}
+  m_AnchoredPosition: {x: 0, y: -0.000030517578}
   m_SizeDelta: {x: 0, y: 80}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &2088268904
