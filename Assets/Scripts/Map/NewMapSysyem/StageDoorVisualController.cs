@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class StageDoorVisualController : MonoBehaviour
@@ -24,10 +25,18 @@ public class StageDoorVisualController : MonoBehaviour
     [Header("Door 부모에 있는 문 막는 콜라이더")]
     [SerializeField] private Collider2D doorBlockCollider;
 
+    [Header("열림 애니메이션 종료 후 문 조각 숨김")]
+    [SerializeField] private bool hideDoorPiecesAfterOpenAnimation = true;
+
+    [Header("애니메이션 이벤트 누락 대비용 시간")]
+    [SerializeField] private float openAnimationFallbackTime = 0.6f;
+
     private static readonly int LeftOpenHash = Animator.StringToHash("LeftOpen");
     private static readonly int RightOpenHash = Animator.StringToHash("RightOpen");
 
     private bool isOpen;
+    private bool openAnimationFinished;
+    private Coroutine hideDoorPiecesRoutine;
 
     private void Awake()
     {
@@ -86,6 +95,7 @@ public class StageDoorVisualController : MonoBehaviour
                 return child;
 
             Transform found = FindChildRecursive(child, targetName);
+
             if (found != null)
                 return found;
         }
@@ -96,6 +106,13 @@ public class StageDoorVisualController : MonoBehaviour
     public void SetClosedImmediate()
     {
         isOpen = false;
+        openAnimationFinished = false;
+
+        if (hideDoorPiecesRoutine != null)
+        {
+            StopCoroutine(hideDoorPiecesRoutine);
+            hideDoorPiecesRoutine = null;
+        }
 
         if (animator != null)
         {
@@ -125,6 +142,7 @@ public class StageDoorVisualController : MonoBehaviour
             return;
 
         isOpen = true;
+        openAnimationFinished = false;
 
         Debug.Log($"[StageDoor] PlayOpen 호출됨: {name}");
 
@@ -137,25 +155,71 @@ public class StageDoorVisualController : MonoBehaviour
         if (closedDoorRenderer != null)
             closedDoorRenderer.enabled = false;
 
-        // 핵심: 문 열림 → Door 부모의 큰 BoxCollider2D 끄기
+        // 문 열림 → Door 부모의 큰 BoxCollider2D 끄기
         SetDoorBlockColliderEnabled(false);
 
-        if (animator == null)
+        if (animator != null)
+        {
+            animator.ResetTrigger(LeftOpenHash);
+            animator.ResetTrigger(RightOpenHash);
+
+            switch (openAnimationType)
+            {
+                case DoorOpenAnimationType.LeftOpen:
+                    animator.SetTrigger(LeftOpenHash);
+                    break;
+
+                case DoorOpenAnimationType.RightOpen:
+                    animator.SetTrigger(RightOpenHash);
+                    break;
+            }
+        }
+
+        // 애니메이션 이벤트를 안 넣었을 때도 자동으로 꺼지게 하는 보험
+        if (hideDoorPiecesAfterOpenAnimation)
+        {
+            if (hideDoorPiecesRoutine != null)
+                StopCoroutine(hideDoorPiecesRoutine);
+
+            hideDoorPiecesRoutine = StartCoroutine(HideDoorPiecesAfterDelay());
+        }
+    }
+
+    private IEnumerator HideDoorPiecesAfterDelay()
+    {
+        yield return new WaitForSeconds(openAnimationFallbackTime);
+
+        HideDoorPiecesAfterOpenAnimation();
+    }
+
+    /// <summary>
+    /// LeftOpen / RightOpen 애니메이션 마지막 프레임에 Animation Event로 호출해도 됨.
+    /// </summary>
+    public void AnimationEvent_OnOpenAnimationEnd()
+    {
+        HideDoorPiecesAfterOpenAnimation();
+    }
+
+    private void HideDoorPiecesAfterOpenAnimation()
+    {
+        if (!isOpen)
             return;
 
-        animator.ResetTrigger(LeftOpenHash);
-        animator.ResetTrigger(RightOpenHash);
+        if (openAnimationFinished)
+            return;
 
-        switch (openAnimationType)
-        {
-            case DoorOpenAnimationType.LeftOpen:
-                animator.SetTrigger(LeftOpenHash);
-                break;
+        openAnimationFinished = true;
 
-            case DoorOpenAnimationType.RightOpen:
-                animator.SetTrigger(RightOpenHash);
-                break;
-        }
+        if (!hideDoorPiecesAfterOpenAnimation)
+            return;
+
+        if (rightDoorObject != null)
+            rightDoorObject.SetActive(false);
+
+        if (leftDoorObject != null)
+            leftDoorObject.SetActive(false);
+
+        Debug.Log($"[StageDoor] 열림 애니메이션 종료 → RightDoor / LeftDoor 비활성화: {name}");
     }
 
     private void SetDoorBlockColliderEnabled(bool enabled)
@@ -166,9 +230,12 @@ public class StageDoorVisualController : MonoBehaviour
             return;
         }
 
-        // Door의 콜라이더는 문 막는 용도라서 Trigger가 아니어야 함
+        // IsTrigger는 절대 건드리지 않는다.
         doorBlockCollider.enabled = enabled;
 
-        Debug.Log($"[StageDoor] Door Block Collider {(enabled ? "ON" : "OFF")}: {doorBlockCollider.name}");
+        Debug.Log(
+            $"[StageDoor] Door Block Collider {(enabled ? "ON" : "OFF")}: {doorBlockCollider.name}, " +
+            $"IsTrigger 유지값: {doorBlockCollider.isTrigger}"
+        );
     }
 }

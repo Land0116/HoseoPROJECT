@@ -228,6 +228,8 @@ MonoBehaviour:
   animator: {fileID: 1251544637531166396}
   openAnimationType: 1
   doorBlockCollider: {fileID: -7024196848459402390}
+  hideDoorPiecesAfterOpenAnimation: 1
+  openAnimationFallbackTime: 1
 --- !u!114 &-2905326461840529806
 MonoBehaviour:
   m_ObjectHideFlags: 0
