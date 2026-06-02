@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class MonsterAttack_ADC : AttackPattern
@@ -5,9 +6,11 @@ public class MonsterAttack_ADC : AttackPattern
     public GameObject bulletPrefab;
     public float fireRate = 1f;
     public float attackRange = 5f;
+    public float preDelay = 0.3f;
 
     private float timer;
     private bool wasInRange = false;
+    private bool isAttacking;
 
     public override void Execute()
     {
@@ -15,7 +18,6 @@ public class MonsterAttack_ADC : AttackPattern
 
         float distance = Vector2.Distance(monster.Player.position, monster.transform.position);
         bool isInRange = distance <= attackRange;
-
 
         if (isInRange && !wasInRange)
         {
@@ -31,25 +33,51 @@ public class MonsterAttack_ADC : AttackPattern
 
         timer += Time.deltaTime;
 
-        if (timer >= 1f / fireRate)
+        if (!isAttacking && timer >= 1f / fireRate)
         {
-            Shoot();
             timer = 0f;
+            StartCoroutine(AttackRoutine());
         }
 
         wasInRange = isInRange;
     }
 
-    void Shoot()
+    private IEnumerator AttackRoutine()
     {
+        isAttacking = true;
+
         Vector3 dir = (monster.Player.position - monster.transform.position).normalized;
 
-        GameObject bullet = Instantiate(
+        monster.SetAnimationLock(false); // 핵심 (Lock 걸면 갱신 막힘 구조 있음)
+
+        monster.PlayAttackPreAnimation(dir);
+
+        yield return new WaitForSeconds(preDelay);
+
+        monster.PlayAttackFireAnimation(dir);
+
+        GameObject bullet = Object.Instantiate(
             bulletPrefab,
             monster.transform.position,
             Quaternion.identity
         );
 
         bullet.GetComponent<MonsterBullet>().SetDirection(dir);
+
+        yield return new WaitForSeconds(0.1f);
+
+        isAttacking = false;
+    }
+
+    private void OnEnable()
+    {
+        if (monster != null)
+            monster.forceADCDeathDuration = true;
+    }
+
+    private void OnDisable()
+    {
+        if (monster != null)
+            monster.forceADCDeathDuration = false;
     }
 }
