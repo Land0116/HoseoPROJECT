@@ -3,13 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EquipScriptableObject", menuName = "Weapon/WeaponData")]
 public class WeaponData : ScriptableObject
 {
-    [Header("¹«±â ÀÌ¸§")]
+    [Header("ë¬´ê¸° ì´ë¦„")]
     public string weaponName;
 
-    [Header("¹«±â ½ºÅÈ")]
+    [Header("ë¬´ê¸° ìŠ¤íƒ¯")]
     public float damage = 1f;
 
     public Sprite icon;
-    [Header("¹ß»ç¿ë ÃÑ¾Ë")]
+    [Header("ë°œì‚¬ìš© ì´ì•Œ")]
     public GameObject projectilePrefab;
 }

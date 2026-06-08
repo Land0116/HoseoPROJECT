@@ -31,7 +31,7 @@ public class ItemUIManager : MonoBehaviour
     [SerializeField] private GameObject alertMaxItemPanel;
 
     [SerializeField] private GameObject uiItemPanel;
-    [Header("Ãß°¡")]
+    [Header("ì¶”ê°€")]
     [Header("UI Item Detail (Shop Style)")]
     [SerializeField] private TextMeshProUGUI uiItemNameText;
     [SerializeField] private TextMeshProUGUI uiItemCategoryText;
@@ -53,7 +53,7 @@ public class ItemUIManager : MonoBehaviour
 
     
 
-    //»óÁ¡ »óÈ£ÀÛ¿ë UI
+    //ìƒì  ìƒí˜¸ì‘ìš© UI
     [SerializeField] private GameObject shopInteractPanel;
     [SerializeField] private TextMeshProUGUI shopInteractText;
 
@@ -100,7 +100,7 @@ public class ItemUIManager : MonoBehaviour
             {
                 currentShopTarget.Interact(PlayerController.Instance);
 
-                // »óÁ¡Àº 1È¸ Å¬¸¯ ÈÄ À¯Áö ¿øÇÏ¸é ÀÌ ÁÙ Á¦°Å
+                // ìƒì ì€ 1íšŒ í´ë¦­ í›„ ìœ ì§€ ì›í•˜ë©´ ì´ ì¤„ ì œê±°
                 return;
             }
 
@@ -249,7 +249,7 @@ public class ItemUIManager : MonoBehaviour
             var data = item.GetItemData();
             if (data == null) return;
 
-            string desc = $"[{data.itemName}]\n[F]Å°·Î »óÈ£ÀÛ¿ë\n";
+            string desc = $"[{data.itemName}]\n[F]í‚¤ë¡œ ìƒí˜¸ì‘ìš©\n";
 
             if (!string.IsNullOrEmpty(data.description))
             {
@@ -257,16 +257,16 @@ public class ItemUIManager : MonoBehaviour
             }
 
             if (data.damage != 0)
-                desc += FormatStat("µ¥¹ÌÁö", data.damage);
+                desc += FormatStat("ë°ë¯¸ì§€", data.damage);
 
             if (data.moveSpeed != 0)
-                desc += FormatStat("ÀÌµ¿¼Óµµ", data.moveSpeed);
+                desc += FormatStat("ì´ë™ì†ë„", data.moveSpeed);
 
             if (data.hp != 0)
-                desc += FormatStat("Ã¼·Â", data.hp);
+                desc += FormatStat("ì²´ë ¥", data.hp);
 
             if (data.bulletRate != 0)
-                desc += FormatStat("°ø°İ¼Óµµ", data.bulletRate);
+                desc += FormatStat("ê³µê²©ì†ë„", data.bulletRate);
 
             itemText.text = desc;
             itemPanel.SetActive(true);
@@ -276,9 +276,9 @@ public class ItemUIManager : MonoBehaviour
             var data = weapon.GetWeaponData();
             if (data == null) return;
 
-            string desc = $"[{data.weaponName}]\n[F]Å°·Î »óÈ£ÀÛ¿ë\n";
+            string desc = $"[{data.weaponName}]\n[F]í‚¤ë¡œ ìƒí˜¸ì‘ìš©\n";
 
-            desc += FormatStat("µ¥¹ÌÁö", data.damage);
+            desc += FormatStat("ë°ë¯¸ì§€", data.damage);
 
             weaponText.text = desc;
             weaponPanel.SetActive(true);
@@ -294,24 +294,24 @@ public class ItemUIManager : MonoBehaviour
         }
 
         // =========================
-        // ¾ÆÀÌÅÛ
+        // ì•„ì´í…œ
         // =========================
         if (target is ItemPickup item)
         {
             var data = item.GetItemData();
             if (data == null) return;
 
-            // 1. À§Ä¡ UI (FÅ°)
+            // 1. ìœ„ì¹˜ UI (Fí‚¤)
             SetInteractTarget(item.transform, data.itemName);
 
-            // 2. »óÁ¡ ½ºÅ¸ÀÏ UI °­Á¦ Ãâ·Â
+            // 2. ìƒì  ìŠ¤íƒ€ì¼ UI ê°•ì œ ì¶œë ¥
             ShowShopInteract(null, null);
 
             ShowShopItemTooltip(data);
         }
 
         // =========================
-        // ¹«±â
+        // ë¬´ê¸°
         // =========================
         else if (target is WeaponPickup weapon)
         {
@@ -322,18 +322,18 @@ public class ItemUIManager : MonoBehaviour
 
             ShowShopInteract(null, null);
 
-            // ¹«±â¿ë µû·Î ¾øÀ¸´Ï±î ItemÃ³·³ Ã³¸®
+            // ë¬´ê¸°ìš© ë”°ë¡œ ì—†ìœ¼ë‹ˆê¹Œ Itemì²˜ëŸ¼ ì²˜ë¦¬
             if (shopAugTitleText != null)
                 shopAugTitleText.text = data.weaponName;
 
             if (shopAugCategoryText != null)
-                shopAugCategoryText.text = "¹«±â";
+                shopAugCategoryText.text = "ë¬´ê¸°";
 
             if (shopAugEffectText != null)
-                shopAugEffectText.text = $"µ¥¹ÌÁö {data.damage}";
+                shopAugEffectText.text = $"ë°ë¯¸ì§€ {data.damage}";
 
             if (shopAugDescText != null)
-                shopAugDescText.text = "ÀåÂø ½Ã ´É·Â °­È­";
+                shopAugDescText.text = "ì¥ì°© ì‹œ ëŠ¥ë ¥ ê°•í™”";
         }
     }
 
@@ -364,7 +364,7 @@ public class ItemUIManager : MonoBehaviour
     {
         if (data == null || uiItemPanel == null) return;
 
-        string desc = $"[¿ìÅ¬¸¯ ½Ã ÀåÂø ÇØÁ¦]\n[{data.itemName}]\n";
+        string desc = $"[ìš°í´ë¦­ ì‹œ ì¥ì°© í•´ì œ]\n[{data.itemName}]\n";
 
         if (!string.IsNullOrEmpty(data.description))
         {
@@ -372,16 +372,16 @@ public class ItemUIManager : MonoBehaviour
         }
 
         if (data.damage != 0)
-            desc += FormatStat("µ¥¹ÌÁö", data.damage);
+            desc += FormatStat("ë°ë¯¸ì§€", data.damage);
 
         if (data.moveSpeed != 0)
-            desc += FormatStat("ÀÌµ¿¼Óµµ", data.moveSpeed);
+            desc += FormatStat("ì´ë™ì†ë„", data.moveSpeed);
 
         if (data.hp != 0)
-            desc += FormatStat("Ã¼·Â", data.hp);
+            desc += FormatStat("ì²´ë ¥", data.hp);
 
         if (data.bulletRate != 0)
-            desc += FormatStat("°ø°İ¼Óµµ", data.bulletRate);
+            desc += FormatStat("ê³µê²©ì†ë„", data.bulletRate);
 
         uiItemText.text = desc;
         uiItemPanel.SetActive(true);
@@ -406,7 +406,7 @@ public class ItemUIManager : MonoBehaviour
         uiItemPanel.SetActive(true);
 
         // =========================
-        // ÅØ½ºÆ® ¼¼ÆÃ (Shop ¹æ½Ä)
+        // í…ìŠ¤íŠ¸ ì„¸íŒ… (Shop ë°©ì‹)
         // =========================
         if (uiItemNameText != null)
             uiItemNameText.text = data.itemName;
@@ -421,7 +421,7 @@ public class ItemUIManager : MonoBehaviour
             uiItemDescText.text = data.shopDesc;
 
         // =========================
-        // À§Ä¡ Ã³¸® (±âÁ¸ À¯Áö)
+        // ìœ„ì¹˜ ì²˜ë¦¬ (ê¸°ì¡´ ìœ ì§€)
         // =========================
         uiItemRect.anchoredPosition = Vector2.zero;
 
@@ -446,7 +446,7 @@ public class ItemUIManager : MonoBehaviour
     {
         if (itemInteractPanel == null || Camera.main == null) return;
 
-        itemInteractText.text = $"[{name}]\n[F]Å°·Î »óÈ£ÀÛ¿ë";
+        itemInteractText.text = $"[{name}]\n[F]í‚¤ë¡œ ìƒí˜¸ì‘ìš©";
 
         RectTransform interactRect = itemInteractPanel.GetComponent<RectTransform>();
 
@@ -490,7 +490,7 @@ public class ItemUIManager : MonoBehaviour
     }*/
     private System.Collections.IEnumerator ShowAlertItemPaenl(float duration)
     {
-        ShowAlertMessage("¾ÆÀÌÅÛÀ» È¹µæÇß½À´Ï´Ù.", true);
+        ShowAlertMessage("ì•„ì´í…œì„ íšë“í–ˆìŠµë‹ˆë‹¤.", true);
 
         yield break;
     }
@@ -592,7 +592,7 @@ public class ItemUIManager : MonoBehaviour
             return;
         }
 
-        itemInteractText.text = $"[{currentInteractName}]\n[F]Å°·Î »óÈ£ÀÛ¿ë";
+        itemInteractText.text = $"[{currentInteractName}]\n[F]í‚¤ë¡œ ìƒí˜¸ì‘ìš©";
 
         RectTransform interactRect = itemInteractPanel.GetComponent<RectTransform>();
 
@@ -652,7 +652,7 @@ public class ItemUIManager : MonoBehaviour
         }
 
         currentInteractTarget = nearestBag.transform;
-        currentInteractName = "[¾ÆÀÌÅÛ º¸µû¸®]";
+        currentInteractName = "[ì•„ì´í…œ ë³´ë”°ë¦¬]";
     }
 
     /*public void ShowShopInteract(IShopInteractable shop, AugmentationSystem augment)
@@ -684,7 +684,7 @@ public class ItemUIManager : MonoBehaviour
     {
         if (shopInteractPanel == null) return;
 
-        currentShopTarget = shop; // nullÀÌ¾îµµ Çã¿ë
+        currentShopTarget = shop; // nullì´ì–´ë„ í—ˆìš©
         isShopUIForced = true;
 
         if (augment != null)
@@ -744,7 +744,7 @@ public class ItemUIManager : MonoBehaviour
         Vector3 worldPos;
 
         // =========================
-        // ¾ÆÀÌÅÛ ±âÁØ À§Ä¡
+        // ì•„ì´í…œ ê¸°ì¤€ ìœ„ì¹˜
         // =========================
         if (currentTarget is ItemPickup item)
         {
@@ -752,7 +752,7 @@ public class ItemUIManager : MonoBehaviour
         }
         else if (currentShopTarget != null)
         {
-            // ±âÁ¸ »óÁ¡ Ã³¸® (À¯Áö)
+            // ê¸°ì¡´ ìƒì  ì²˜ë¦¬ (ìœ ì§€)
             worldPos = currentShopTarget.GetTransform().position + new Vector3(-4.5f, 0f, 0f);
         }
         else
@@ -829,7 +829,7 @@ public class ItemUIManager : MonoBehaviour
             previewLevel = AugmentRunManager.Instance.GetPreviewLevel(data);
         }
 
-        // ÀÌ¸§
+        // ì´ë¦„
         string name = string.IsNullOrWhiteSpace(data.augmentationName)
             ? data.name
             : data.augmentationName;
@@ -837,15 +837,15 @@ public class ItemUIManager : MonoBehaviour
         if (shopAugTitleText != null)
             shopAugTitleText.text = name;
 
-        // Ä«Å×°í¸®
+        // ì¹´í…Œê³ ë¦¬
         if (shopAugCategoryText != null)
             shopAugCategoryText.text = data.GetTooltipCategoryText();
 
-        // È¿°ú
+        // íš¨ê³¼
         if (shopAugEffectText != null)
             shopAugEffectText.text = data.GetTooltipEffectText(previewLevel);
 
-        // ¼³¸í
+        // ì„¤ëª…
         if (shopAugDescText != null)
             shopAugDescText.text = data.GetTooltipDescription(previewLevel);
     }
@@ -871,21 +871,21 @@ public class ItemUIManager : MonoBehaviour
     {
         if (data == null) return;
 
-        // ÀÌ¸§
+        // ì´ë¦„
         if (shopAugTitleText != null)
             shopAugTitleText.text = string.IsNullOrEmpty(data.itemName)
                 ? data.itemName
                 : data.itemName;
 
-        // Å¸ÀÔ
+        // íƒ€ì…
         if (shopAugCategoryText != null)
             shopAugCategoryText.text = data.itemType;
 
-        // È¿°ú
+        // íš¨ê³¼
         if (shopAugEffectText != null)
             shopAugEffectText.text = data.itemStatView;
 
-        // ¼³¸í
+        // ì„¤ëª…
         if (shopAugDescText != null)
             shopAugDescText.text = data.shopDesc;
     }

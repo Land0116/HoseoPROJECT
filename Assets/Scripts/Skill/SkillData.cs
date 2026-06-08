@@ -9,10 +9,10 @@ public class SkillData : ScriptableObject
     [TextArea] public string description;
 
     [Header("UI Info (Shop Display)")]
-    public string skillDisplayName;     // ½ºÅ³ ÀÌ¸§ (UI¿ë)
-    public string combatType;           // ÀüÅõ Å¸ÀÔ
-    public string damageText;           // µ¥¹ÌÁö (¹®ÀÚ ÇüÅÂ)
-    [TextArea] public string skillDesc; // ½ºÅ³ ¼³¸í
+    public string skillDisplayName;     // ìŠ¤í‚¬ ì´ë¦„ (UIìš©)
+    public string combatType;           // ì „íˆ¬ íƒ€ì…
+    public string damageText;           // ë°ë¯¸ì§€ (ë¬¸ì í˜•íƒœ)
+    [TextArea] public string skillDesc; // ìŠ¤í‚¬ ì„¤ëª…
 
     [Header("??????")]
     public Sprite icon;

@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class Item : MonoBehaviour
 {
-    [Header("¾ÆÀÌÅÛ ½ºÅİ")]
+    [Header("ì•„ì´í…œ ìŠ¤í…Ÿ")]
     public int itemStage;
     public float damage = 1f;
     public float moveSpeed = 0f;
