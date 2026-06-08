@@ -18,4 +18,12 @@ public class PlayerAnimationEventReceiver : MonoBehaviour
             PlayerController.Instance.EndDeathAnimationEvent();
         }
     }
+
+    public void FireOnAnimationEvent()
+    {
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.FireOnAnimationEvent();
+        }
+    }
 }

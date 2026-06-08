@@ -297,6 +297,7 @@ MonoBehaviour:
   aimDirection: {x: 0, y: -1}
   animDirection: {x: 0, y: -1}
   lockedAttackAimDirection: {x: 0, y: -1}
+  hasFiredThisAttackAnimation: 0
   isHitAnimating: 0
   hitInvincibleDuration: 0.15
   ignoreDamageWhileHit: 1
@@ -778,7 +779,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 91
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5164357226681718072, guid: 419c67b5c43947b498e877821269ae75, type: 3}
+  m_Sprite: {fileID: -5164357226681718072, guid: 5397c690db8d5a44ab7c01e09cb00369, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -798,7 +799,7 @@ Animator:
   m_GameObject: {fileID: 4803840776975053172}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 664611471f450da4395caf8c8bc2f80d, type: 2}
+  m_Controller: {fileID: 9100000, guid: a56fda1d7260ca741a96bb53aebeffed, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 2
   m_ApplyRootMotion: 0

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8dc97ac5fd8696b4da2472b4d015e49c
+guid: 86a260b616dc4414da47b2dfe0bfba4b
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: Back_2_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 256
-        height: 256
+        x: 36
+        y: 23
+        width: 183
+        height: 212
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 1d28a21d68e0c8b46ad9974bd52b7162
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -214,7 +214,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Back_2_0: -1468617235225215949
-      Back_2_1: -1840480890
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
