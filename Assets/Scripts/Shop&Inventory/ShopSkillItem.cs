@@ -94,7 +94,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         // 1. �� ����
         if (p.Gold < finalPrice)
         {
-            ItemUIManager.Instance?.ShowAlertMessage("���� �����մϴ�.", false);
+            ItemUIManager.Instance?.ShowAlertMessage("골드가 부족합니다.", false);
             PlayIndependent(purchaseFailClip);
             return;
         }
@@ -105,7 +105,7 @@ public class ShopSkillItem : MonoBehaviour, IInteractable, IShopInteractable
         HandleSkillAcquire(currentSkill);
 
         // 3. ���� UI
-        ItemUIManager.Instance?.ShowAlertMessage("���� ����!", false);
+        ItemUIManager.Instance?.ShowAlertMessage("구매성공!", false);
         PlayIndependent(purchaseSuccessClip);
 
         gameObject.SetActive(false);

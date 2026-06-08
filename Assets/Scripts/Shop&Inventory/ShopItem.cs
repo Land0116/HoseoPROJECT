@@ -73,7 +73,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         // =========================
         if (player.Gold < finalPrice)
         {
-            ItemUIManager.Instance?.ShowAlertMessage("���� �����մϴ�.", false);
+            ItemUIManager.Instance?.ShowAlertMessage("골드가 부족합니다.", false);
             PlayIndependent(purchaseFailSound);
             return;
         }
@@ -114,7 +114,7 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         // =========================
         // 5. ���� ���� (���� �޽���)
         // =========================
-        ItemUIManager.Instance?.ShowAlertMessage("���� ����!", false);
+        ItemUIManager.Instance?.ShowAlertMessage("구매성공!", false);
         PlayIndependent(purchaseSuccessSound);
 
         gameObject.SetActive(false);
@@ -392,27 +392,27 @@ public class ShopItem : MonoBehaviour, IInteractable, IShopInteractable
         if (isPotion)
         {
             string title = "";
-            string category = "ȸ�� ������";
+            string category = "회복 아이템";
             string effect = "";
             string desc = "";
 
             if (potionHealPercent == 0.25f)
             {
-                title = "�ϱ� ����";
+                title = "소형포션";
                 effect = "25%";
-                desc = "ü���� ���� ȸ���Ѵ�.";
+                desc = "체력을 25%회복합니다..";
             }
             else if (potionHealPercent == 0.5f)
             {
-                title = "�߱� ����";
+                title = "중형포션";
                 effect = "50%";
-                desc = "ü���� ȸ���Ѵ�.";
+                desc = "체력을 50%회복합니다.";
             }
             else if (potionHealPercent == 0.75f)
             {
-                title = "��� ����";
+                title = "대형포션";
                 effect = "75%";
-                desc = "ü���� ���� ȸ���Ѵ�.";
+                desc = "체력을 75%회복합니다.";
             }
 
             ItemUIManager.Instance.ShowShopInteract(this, null);

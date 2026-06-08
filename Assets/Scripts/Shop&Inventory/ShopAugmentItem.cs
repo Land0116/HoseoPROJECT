@@ -75,7 +75,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
             if (ItemUIManager.Instance != null)
             {
-                ItemUIManager.Instance.ShowAlertMessage("���� �����մϴ�.", false);
+                ItemUIManager.Instance.ShowAlertMessage("골드가 부족합니다.", false);
             }
 
             PlayIndependent(purchaseFailSound);
@@ -93,7 +93,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
             if (ItemUIManager.Instance != null)
             {
-                ItemUIManager.Instance.ShowAlertMessage("�� �̻� ������ ������ �� �����ϴ�.", false);
+                ItemUIManager.Instance.ShowAlertMessage("증강이 최대입니다.", false);
             }
 
             PlayIndependent(purchaseFailSound);
@@ -107,7 +107,7 @@ public class ShopAugmentItem : MonoBehaviour, IInteractable, IShopInteractable
 
         if (ItemUIManager.Instance != null)
         {
-            ItemUIManager.Instance.ShowAlertMessage("���� ����!", false);
+            ItemUIManager.Instance.ShowAlertMessage("구매에 성공하였습니다!", false);
         }
 
         PlayIndependent(purchaseSuccessSound);
