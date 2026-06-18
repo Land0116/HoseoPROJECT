@@ -11344,7 +11344,7 @@ MonoBehaviour:
       entranceGroups: 0100000003000000
     shopSceneName: ShopRoom
     bossSceneName: BossRoom
-    combatRoomsBeforeBoss: 2
+    combatRoomsBeforeBoss: 6
   - actNumber: 2
     combatScenes:
     - sceneName: CombatRoom_2_1
@@ -11357,7 +11357,7 @@ MonoBehaviour:
       entranceGroups: 0100000003000000
     shopSceneName: ShopRoom_1
     bossSceneName: BossRoom_1
-    combatRoomsBeforeBoss: 2
+    combatRoomsBeforeBoss: 6
   - actNumber: 3
     combatScenes:
     - sceneName: CombatRoom_3_1
@@ -11370,7 +11370,7 @@ MonoBehaviour:
       entranceGroups: 0100000003000000
     shopSceneName: ShopRoom_2
     bossSceneName: BossRoom_2
-    combatRoomsBeforeBoss: 3
+    combatRoomsBeforeBoss: 6
   gameClearSceneName: GameClear
   currentAct: 1
   maxAct: 3
@@ -22758,7 +22758,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1406349987}
   m_HandleRect: {fileID: 1406349986}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
