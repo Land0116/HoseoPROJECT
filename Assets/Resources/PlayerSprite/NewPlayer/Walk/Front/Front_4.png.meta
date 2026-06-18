@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 41b3acb69e6834b4f8c5d22dca4e4237
+guid: ee426e83456e300439897e407606cccf
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: Front_4_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 18
-        width: 183
-        height: 217
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 622f849a1face8e4c8f6b942dc380c11
     internalID: 0
     vertices: []
     indices: 

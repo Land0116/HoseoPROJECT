@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 874e2d9804e09fe44b496067a2e0e401
+guid: 8df17209933f31c4d878cf5a231f8a1a
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: SideL_2_0
       rect:
         serializedVersion: 2
-        x: 57
-        y: 7
-        width: 144
-        height: 235
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b8b212b68375f2643b1c9af25fece9e0
     internalID: 0
     vertices: []
     indices: 

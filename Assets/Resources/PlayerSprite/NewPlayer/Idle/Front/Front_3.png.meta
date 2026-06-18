@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9788fed8eeffaea45a5d78f842348b75
+guid: fa6d5fb4842622a41a55964bf01913aa
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: Front_3_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 23
-        width: 183
-        height: 214
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e3b7df2d2a6728143b70f30a1fdc9d8f
     internalID: 0
     vertices: []
     indices: 
@@ -214,6 +214,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Front_3_0: -4838005212983992651
+      Front_3_1: 1385875164
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

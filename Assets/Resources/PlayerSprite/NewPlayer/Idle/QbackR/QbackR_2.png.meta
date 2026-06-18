@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 013c64e3200d1824fb9e62c52ebd1a91
+guid: 4e1c83eb42777354a90c03a4212ec23c
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: QbackR_2_0
       rect:
         serializedVersion: 2
-        x: 54
-        y: 10
-        width: 174
-        height: 216
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1eebb7d950a2f0f44ad6d86333e3741d
     internalID: 0
     vertices: []
     indices: 

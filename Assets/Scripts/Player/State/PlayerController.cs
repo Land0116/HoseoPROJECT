@@ -72,12 +72,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     private static readonly int HitHash = Animator.StringToHash("Hit");
     private static readonly int IsDeathHash = Animator.StringToHash("IsDeath");
     private static readonly int IsChargeHash = Animator.StringToHash("IsCharge");
-    private static readonly int AttackMoveHash = Animator.StringToHash("AttackMove");
-    [SerializeField] private bool hasFiredThisAttackAnimation = false;
-    private static readonly int CancelChargeHash = Animator.StringToHash("CancelCharge");
-    
-    [SerializeField] private bool rawFireInput = false;
-    [SerializeField] private bool attackPressBlockedByUI = false;
 
     [Header("피격")] [SerializeField] private bool isHitAnimating = false;
     [Header("피격 무적 시간")] [SerializeField] private float hitInvincibleDuration = 0.6f;
@@ -669,23 +663,21 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             UpdateAimDirectionFromMouse();
         }
-
-        HandleKnockback();
+        
+        HandleKnockback(); //* 0513
         UpdateStun();
 
         if (IsDie)
             return;
 
-        isPointerOverUIThisFrame =
-            EventSystem.current != null &&
-            EventSystem.current.IsPointerOverGameObject();
+        isPointerOverUIThisFrame = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
         foreach (var item in equippedItems)
         {
-            item?.OnUpdate(this);
+            item?.OnUpdate(this); //*
         }
 
-        if (statsDirty)
+        if (statsDirty) //*
         {
             statsDirty = false;
             RebuildPlayerStats();
@@ -696,101 +688,16 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         TickSpecialRuntime();
 
-        // 핵심 추가
-        RefreshAttackInputFromMouse();
+        if (isPointerOverUIThisFrame && Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            ClearAttackInput();
+            return;
+        }
 
         HandleAttack();
         UpdateAnimatorPlaybackSpeed();
     }
-    
-    private void RefreshAttackInputFromMouse()
-    {
-        if (Mouse.current == null)
-            return;
 
-        bool physicalPressed = Mouse.current.leftButton.isPressed;
-        bool pressedThisFrame = Mouse.current.leftButton.wasPressedThisFrame;
-        bool releasedThisFrame = Mouse.current.leftButton.wasReleasedThisFrame;
-
-        if (pressedThisFrame)
-        {
-            rawFireInput = true;
-
-            // UI 위에서 시작한 클릭은 release 전까지 공격으로 쓰지 않는다.
-            attackPressBlockedByUI = isPointerOverUIThisFrame;
-
-            if (!attackPressBlockedByUI)
-            {
-                BeginAttackInputRequest();
-            }
-        }
-        else if (releasedThisFrame)
-        {
-            rawFireInput = false;
-            attackPressBlockedByUI = false;
-
-            EndAttackInputRequest();
-        }
-        else
-        {
-            rawFireInput = physicalPressed;
-        }
-
-        bool canUseHeldMouseAsAttack =
-            rawFireInput &&
-            !attackPressBlockedByUI &&
-            !isSystemInputLocked &&
-            IsGameplayScene() &&
-            !IsDie &&
-            canControl &&
-            !shotUseOrbitProjectile &&
-            playerState != PlayerState.Hit &&
-            playerState != PlayerState.Death;
-
-        // 마우스를 계속 누르고 있는데 중간에 isFireInput이 false로 날아갔다면 복구
-        if (canUseHeldMouseAsAttack)
-        {
-            if (!isFireInput)
-            {
-                BeginAttackInputRequest();
-            }
-
-            isFireInput = true;
-        }
-        else
-        {
-            // 여기서 rawFireInput은 지우지 않는다.
-            // Hit 중이거나 잠깐 공격 불가 상태여도, 마우스를 계속 누르고 있으면 나중에 복구되어야 함.
-            isFireInput = false;
-        }
-    }
-    private void BeginAttackInputRequest()
-    {
-        requestSingleShot = true;
-        firedThisPress = false;
-
-        if (FinalChargeShotTime > 0f)
-        {
-            BeginChargeShot();
-        }
-        else
-        {
-            chargeStartTime = -1f;
-        }
-    }
-
-    private void EndAttackInputRequest()
-    {
-        firedThisPress = false;
-
-        if (FinalChargeShotTime > 0f && !IsChargeReady())
-        {
-            requestSingleShot = false;
-            EndChargeShot();
-        }
-
-        isFireInput = false;
-    }
     void LateUpdate()
     {
         UpdateShadowVisual();
@@ -941,6 +848,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             !isDashing &&
             inputDirection.sqrMagnitude > 0.01f;
 
+        // 상태머신 동기화
         if (playerState != PlayerState.Attack &&
             playerState != PlayerState.Hit &&
             playerState != PlayerState.Death)
@@ -948,9 +856,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             playerState = hasMoveInput ? PlayerState.Walk : PlayerState.Idle;
         }
 
-        // 공격 중에는 IsMove를 건드리지 않는다.
-        // 공격 중에 IsMove가 바뀌면 Animator가 IdleAttackSM / WalkAttackSM 흐름을 흔들 수 있음.
-        if (bodyAnimator != null && playerState != PlayerState.Attack)
+        // Animator의 IsMove는 "실제 이동 입력" 기준으로만 넣는다.
+        if (bodyAnimator != null)
         {
             bodyAnimator.SetBool(IsMoveHash, hasMoveInput);
         }
@@ -958,14 +865,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void UpdateAnimatorLocomotion()
     {
-        if (bodyAnimator == null)
-            return;
-
-        // 핵심:
-        // 공격 중에는 이동 입력이 들어와도 Animator의 IsMove를 바꾸지 않는다.
-        // 실제 이동은 FixedUpdate의 PlayerState.Attack에서 계속 가능함.
-        if (playerState == PlayerState.Attack)
-            return;
+        if (bodyAnimator == null) return;
 
         bool hasMoveInput =
             !IsDie &&
@@ -1056,14 +956,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             animDirection = aimDirection;
             ApplyBlendTreeDirection(animDirection);
         }
-        
 
         SyncLocomotionState();
-        
-        if (rawFireInput && !attackPressBlockedByUI)
-        {
-            isFireInput = true;
-        }
     }
 
     /// <summary>
@@ -1083,16 +977,11 @@ public class PlayerController : MonoBehaviour, IDamageable
             return;
         }
 
+        // 주위탄은 일반 공격 대체형이다.
+        // 따라서 마우스 입력으로 일반 총알이 나가면 안 된다.
         if (shotUseOrbitProjectile)
         {
             CancelNormalAttackBecauseOrbit();
-            return;
-        }
-
-        // 차지샷은 playerState == Attack 중에도 계속 갱신되어야 한다.
-        if (FinalChargeShotTime > 0f)
-        {
-            HandleChargeShotAttack();
             return;
         }
 
@@ -1115,39 +1004,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         HandleSingleClickAttack();
     }
 
-    private void HandleChargeShotAttack()
-    {
-        if (!isFireInput)
-        {
-            if (IsChargeShotCharging)
-            {
-                CancelChargeShot();
-            }
 
-            return;
-        }
-
-        if (IsDie || !canControl || isSystemInputLocked || !IsGameplayScene())
-            return;
-
-        if (playerState == PlayerState.Hit || playerState == PlayerState.Death)
-            return;
-
-        if (Time.time < nextAttackTime && !IsChargeShotCharging)
-            return;
-
-        if (chargeStartTime < 0f)
-        {
-            BeginChargeShot();
-        }
-
-        UpdateChargeMoveAnimation();
-
-        if (!IsChargeReady())
-            return;
-
-        CompleteChargeShot();
-    }
     /// <summary>
     /// 마우스 클릭 1회 공격 처리.
     /// 
@@ -1255,43 +1112,63 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (isAttackSequenceRunning)
             return;
 
-        isAttackSequenceRunning = true;
-        hasFiredThisAttackAnimation = false;
-
         float attackInterval = GetCurrentAttackInterval();
 
         float burstTotalTime = burstEnabled
             ? burstInterval * Mathf.Max(0, FinalBurstCount - 1)
             : 0f;
 
-        // 3연발 시간까지 포함해서 다음 공격 가능 시간 계산
         nextAttackTime = Time.time + burstTotalTime + attackInterval;
 
-        PlayAttackAnimation();
+        if (burstShootCoroutine != null)
+        {
+            StopCoroutine(burstShootCoroutine);
+            burstShootCoroutine = null;
+        }
+
+        burstShootCoroutine = StartCoroutine(AttackSequenceRoutine());
     }
-    
-    private IEnumerator BurstFireByAnimationEventRoutine()
+
+    /// <summary>
+    /// 공격 1회 시퀀스.
+    /// 
+    /// 3연발 없음:
+    /// - 1번만 발사.
+    /// 
+    /// 3연발 있음:
+    /// - FinalBurstCount만큼 반복 발사.
+    /// 
+    /// 산탄 있음:
+    /// - 각 반복마다 FinalMultiShotCount만큼 퍼져서 발사.
+    /// </summary>
+    private IEnumerator AttackSequenceRoutine()
     {
+        isAttackSequenceRunning = true;
+
         int burstCount = FinalBurstCount;
         float interval = Mathf.Max(0.03f, burstInterval);
 
         for (int i = 0; i < burstCount; i++)
         {
-            if (IsDie)
-                yield break;
-
             if (shotUseOrbitProjectile)
+            {
+                CancelNormalAttackBecauseOrbit();
+                isAttackSequenceRunning = false;
+                burstShootCoroutine = null;
                 yield break;
+            }
 
+            PlayAttackAnimation();
             ShootOneAttackStep();
 
             if (i < burstCount - 1)
                 yield return new WaitForSeconds(interval);
         }
 
+        isAttackSequenceRunning = false;
         burstShootCoroutine = null;
     }
-    
+
     /// <summary>
     /// 3연발의 각 1타마다 실제 발사되는 함수.
     /// 
@@ -1662,9 +1539,72 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void OnAttack(InputValue value)
     {
-        // 실제 공격 가능 여부는 Update의 RefreshAttackInputFromMouse()와 HandleAttack()에서 판단한다.
-        // 여기서는 Input System 이벤트가 들어왔을 때 raw 상태만 보조로 기록한다.
-        rawFireInput = value.isPressed;
+        if (isSystemInputLocked)
+        {
+            ClearAttackInput();
+            return;
+        }
+
+        if (shotUseOrbitProjectile)
+        {
+            CancelNormalAttackBecauseOrbit();
+            return;
+        }
+
+        if (!IsGameplayScene())
+        {
+            ClearAttackInput();
+            return;
+        }
+
+        if (IsDie)
+        {
+            ClearAttackInput();
+            return;
+        }
+
+        if (!canControl)
+        {
+            ClearAttackInput();
+            return;
+        }
+
+        bool pressed = value.isPressed;
+
+        // UI 위에서 처음 누른 클릭만 차단
+        if (pressed && !isFireInput && isPointerOverUIThisFrame)
+        {
+            ClearAttackInput();
+            return;
+        }
+
+        if (pressed && !isFireInput)
+        {
+            requestSingleShot = true;
+            firedThisPress = false;
+
+            if (FinalChargeShotTime > 0f)
+            {
+                BeginChargeShot();
+            }
+            else
+            {
+                chargeStartTime = -1f;
+            }
+        }
+
+        if (!pressed)
+        {
+            firedThisPress = false;
+
+            if (FinalChargeShotTime > 0f && !IsChargeReady())
+            {
+                requestSingleShot = false;
+                EndChargeShot();
+            }
+        }
+
+        isFireInput = pressed;
     }
 
     private bool CanStartAttackNow()
@@ -1677,11 +1617,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (playerState == PlayerState.Hit) return false;
         if (playerState == PlayerState.Death) return false;
 
-        // 핵심 추가
-        // 공격 애니메이션 도중에는 다음 Attack Trigger를 넣지 않는다.
-        if (playerState == PlayerState.Attack) return false;
-        if (isAttackSequenceRunning) return false;
-
         return true;
     }
 
@@ -1690,116 +1625,57 @@ public class PlayerController : MonoBehaviour, IDamageable
         playerState = PlayerState.Attack;
 
         lockedAttackAimDirection = aimDirection.sqrMagnitude > 0.0001f
-            ? aimDirection.normalized
-            : animDirection.sqrMagnitude > 0.0001f
-                ? animDirection.normalized
-                : Vector2.down;
+            ? aimDirection
+            : animDirection;
 
         animDirection = lockedAttackAimDirection;
         ApplyBlendTreeDirection(animDirection);
 
-        if (bodyAnimator == null)
-            return;
-
-        bool attackMove = inputDirection.sqrMagnitude > 0.01f;
-
-        bodyAnimator.SetBool(AttackMoveHash, attackMove);
-
-        bodyAnimator.speed = Mathf.Max(0.1f, AttackPerSecond);
-
-        bodyAnimator.ResetTrigger(HitHash);
-        bodyAnimator.ResetTrigger(AttackHash);
-        bodyAnimator.SetTrigger(AttackHash);
-
-        Debug.Log($"[Attack] Start / AttackMove:{attackMove} / Input:{inputDirection} / State:{playerState}");
-    }
-    public void NotifyAttackAnimationFinished()
-    {
-        ReleaseAttackState();
-            
-        TryStartNextHeldAttackAfterAnimation();
-    }
-    private void TryStartNextHeldAttackAfterAnimation()
-    {
-        if (!isFireInput)
-            return;
-
-        if (shotUseOrbitProjectile)
-            return;
-
-        if (Time.time < nextAttackTime)
-            return;
-
-        if (!CanStartAttackNow())
-            return;
-
-        FireCurrentAttackPattern();
-
-        requestSingleShot = false;
-        firedThisPress = true;
-    }
-    
-    public void FireOnAnimationEvent()
-    {
-        if (IsDie)
-            return;
-
-        if (playerState != PlayerState.Attack)
-            return;
-
-        if (!isAttackSequenceRunning)
-            return;
-
-        if (hasFiredThisAttackAnimation)
-            return;
-
-        hasFiredThisAttackAnimation = true;
-
-        if (burstShootCoroutine != null)
+        if (bodyAnimator != null)
         {
-            StopCoroutine(burstShootCoroutine);
-            burstShootCoroutine = null;
-        }
+            if (bodyAnimator.GetBool(IsMoveHash))
+            {
+                bodyAnimator.speed = 1.0f;
+            }
+            else
+            {
+                bodyAnimator.speed = AttackPerSecond;
+            }
 
-        burstShootCoroutine = StartCoroutine(BurstFireByAnimationEventRoutine());
+            bodyAnimator.ResetTrigger(HitHash);
+            bodyAnimator.ResetTrigger(AttackHash);
+            bodyAnimator.SetTrigger(AttackHash);
+        }
     }
+
     private void ReleaseAttackState()
     {
         if (playerState != PlayerState.Attack)
             return;
-
-        // 공격 종료 시퀀스는 여기서도 반드시 정리한다.
-        // NotifyAttackAnimationFinished()가 못 불려도 다음 공격이 막히지 않게 하기 위함.
-        isAttackSequenceRunning = false;
-        hasFiredThisAttackAnimation = false;
-
         if (bodyAnimator != null)
         {
             bodyAnimator.speed = 1f;
             bodyAnimator.ResetTrigger(AttackHash);
-
-            // 다음 공격 때 PlayAttackAnimation()에서 다시 세팅하므로 초기화해도 됨.
-            bodyAnimator.SetBool(AttackMoveHash, false);
         }
 
+        // 공격 끝난 직후 현재 입력 기준으로 상태 복귀
         playerState = inputDirection.sqrMagnitude > 0.01f
             ? PlayerState.Walk
             : PlayerState.Idle;
 
+        // 다시 마우스 방향으로 BlendTree 방향 갱신
         if (aimDirection.sqrMagnitude > 0.0001f)
         {
             animDirection = aimDirection;
             ApplyBlendTreeDirection(animDirection);
         }
 
+        // 이동 상태 재동기화
         SyncLocomotionState();
     }
 
     private void ClearAttackInput()
     {
-        // rawFireInput은 여기서 건드리지 않는다.
-        // 마우스를 실제로 누르고 있는지는 RefreshAttackInputFromMouse()가 매 프레임 다시 판단한다.
-
         isFireInput = false;
         requestSingleShot = false;
         firedThisPress = false;
@@ -1814,13 +1690,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         isAttackSequenceRunning = false;
-        hasFiredThisAttackAnimation = false;
-
-        if (bodyAnimator != null)
-        {
-            bodyAnimator.speed = 1f;
-            bodyAnimator.ResetTrigger(AttackHash);
-        }
 
         if (playerState == PlayerState.Attack)
         {
@@ -1831,65 +1700,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             SyncLocomotionState();
         }
     }
-    // private void ForceClearRawAttackInput()
-    // {
-    //     rawFireInput = false;
-    //     attackPressBlockedByUI = false;
-    //     ClearAttackInput();
-    // }
 
-    private void UpdateChargeMoveAnimation()
-    {
-        if (bodyAnimator == null)
-            return;
 
-        if (!IsChargeShotCharging)
-            return;
-
-        bool attackMove = inputDirection.sqrMagnitude > 0.01f;
-
-        bodyAnimator.SetBool(AttackMoveHash, attackMove);
-    }
-    
-    private void CompleteChargeShot()
-    {
-        if (!IsChargeShotCharging)
-            return;
-
-        chargeStartTime = -1f;
-        isChargingShot = false;
-
-        if (bodyAnimator != null)
-        {
-            bodyAnimator.SetBool(IsChargeHash, false);
-        }
-
-        nextAttackTime = Time.time + GetCurrentAttackInterval();
-    }
-    
-    private void CancelChargeShot()
-    {
-        chargeStartTime = -1f;
-        isChargingShot = false;
-
-        isAttackSequenceRunning = false;
-        hasFiredThisAttackAnimation = false;
-
-        if (burstShootCoroutine != null)
-        {
-            StopCoroutine(burstShootCoroutine);
-            burstShootCoroutine = null;
-        }
-
-        if (bodyAnimator != null)
-        {
-            bodyAnimator.SetBool(IsChargeHash, false);
-            bodyAnimator.SetTrigger(CancelChargeHash);
-            bodyAnimator.ResetTrigger(AttackHash);
-        }
-
-        ReleaseAttackState();
-    }
     #region 차지 처리
 
     private void SetChargeAnimation(bool value)
@@ -1914,16 +1726,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (FinalChargeShotTime <= 0f)
             return;
 
-        if (chargeStartTime >= 0f)
-            return;
-
-        chargeStartTime = Time.time;
-        isChargingShot = true;
-
-
-        playerState = PlayerState.Attack;
-        isAttackSequenceRunning = true;
-        hasFiredThisAttackAnimation = false;
+        if (chargeStartTime < 0f)
+            chargeStartTime = Time.time;
 
         lockedAttackAimDirection = aimDirection.sqrMagnitude > 0.0001f
             ? aimDirection.normalized
@@ -1934,31 +1738,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         animDirection = lockedAttackAimDirection;
         ApplyBlendTreeDirection(animDirection);
 
-        if (bodyAnimator == null)
-            return;
-
-        bool attackMove = inputDirection.sqrMagnitude > 0.01f;
-
-        bodyAnimator.ResetTrigger(CancelChargeHash);
-        bodyAnimator.ResetTrigger(HitHash);
-        bodyAnimator.ResetTrigger(AttackHash);
-
-        bodyAnimator.SetBool(AttackMoveHash, attackMove);
-        bodyAnimator.SetBool(IsChargeHash, true);
-
-        bodyAnimator.speed = Mathf.Max(0.1f, AttackPerSecond);
-
-        bodyAnimator.SetTrigger(AttackHash);
+        SetChargeAnimation(true);
     }
+
     private void EndChargeShot()
     {
         chargeStartTime = -1f;
-        isChargingShot = false;
-
-        if (bodyAnimator != null)
-        {
-            bodyAnimator.SetBool(IsChargeHash, false);
-        }
+        SetChargeAnimation(false);
     }
 
     private bool IsChargeReady()

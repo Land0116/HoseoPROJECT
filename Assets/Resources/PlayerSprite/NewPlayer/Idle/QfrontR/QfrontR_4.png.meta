@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 36c41bfb0341f8247a995da53607d1a8
+guid: 3c8884c394505a34695947d164b094d3
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: QfrontR_4_0
       rect:
         serializedVersion: 2
-        x: 40
-        y: 11
-        width: 156
-        height: 237
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: e0632371c2f6a1e46b0b780dc381dd40
     internalID: 0
     vertices: []
     indices: 

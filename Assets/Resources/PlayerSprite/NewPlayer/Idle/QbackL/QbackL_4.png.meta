@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 02a770513338f604ca8fa6b9f73cab2b
+guid: 1e126730994a2254985c22a5429943a8
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -181,12 +181,12 @@ TextureImporter:
       name: QbackL_4_0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 10
-        width: 174
-        height: 220
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,7 +203,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 872e3da18be4919488e091954d90e140
     internalID: 0
     vertices: []
     indices: 
@@ -214,6 +214,7 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       QbackL_4_0: 8452152195917782595
+      QbackL_4_1: -1418423428
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
